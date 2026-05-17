@@ -10,7 +10,7 @@
 		"@mapsight/lib-ol": "workspace:^",
 		"@mapsight/lib-redux": "workspace:^",
 		"@mapsight/traffic-style": "workspace:^",
-		"date-fns": "^2.30.0",
+		"date-fns": "^4.1.0",
 		"ol": "catalog:",
 		"proj4": "catalog:",
 		"react": "catalog:",
