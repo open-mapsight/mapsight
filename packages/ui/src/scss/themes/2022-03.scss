@@ -1,0 +1,48 @@
+@use "../variables";
+
+$ms3-theme-font-family:
+	ui-sans-serif,
+	system-ui,
+	-apple-system,
+	BlinkMacSystemFont,
+	"Segoe UI",
+	Roboto,
+	"Helvetica Neue",
+	Arial,
+	"Noto Sans",
+	sans-serif,
+	"Apple Color Emoji",
+	"Segoe UI Emoji",
+	"Segoe UI Symbol",
+	"Noto Color Emoji";
+$ms3-theme-desktop-map-min-height: 500px !default;
+
+.ms3-wrapper {
+	font-family: $ms3-theme-font-family;
+	font-size: variables.$ms3-fontSizeBase;
+	line-height: 1.15;
+	-webkit-text-size-adjust: 100%; // Prevent adjustments of font size after orientation changes in i9OS
+}
+
+.ms3-map-row {
+	border: 1px solid variables.$ms3-borderColor;
+}
+
+.ms3-map-wrapper {
+	.ms3-wrapper--desktop & {
+		min-height: $ms3-theme-desktop-map-min-height;
+	}
+}
+
+.ms3-list {
+	&__item {
+		&:not(:first-of-type) {
+			border-top: 1px solid variables.$ms3-borderColor;
+		}
+
+		&__head {
+			display: flex;
+			flex-direction: row;
+		}
+	}
+}

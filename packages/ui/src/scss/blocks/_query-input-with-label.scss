@@ -1,0 +1,55 @@
+@use "../variables";
+
+.ms3-query-input-with-label {
+	&__label {
+		margin-right: 8px;
+	}
+
+	&__input-container {
+		border: 0;
+		flex-grow: 1;
+		padding: 0;
+		display: inline-block;
+		position: relative;
+	}
+
+	&__input {
+		box-sizing: border-box;
+		vertical-align: top;
+		color: #222;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-radius: 0;
+		width: 100%;
+		padding: 6px 40px 2px 8px;
+		font-size: 1.23077rem;
+		display: block;
+		outline-offset: -2px;
+	}
+
+	&__reset-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		color: #fff;
+		text-transform: uppercase;
+		text-align: left;
+		cursor: pointer;
+		background: #0e78ad;
+		border: 0;
+		padding: 10px 16px;
+		font-size: 1rem;
+		font-weight: bold;
+		line-height: 1;
+		height: 33px;
+		width: 40px;
+		background: transparent url(variables.$ms3-uiIconPath + "/reset.svg") no-repeat
+			center;
+
+		&:hover,
+		&:focus {
+			background: transparent url(variables.$ms3-uiIconPath + "reset-active.svg")
+				no-repeat center;
+		}
+	}
+}

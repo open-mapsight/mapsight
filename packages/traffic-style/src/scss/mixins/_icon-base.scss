@@ -1,0 +1,10 @@
+@use "../variables";
+
+@mixin iconBase {
+	image-type: icon;
+	icon: {
+		scale: variables.$MAPSIGHT_TRAFFIC_STYLE__IMG_BASE_SCALE;
+		src: variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH;
+		snapToPixel: true;
+	}
+}

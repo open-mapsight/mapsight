@@ -1,0 +1,24 @@
+@use "../variables";
+
+.ms3-layer-switcher-overlay {
+	display: block;
+	position: relative;
+
+	.ms3-layer-switcher-container {
+		position: absolute;
+		top: 5px;
+		right: 15px;
+		width: 200px;
+		background: variables.$ms3-backgroundColor;
+		box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+		pointer-events: auto;
+	}
+
+	.ms3-wrapper--mobile & {
+		display: none;
+	}
+
+	.ms3-wrapper--mobile.ms3-wrapper--embedded & {
+		display: block;
+	}
+}

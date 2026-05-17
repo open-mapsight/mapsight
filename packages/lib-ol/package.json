@@ -1,0 +1,37 @@
+{
+	"name": "@mapsight/lib-ol",
+	"description": "Mapsight OpenLayers Library",
+	"version": "3.3.0",
+	"type": "module",
+	"dependencies": {
+		"@mapsight/lib-js": "workspace:^",
+		"@types/lodash": "catalog:",
+		"lodash": "catalog:",
+		"ol": "catalog:"
+	},
+	"devDependencies": {
+		"tsc-alias": "^1.8.17"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		}
+	},
+	"license": "UNLICENSED",
+	"main": "index.js",
+	"peerDependencies": {
+		"ol": "catalog:"
+	},
+	"scripts": {
+		"build": "tsc && tsc-alias",
+		"clean": "rimraf dist/*",
+		"clean-build": "run-s clean build",
+		"prepublishOnly": "pnpm run clean-build",
+		"typecheck": "tsc --noEmit",
+		"watch": "run-s build watch:build",
+		"watch:build": "run-p watch:build:modules watch:build:paths",
+		"watch:build:modules": "tsc --watch",
+		"watch:build:paths": "tsc-alias --watch"
+	}
+}

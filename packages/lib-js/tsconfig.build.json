@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"exclude": ["scripts/**/*", "**/*.spec.ts", "**/*.test.ts"],
+	"include": ["src/js/**/*"],
+	"compilerOptions": {
+		"rootDir": "src/js",
+		"outDir": "dist"
+	}
+}

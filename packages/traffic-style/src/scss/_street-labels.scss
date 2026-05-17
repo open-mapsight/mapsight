@@ -1,0 +1,16 @@
+#streetLabels {
+	[|js="env.zoom >= 14"] {
+		text: {
+			text: attr(name);
+			font: normal 11px sans-serif;
+			stroke: {
+				width: 3;
+				color: black;
+			}
+			fill-color: white;
+			offsetX: 0;
+			offsetY: 0;
+			placement: line;
+		}
+	}
+}

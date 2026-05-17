@@ -1,0 +1,39 @@
+@use "sass:map";
+@use "../variables";
+
+@function getFeatureLabelBaseOffsetX() {
+	@return variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_X +
+		map.get(variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_MAX_SIZE, x);
+}
+
+@function getFeatureLabelBaseOffsetY() {
+	@return variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_Y;
+}
+
+@mixin featureLabel(
+	$minZoom: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_MIN_ZOOM,
+	$prefix: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_PREFIX,
+	$suffix: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_SUFFIX
+) {
+	[|js="env.zoom >= #{$minZoom}"] {
+		text: {
+			font: bold 12px sans-serif;
+			offsetX: getFeatureLabelBaseOffsetX();
+			offsetY: getFeatureLabelBaseOffsetY();
+			textAlign: left;
+			fill-color: #03437e;
+			stroke-color: #fff;
+			stroke-width: 1;
+			text: "#{$prefix}attr(title)#{$suffix}";
+		}
+	}
+}
+
+@mixin moveFeatureLabel($minZoom: 15, $x: 0, $y: 0) {
+	[|js="env.zoom >= #{$minZoom}"] {
+		text: {
+			offsetX: getFeatureLabelBaseOffsetX() + $x;
+			offsetY: getFeatureLabelBaseOffsetY() + $y;
+		}
+	}
+}

@@ -1,0 +1,21 @@
+@use "../variables";
+
+.ms3-search-overlay {
+	pointer-events: auto;
+
+	.ms3-wrapper--desktop &,
+	.ms3-wrapper--fullscreen & {
+		margin: 10px 0 0 10px;
+		position: relative;
+		z-index: 2;
+		background: variables.$ms3-backgroundColor;
+	}
+
+	.ms3-wrapper--mobile & {
+		display: none;
+	}
+
+	.ms3-wrapper--mobile.ms3-wrapper--embedded & {
+		display: block;
+	}
+}

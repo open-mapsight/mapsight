@@ -1,0 +1,100 @@
+{
+	"name": "@mapsight/core",
+	"description": "Mapsight Core",
+	"version": "13.1.0",
+	"type": "module",
+	"dependencies": {
+		"@mapsight/lib-js": "workspace:^",
+		"@mapsight/lib-ol": "workspace:^",
+		"@mapsight/lib-redux": "workspace:^",
+		"@reduxjs/toolkit": "catalog:",
+		"eventemitter3": "^5.0.4",
+		"lodash": "catalog:",
+		"minimatch": "^10.2.5",
+		"redux": "catalog:",
+		"redux-batched-actions": "catalog:",
+		"redux-thunk": "catalog:",
+		"reselect": "catalog:"
+	},
+	"devDependencies": {
+		"@redux-devtools/extension": "^3.3.0",
+		"@types/geojson": "^7946.0.16",
+		"@types/jsdom": "catalog:",
+		"@types/lodash": "catalog:",
+		"@types/node": "catalog:",
+		"jsdom": "catalog:",
+		"ol": "catalog:",
+		"proj4": "catalog:",
+		"tsc-alias": "^1.8.17",
+		"typescript": "catalog:"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./types": {
+			"types": "./dist/types.d.ts",
+			"import": "./dist/types.js"
+		},
+		"./lib/*": {
+			"types": "./dist/lib/*.d.ts",
+			"import": "./dist/lib/*.js"
+		},
+		"./lib/helpers": {
+			"types": "./dist/lib/helpers/index.d.ts",
+			"import": "./dist/lib/helpers/index.js"
+		},
+		"./ol-proxy": {
+			"types": "./dist/ol-proxy/index.d.ts",
+			"import": "./dist/ol-proxy/index.js"
+		},
+		"./ol-proxy/*": {
+			"types": "./dist/ol-proxy/*.d.ts",
+			"import": "./dist/ol-proxy/*.js"
+		},
+		"./mixins/*": {
+			"types": "./dist/mixins/*.d.ts",
+			"import": "./dist/mixins/*.js"
+		},
+		"./env/ssr-simulated-browser": {
+			"types": "./dist/env/ssr-simulated-browser.d.ts",
+			"import": "./dist/env/ssr-simulated-browser.js"
+		}
+	},
+	"license": "UNLICENSED",
+	"peerDependencies": {
+		"@redux-devtools/extension": "^3.3.0",
+		"jsdom": "catalog:",
+		"ol": "catalog:",
+		"proj4": "catalog:"
+	},
+	"peerDependenciesMeta": {
+		"jsdom": {
+			"optional": true
+		},
+		"ol": {
+			"optional": true
+		},
+		"proj4": {
+			"optional": true
+		},
+		"@redux-devtools/extension": {
+			"optional": true
+		}
+	},
+	"scripts": {
+		"build": "npm-run-all build:setup build:modules",
+		"build:modules": "tsc && tsc-alias",
+		"build:setup": "mkdirp dist",
+		"clean": "rimraf dist/*",
+		"clean-build": "run-s clean build",
+		"lint": "eslint",
+		"prepublishOnly": "pnpm run clean-build",
+		"typecheck": "tsc --noEmit",
+		"watch": "run-s build:modules watch:build",
+		"watch:build": "run-p watch:build:modules watch:build:paths",
+		"watch:build:modules": "tsc --watch",
+		"watch:build:paths": "tsc-alias --watch"
+	}
+}

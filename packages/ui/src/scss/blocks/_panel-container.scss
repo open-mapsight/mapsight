@@ -1,0 +1,36 @@
+@use "../variables";
+
+.ms3-panel-container {
+	$b: &;
+
+	position: relative;
+	z-index: 2;
+
+	&--docked-left {
+		width: variables.$ms3-verticalPanelWidth;
+		transition:
+			width 300ms ease-in,
+			flex 300ms ease-in;
+
+		&#{$b}--empty {
+			width: 0;
+			transition:
+				width 300ms ease-out,
+				flex 300ms ease-out;
+		}
+	}
+
+	&--docked-below {
+		display: flex;
+		flex-shrink: 0;
+
+		width: 100%;
+		max-height: variables.$ms3-mobileFeatureSelectInfoHeight;
+		transition: max-height 300ms ease-in;
+
+		&#{$b}--empty {
+			max-height: 0;
+			transition: max-height 300ms ease-out;
+		}
+	}
+}

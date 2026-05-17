@@ -1,0 +1,12 @@
+@use "sass:map";
+@mixin getIconDimension($dimensions) {
+	$x: map.get($dimensions, x);
+	$y: map.get($dimensions, y);
+	$width: map.get($dimensions, width);
+	$height: map.get($dimensions, height);
+
+	icon-offsetX: $x;
+	icon-offsetY: $y;
+	icon-sizeX: $width;
+	icon-sizeY: $height;
+}

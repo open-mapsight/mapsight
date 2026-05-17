@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+	<title>mapsight-icons-svg/icn/parken/cam-default</title>
+	<g fill="none" fill-rule="evenodd">
+		<g stroke-linejoin="square">
+			<rect width="24" height="24" x="8" y="8" fill="#035799" stroke="#FFF" stroke-width="2" rx="4" />
+			<rect width="25" height="25" x="7.5" y="7.5" stroke="#000" rx="4" />
+		</g>
+		<path fill="#FFF"
+			  d="m26.033 13.165 1.645 5.78-4.69 1.376v7.704h-1.996v-7.098l-1.572.432-5.775-4.601 12.388-3.593Zm-12.14 5.487 2.473 1.998-3.49 1.248-.9-2.562 1.917-.684Z" />
+	</g>
+</svg>

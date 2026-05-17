@@ -1,0 +1,41 @@
+.ms3-list-pagination {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	justify-content: center;
+
+	&__page,
+	&__break,
+	&__page-link {
+		display: block;
+	}
+
+	&__page-link,
+	&__break {
+		padding: 7px;
+	}
+
+	&__page-link {
+		&:hover,
+		&:focus {
+		}
+	}
+
+	&__page--active {
+		font-weight: bold;
+	}
+
+	&__page--disabled {
+		color: #555;
+		cursor: default;
+	}
+
+	&__break {
+		cursor: default;
+	}
+
+	&__page-link {
+		cursor: pointer;
+	}
+}

@@ -1,0 +1,25 @@
+@use "../variables";
+
+.ms3-list-wrapper {
+	position: relative;
+	padding: 10px 0;
+
+	.ms3-panel--docked-left & {
+		width: variables.$ms3-verticalPanelContentWidth;
+		height: calc(100% - #{2 * variables.$ms3-verticalPanelPadding});
+		padding: 0;
+		margin: variables.$ms3-verticalPanelPadding;
+
+		overflow-y: scroll;
+		overflow-x: hidden;
+		overflow-scrolling: touch;
+		-webkit-overflow-scrolling: touch;
+
+		border-radius: variables.$ms3-verticalPanelBorderRadius;
+		background: variables.$ms3-pageBackgroundColor;
+	}
+
+	.ms3-panel--hide-list & {
+		display: none;
+	}
+}

@@ -1,0 +1,24 @@
+@use "sass:list";
+@use "sass:meta";
+
+// https://hugogiraudel.com/2013/08/08/advanced-sass-list-functions/
+@function list-to-string($list, $glue: "", $is-nested: false) {
+	$result: null;
+
+	@for $i from 1 through list.length($list) {
+		$e: list.nth($list, $i);
+
+		@if meta.type-of($e) == list {
+			$result: $result#{list-to-string($e, $glue, true)};
+		} @else {
+			$result: if(
+				sass($i != list.length($list) or $is-nested):
+					$result #{$e}#{$glue};
+					else:
+						$result#{$e}
+			);
+		}
+	}
+
+	@return $result;
+}

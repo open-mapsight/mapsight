@@ -1,0 +1,12 @@
+.ms3-vector-editor-coords {
+	display: inline-block;
+	font-size: 0.8rem;
+	border: 1px solid #999;
+	padding: 0 4px;
+	margin: 0 5px;
+	color: #555;
+	border-radius: 7px;
+	background: white;
+	font-variant-numeric: tabular-nums;
+	user-select: all;
+}

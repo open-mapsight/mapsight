@@ -1,0 +1,58 @@
+{
+	"name": "@mapsight/traffic-style",
+	"description": "Mapsight Traffic Style",
+	"version": "4.3.0",
+	"type": "module",
+	"bin": {
+		"traffic-icon-sprite": "scripts/traffic-icon-sprite.ts",
+		"traffic-optimize-icons": "scripts/optimize-icons.ts"
+	},
+	"dependencies": {
+		"@mapsight/lib-ol": "workspace:^",
+		"merge-stream": "^2.0.0",
+		"ol": "catalog:",
+		"sharp": "^0.34.5",
+		"svgo": "^4.0.1",
+		"vinyl": "^3.0.1",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@mapsight/vector-style-compiler": "workspace:^",
+		"@types/fs-extra": "^11.0.4",
+		"@types/markdown-table": "^2.0.0",
+		"@types/node": "catalog:",
+		"chokidar": "^5.0.0",
+		"fs-extra": "^11.3.5",
+		"markdown-table": "^2.0.0",
+		"vitest": "catalog:"
+	},
+	"main": "default.js",
+	"publishConfig": {
+		"directory": "dist",
+		"linkDirectory": true
+	},
+	"scripts": {
+		"build": "npm-run-all build:setup build:meta --parallel build:icons build:icons2x build:iconsSvg build:docs --sequential build:icon-sprites build:styles copy",
+		"build:docs": "run-p build:docs:overview",
+		"build:docs:overview": "node scripts/create-overview-md.ts ./src/icons/ ../img/mapsight-icons-svg/ > dist/docs/overview.md",
+		"build:icon-sprites": "run-p build:icon-sprites:*",
+		"build:icon-sprites:1x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons/ --sprite-name mapsight-traffic-style-icon-sprite-1x",
+		"build:icon-sprites:2x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons-2x/ --sprite-name mapsight-traffic-style-icon-sprite-2x",
+		"build:icons": "node scripts/optimize-icons.ts --src ./src/icons/ --dest ./dist/img/mapsight-icons/",
+		"build:icons2x": "node scripts/optimize-icons.ts --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
+		"build:iconsSvg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
+		"build:meta": "node scripts/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
+		"build:setup": "mkdirp dist/docs && mkdirp dist/img",
+		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.css dist",
+		"clean": "rimraf tmp/* dist/*",
+		"clean-build": "run-s clean build",
+		"copy": "run-p copy:src copy:misc",
+		"copy:misc": "cp package.json README.md *.scss dist/",
+		"copy:scripts": "mkdirp dist; cp -r scripts dist/",
+		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
+		"lint": "eslint scripts",
+		"prepublishOnly": "pnpm run clean-build",
+		"typecheck": "tsc --noEmit",
+		"watch": "echo \"Currently traffic-style does not support watch\""
+	}
+}

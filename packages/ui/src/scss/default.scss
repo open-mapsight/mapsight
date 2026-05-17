@@ -1,0 +1,63 @@
+@use "variables";
+@use "ol/ol";
+
+// globals
+@use "global/no-scroll";
+
+// blocks, alphabetical order!
+@use "blocks/additional-container";
+@use "blocks/app-overlay";
+@use "blocks/attribution";
+@use "blocks/mini-legend";
+@use "blocks/dialog-close-button";
+@use "blocks/feature-link";
+@use "blocks/feature-selection-info";
+@use "blocks/features-sorting";
+@use "blocks/filter";
+@use "blocks/filter-button";
+@use "blocks/flex";
+@use "blocks/hint";
+@use "blocks/info-overlay";
+@use "blocks/input-container";
+@use "blocks/layer-switcher";
+@use "blocks/layer-switcher-overlay";
+@use "blocks/link-share";
+@use "blocks/list";
+@use "blocks/list-cycling-box";
+@use "blocks/list-header";
+@use "blocks/list-pagination";
+@use "blocks/list-toggle-button";
+@use "blocks/list-wrapper";
+@use "blocks/logo";
+@use "blocks/main-container";
+@use "blocks/map-overlay";
+@use "blocks/map-overlay-combined-buttons";
+@use "blocks/map-row";
+@use "blocks/map-synced-interlay";
+@use "blocks/map-target";
+@use "blocks/map-usage";
+@use "blocks/map-wrapper";
+@use "blocks/marginal";
+@use "blocks/modal";
+@use "blocks/page-title";
+@use "blocks/panel-container";
+@use "blocks/panel";
+@use "blocks/query-input-with-label";
+@use "blocks/region-selector";
+@use "blocks/search";
+@use "blocks/search-overlay";
+@use "blocks/search-result";
+@use "blocks/share-link";
+@use "blocks/sticky-header";
+@use "blocks/switcher-header";
+@use "blocks/tool-overlay";
+@use "blocks/tooltip";
+@use "blocks/viewport-button";
+@use "blocks/watermark";
+@use "blocks/wrapper";
+
+// openlayers overrides
+@use "ol/viewport";
+
+// helpers
+@use "helpers/visually-hidden";

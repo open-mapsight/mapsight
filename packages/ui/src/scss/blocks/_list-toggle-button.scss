@@ -1,0 +1,57 @@
+@use "../variables";
+
+$buttonWidth: 25px;
+$buttonHeight: 70px;
+$transitionTime: 400ms;
+
+.ms3-list-toggle-button {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: $buttonWidth;
+	height: $buttonHeight;
+	margin: 0 (-$buttonWidth) 80px 0;
+	border: 0;
+	border-radius: 0 variables.$ms3-borderRadius variables.$ms3-borderRadius 0;
+	z-index: variables.$ms3-zIndexListToggleButton;
+	background-color: variables.$ms3-backgroundColor;
+	transition: margin-left $transitionTime ease-out;
+	box-shadow: 3px 4px 4px -2px rgba(0, 0, 0, 0.4);
+
+	&::after {
+		// arrow
+		content: "";
+		border: 7px solid transparent;
+		border-left-color: variables.$ms3-themeColorA;
+		display: block;
+		left: 2px;
+		position: relative;
+	}
+
+	&:hover,
+	&:focus {
+		background: variables.$ms3-backgroundHighlightColor;
+		color: variables.$ms3-themeColorB;
+		outline: 0;
+	}
+
+	&:hover::after {
+		// arrow
+		border-left-color: variables.$ms3-themeColorB;
+	}
+
+	&--active {
+		&::after {
+			// arrow
+			left: -6px;
+			border-right-color: variables.$ms3-themeColorA;
+			border-left-color: transparent;
+		}
+
+		&:hover::after {
+			// arrow
+			border-left-color: transparent;
+			border-right-color: variables.$ms3-themeColorB;
+		}
+	}
+}

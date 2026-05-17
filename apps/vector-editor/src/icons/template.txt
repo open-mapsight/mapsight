@@ -1,0 +1,6 @@
+$sprite-map: (
+	sprite: (width: {{spriteWidth}}px, height: {{spriteHeight}}px, path: '{{{sprite}}}'),
+	{{#shapes}}
+	{{base}}: (width: {{width.inner}}px, height: {{height.inner}}px, x: {{position.absolute.x}}px, y: {{position.absolute.y}}px),
+	{{/shapes}}
+);

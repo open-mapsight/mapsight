@@ -1,0 +1,16 @@
+@use "../variables";
+
+.ms3-timefilter {
+	padding: 1em 6px;
+	border-bottom: 1px solid variables.$ms3-borderColor;
+
+	input {
+		display: inline-block;
+		width: 44%;
+		padding: 5px 6px;
+		margin-bottom: 7px;
+		border: 1px solid variables.$ms3-borderColor;
+
+		text-align: center;
+	}
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+	form {
+		margin: 20px auto;
+		max-width: 80vw;
+	}
+
+	label {
+		display: block;
+		margin: 20px 0;
+	}
+
+	textarea {
+		width: 100%;
+	}
+</style>
+
+
+<script>
+	window.mapsightPoiGeoJsonElement_createHandlers = window.mapsightPoiGeoJsonElement_createHandlers || function (inputElementName, popupUrl, popupWindowName, popupWindowParameters) {
+		var popupWindow;
+
+		window[inputElementName + '-edit'] = function () {
+			popupWindow = window.open(popupUrl, popupWindowName, popupWindowParameters);
+			popupWindow.focus();
+		};
+
+		window[inputElementName + '-reset'] = function () {
+			if (popupWindow) {
+				popupWindow.close();
+			}
+			document.getElementsByName(inputElementName)[0].value = '';
+		};
+	};
+</script>
+
+<form>
+	<h1>TYPO3 dummy</h1>
+
+	<label>
+		POI (GeoJSON-Geometry)<br>
+		<textarea name="data[tx_nnpois_domain_model_poi][12345][geojson]" readonly></textarea><br>
+
+		<button class="button button--primary" onclick="window['data[tx_nnpois_domain_model_poi][12345][geojson]-edit']()"
+				type="button">Bearbeiten
+		</button>
+		<button class="button button--warn" onclick="window['data[tx_nnpois_domain_model_poi][12345][geojson]-reset']()"
+				type="button">Löschen
+		</button>
+	</label>
+
+	<script>
+		window.mapsightPoiGeoJsonElement_createHandlers(
+			'data[tx_nnpois_domain_model_poi][12345][geojson]',
+			'poi-editor.html?type=main',
+			'Mapsight POI GeoJSON-Editor',
+			'width=680,height=800,dependent=yes,resizable=yes,status=no,toolbar=no'
+		);
+	</script>
+</form>

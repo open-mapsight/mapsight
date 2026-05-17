@@ -1,0 +1,127 @@
+@use "../variables";
+
+@keyframes msSearchResultSpin {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.ms3-search-result {
+	$b: &;
+
+	position: relative;
+	border-top: 1px solid variables.$ms3-borderColor;
+	max-height: variables.$ms3-searchResultMaxHeight;
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	&__group {
+		max-height: variables.$ms3-searchResultMaxHeight - 50px;
+	}
+
+	&__group-head {
+		margin: 0;
+		padding: 4px 10px;
+
+		position: sticky;
+		top: 0;
+
+		background: variables.$ms3-backgroundColorOffset;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+		font-size: inherit;
+
+		#{$b}__group:not(:first-child) & {
+			border-top: 1px solid variables.$ms3-borderColor;
+		}
+	}
+
+	&__entry {
+		display: block;
+		width: 100%;
+		border: 0;
+		margin: 0;
+		padding: 5px 20px 5px 10px;
+		text-align: left;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		background: variables.$ms3-backgroundColor;
+
+		&__subline {
+			display: block;
+			margin-left: 1px;
+			margin-top: -2px;
+			font-size: variables.$ms3-fontSizeSmallest;
+			color: variables.$ms3-secondaryColor;
+		}
+
+		&:hover,
+		&:focus {
+			background: variables.$ms3-backgroundHighlightColor;
+			color: variables.$ms3-themeColorB;
+
+			// show overflow text on hover/focus
+			overflow: visible;
+			text-shadow:
+				1px 1px 2px variables.$ms3-backgroundHighlightColor,
+				-1px -1px 2px variables.$ms3-backgroundHighlightColor;
+		}
+	}
+
+	&__list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__list-item:not(:first-child) {
+		border-top: 1px solid variables.$ms3-borderColor;
+	}
+
+	&__empty-message,
+	&__error {
+		padding: 10px;
+		margin: 0;
+	}
+
+	&--inactive {
+		display: none;
+	}
+
+	&__error {
+		&::before {
+			content: "";
+			float: left;
+			width: 22px;
+			height: 22px;
+			background: transparent url(variables.$ms3-uiIconPath + "error.svg") no-repeat
+				0 3px;
+		}
+	}
+
+	&--loading {
+		&::after {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: 10px;
+			content: "";
+			display: block;
+			width: 15px;
+			height: 15px;
+			background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
+				no-repeat center center;
+			animation: msSearchResultSpin 4s linear infinite;
+		}
+	}
+
+	.ms3-search-overlay & {
+		background: variables.$ms3-backgroundColor;
+
+		&--empty,
+		&--loading,
+		&--found,
+		&--error {
+			min-height: 200px;
+		}
+	}
+}

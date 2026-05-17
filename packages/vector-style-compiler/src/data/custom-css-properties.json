@@ -1,0 +1,200 @@
+[
+	{
+		"name": "circle-fill-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "circle-radius",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "circle-stroke-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "circle-stroke-width",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "fill-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-anchorx",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-anchory",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-offsetx",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-offsety",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-opacity",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-scale",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-sizex",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-sizey",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-snaptopixel",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "icon-src",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "image-circle-fill-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "image-circle-radius",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "image-type",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "stroke-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "stroke-linedash",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-alignment",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-fill-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-font",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-offsetx",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-offsety",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-placement",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-stroke-color",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-stroke-width",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-testalign",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-text",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-textalign",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "text-textbaseline",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "zindex",
+		"description": "",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	}
+]

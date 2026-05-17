@@ -1,0 +1,20 @@
+.ms3-vector-editor-panel {
+	display: flex;
+	overflow: auto;
+	flex-direction: column;
+
+	&--list {
+		.ms3-vector-editor-container--panel-configuration-map & {
+			overflow: hidden;
+			height: 45px;
+		}
+
+		.ms3-vector-editor-container--panel-configuration-list & {
+			height: 90vh;
+		}
+
+		.ms3-vector-editor-container--panel-configuration-divided & {
+			height: 300px;
+		}
+	}
+}

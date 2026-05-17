@@ -1,0 +1,67 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+.ms3-modal {
+	//width: 100%;
+	max-width: 480px;
+	max-height: 800px;
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
+		margin-top: 5vh;
+		max-width: 320px;
+	}
+
+	&:focus {
+		outline: 0;
+	}
+
+	&__inner {
+		//width: 100%;
+		height: 100%;
+		max-width: 90vw;
+		max-height: 90vh;
+		min-height: 34px;
+
+		position: relative;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+		overflow-scrolling: touch;
+		background: variables.$ms3-backgroundColor;
+		box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+
+		.ms3-dialog-close-button {
+			// disable `position: absolute`
+			position: relative !important;
+		}
+	}
+
+	&__headline {
+		margin: 0;
+		padding: 7px;
+		flex-grow: 1;
+		flex-shrink: 1;
+	}
+
+	&__close {
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+
+	.ms3-layer-switcher-container {
+		min-width: 60vw;
+	}
+
+	.ms3-layer-switcher__button {
+		padding: 7px;
+	}
+
+	.ms3-layer-switcher__entry__label {
+		font-size: 110%;
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig-base-tsx.json",
+	"compilerOptions": {
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true
+	},
+	"exclude": ["node_modules"]
+}

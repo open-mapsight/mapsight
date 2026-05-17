@@ -1,0 +1,32 @@
+@use "../variables";
+
+.ms3-dialog-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 42px;
+	height: 34px;
+	border-radius: 0 4px 0 4px;
+	background: transparent url(variables.$ms3-uiIconPath + "reset.svg") no-repeat 13px
+		10px;
+	border-top-width: 0;
+	border-right-width: 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.01);
+	border-left: 1px solid rgba(255, 255, 255, 0.01);
+	transition:
+		background 200ms ease-in-out,
+		border 200ms ease-in-out;
+
+	&:hover,
+	&:focus {
+		background-color: variables.$ms3-backgroundHighlightColor;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+		border-left: 1px solid variables.$ms3-borderColor;
+	}
+
+	@media print {
+		& {
+			display: none !important;
+		}
+	}
+}

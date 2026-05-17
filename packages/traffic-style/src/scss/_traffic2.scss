@@ -1,0 +1,122 @@
+@use "./variables";
+
+@use "./mixins/icon-base";
+@use "./mixins/icon";
+
+#traffic2 {
+	image-type: none;
+	stroke-width: 6;
+
+	[|js="env.zoom < 20"] {
+		stroke-width: 7;
+	}
+
+	[|js="env.zoom < 18"] {
+		stroke-width: 5;
+	}
+
+	[|js="env.zoom < 16"] {
+		stroke-width: 4;
+	}
+
+	[|js="env.zoom < 15"] {
+		stroke-width: 3;
+	}
+
+	[|js="env.zoom < 12"] {
+		stroke-width: 2;
+	}
+
+	stroke-color: rgba(255, 156, 4, 0.7);
+
+	[|js="env.zoom < 9"] {
+		stroke-color: rgba(255, 156, 4, 0.5);
+	}
+
+	[state="highlight"],
+	[state="select"] {
+		stroke-color: rgba(255, 156, 4, 1);
+	}
+
+	// should not end up in the map (filtered by pulp)
+	[trafficSituation=""],
+	[trafficSituation="Unbekannt"],
+	[trafficSituation="UNKNOWN_ERROR"],
+	[los=""],
+	[los="0"] {
+		stroke-color: rgba(0, 0, 0, 0.7);
+
+		[|js="env.zoom < 15"] {
+			stroke-color: rgba(0, 0, 0, 0.5);
+		}
+
+		[|js="env.zoom < 9"] {
+			stroke-color: rgba(0, 0, 0, 0.3);
+		}
+
+		[state="highlight"],
+		[state="select"] {
+			stroke-color: rgba(0, 0, 0, 1);
+		}
+	}
+
+	[trafficSituation="Frei"],
+	[los="1"] {
+		stroke-color: rgba(0, 179, 54, 0.7);
+
+		[|js="env.zoom < 9"] {
+			stroke-color: rgba(0, 179, 54, 0.2);
+		}
+
+		[state="highlight"],
+		[state="select"] {
+			stroke-color: rgba(0, 179, 54, 1);
+		}
+	}
+
+	[trafficSituation="Zaehfliessend"],
+	[los="2"] {
+		stroke-color: rgba(255, 82, 0, 0.7);
+
+		[|js="env.zoom < 9"] {
+			stroke-color: rgba(255, 82, 0, 0.5);
+		}
+
+		[state="highlight"],
+		[state="select"] {
+			stroke-color: rgb(255, 82, 0);
+		}
+	}
+
+	[trafficSituation="Stau"],
+	[los="3"],
+	[los="4"] {
+		// Icon
+		@include icon-base.iconBase;
+		@include icon.icon("stau", "default");
+
+		[|js="env.zoom >= 1 && env.zoom <= 10"]
+			:not([state="highlight"])
+			:not([state="select"]) {
+			@include icon.icon("stau", "xsmall");
+		}
+
+		[|js="env.zoom >= 11 && env.zoom <= 12"]
+			:not([state="highlight"])
+			:not([state="select"]) {
+			@include icon.icon("stau", "small");
+		}
+
+		stroke-color: rgba(174, 0, 5, 0.8);
+		zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 7;
+
+		[|js="env.zoom < 9"] {
+			stroke-color: rgba(174, 0, 5, 0.6);
+		}
+
+		[state="highlight"],
+		[state="select"] {
+			stroke-color: rgb(255, 0, 102);
+		}
+	}
+}

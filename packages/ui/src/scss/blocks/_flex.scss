@@ -1,0 +1,20 @@
+.ms3-flex {
+	display: flex;
+	align-content: stretch;
+
+	&--column {
+		flex-direction: column;
+	}
+
+	&--row {
+		flex-direction: row;
+	}
+
+	&-grow {
+		flex-grow: 1;
+	}
+
+	&-no-shrink {
+		flex-shrink: 0;
+	}
+}

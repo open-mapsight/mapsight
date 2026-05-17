@@ -1,0 +1,8 @@
+@use "../mixins/visually-hidden";
+
+/*
+ * Hide only visually, but have it available for screen readers
+ */
+.ms3-visuallyhidden {
+	@include visually-hidden.visually-hidden();
+}

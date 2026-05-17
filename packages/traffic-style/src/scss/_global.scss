@@ -1,0 +1,24 @@
+@use "./variables";
+
+* {
+	zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX;
+	fill-color: variables.$MAPSIGHT_TRAFFIC_STYLE__FILL_COLOR;
+	stroke-color: variables.$MAPSIGHT_TRAFFIC_STYLE__STROKE_COLOR;
+
+	text: {
+		font: variables.$MAPSIGHT_TRAFFIC_STYLE__TEXT_FONT;
+		fill-color: variables.$MAPSIGHT_TRAFFIC_STYLE__TEXT_FILL_COLOR;
+		stroke-color: variables.$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_COLOR;
+		stroke-width: variables.$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_WIDTH;
+	}
+
+	//[state = "modify"] {
+	//	image-type: circle;
+	//	icon-opacity: 1;
+	//	circle-radius: 6;
+	//	stroke-color: blue;
+	//	fill-color: rgba(0, 0, 255, 0.4);
+	//	stroke-width: 2;
+	//	icon-src: "";
+	//}
+}

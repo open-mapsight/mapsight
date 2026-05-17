@@ -1,0 +1,19 @@
+@use "sass:map";
+@use "../variables";
+
+@use "./get-icon-dimensions";
+
+@mixin icon(
+	$iconId: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_DEFAULT,
+	$state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
+	$icons: variables.$MAPSIGHT_TRAFFIC_STYLE__ICONS
+) {
+	$stateSuffix: "-" + $state;
+	$dimensions: map.get($icons, $iconId + $stateSuffix);
+
+	@if $dimensions {
+		@include get-icon-dimensions.getIconDimension($dimensions);
+	} @else {
+		@error "Icon not found: " + $iconId + $stateSuffix;
+	}
+}

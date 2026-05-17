@@ -1,0 +1,15 @@
+.ms3-vector-editor-map {
+	width: 100%;
+
+	.ms3-vector-editor-container--panel-configuration-map & {
+		height: calc(100vh - 45px);
+	}
+
+	.ms3-vector-editor-container--panel-configuration-list & {
+		height: calc(100vh - 90vh);
+	}
+
+	.ms3-vector-editor-container--panel-configuration-divided & {
+		height: calc(100vh - 300px);
+	}
+}

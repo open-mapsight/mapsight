@@ -1,0 +1,26 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../mixins/visually-hidden";
+@use "../variables";
+
+.ms3-info-overlay {
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
+		&__desktop-content {
+			display: none;
+		}
+	}
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+		&__mobile-content {
+			display: none;
+		}
+	}
+
+	&__area {
+		&--left {
+		}
+
+		&--right {
+			max-width: 60vw;
+		}
+	}
+}

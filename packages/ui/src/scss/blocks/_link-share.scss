@@ -1,0 +1,25 @@
+@use "../variables";
+
+.ms3-link-share {
+	padding: 6px;
+	display: flex;
+	flex-direction: row;
+
+	&__input {
+		flex-grow: 1;
+		user-select: text;
+		padding: 6px;
+		border: 1px solid variables.$ms3-borderColor;
+		color: #444;
+		background: #f5f5f5;
+		border-radius: 2px;
+	}
+
+	&__button {
+		margin-right: 10px;
+		padding: 5px 9px;
+		border: 1px solid variables.$ms3-borderColor;
+		background: white;
+		border-radius: 2px;
+	}
+}

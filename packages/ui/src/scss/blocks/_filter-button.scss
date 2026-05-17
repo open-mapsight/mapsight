@@ -1,0 +1,78 @@
+@use "../mixins/visually-hidden";
+@use "../variables";
+
+.ms3-filter-button {
+	padding: 10px 16px;
+	border: 0;
+	background: variables.$ms3-themeColorA;
+	color: variables.$ms3-invertedPrimaryColor;
+	font-weight: bold;
+	font-size: variables.$ms3-fontSizeSmaller;
+	text-transform: uppercase;
+	line-height: 1;
+	text-align: left;
+	cursor: pointer;
+
+	i {
+		font-style: normal;
+	}
+
+	&--secondary {
+		background-color: variables.$ms3-tertiaryColor;
+	}
+
+	&:hover,
+	&:focus {
+		background-color: variables.$ms3-primaryColor;
+		color: variables.$ms3-invertedPrimaryColor;
+	}
+
+	&--full-width {
+		display: block;
+		width: 100%;
+	}
+
+	&--half-width {
+		display: block;
+		width: 50%;
+	}
+
+	&--icon-sort,
+	&--icon-sort-active {
+		height: 33px;
+		width: 40px;
+		background: transparent url(variables.$ms3-uiIconPath + "sort.svg") no-repeat
+			center;
+
+		i {
+			@include visually-hidden.visually-hidden;
+		}
+
+		&:hover,
+		&:focus {
+			background: transparent url(variables.$ms3-uiIconPath + "sort-active.svg")
+				no-repeat center;
+		}
+	}
+
+	&--icon-sort-active {
+		background-image: url(variables.$ms3-uiIconPath + "sort-active.svg");
+	}
+
+	&--icon-reset {
+		height: 33px;
+		width: 40px;
+		background: transparent url(variables.$ms3-uiIconPath + "reset.svg") no-repeat
+			center;
+
+		i {
+			@include visually-hidden.visually-hidden;
+		}
+
+		&:hover,
+		&:focus {
+			background: transparent url(variables.$ms3-uiIconPath + "reset-active.svg")
+				no-repeat center;
+		}
+	}
+}

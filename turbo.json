@@ -1,0 +1,32 @@
+{
+	"$schema": "https://v2-9-14.turborepo.dev/schema.json",
+	"tasks": {
+		"lint": {
+			"dependsOn": ["^build"],
+			"outputs": []
+		},
+		"clean": {},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [
+				"dist/**",
+				".next/**",
+				"!.next/cache/**",
+				"public/img/mapsight**",
+				"src/generated/**"
+			]
+		},
+		"watch": {
+			"cache": false,
+			"persistent": true
+		},
+		"test": {
+			"dependsOn": ["^build"],
+			"outputs": []
+		},
+		"typecheck": {
+			"dependsOn": ["^build"],
+			"outputs": []
+		}
+	}
+}

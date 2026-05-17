@@ -1,0 +1,94 @@
+@use "sass:math";
+
+// paths
+$ms3-iconPath: "../Images/" !default;
+
+// colors
+$ms3-primaryColor: #222 !default; // default color
+$ms3-invertedPrimaryColor: white !default;
+$ms3-secondaryColor: #636567 !default;
+$ms3-tertiaryColor: #545454;
+
+$ms3-themeColorA: #0e78ad !default;
+$ms3-themeColorB: #cc0000 !default;
+
+// typography
+$ms3-rem-px-ratio: 10 !default;
+$ms3-fontSizeBase: math.div(14, $ms3-rem-px-ratio) * 1rem !default;
+$ms3-fontSizeSmaller: math.div(13, $ms3-rem-px-ratio) * 1rem !default;
+$ms3-fontSizeSmallest: math.div(12, $ms3-rem-px-ratio) * 1rem !default;
+$ms3-fontSizeHeadline: math.div(16, $ms3-rem-px-ratio) * 1rem !default;
+$ms3-fontSizeInput: math.div(16, $ms3-rem-px-ratio) * 1rem !default; // >= 16px to prevent auto zoom in iOS @see https://stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone
+
+// background colors
+$ms3-backgroundColor: white !default;
+$ms3-backgroundColorOffset: #f2f2f2 !default;
+$ms3-backgroundColorOffset2: #dadada !default;
+$ms3-pageBackgroundColor: white !default;
+$ms3-backgroundHighlightColor: #f2f2f2 !default;
+$ms3-foregroundColor: black !default;
+
+// options
+$ms3-option-mapOverlayButtonsShowLabel: true !default;
+$ms3-option-listInfoShowInFullscreen: true !default;
+$ms3-option-featureSelectionInfoOverflowScrollContent: true !default;
+
+$ms3-option-showFeatureCountsInTagSwitcherGroups: never !default; // available options: never, always, moreThanOne
+$ms3-option-showFeatureCountsInTagSwitcherEntries: never !default; // available options: never, always, moreThanOne
+
+// transitions/animations
+$ms3-easing-default: ease-in-out;
+$ms3-transition-fast: 200ms;
+
+// other colors
+$ms3-tableLineColor: #ccc !default;
+$ms3-borderColor: #ccc !default;
+$ms3-dotsShadowColor: rgba(0, 0, 0, 0.5) !default;
+
+// component specific colors
+$ms3-tooltipBackgroundColor: white !default;
+$ms3-tooltipBorderColor: #333 !default;
+$ms3-attributionsBackgroundColor: rgba(255, 255, 255, 0.5) !default;
+$ms3-backgroundColorAppOverlay: rgba(9, 15, 21, 0.75) !default;
+$ms3-mapBackgroundColor: #efece5 !default;
+
+// special sizes
+$ms3-listIconWidth: 20px !default;
+$ms3-searchHeight: 33px !default;
+$ms3-searchResultMaxHeight: 300px !default;
+$ms3-borderRadius: 3px !default;
+$ms3-fullscreen-top: 0px !default; // NOTE: 0px instead of just 0 so we can use the value in calc()
+$ms3-mapOverlayPadding: 10px !default;
+$ms3-mapMaxHeightDefault: 33vh !default;
+$ms3-mapMinHeightDesktop: 500px !default;
+$ms3-mobileFeatureSelectInfoHeight: 240px !default;
+$ms3-verticalPanelPadding: 0px !default;
+$ms3-verticalPanelBorderRadius: 0 !default;
+$ms3-verticalPanelWidth: 330px !default;
+$ms3-verticalPanelContentWidth: $ms3-verticalPanelWidth -
+	(2 * $ms3-verticalPanelPadding) !default;
+$ms3-marginalGap: 2% !default;
+
+// hint.css tooltips
+$ms3-hintPrefix: "ms3-hint--" !default;
+$ms3-hintFontFamily: PTSansRegular, Helvetica, Arial, sans-serif !default;
+$ms3-hintDefaultColor: #165a7e !default;
+
+// z indexes
+$ms3-zIndexListToggleButton: 1000 !default;
+$ms3-zIndexAppOverlay: 500 !default;
+$ms3-zIndexViewportButton: 300 !default;
+$ms3-zIndexListHeader: 200 !default;
+
+$ms3-zIndexWrapper: 0 !default;
+$ms3-fullscreen-zIndexWrapper: 2 !default;
+
+// breakpoints NOTE: Keep in sync with mapsight ui create options in javascript!
+//  - Mobile
+//  - Desktop
+$ms3-step1: 768px !default;
+
+// calculated variables (no !default)
+$ms3-uiIconPath: $ms3-iconPath + "mapsight-ui/"; // kein default, soll nicht direkt geändert werden
+$ms3-breakpoint-mobile: 0 ($ms3-step1 - 1px);
+$ms3-breakpoint-desktop: $ms3-step1;

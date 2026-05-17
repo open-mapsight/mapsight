@@ -1,0 +1,17 @@
+@use "../variables";
+
+.ms3-switcher-header {
+	&__count {
+		@if variables.$ms3-option-showFeatureCountsInTagSwitcherGroups != always {
+			display: none;
+		} @else {
+			display: inline-block;
+		}
+
+		@if variables.$ms3-option-showFeatureCountsInTagSwitcherGroups == moreThanOne {
+			&:not([data-ms3-count=""]):not([data-ms3-count="1"]) {
+				display: inline-block;
+			}
+		}
+	}
+}

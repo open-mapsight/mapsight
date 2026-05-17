@@ -1,0 +1,10 @@
+# we need the lock file for CI
+# /pnpm-lock.yaml
+
+/package-lock.json
+/node_modules/
+/dist/
+/coverage/
+
+# pnpm package dir, used by CI
+/.pnpm-store/

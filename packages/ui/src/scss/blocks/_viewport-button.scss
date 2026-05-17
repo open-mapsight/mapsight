@@ -1,0 +1,101 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../mixins/visually-hidden";
+@use "../variables";
+
+.ms3-viewport-button {
+	position: fixed;
+
+	display: block;
+	width: 40px;
+	min-height: 40px;
+	padding: 0;
+	margin: 5px 7px;
+	background: variables.$ms3-backgroundColor;
+	border: 0;
+	border-radius: variables.$ms3-borderRadius;
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+
+	&::before {
+		display: block;
+		content: "";
+		width: 100%;
+		height: 40px;
+		background-repeat: no-repeat;
+		background-position: center center;
+	}
+
+	&--top-left {
+		top: 0;
+		left: 0;
+	}
+
+	&--top-right {
+		top: 0;
+		right: 0;
+	}
+
+	&--bottom-left {
+		bottom: 0;
+		left: 0;
+	}
+
+	&--bottom-right {
+		bottom: 0;
+		right: 0;
+		z-index: variables.$ms3-zIndexViewportButton;
+	}
+
+	&--mobile-view-toggle--mobile {
+		// FIXME use differnt icon if there is no list to close
+		&::before {
+			background-image: url(variables.$ms3-uiIconPath + "close-list.svg");
+			margin-top: -10px;
+			margin-left: 3px;
+		}
+
+		&.ms3-viewport-button--mobile-view-toggle--map-out-of-view::before {
+			background-image: url(variables.$ms3-uiIconPath + "map.svg");
+			margin-top: 0;
+			margin-left: 0;
+		}
+	}
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
+		&--desktop-view-toggle {
+			display: none;
+		}
+
+		&__label {
+			@include visually-hidden.visually-hidden;
+		}
+	}
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+		&--mobile-view-toggle {
+			display: none;
+		}
+	}
+
+	.ms3-wrapper--mapOnly &--mobile-view-toggle--mapOnly {
+		display: none;
+	}
+
+	.no-js {
+		display: none !important;
+	}
+
+	@media print {
+		display: none !important;
+	}
+}
+
+// hide button if map is embedded as there will be an on-map-fullscreen-button. this will only hide the fullscreen button, but not the map-out-of-view button
+.ms3-wrapper--embedded {
+	.ms3-viewport-button--mobile-view-toggle--mobile {
+		display: none;
+	}
+
+	.ms3-viewport-button--mobile-view-toggle--mobile.ms3-viewport-button--mobile-view-toggle--map-out-of-view {
+		display: block;
+	}
+}

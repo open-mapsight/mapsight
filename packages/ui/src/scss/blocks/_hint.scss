@@ -1,0 +1,58 @@
+@use "../variables";
+
+// Prefix for all classes
+$hintPrefix: variables.$ms3-hintPrefix;
+
+// font size
+//$hintFontSize: 12px;
+
+// default font family
+$hintFontFamily: variables.$ms3-hintFontFamily;
+
+// paddings
+//$hintVerticalPadding: 8px;
+//$hintHorizontalPadding: 10px;
+
+// default tooltip height
+//$hintTooltipHeight: $hintFontSize + 2 * $hintVerticalPadding;
+
+// border-width for tooltip arrow
+//$hintArrowBorderWidth: 6px;
+
+// horizontal arrow offset
+//$hintArrowOffsetX: 2 * $hintArrowBorderWidth;
+
+// text-shadow darken percentage
+//$hintTextShadowDarkenAmount: 25%;
+
+// transition distance
+//$hintTransitionDistance: 8px;
+
+// Transition Duration
+//$hintTransitionDuration: 0.3s;
+
+// Delay in showing the tooltips.
+//$hintShowDelay: 100ms;
+
+// Delay in hiding the tooltips.
+//$hintHideDelay: 0ms;
+
+// z-index for tooltips
+//$hintZIndex: 1000000;
+
+// Size options
+//$hintSizeSmall: 80px;
+//$hintSizeMedium: 150px;
+//$hintSizeLarge: 300px;
+
+// Default color
+$hintDefaultColor: variables.$ms3-hintDefaultColor;
+
+@import "hint.css/src/hint-variables";
+@import "hint.css/src/hint-mixins";
+@import "hint.css/src/hint-core";
+@import "hint.css/src/hint-position";
+@import "hint.css/src/hint-sizes";
+@import "hint.css/src/hint-always";
+@import "hint.css/src/hint-rounded";
+@import "hint.css/src/hint-effects";

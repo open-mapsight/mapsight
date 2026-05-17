@@ -1,0 +1,42 @@
+@use "../variables";
+
+#features [type="parking"] {
+	[|js="env.zoom >= 15"] {
+		// TODO: Use ../mixins/feature-label
+		text: {
+			font: bold 12px sans-serif;
+			offsetX: 17;
+			offsetY: 1;
+			textAlign: left;
+			fill-color: #03437e;
+			stroke-color: #fff;
+			stroke-width: 1;
+			text: "attr(title)";
+		}
+	}
+
+	[occupancyTrendString] {
+		[|js="env.zoom >= 13"],
+		[state="highlight"],
+		[state="select"] {
+			.background {
+				image-type: icon;
+
+				icon: {
+					anchorX: -14px;
+					anchorY: 12px;
+					src: variables.$MAPSIGHT_TRAFFIC_STYLE__IMAGE_PATH + "parking-dynamic/attr(occupancyTrendString).png";
+				}
+
+				[state="highlight"],
+				[state="select"] {
+					zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 5;
+				}
+			}
+		}
+
+		[|js="env.zoom >= 15"] {
+			text-offsetX: 29;
+		}
+	}
+}

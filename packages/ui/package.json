@@ -1,0 +1,79 @@
+{
+	"name": "@mapsight/ui",
+	"description": "Mapsight UI for map based web applications using React and Redux",
+	"version": "6.4.0",
+	"type": "module",
+	"dependencies": {
+		"@mapsight/core": "workspace:^",
+		"@mapsight/lib-js": "workspace:^",
+		"@mapsight/lib-ol": "workspace:^",
+		"@mapsight/lib-redux": "workspace:^",
+		"@types/react-redux": "catalog:",
+		"breakpoint-sass": "^3.0.0",
+		"flatpickr": "^4.6.13",
+		"focus-trap-react": "^12.0.1",
+		"hint.css": "^3.0.0",
+		"jsdom": "catalog:",
+		"lodash": "catalog:",
+		"ol": "catalog:",
+		"proj4": "catalog:",
+		"react-aria": "^3.48.0",
+		"react-intersection-observer": "^10.0.3",
+		"react-modal": "^3.16.3",
+		"react-paginate": "^8.3.0",
+		"react-redux": "catalog:",
+		"redux": "catalog:",
+		"redux-batched-actions": "catalog:",
+		"redux-thunk": "catalog:",
+		"reselect": "catalog:"
+	},
+	"devDependencies": {
+		"@types/lodash": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@types/react-modal": "^3.16.3",
+		"chokidar": "^5.0.0",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"svgo": "^4.0.1"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		},
+		"./*.png": {
+			"default": "./dist/*.png"
+		},
+		"./*.svg": {
+			"default": "./dist/*.svg"
+		},
+		"./config": {
+			"types": "./dist/config/index.d.ts",
+			"default": "./dist/config/index.js"
+		},
+		"./config/*": {
+			"types": "./dist/config/*.d.ts",
+			"default": "./dist/config/*.js"
+		}
+	},
+	"license": "UNLICENSED",
+	"peerDependencies": {
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"scripts": {
+		"build": "npm-run-all build:setup --parallel build:images build:modules",
+		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/",
+		"build:modules": "tsc",
+		"build:setup": "mkdirp dist",
+		"clean": "rimraf dist/*",
+		"clean-build": "run-s clean build",
+		"lint": "eslint",
+		"prepublishOnly": "pnpm run clean-build",
+		"typecheck": "tsc --noEmit",
+		"watch": "run-s build:modules watch:build",
+		"watch:build": "run-p watch:build:*",
+		"watch:build:modules": "tsc --watch"
+	}
+}

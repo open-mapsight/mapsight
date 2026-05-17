@@ -1,0 +1,131 @@
+//$MAPSIGHT_TRAFIC_STYLE__BASE_Z_INDEX: 100;
+//$MAPSIGHT_TRAFIC_STYLE__IMG_BASE_SCALE: 0.5;
+//
+//$MAPSIGHT_TRAFIC_STYLE__IMAGE_PATH: "/typo3conf/ext/nn_vmzhb_base/Resources/Public/Images/";
+//$MAPSIGHT_TRAFIC_STYLE__SPRITE_PATH: $MAPSIGHT_TRAFIC_STYLE__IMAGE_PATH + "mapsight-icon-sprite-2x.png?v=3";
+//
+//$MAPSIGHT_TRAFIC_STYLE__FILL_COLOR: rgba(255, 0, 0, 0.46);
+//$MAPSIGHT_TRAFIC_STYLE__STROKE_COLOR: rgba(224, 109, 208, 0.9);
+//$MAPSIGHT_TRAFIC_STYLE__STROKE_WIDTH: 4;
+//$MAPSIGHT_TRAFIC_STYLE__TEXT_OFFSET_Y: -20;
+//$MAPSIGHT_TRAFIC_STYLE__TEXT_FONT: bold;
+//$MAPSIGHT_TRAFIC_STYLE__TEXT_FILL_COLOR: #0c6490;
+//$MAPSIGHT_TRAFIC_STYLE__TEXT_STROKE_COLOR: #fff;
+//$MAPSIGHT_TRAFIC_STYLE__TEXT_STROKE_WIDTH: 3;
+@use "../../node_modules/@mapsight/traffic-style/full";
+
+[geometry|type="LineString"],
+[geometry|type="Polygon"] {
+	[|js="env.zoom > 13"] .vertices {
+		geometry: vertices;
+		image-type: circle;
+		circle: {
+			radius: 4;
+			fill-color: rgba(240, 0, 254, 0.1);
+			stroke-width: 2;
+			stroke-color: #f000fe;
+		}
+	}
+}
+
+#features {
+	[env|isTemporaryRestriction] {
+		stroke-lineDash: 5, 15;
+	}
+
+	[env|mapsightIconId="umleitung"] :not([state="select"]) {
+		stroke-color: #2aadea;
+	}
+
+	[|js="env.zoom >= 16"] [geometry|type="LineString"] {
+		.vertices {
+			display: none;
+		}
+
+		.start,
+		.arrow,
+		.arrowLast {
+			image-type: icon;
+			icon: {
+				rotateWithView: true;
+				rotateAlongGeometry: true;
+			}
+		}
+
+		.start {
+			geometry: firstVertex;
+			icon-src: "img/linestring-start.png";
+			anchorX: 0.25;
+			anchorY: 0.5;
+		}
+
+		.arrow {
+			geometry: intermediateSegmentEnd;
+			icon-src: "img/linestring-arrow.png";
+			anchorX: 0.75;
+			anchorY: 0.5;
+		}
+
+		.arrowLast {
+			geometry: lastVertex;
+			icon-src: "img/linestring-arrow-last.png";
+			anchorX: 0.75;
+			anchorY: 0.5;
+		}
+	}
+}
+
+#measure {
+	stroke-width: 4;
+	stroke-color: #467aff;
+
+	[measurementLabel] {
+		text: {
+			font: 14px sans-serif;
+			placement: line;
+			overflow: true;
+			align: end;
+			stroke-width: 2;
+			stroke-color: white;
+			text: attr(measurementLabel);
+			maxAngle: 0;
+			textBaseline: bottom;
+		}
+	}
+}
+
+#draw {
+	stroke-width: 4;
+	stroke-color: #467aff;
+	image-type: circle;
+	circle: {
+		radius: 5;
+		fill-color: white;
+		stroke-width: 2;
+		stroke-color: #467aff;
+	}
+}
+
+#drawMeasure {
+	stroke-width: 4;
+	stroke-color: #467aff;
+	image-type: circle;
+	circle: {
+		radius: 5;
+		fill-color: white;
+		stroke-width: 2;
+		stroke-color: #467aff;
+	}
+
+	[geometry|type="Point"] [measurementType="drawPoint"] [measurementLabel] {
+		text: {
+			offsetX: 20;
+			offsetY: -15;
+			stroke-width: 2;
+			stroke-color: white;
+			font: 14px sans-serif;
+			text: attr(measurementLabel);
+			textAlign: center;
+		}
+	}
+}

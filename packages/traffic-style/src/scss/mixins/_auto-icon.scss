@@ -1,0 +1,85 @@
+@use "sass:list";
+@use "sass:map";
+@use "../functions/ends-with";
+@use "../functions/str-replace";
+@use "../functions/list-to-string";
+
+@use "../variables";
+
+@use "./get-icon-dimensions";
+
+@mixin autoIcon(
+	$state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
+	$iconDefault: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_DEFAULT,
+	$iconFallbackMap: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_FALLBACK_MAP,
+	$icons: variables.$MAPSIGHT_TRAFFIC_STYLE__ICONS
+) {
+	$stateSuffix: "-" + $state;
+
+	// default fallback
+	$defaultName: $iconDefault + $stateSuffix;
+	$defaultDimensions: map.get($icons, $defaultName);
+	@if $defaultDimensions {
+		@include get-icon-dimensions.getIconDimension($defaultDimensions);
+	} @else {
+		@debug "Default icon not found: " + $defaultName;
+	}
+
+	// fallback icons
+	@each $fallbackId, $iconIds in $iconFallbackMap {
+		$fallbackName: $fallbackId + $stateSuffix;
+		$fallbackIcon: map.get($icons, $fallbackName);
+
+		@if $fallbackIcon {
+			$selectors: ();
+
+			@each $iconId in $iconIds {
+				$selectors: list.append(
+					$selectors,
+					#{"[mapsightIconId = " + $iconId + "]"}
+				);
+				$selectors: list.append(
+					$selectors,
+					#{"[env|mapsightIconId = " + $iconId + "]"}
+				);
+			}
+
+			#{list-to-string.list-to-string($selectors, ", ")} {
+				@include get-icon-dimensions.getIconDimension($fallbackIcon);
+			}
+		} @else {
+			@debug "Fallback icon not found: " + $fallbackName;
+		}
+	}
+
+	// icons for state
+	@each $iconName, $dimensions in $icons {
+		$stateMatches: ends-with.ends-with($iconName, $stateSuffix);
+
+		@if $stateMatches {
+			$iconId: str-replace.str-replace($iconName, $stateSuffix, "");
+
+			[mapsightIconId="#{$iconId}"],
+			[env|mapsightIconId="#{$iconId}"] {
+				@include get-icon-dimensions.getIconDimension($dimensions);
+			}
+		}
+	}
+
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_ENABLE_FORCE_BY_ENV {
+		// force override by env
+		[env|mapsightIconUse="force"] {
+			@each $iconName, $dimensions in $icons {
+				$stateMatches: ends-with.ends-with($iconName, $stateSuffix);
+
+				@if $stateMatches {
+					$iconId: str-replace.str-replace($iconName, $stateSuffix, "");
+
+					[env|mapsightIconId="#{$iconId}"] {
+						@include get-icon-dimensions.getIconDimension($dimensions);
+					}
+				}
+			}
+		}
+	}
+}

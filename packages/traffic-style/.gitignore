@@ -1,0 +1,32 @@
+# backupfiles
+bak
+
+# external js modules installed with npm
+/node_modules/
+
+# temporary files created by build process
+/tmp/
+
+# built files that get distributed
+/dist/
+/mapsight-traffic-style-icon-sprite-1x.scss
+/mapsight-traffic-style-icon-sprite-2x.scss
+/meta.json
+
+# external php packages installed with composer
+/src/bin/php/vendor/
+/src/php/vendor/
+
+# composer "binary"
+composer.phar
+
+# lockfile created by composer
+composer.lock
+
+# projectfiles
+.idea/
+.vscode/
+
+# OSX generated files
+.DS_Store
+.DS_Store?

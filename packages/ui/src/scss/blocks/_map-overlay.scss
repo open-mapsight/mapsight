@@ -1,0 +1,224 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../mixins/visually-hidden";
+@use "../variables";
+
+.ms3-map-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+
+	.ms3-wrapper--fullscreen & {
+		overflow: hidden;
+	}
+
+	&__area {
+		position: absolute;
+
+		&--top-left {
+			top: 0;
+			left: 0;
+
+			// "align" each child to the left
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		&--top-right {
+			top: 0;
+			right: 0;
+
+			// "align" each child to the right
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+		}
+
+		&--bottom-left {
+			bottom: 0;
+			left: 0;
+
+			// "align" each child to the left
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		&--bottom-right {
+			bottom: 0;
+			right: 0;
+
+			// "align" each child to the right
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+		}
+	}
+
+	&__button {
+		display: block;
+		@if (variables.$ms3-option-mapOverlayButtonsShowLabel) {
+			width: 80px;
+			min-height: 50px;
+		} @else {
+			width: 40px;
+			min-height: 40px;
+		}
+		padding: 0;
+		margin: 5px 15px;
+		background: variables.$ms3-backgroundColor;
+		border: 0;
+		border-radius: variables.$ms3-borderRadius;
+		pointer-events: auto;
+
+		transition: margin 300ms ease-in-out;
+
+		@if (variables.$ms3-option-mapOverlayButtonsShowLabel == false) {
+			&__label {
+				@include visually-hidden.visually-hidden;
+			}
+		}
+
+		&--with-icon {
+			&::before {
+				display: block;
+				content: "";
+				width: 100%;
+				height: 26px;
+				background-repeat: no-repeat;
+				background-position: center center;
+			}
+		}
+
+		&--search {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "search.svg");
+			}
+		}
+
+		&--layers {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "layers.svg");
+			}
+		}
+
+		&--info {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "info.svg");
+			}
+		}
+
+		&--desktop-view-toggle--desktop {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+			}
+		}
+
+		&--desktop-view-toggle--fullscreen {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+			}
+		}
+
+		&--mobile-view-toggle--mapOnly {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "open-list.svg");
+			}
+		}
+
+		&--zoom--zoomIn {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "zoom-in.svg");
+			}
+		}
+
+		&--zoom--zoomOut {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "zoom-out.svg");
+			}
+		}
+
+		&--geo-location--active {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "geo-active.svg");
+			}
+		}
+
+		&--geo-location--inactive {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "geo-inactive.svg");
+			}
+		}
+
+		&--geo-location--error {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "geo-error.svg");
+			}
+		}
+
+		&--share-link {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "place-marker.svg");
+			}
+
+			.ms3-wrapper--mobile & {
+				display: none;
+			}
+		}
+
+		&--measure-distance {
+			&::before {
+				background-image: url(variables.$ms3-uiIconPath + "measure-distance.svg");
+			}
+		}
+
+		@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
+			margin: 5px 7px;
+			width: 40px;
+			min-height: 40px;
+			background: rgba(255, 255, 255, 0.9);
+			border-radius: 20px;
+
+			&--desktop-view-toggle {
+				display: none;
+			}
+
+			@if (variables.$ms3-option-mapOverlayButtonsShowLabel) {
+				&--with-icon &__label {
+					@include visually-hidden.visually-hidden;
+				}
+			}
+		}
+
+		@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+			&--mobile-view-toggle {
+				display: none;
+			}
+		}
+
+		.ms3-wrapper--mobile &--mobile-view-toggle--mobile {
+			display: none;
+		}
+	}
+}
+
+// override for embedded mode
+.ms3-wrapper--embedded {
+	.ms3-map-overlay__button--mobile-view-toggle--mapOnly {
+		&::before {
+			background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+		}
+	}
+
+	.ms3-map-overlay__button--mobile-view-toggle--mobile {
+		display: block;
+
+		&::before {
+			background-position: 51% 65%;
+			background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+		}
+	}
+}

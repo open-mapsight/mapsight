@@ -1,0 +1,7 @@
+@use "../variables";
+
+.ms3-map-target {
+	width: 100%;
+	height: 100%;
+	background: variables.$ms3-mapBackgroundColor;
+}

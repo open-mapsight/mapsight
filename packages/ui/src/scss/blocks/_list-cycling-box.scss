@@ -1,0 +1,143 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+.ms3-list-cycling-box {
+	display: flex;
+	width: 100%;
+
+	&__dot,
+	&__button {
+		display: block;
+		border: 0;
+		padding: 0;
+
+		background: transparent;
+	}
+
+	&__button {
+		display: block;
+		width: 40px;
+		height: 40px;
+		position: relative;
+
+		// TODO: Replace css border arrow magic with SVG
+		&::before {
+			content: "";
+
+			display: block;
+			width: 10px;
+			height: 10px;
+			margin: -5px;
+
+			position: absolute;
+			left: 50%;
+			top: 50%;
+
+			border-top: 2px solid variables.$ms3-primaryColor;
+			border-left: 2px solid variables.$ms3-primaryColor;
+
+			transform-origin: center center;
+		}
+
+		&--prev::before {
+			transform: rotate(-45deg);
+			margin-left: -3px;
+		}
+
+		&--next::before {
+			transform: rotate(135deg);
+			margin-left: -7px;
+		}
+
+		@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+			&:hover {
+				background-color: transparent;
+
+				&::before {
+					border-top: 2px solid variables.$ms3-themeColorB;
+					border-left: 2px solid variables.$ms3-themeColorB;
+				}
+			}
+		}
+	}
+
+	&__dots-shadows {
+		display: flex;
+		position: relative;
+		flex-grow: 1;
+
+		&::before,
+		&::after {
+			content: "";
+			display: block;
+			height: 100%;
+			width: 20px;
+			position: absolute;
+			top: 0;
+			pointer-events: none;
+			z-index: 1;
+			opacity: 0;
+			transition: opacity variables.$ms3-transition-fast variables.$ms3-easing-default;
+		}
+
+		&::before {
+			left: 0;
+			box-shadow: inset 20px 0 20px -20px variables.$ms3-dotsShadowColor;
+		}
+
+		&::after {
+			right: 0;
+			box-shadow: inset -20px 0 20px -20px variables.$ms3-dotsShadowColor;
+		}
+
+		&--overflow-left::before {
+			opacity: 1;
+		}
+
+		&--overflow-right::after {
+			opacity: 1;
+		}
+	}
+
+	&__dots-scroller {
+		width: 0;
+		position: relative;
+		overflow: hidden;
+		flex-grow: 1;
+	}
+
+	&__dots {
+		display: flex;
+		width: fit-content;
+		height: 100%;
+		margin: 0 auto;
+	}
+
+	&__dot {
+		&::before {
+			content: "";
+			display: block;
+			height: 1em;
+			width: 1em;
+			background-color: variables.$ms3-primaryColor;
+			border-radius: 50%;
+			box-sizing: border-box;
+		}
+
+		&--selected {
+			&::before {
+				background-color: variables.$ms3-themeColorB;
+			}
+		}
+
+		@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+			&:hover,
+			&--highlight:nth-child(odd),
+			&--highlight:nth-child(even) {
+				&::before {
+					background-color: variables.$ms3-themeColorB;
+				}
+			}
+		}
+	}
+}

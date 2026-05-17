@@ -1,0 +1,18 @@
+.ms3-vector-editor-coords-group {
+	display: inline-block;
+	font-size: 0.8rem;
+	color: #999;
+	background: #d8d8d8;
+	padding: 0;
+	margin: 0 5px;
+	border-radius: 7px;
+	user-select: none;
+
+	.ms3-vector-editor-coords:first-child {
+		margin-left: 0;
+	}
+
+	.ms3-vector-editor-coords:last-child {
+		margin-right: 0;
+	}
+}

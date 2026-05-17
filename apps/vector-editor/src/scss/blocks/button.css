@@ -1,0 +1,92 @@
+.ms3-vector-editor-button {
+	background: white;
+	color: black;
+	border: 1px solid #ccc;
+	padding: 5px 12px;
+	position: relative;
+	border-radius: 4px;
+
+	&__label {
+		.ms3-vector-editor-icon + & {
+			margin-left: 0.7rem;
+		}
+	}
+
+	&__badge {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: block;
+		width: 15px;
+		height: 15px;
+		margin: -3px;
+		padding: 2px;
+		font-size: 10px;
+		background: #333;
+		color: #f5f5f5;
+		line-height: 1;
+		border-radius: 4px;
+		text-align: center;
+	}
+
+	&--active {
+		background: #ccc;
+	}
+
+	&--disabled {
+		color: #ccc;
+		background: #f5f5f5;
+		border-color: #ccc;
+		cursor: default;
+
+		.ms3-vector-editor-icon {
+			opacity: 0.6;
+		}
+	}
+
+	&--grouped {
+		border-radius: 0;
+		border-color: #ccc;
+
+		z-index: 1;
+		position: relative;
+
+		&:active,
+		&:hover,
+		&:focus {
+			z-index: 2;
+		}
+
+		&:not(:first-child) {
+			border-left: 0;
+		}
+
+		&:first-child {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
+
+		&:last-child {
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+	}
+
+	&--inline {
+		border: 0;
+		background: transparent;
+	}
+
+	&--docked-right {
+		float: right;
+		height: 100%;
+		border: 1px solid #bbb;
+		border-radius: 0;
+		border-right: 0;
+		background: #f5f5f5;
+
+		.ms3-vector-editor-container--panel-configuration-map & {
+			height: 46px;
+		}
+	}
+}

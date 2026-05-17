@@ -1,0 +1,107 @@
+@use "../variables";
+
+.ms3-feature-selection-info {
+	position: relative;
+	transition: height 300ms linear;
+	background: variables.$ms3-backgroundColor;
+
+	&__headline {
+		margin-top: 0;
+
+		.ms3-sticky-header__header--stuck &,
+		.ms3-sticky-header__header--stuck-placeholder & {
+			margin: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			line-height: 1;
+		}
+	}
+
+	&__wrapper {
+		.ms3-wrapper--desktop &,
+		.ms3-wrapper--fullscreen & {
+			width: variables.$ms3-verticalPanelWidth - 1px;
+			height: 100%;
+
+			@if (variables.$ms3-option-featureSelectionInfoOverflowScrollContent) {
+				overflow: auto;
+				overflow-y: scroll;
+				overflow-x: hidden;
+				-webkit-overflow-scrolling: touch;
+				overflow-scrolling: touch;
+
+				@media print {
+					overflow: visible !important;
+					-webkit-overflow-scrolling: auto !important;
+					overflow-scrolling: auto !important;
+				}
+			}
+		}
+
+		.ms3-wrapper--mapOnly & {
+			height: variables.$ms3-mobileFeatureSelectInfoHeight;
+		}
+	}
+
+	&__close-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: block;
+		width: 25px;
+		height: 25px;
+		margin-top: 10px;
+		background: transparent;
+		border: 0;
+		z-index: 3;
+		margin-right: 10px;
+		opacity: 1;
+		transition: opacity 100ms ease-in-out;
+		transition-delay: 300ms;
+
+		&::before,
+		&::after {
+			content: "";
+			position: absolute;
+			top: 11px;
+			right: 2px;
+			display: block;
+			width: 20px;
+			height: 3px;
+			background: variables.$ms3-themeColorA;
+			border-radius: 2px;
+			transform: rotate(-45deg);
+		}
+
+		&::after {
+			transform: rotate(45deg);
+		}
+
+		&:hover,
+		&:focus {
+			&::before,
+			&::after {
+				background: variables.$ms3-themeColorB;
+			}
+		}
+
+		.ms3-panel--empty & {
+			opacity: 0;
+			transition-delay: 0ms;
+		}
+
+		@media print {
+			display: none !important;
+		}
+	}
+
+	.ms3-wrapper--desktop &,
+	.ms3-wrapper--fullscreen &,
+	.ms3-wrapper--mapOnly &--select {
+		height: 100%;
+		padding: 0;
+		border-radius: variables.$ms3-borderRadius;
+		overflow: hidden;
+	}
+}

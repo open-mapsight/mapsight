@@ -1,0 +1,32 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+/*
+	Also see _additional-container.scss!
+	Structure:
+		<div class="ms3-additional-container">
+			<div class="ms3-marginal ms3-marginal--left"> … </div>
+			<div class="ms3-additional-container__content"> … </div>
+			<div class="ms3-marginal ms3-marginal--right"> … </div>
+		</div>
+ */
+
+.ms3-marginal {
+	font-size: variables.$ms3-fontSizeBase;
+
+	&:empty {
+		display: none;
+	}
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+		width: 25%;
+
+		&--left {
+			margin-right: variables.$ms3-marginalGap;
+		}
+
+		&--right {
+			margin-right: variables.$ms3-marginalGap;
+		}
+	}
+}

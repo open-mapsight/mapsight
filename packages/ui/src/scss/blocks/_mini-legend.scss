@@ -1,0 +1,51 @@
+@use "../variables";
+
+.ms3-mini-legend {
+	pointer-events: auto;
+	display: flex;
+	flex-direction: row;
+
+	//padding: 0;
+	border: 1px solid variables.$ms3-borderColor;
+	background: white;
+
+	// reset browser styles
+	select,
+	button {
+		background: white;
+		border: none;
+		margin: 0;
+	}
+
+	select {
+		height: 100%;
+
+		&[disabled] {
+			background-color: white;
+			-webkit-appearance: none;
+		}
+	}
+
+	&__legend,
+	&__select,
+	&__more {
+		display: inline-block;
+		padding: 5px;
+	}
+
+	&__select {
+		font-size: variables.$ms3-fontSizeInput;
+		border-right: 1px solid variables.$ms3-borderColor;
+	}
+
+	&__more {
+		border-left: 1px solid variables.$ms3-borderColor;
+		font-weight: bold;
+	}
+
+	&__legend {
+		display: flex;
+		flex-grow: 1;
+		flex-shrink: 1;
+	}
+}

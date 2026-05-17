@@ -1,0 +1,12 @@
+.ms3-vector-editor-mode-button-group {
+	white-space: nowrap;
+	display: inline-block;
+	padding: 0;
+	margin: 6px 0;
+	border-radius: 4px;
+	background: #ccc;
+
+	& + & {
+		margin-left: 10px;
+	}
+}

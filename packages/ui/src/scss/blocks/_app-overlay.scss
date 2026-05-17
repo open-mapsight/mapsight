@@ -1,0 +1,19 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+.ms3-app-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: variables.$ms3-zIndexAppOverlay;
+	background-color: variables.$ms3-backgroundColorAppOverlay;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
+		align-items: flex-start;
+	}
+}

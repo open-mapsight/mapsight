@@ -1,0 +1,138 @@
+@use "sass:color";
+
+@use "../variables";
+
+@keyframes spin {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.ms3-layer-switcher {
+	position: relative;
+	width: 100%;
+
+	&-container {
+		// wrapper um .ms3-layer-switcher  siehe auch: _layer-switcher-overlay.scss
+	}
+
+	&-container--ungrouped {
+		// markiert ms3-layer-switcher-container wenn keine Gruppenüberschriften enthalten sind. Dh. dann steht der erste Entry ganz oben in dem .ms3-layer-switcher, der hiervon umschlossen wird
+	}
+
+	&__header {
+		color: variables.$ms3-primaryColor;
+		margin: 0;
+		padding: 9px 13px;
+	}
+
+	&__entries {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__entry {
+		border-top: 1px solid variables.$ms3-borderColor;
+
+		.ms3-tag-switcher &__count {
+			@if variables.$ms3-option-showFeatureCountsInTagSwitcherGroups != always {
+				display: none;
+			} @else {
+				display: inline-block;
+			}
+
+			@if variables.$ms3-option-showFeatureCountsInTagSwitcherGroups == moreThanOne
+			{
+				&:not([data-ms3-count=""]):not([data-ms3-count="1"]) {
+					display: inline-block;
+				}
+			}
+		}
+
+		&--split {
+			display: flex;
+
+			.ms3-layer-switcher__status {
+				flex-shrink: 0;
+				flex-grow: 0;
+				align-self: center;
+			}
+		}
+
+		&__text-button {
+			flex-shrink: 1;
+			flex-grow: 1;
+		}
+
+		&:first-child {
+			border-top: 0;
+		}
+	}
+
+	&__status {
+		display: inline-block;
+		width: 18px;
+		height: 18px;
+		background: transparent url(variables.$ms3-uiIconPath + "check-empty.svg")
+			no-repeat 2px 3px;
+		vertical-align: top;
+		margin: 1px 7px 1px 0;
+		border: none;
+
+		&--active {
+			background: transparent url(variables.$ms3-uiIconPath + "check.svg") no-repeat
+				0 0;
+		}
+
+		&--error {
+			background: transparent url(variables.$ms3-uiIconPath + "error.svg") no-repeat
+				1px 1px;
+		}
+
+		&--loading {
+			background: transparent;
+			margin-top: 2px;
+
+			&::before {
+				content: "";
+				display: block;
+				width: 15px;
+				height: 15px;
+				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
+					no-repeat 0 0;
+				animation: spin 4s linear infinite;
+			}
+		}
+	}
+
+	&__button {
+		display: block;
+		width: 100%;
+	}
+
+	&__button,
+	&__entry__text-button {
+		border: 0;
+		border-radius: 0 !important;
+		padding: 5px 7px 4px 7px;
+		margin: 0;
+		background: variables.$ms3-backgroundColor;
+		color: variables.$ms3-foregroundColor;
+		text-align: left;
+		transition:
+			color 200ms ease-in-out,
+			background 200ms ease-in-out;
+
+		&--active {
+			background: variables.$ms3-backgroundHighlightColor;
+		}
+
+		&:hover,
+		&:focus {
+			background: variables.$ms3-backgroundColorOffset2;
+			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
+			outline: 0;
+		}
+	}
+}

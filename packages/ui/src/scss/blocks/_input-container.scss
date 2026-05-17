@@ -1,0 +1,31 @@
+@use "../variables";
+
+.ms3-input-container {
+	position: relative;
+	z-index: 2;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	&__element {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		padding: 6px 40px 2px 8px;
+		border: 1px solid variables.$ms3-borderColor;
+
+		vertical-align: top;
+		border-radius: variables.$ms3-borderRadius;
+		color: variables.$ms3-primaryColor;
+		font-size: variables.$ms3-fontSizeInput;
+		background: variables.$ms3-pageBackgroundColor;
+
+		-webkit-appearance: none;
+	}
+
+	&__reset-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+}

@@ -1,0 +1,29 @@
+@use "../variables";
+@use "../mixins/icon-base";
+@use "../mixins/icon";
+@use "../mixins/auto-icon";
+
+#features [cluster] {
+	.clusterLabel {
+		text: {
+			font: bold 13px sans-serif;
+			offsetX: 5;
+			offsetY: 5;
+			textAlign: center;
+			fill-color: #ad1a00;
+			stroke-color: #fff;
+			stroke-width: 1;
+			text: attr(clusterSize);
+		}
+
+		zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 2;
+
+		[state="highlight"] {
+			zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 5 + 2;
+		}
+
+		[state="select"] {
+			zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 205 + 2;
+		}
+	}
+}

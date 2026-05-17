@@ -1,0 +1,25 @@
+@import "tailwindcss/preflight.css";
+@import "global/base.css";
+@import "global/_box-sizing.css";
+
+@import "ol/ol.css";
+
+@import "blocks/button.css";
+@import "blocks/controls.css";
+@import "blocks/coords.css";
+@import "blocks/coords-group.css";
+@import "blocks/feature-list.css";
+@import "blocks/icon.css";
+@import "blocks/map.css";
+@import "blocks/modal.css";
+@import "blocks/modal-overlay.css";
+@import "blocks/mode-button-group.css";
+@import "blocks/panel.css";
+@import "blocks/panel-configuration-control-group.css";
+@import "blocks/redo-button.css";
+@import "blocks/undo-button.css";
+@import "blocks/vector-editor.css";
+@import "blocks/view-info.css";
+
+/* trumps */
+@import "global/_helpers.css";

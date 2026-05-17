@@ -1,0 +1,27 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+.ms3-map-wrapper {
+	position: relative;
+	clear: both;
+	flex-grow: 1;
+	height: calc(100vh - #{variables.$ms3-fullscreen-top});
+	max-height: #{variables.$ms3-mapMaxHeightDefault};
+	transition: max-height 200ms ease-out;
+
+	.ms3-wrapper--desktop & {
+		min-height: #{variables.$ms3-mapMinHeightDesktop};
+	}
+
+	.ms3-wrapper--mapOnly &,
+	.ms3-wrapper--fullscreen & {
+		height: auto;
+		max-height: calc(100vh - #{variables.$ms3-fullscreen-top});
+	}
+
+	@media print {
+		.ms3--print-feature-selection-info-only & {
+			display: none !important;
+		}
+	}
+}

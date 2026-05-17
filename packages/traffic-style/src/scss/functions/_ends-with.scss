@@ -1,0 +1,16 @@
+@use "sass:string";
+
+// https://stackoverflow.com/questions/40389319/is-there-a-way-in-sass-to-do-if-string-contains-or-ends-with
+@function ends-with($string, $find) {
+	@if string.length($string) >=
+		string.length($find) and
+		(
+			string.slice($string, (string.length($string) - string.length($find) + 1)) ==
+				$find
+		)
+	{
+		@return true;
+	} @else {
+		@return false;
+	}
+}

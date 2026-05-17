@@ -1,0 +1,17 @@
+#userGeolocation {
+	.accuracy {
+		image-type: circle;
+		circle: {
+			radius: calc(attr(accuracy) / attr(--env-resolution));
+			fill-color: rgba(51, 153, 204, 0.61);
+		}
+	}
+
+	.point {
+		image-type: circle;
+		circle: {
+			radius: 6;
+			fill-color: #3399cc;
+		}
+	}
+}

@@ -1,0 +1,204 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+	body, html {
+		margin: 0;
+		padding: 0;
+	}
+
+	.wrapper {
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
+		display: flex;
+	}
+
+	.wrapper > * {
+		position: relative;
+		flex-shrink: 1;
+		flex-grow: 1;
+		width: 50%;
+	}
+
+	form {
+		padding: 20px;
+	}
+
+	iframe {
+		position: absolute;
+		inset: 0;
+		border: 0;
+		width: 100%;
+		height: 100%;
+		background: #f5f5f5;
+	}
+
+	label {
+		display: block;
+		margin: 20px 0;
+	}
+
+	textarea {
+		width: 100%;
+	}
+</style>
+
+
+<script>
+	window.mapsightVisGeoJsonElement_createHandlers = window.mapsightVisGeoJsonElement_createHandlers || function(inputElementName, popupUrl, popupWindowName, popupWindowParameters) {
+		var popupWindow;
+
+		window[inputElementName + '-edit'] = function() {
+			document.querySelector('#frame').src = popupUrl;
+		};
+
+		window[inputElementName + '-reset'] = function() {
+			document.querySelector('#frame').src = '';
+			document.getElementsByName(inputElementName)[0].value = '';
+		};
+	};
+</script>
+
+<div class="wrapper">
+	<form>
+		<h1>TYPO3 dummy</h1>
+
+		<label>
+			Gesamtmeldung (GeoJSON)<br>
+			<textarea readonly name="data[tx_nnvis_domain_model_situation][12345][geojson]"></textarea><br>
+
+			<button type="button" onclick="window['data[tx_nnvis_domain_model_situation][12345][geojson]-edit']()"
+				class="button button--primary">Bearbeiten
+			</button>
+			<button type="button" onclick="window['data[tx_nnvis_domain_model_situation][12345][geojson]-reset']()"
+				class="button button--warn">Löschen
+			</button>
+		</label>
+
+		<label>
+			Umleitung (GeoJSON)<br>
+			<textarea readonly name="data[tx_nnvis_domain_model_situation][12345][detour_geojson]"></textarea><br>
+
+			<button type="button"
+				onclick="window['data[tx_nnvis_domain_model_situation][12345][detour_geojson]-edit']()"
+				class="button button--primary">Bearbeiten
+			</button>
+			<button type="button"
+				onclick="window['data[tx_nnvis_domain_model_situation][12345][detour_geojson]-reset']()"
+				class="button button--warn">Löschen
+			</button>
+		</label>
+		<label>
+			Typ<br>
+			<select name="data[tx_nnvis_domain_model_situation][12345][tmc_event_code]" size="1">
+				<option value="0">-</option>
+				<option value="33" data-type="constructionWork">Baustelle (constructionWork)</option>
+				<option value="28" data-type="narrowing">Einengung der Fahrbahn (narrowing)</option>
+				<option value="7" selected="selected" data-type="closure">Sperrung (selected)</option>
+				<option value="30" data-type="closureOneway">Sperrung einer Fahrtrichtung (closureOneway)</option>
+				<option value="39" data-type="constructionWork">Verkehrsregelung mit Ampel (constructionWork)</option>
+				<option value="31" data-type="closure">Vollsperrung (closure)</option>
+				<option value="47" data-type="constructionWork">Baustelle, für beide Richtungen nur ein Fahrstreifen
+					abwechselnd frei
+					(constructionWork)
+				</option>
+				<option value="75" data-type="widthLimit">Begrenzung Breite vorübergehend (widthLimit)</option>
+				<option value="77" data-type="weightLimit">Begrenzung des zulässigen Gesamtgewichts vorübergehend
+					(weightLimit)
+				</option>
+				<option value="76" data-type="heightLimit">Begrenzung Höhe vorübergehend (heightLimit)</option>
+				<option value="25" data-type="narrowing">Einengung auf einen Fahrstreifen (narrowing)</option>
+				<option value="48" data-type="narrowing">Einengung auf einen Fahrstreifen, Baustelle (narrowing)
+				</option>
+				<option value="26" data-type="narrowing">Einengung auf zwei Fahrstreifen (narrowing)</option>
+				<option value="49" data-type="narrowing">Einengung auf zwei Fahrstreifen, Baustelle (narrowing)</option>
+				<option value="29" data-type="narrowing">Einengung der Fahrbahn, Verkehr wird über die Gegenfahrbahn
+					geleitet
+					(narrowing)
+				</option>
+				<option value="62" data-type="event">Fußballspiel (event)</option>
+				<option value="10" data-type="closure">Sperrung Ausfahrt (closure)</option>
+				<option value="1" data-type="closure">Sperrung Brücke (closure)</option>
+				<option value="20" data-type="narrowing">Sperrung des linken Fahrstreifens (narrowing)</option>
+				<option value="43" data-type="narrowing">Sperrung des linken Fahrstreifens, Baustelle (narrowing)
+				</option>
+				<option value="19" data-type="narrowing">Sperrung des mittleren Fahrstreifens (narrowing)</option>
+				<option value="42" data-type="narrowing">Sperrung des mittleren Fahrstreifens, Baustelle (narrowing)
+				</option>
+				<option value="18" data-type="narrowing">Sperrung des rechten Fahrstreifens (narrowing)</option>
+				<option value="41" data-type="narrowing">Sperrung des rechten Fahrstreifens, Baustelle (narrowing)
+				</option>
+				<option value="17" data-type="narrowing">Sperrung eines Fahrstreifens (narrowing)</option>
+				<option value="9" data-type="closure">Sperrung Einfahrt (closure)</option>
+				<option value="16" data-type="truckClosure">Sperrung für LKW (truckClosure)</option>
+				<option value="32" data-type="closure">Sperrung mehrfach kurzfristig (closure)</option>
+				<option value="13" data-type="closure">Sperrung Parallelfahrbahn (closure)</option>
+				<option value="2" data-type="closure">Sperrung Tunnel (closure)</option>
+				<option value="23" data-type="narrowing">Sperrung von drei Fahrstreifen (narrowing)</option>
+				<option value="46" data-type="narrowing">Sperrung von drei Fahrstreifen, Baustelle (narrowing)</option>
+				<option value="22" data-type="narrowing">Sperrung von zwei Fahrstreifen (narrowing)</option>
+				<option value="45" data-type="narrowing">Sperrung von zwei Fahrstreifen, Baustelle (narrowing)</option>
+				<option value="40" data-type="closure">Sperrung wegen Baustelle (closure)</option>
+				<option value="74" data-type="closure">Sperrung wegen Demonstration (closure)</option>
+				<option value="61" data-type="closure">Sperrung wegen Fahbrahnabsenkung (closure)</option>
+				<option value="73" data-type="closure">Sperrung wegen Volksfest (closure)</option>
+				<option value="6" data-type="trafficJam">Staugefahr (trafficJam)</option>
+				<option value="27" data-type="constructionWork">Verkehr wird über die Gegenfahrbahn geleitet
+					(constructionWork)
+				</option>
+				<option value="51" data-type="constructionWork">Verkehr wird über die Gegenfahrbahn geleitet, Baustelle
+					(constructionWork)
+				</option>
+			</select>
+		</label>
+
+
+		<label>
+			Darstellung in Kartenanwendung Mapsight<br>
+			<select name="data[tx_nnvis_domain_model_situation][1234][type_override]">
+				<option value="0" selected="selected">- Standard -</option>
+				<option value="constructionWork">Arbeitsstelle</option>
+				<option value="situation">Gefahrstelle</option>
+				<option value="event">Veranstaltung</option>
+				<option value="closureOneway">Verbot der Einfahrt</option>
+				<option value="closure">Verbot (Alle)</option>
+				<option value="truckClosure">Verbot (ü. 3,5t)</option>
+				<option value="narrowing">Verengte Fahrbahn</option>
+				<option value="contraflow">Gegenverkehr</option>
+				<option value="trafficJam">Stau</option>
+				<option value="widthLimit">Tatsächliche Breite</option>
+				<option value="heightLimit">Tatsächliche Höhe</option>
+				<option value="weightLimit">Tatsächliche Masse</option>
+			</select>
+		</label>
+
+		<label>
+			Temporäres Ereignis (gestrichelt)<br>
+			<select name="data[tx_nnvis_domain_model_situation][1234][is_temporary_restriction_override]">
+				<option value="0" selected="selected">- Standard -</option>
+				<option value="1">Ja (überschreibt)</option>
+				<option value="2">Nein (überschreibt)</option>
+			</select>
+		</label>
+
+		<script>
+			window.mapsightVisGeoJsonElement_createHandlers(
+				'data[tx_nnvis_domain_model_situation][12345][geojson]',
+				'vector-editor.html?type=main',
+				'Mapsight VIS GeoJSON-Editor',
+				'width=680,height=800,dependent=yes,resizable=yes,status=no,toolbar=no',
+			);
+			window.mapsightVisGeoJsonElement_createHandlers(
+				'data[tx_nnvis_domain_model_situation][12345][detour_geojson]',
+				'vector-editor.html?type=detour',
+				'Mapsight VIS GeoJSON-Editor',
+				'width=680,height=800,dependent=yes,resizable=yes,status=no,toolbar=no',
+			);
+		</script>
+	</form>
+
+	<div>
+		<iframe id="frame" src="vector-editor.html">
+		</iframe>
+	</div>
+</div>

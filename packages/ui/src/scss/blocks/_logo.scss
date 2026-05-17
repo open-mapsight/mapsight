@@ -1,0 +1,27 @@
+@use "../variables";
+
+.ms3-logo {
+	pointer-events: auto;
+	display: block;
+	margin: 7px;
+	opacity: 0.7;
+	transition: opacity 300ms ease-in-out;
+	width: 120px;
+	height: 40px;
+
+	background: transparent url(variables.$ms3-uiIconPath + "watermark.svg") no-repeat 0 0;
+	background-size: 120px 40px;
+	cursor: pointer;
+
+	&:hover,
+	&:focus {
+		opacity: 1;
+	}
+
+	.ms3-wrapper--mobile &,
+	.ms3-wrapper--mapOnly & {
+		width: 90px;
+		height: 30px;
+		background-size: 90px 30px;
+	}
+}

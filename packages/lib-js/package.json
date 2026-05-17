@@ -1,0 +1,32 @@
+{
+	"name": "@mapsight/lib-js",
+	"description": "Mapsight JS Library",
+	"version": "2.7.0",
+	"type": "module",
+	"devDependencies": {
+		"@changesets/cli": "^2.31.0",
+		"@types/modernizr": "^3.5.6",
+		"mkdirp": "^3.0.1",
+		"npm-run-all": "^4.1.5",
+		"vitest": "catalog:"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"import": "./dist/*.js"
+		}
+	},
+	"license": "UNLICENSED",
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json --outDir dist",
+		"clean": "rm -rf dist",
+		"clean-build": "run-s clean build",
+		"lint": "eslint",
+		"prepack": "pnpm run clean-build",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"watch": "run-p watch:*",
+		"watch:cjs": "pnpm run build:cjs --watch",
+		"watch:esm": "pnpm run build:esm --watch"
+	}
+}

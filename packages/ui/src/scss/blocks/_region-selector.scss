@@ -1,0 +1,44 @@
+@use "../variables";
+
+.ms3-region-selector {
+	display: inline-block;
+	padding: 0;
+	margin: variables.$ms3-mapOverlayPadding 0 0 variables.$ms3-mapOverlayPadding;
+	background: variables.$ms3-backgroundColor;
+	border-radius: variables.$ms3-borderRadius;
+	list-style: none;
+	pointer-events: auto;
+
+	li {
+		display: block;
+		padding: 0;
+		margin: 0;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+
+		&:first-child {
+			border-top-left-radius: variables.$ms3-borderRadius;
+			border-top-right-radius: variables.$ms3-borderRadius;
+		}
+
+		&:last-child {
+			border-bottom: 0;
+			border-bottom-left-radius: variables.$ms3-borderRadius;
+			border-bottom-right-radius: variables.$ms3-borderRadius;
+		}
+	}
+
+	button {
+		display: block;
+		width: 100%;
+		padding: 4px 10px;
+		border: 0;
+		background: variables.$ms3-backgroundColor;
+		color: variables.$ms3-foregroundColor;
+		text-align: left;
+	}
+
+	.ms3-wrapper--mobile &,
+	.ms3-wrapper--mapOnly & {
+		display: none;
+	}
+}

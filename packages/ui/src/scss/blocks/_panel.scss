@@ -1,0 +1,30 @@
+@use "../variables";
+
+.ms3-panel {
+	$b: &;
+
+	background: variables.$ms3-backgroundColor;
+
+	&--docked-left {
+		position: absolute;
+		inset: 0;
+		background: variables.$ms3-backgroundColorOffset2;
+		overflow: hidden;
+
+		#{$b}__inner {
+			width: variables.$ms3-verticalPanelWidth;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+			overflow: auto;
+		}
+	}
+
+	&--docked-below {
+		width: 100%;
+		max-height: variables.$ms3-mobileFeatureSelectInfoHeight;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+		overflow: auto;
+	}
+}

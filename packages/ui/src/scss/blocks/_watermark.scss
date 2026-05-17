@@ -1,0 +1,21 @@
+.ms3-watermark {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	padding: 10px;
+	user-select: none;
+	opacity: 0.8;
+	z-index: 2000;
+	transition: opacity 400ms ease-in-out;
+
+	&,
+	img {
+		margin: 0 !important;
+		border: 0 !important;
+	}
+
+	&:hover,
+	&:focus {
+		opacity: 1;
+	}
+}

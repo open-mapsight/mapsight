@@ -1,0 +1,84 @@
+@use "../variables";
+
+$ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
+
+.ms3-search {
+	&__query-input {
+		display: flex;
+		width: 100%;
+		position: relative;
+	}
+
+	&__input-group {
+		display: inline-block;
+		padding: 0;
+		border: 0;
+		position: relative;
+		flex-grow: 1;
+	}
+
+	&__input {
+		width: calc(100% - 20px);
+		border: 0;
+		background: variables.$ms3-backgroundColor;
+		border-radius: variables.$ms3-borderRadius;
+		padding: 8px 10px 8px 10px;
+		font-size: variables.$ms3-fontSizeInput;
+	}
+
+	&__reset-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		border: 0;
+		width: variables.$ms3-searchHeight;
+		height: variables.$ms3-searchHeight;
+		vertical-align: top;
+		background: transparent;
+
+		&::before {
+			content: "";
+			display: block;
+			width: 21px;
+			height: 21px;
+			background: #eee url(variables.$ms3-uiIconPath + "close.svg") no-repeat center;
+			border-radius: 50%;
+			margin-top: 3px;
+		}
+	}
+
+	&__send-button {
+		border: 0;
+		width: 42px;
+		flex-shrink: 0;
+		background: transparent url(variables.$ms3-uiIconPath + "search.svg") no-repeat
+			center;
+	}
+
+	.ms3-search-overlay & {
+		position: relative;
+		background: variables.$ms3-backgroundColor;
+
+		&__output {
+			position: absolute;
+			left: 0;
+			top: variables.$ms3-searchHeight + 5px;
+			width: 100%;
+			box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	.ms3-modal & {
+		min-height: 45vh;
+		min-width: 310px;
+
+		&__query-input {
+			padding: 0 10px;
+			border-bottom: 1px solid variables.$ms3-borderColor;
+		}
+
+		&-result {
+			border-top: 0;
+		}
+	}
+}

@@ -1,0 +1,31 @@
+@use "../variables";
+@use "../mixins/icon-base";
+@use "../mixins/icon";
+@use "../mixins/auto-icon";
+
+#features {
+	[spread] {
+		:not([state="highlight"]) :not([state="select"]) {
+			@include auto-icon.autoIcon("small");
+		}
+	}
+
+	[spreadFeatureLine] {
+		stroke-width: 1;
+		stroke-color: #000000;
+	}
+
+	[spreadFeatureDot] {
+		image-type: circle;
+		circle-radius: 3;
+		circle-fill-color: #000000;
+	}
+
+	[state="highlight"],
+	[state="select"] {
+		[spreadFeatureLine],
+		[spreadFeatureDot] {
+			cursor: default;
+		}
+	}
+}

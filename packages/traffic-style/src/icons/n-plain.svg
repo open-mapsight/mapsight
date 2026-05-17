@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
+	<g fill="none" fill-rule="evenodd">
+		<rect width="24" height="24" x="5" y="5" fill="#FFF" rx="3" />
+		<text fill="#000" font-family="Arial-BoldMT, Arial" font-size="18" font-weight="bold">
+			<tspan x="10.5" y="23">N</tspan>
+		</text>
+	</g>
+</svg>

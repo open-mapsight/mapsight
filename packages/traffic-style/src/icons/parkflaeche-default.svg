@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+	<title>mapsight-icons-svg/icn/parken/parkflaeche-default</title>
+	<g fill="none" fill-rule="evenodd">
+		<g stroke-linejoin="square">
+			<rect width="24" height="24" x="8" y="8" fill="#035799" stroke="#FFF" stroke-width="2" rx="4" />
+			<rect width="25" height="25" x="7.5" y="7.5" stroke="#000" rx="4" />
+		</g>
+		<path fill="#F8F8F8"
+			  d="M21.586 13.28c.95.246 1.71.702 2.28 1.367.57.663.952 1.533.966 2.781-.007 1.372-.558 2.063-1.473 2.876-.915.813-1.526 1.11-3.035 1.267H17.82v5.42h-2.834V12.974h4.106c1.158-.007 1.544.06 2.494.306Zm-2.03 1.898-1.736.006v4.223l1.735.004c.646.007 1.28-.13 1.722-.41.441-.278.627-.936.645-1.796-.018-.858-.159-1.338-.6-1.617-.443-.28-1.121-.415-1.767-.41Z" />
+	</g>
+</svg>

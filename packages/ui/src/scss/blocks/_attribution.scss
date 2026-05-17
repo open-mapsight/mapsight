@@ -1,0 +1,41 @@
+@use "../variables";
+
+.ms3-attribution {
+	pointer-events: auto;
+	line-height: 1;
+	font-size: variables.$ms3-fontSizeBase;
+
+	background: variables.$ms3-attributionsBackgroundColor;
+	border-top-left-radius: variables.$ms3-borderRadius;
+
+	max-width: calc(100% - 15px);
+
+	a,
+	button {
+		color: inherit;
+		text-decoration: underline;
+	}
+
+	// undo button styles:
+	button {
+		background: transparent;
+		border: 0;
+		padding: 0;
+	}
+
+	&__entries {
+		display: block;
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+	&__entry {
+		display: inline-block;
+
+		&:not(:last-child)::after {
+			content: ", ";
+			margin-right: 4px;
+		}
+	}
+}

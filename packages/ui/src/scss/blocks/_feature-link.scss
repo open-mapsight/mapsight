@@ -1,0 +1,44 @@
+@use "../variables";
+
+.ms3-feature-link {
+	display: block;
+	width: 56px;
+	height: 40px;
+	padding: 0;
+	margin: 7px 10px 15px 0;
+	border: 1px solid variables.$ms3-tableLineColor;
+	border-radius: variables.$ms3-borderRadius;
+	float: left;
+	background: transparent no-repeat center center;
+	transition: background 300ms ease-in-out;
+
+	&:hover,
+	&:focus {
+		background-color: variables.$ms3-pageBackgroundColor;
+	}
+
+	&--map {
+		display: none;
+		background-image: url(variables.$ms3-uiIconPath + "map.svg");
+
+		.ms3-wrapper--mobile & {
+			display: block;
+			float: right;
+			height: 48px;
+			width: 48px;
+			margin: 0;
+		}
+	}
+
+	&--share {
+		background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
+	}
+
+	&--print {
+		background-image: url(variables.$ms3-uiIconPath + "print.svg");
+	}
+
+	@media print {
+		display: none !important;
+	}
+}

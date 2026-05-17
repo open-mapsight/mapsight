@@ -1,0 +1,25 @@
+@use "../variables";
+
+/*
+	Also see _marginal.scss!
+	Structure:
+		<div class="ms3-additional-container">
+			<div class="ms3-marginal ms3-marginal--left"> … </div>
+			<div class="ms3-additional-container__content"> … </div>
+			<div class="ms3-marginal ms3-marginal--right"> … </div>
+		</div>
+ */
+
+.ms3-additional-container {
+	display: flex;
+	flex-direction: row;
+
+	&__content {
+		flex-grow: 1;
+	}
+
+	.ms3-wrapper--mapOnly &,
+	.ms3-wrapper--fullscreen & {
+		display: none;
+	}
+}

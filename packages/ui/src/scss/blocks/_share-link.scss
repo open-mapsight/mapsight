@@ -1,0 +1,15 @@
+@use "../variables";
+
+.ms3-share-link {
+	padding: 20px;
+
+	&__head {
+		margin-top: 0;
+		color: variables.$ms3-primaryColor;
+	}
+
+	&__input {
+		display: block;
+		width: 100%;
+	}
+}

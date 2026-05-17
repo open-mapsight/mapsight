@@ -1,0 +1,67 @@
+{
+	"name": "@mapsight/vector-style-compiler",
+	"description": "Mapsight Vector Style Compiler",
+	"version": "7.2.0",
+	"type": "module",
+	"bin": {
+		"vector-style-compiler": "./bin/vector-style-compiler.js"
+	},
+	"dependencies": {
+		"@mapsight/lib-js": "workspace:^",
+		"@types/css": "^0.0.38",
+		"@types/lodash": "catalog:",
+		"@types/node": "catalog:",
+		"css": "^3.0.0",
+		"lodash": "catalog:"
+	},
+	"devDependencies": {
+		"@mapsight/core": "workspace:^",
+		"@mapsight/lib-ol": "workspace:^",
+		"@types/pidusage": "^2.0.5",
+		"chokidar": "^5.0.0",
+		"fs-extra": "^11.3.5",
+		"json": "^11.0.0",
+		"mkdirp": "^3.0.1",
+		"pidtree": "^0.6.0",
+		"pidusage": "catalog:",
+		"playwright": "catalog:",
+		"replace-in-file": "^8.4.0",
+		"sass": "^1.99.0",
+		"vite": "^8.0.12",
+		"vitest": "catalog:"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"peerDependencies": {
+		"@mapsight/core": "workspace:^",
+		"@mapsight/lib-ol": "workspace:^",
+		"ol": "catalog:"
+	},
+	"scripts": {
+		"bench": "node __tests__/performance.engines.bench.ts",
+		"build": "run-s build:setup build:modules",
+		"build:modules": "tsc -p tsconfig.build.json",
+		"build:setup": "mkdirp dist",
+		"clean": "rimraf dist",
+		"clean-build": "run-s clean build",
+		"copy": "run-p copy:*",
+		"copy:templates": "cp src/js/template.source.js dist/template.source.js",
+		"data:sort-custom-css-properties": "json -I -f src/data/custom-css-properties.json -o jsony-tab -e 'this.sort((a, b) => a.name.localeCompare(b.name))' -A",
+		"lint": "eslint",
+		"prepublishOnly": "pnpm run clean-build",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"update-readme": "node scripts/update-readme.mts",
+		"watch": "tsc --watch"
+	},
+	"types": "./dist/index.d.ts"
+}

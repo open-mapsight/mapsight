@@ -1,0 +1,14 @@
+.ms3-vector-editor-modal {
+	position: absolute;
+	max-width: 400px;
+	max-height: 400px;
+	width: 90vw;
+	height: 90vh;
+	min-width: 200px;
+	min-height: 100px;
+	overflow: auto;
+	background-color: white;
+
+	&__headline {
+	}
+}

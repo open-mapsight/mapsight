@@ -1,0 +1,2810 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parses and template empty css correctly 1`] = `
+"// @ts-nocheck
+import get from "@mapsight/lib-js/object/getPath";
+import replace from "@mapsight/lib-js/string/replaceRegex";
+import createCachedStyleFunction from "@mapsight/lib-ol/style/createCachedStyleFunction";
+import __vectorStyle_style from 'ol/style/Style';
+
+/** @type {(value: unknown) => string} */
+const createHash = /* @__PURE__ */ (value) =>
+	/* @__PURE__ */ JSON.stringify(value);
+/** @type {import('@mapsight/lib-ol/style/createCachedStyleFunction').StyleFunctionOptions} */
+const styleOptions = {
+	constructorsMap: {style: __vectorStyle_style,},
+	allowedStyles: [],
+	allowedProps: [],
+	declarationHashFunction: (env, props, hashPrefix, geometryType, style) => {
+		/** @type {Array<string|number>} */
+		const hash = [hashPrefix, geometryType];
+		// noinspection UnnecessaryLocalVariableJS
+		/** @type {(a: string|number) => void} */
+		const h = (a) => {
+			hash.push(a);
+		};
+
+		
+
+		return hash.join("|");
+	},
+	declarationFunction: (env, props, geometryType, style) => {
+		/** @type {Record<string, unknown>} */
+		const d = {};
+
+		
+
+		return d;
+	},
+};
+
+export default createCachedStyleFunction(styleOptions);
+"
+`;
+
+exports[`parses and template full css correctly 1`] = `
+"// @ts-nocheck
+import get from "@mapsight/lib-js/object/getPath";
+import replace from "@mapsight/lib-js/string/replaceRegex";
+import createCachedStyleFunction from "@mapsight/lib-ol/style/createCachedStyleFunction";
+import __vectorStyle_circle from 'ol/style/Circle';
+import __vectorStyle_stroke from 'ol/style/Stroke';
+import __vectorStyle_fill from 'ol/style/Fill';
+import __vectorStyle_icon from 'ol/style/Icon';
+import __vectorStyle_style from 'ol/style/Style';
+
+/** @type {(value: unknown) => string} */
+const createHash = /* @__PURE__ */ (value) =>
+	/* @__PURE__ */ JSON.stringify(value);
+/** @type {import('@mapsight/lib-ol/style/createCachedStyleFunction').StyleFunctionOptions} */
+const styleOptions = {
+	constructorsMap: {circle: __vectorStyle_circle,
+stroke: __vectorStyle_stroke,
+fill: __vectorStyle_fill,
+icon: __vectorStyle_icon,
+style: __vectorStyle_style,},
+	allowedStyles: ["testCircle","emptyStyle","features"],
+	allowedProps: ["test","path","state","attr","hasAttrTest","parking"],
+	declarationHashFunction: (env, props, hashPrefix, geometryType, style) => {
+		/** @type {Array<string|number>} */
+		const hash = [hashPrefix, geometryType];
+		// noinspection UnnecessaryLocalVariableJS
+		/** @type {(a: string|number) => void} */
+		const h = (a) => {
+			hash.push(a);
+		};
+
+		
+		{
+		const $a = /* @__PURE__ */props['test'];
+		const $b = /* @__PURE__ */get(props, ['path', 'to', 'test']);
+		const $c = /* @__PURE__ */props['state'];
+		const $d = /* @__PURE__ */$c == 'someState';
+		const $e = /* @__PURE__ */$c == 'anotherState';
+		const $f = /* @__PURE__ */props['attr'];
+		const $g = /* @__PURE__ */$f == 'test';
+		const $h = /* @__PURE__ */props['hasAttrTest'];
+		const $i = /* @__PURE__ */$h;
+		const $j = /* @__PURE__ */$f == 123;
+		const $k = /* @__PURE__ */$f == 456;
+		const $l = /* @__PURE__ */get(props, ['parking', 'capacity']);
+		const $m = /* @__PURE__ */$l == 'tests nested properites';
+		const $n = /* @__PURE__ */env['zoom'];
+		const $o = /* @__PURE__ */$n == 2;
+		const $p = /* @__PURE__ */geometryType == 'Point';
+		const $q = /* @__PURE__ */geometryType == 'LineString';
+		const $r = /* @__PURE__ */geometryType == 'Polygon';
+		const $s = /* @__PURE__ */23 > 42;
+		const $t = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
+		const $u = /* @__PURE__ */$f;
+		
+		h(1);
+		h('@' + createHash($a));
+		h('@' + createHash($b));
+		if ($d) {
+				h(2);
+		}
+		if ($e) {
+				h(3);
+		}
+		if ($g) {
+				h(4);
+		}
+		if (!$g) {
+				h(5);
+		}
+		if ($i) {
+				h(6);
+		}
+		if ($j) {
+				h(7);
+		}
+		if ($k) {
+				h(8);
+		}
+		if (!$k) {
+				h(9);
+		}
+		if ($m) {
+				h(10);
+		}
+		if ($o) {
+				h(11);
+		}
+		if (!$o) {
+				h(12);
+		}
+		if (($p || $q)) {
+				h(13);
+		}
+		if ($r) {
+				h(14);
+		}
+		if ($s) {
+				h(15);
+		}
+		if (!$s) {
+				h(16);
+		}
+		if ($t) {
+				h(17);
+		}
+		if ($q) {
+				h(18);
+		}
+		if ($q) {
+				h(19);
+		}
+		if ($q) {
+				h(20);
+		}
+		if (!$u) {
+				h(21);
+		}
+		}
+		switch (state) {
+			case 'selected':
+				h(22);
+				break;
+			case 'highlighted':
+				h(23);
+				break;
+		}
+		switch (style) {
+			case 'testCircle':
+				h(24);
+				break;
+			case 'emptyStyle':
+				h(25);
+				break;
+			case 'features':
+				{
+				const $a = /* @__PURE__ */props['attr'];
+				const $b = /* @__PURE__ */$a == 'test';
+				
+				h(26);
+				if ($b) {
+						h(27);
+				}
+				}
+				break;
+		}
+
+		return hash.join("|");
+	},
+	declarationFunction: (env, props, geometryType, style) => {
+		/** @type {Record<string, unknown>} */
+		const d = {};
+
+		
+		{
+		const $a = /* @__PURE__ */props['state'];
+		const $b = /* @__PURE__ */$a == 'someState';
+		const $c = /* @__PURE__ */$a == 'anotherState';
+		const $d = /* @__PURE__ */props['attr'];
+		const $e = /* @__PURE__ */$d == 'test';
+		const $f = /* @__PURE__ */props['hasAttrTest'];
+		const $g = /* @__PURE__ */$f;
+		const $h = /* @__PURE__ */$d == 123;
+		const $i = /* @__PURE__ */$d == 456;
+		const $j = /* @__PURE__ */get(props, ['parking', 'capacity']);
+		const $k = /* @__PURE__ */$j == 'tests nested properites';
+		const $l = /* @__PURE__ */env['zoom'];
+		const $m = /* @__PURE__ */$l == 2;
+		const $n = /* @__PURE__ */geometryType == 'Point';
+		const $o = /* @__PURE__ */geometryType == 'LineString';
+		const $p = /* @__PURE__ */geometryType == 'Polygon';
+		const $q = /* @__PURE__ */23 > 42;
+		const $r = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
+		const $s = /* @__PURE__ */$d;
+		
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#ff0000' };
+		_default.attrTest = { value: '' + props['test'] + '' };
+		_default.attrPathTest = { value: '' + get(props, ['path', 'to', 'test']) + '' };
+		_default.envAttrTest = { value: '' + env['test'] + '' };
+		_default.envAttrPathTest = { value: '' + get(env, ['path', 'to', 'test']) + '' };
+		_default.calcTest = { value: '' + (33 * 200 + 45) + '' };
+		_default.replaceTest = { value: '' + replace('a', 'e', 'hallo') + '' };
+		_default.calcWithAttributesTest = { value: '' + (3 * get(env, ['path', 'to', 'test'])) + '' };
+		const _group = (
+		d.group ??= {});
+		_group.fillColor = { value: '#ff0000' };
+		_group.testEmptyValue = { value: null };
+		const _emptyGroup = (
+		d.emptyGroup ??= {});
+		const _nullishValues = (
+		d.nullishValues ??= {});
+		_nullishValues.a = { value: 0 };
+		_nullishValues.b = { value: '' };
+		_nullishValues.c = { value: '0px' };
+		_nullishValues.d = { value: '0cm' };
+		_nullishValues.e = { value: '0' };
+		_nullishValues.f = { value: ' ' };
+		_nullishValues.g = { value: '0px' };
+		_nullishValues.h = { value: '0cm' };
+		if ($b) {
+				const _default = (
+				d.default ??= {});
+				const _default_fill = (
+				_default.fill ??= {});
+				_default_fill.color = { value: 'orange' };
+		}
+		if ($c) {
+				const _default = (
+				d.default ??= {});
+				const _default_fill = (
+				_default.fill ??= {});
+				_default_fill.color = { value: 'green' };
+		}
+		if ($e) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#ff0000' };
+		}
+		if (!$e) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#ffff00' };
+		}
+		if ($g) {
+				const _default = (
+				d.default ??= {});
+				_default.foo = { value: 'bar' };
+		}
+		if ($h) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#ff0000' };
+		}
+		if ($i) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#00ff00' };
+		}
+		if (!$i) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#00ffff' };
+		}
+		if ($k) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#0000ff' };
+		}
+		if ($m) {
+				const _default = (
+				d.default ??= {});
+				_default.test = { value: 'test' };
+		}
+		if (!$m) {
+				const _default = (
+				d.default ??= {});
+				_default.foo = { value: 'bar' };
+		}
+		if (($n || $o)) {
+				const _default = (
+				d.default ??= {});
+				_default.strokeColor = { value: 'orange' };
+		}
+		if ($p) {
+				const _default = (
+				d.default ??= {});
+				_default.strokeColor = { value: 'orange' };
+		}
+		if ($q) {
+				const _default = (
+				d.default ??= {});
+				_default.lorem = { value: 'ipsum' };
+		}
+		if (!$q) {
+				const _default = (
+				d.default ??= {});
+				_default.lorem = { value: 'dolor' };
+		}
+		if ($r) {
+				const _default = (
+				d.default ??= {});
+				_default.foo = { value: 'bar' };
+		}
+		if ($o) {
+				const _start = (
+				d.start ??= {});
+				_start.geometry = { value: 'firstSegmentStart' };
+		}
+		if ($o) {
+				const _arrow = (
+				d.arrow ??= {});
+				_arrow.geometry = { value: 'intermediateSegmentEnd' };
+		}
+		if ($o) {
+				const _arrowLast = (
+				d.arrowLast ??= {});
+				_arrowLast.geometry = { value: 'lastSegmentEnd' };
+		}
+		if (!$s) {
+				const _default = (
+				d.default ??= {});
+				_default.fillColor = { value: '#ff4400' };
+		}
+		}
+		switch (state) {
+			case 'selected':
+				const _default = (
+				d.default ??= {});
+				const _default_stroke = (
+				_default.stroke ??= {});
+				_default_stroke.color = { value: 'orange' };
+				break;
+			case 'highlighted':
+				const _default = (
+				d.default ??= {});
+				const _default_stroke = (
+				_default.stroke ??= {});
+				_default_stroke.color = { value: 'green' };
+				break;
+		}
+		switch (style) {
+			case 'testCircle':
+				const _default = (
+				d.default ??= {});
+				const _default_circle = (
+				_default.circle ??= {});
+				const _default_circle_stroke = (
+				_default_circle.stroke ??= {});
+				_default_circle_stroke.width = { value: 4 };
+				const _default_circle_fill = (
+				_default_circle.fill ??= {});
+				_default_circle_fill.color = { value: 'black' };
+				break;
+			case 'emptyStyle':
+				const _default = (
+				d.default ??= {});
+				break;
+			case 'features':
+				{
+				const $a = /* @__PURE__ */props['attr'];
+				const $b = /* @__PURE__ */$a == 'test';
+				
+				const _default = (
+				d.default ??= {});
+				const _default_icon = (
+				_default.icon ??= {});
+				_default_icon.sizeX = { value: 20 };
+				_default_icon.sizeY = { value: 30 };
+				_default_icon.sizeZ = { value: 30 };
+				if ($b) {
+						const _group = (
+						d.group ??= {});
+						_group.foo = { value: 'bar' };
+				}
+				}
+				break;
+		}
+
+		return d;
+	},
+};
+
+export default createCachedStyleFunction(styleOptions);
+"
+`;
+
+exports[`parses and transforms full css to declaration program correctly 1`] = `
+"
+{
+const $a = /* @__PURE__ */props['state'];
+const $b = /* @__PURE__ */$a == 'someState';
+const $c = /* @__PURE__ */$a == 'anotherState';
+const $d = /* @__PURE__ */props['attr'];
+const $e = /* @__PURE__ */$d == 'test';
+const $f = /* @__PURE__ */props['hasAttrTest'];
+const $g = /* @__PURE__ */$f;
+const $h = /* @__PURE__ */$d == 123;
+const $i = /* @__PURE__ */$d == 456;
+const $j = /* @__PURE__ */get(props, ['parking', 'capacity']);
+const $k = /* @__PURE__ */$j == 'tests nested properites';
+const $l = /* @__PURE__ */env['zoom'];
+const $m = /* @__PURE__ */$l == 2;
+const $n = /* @__PURE__ */geometryType == 'Point';
+const $o = /* @__PURE__ */geometryType == 'LineString';
+const $p = /* @__PURE__ */geometryType == 'Polygon';
+const $q = /* @__PURE__ */23 > 42;
+const $r = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
+const $s = /* @__PURE__ */$d;
+
+const _default = (
+d.default ??= {});
+_default.fillColor = { value: '#ff0000' };
+_default.attrTest = { value: '' + props['test'] + '' };
+_default.attrPathTest = { value: '' + get(props, ['path', 'to', 'test']) + '' };
+_default.envAttrTest = { value: '' + env['test'] + '' };
+_default.envAttrPathTest = { value: '' + get(env, ['path', 'to', 'test']) + '' };
+_default.calcTest = { value: '' + (33 * 200 + 45) + '' };
+_default.replaceTest = { value: '' + replace('a', 'e', 'hallo') + '' };
+_default.calcWithAttributesTest = { value: '' + (3 * get(env, ['path', 'to', 'test'])) + '' };
+const _group = (
+d.group ??= {});
+_group.fillColor = { value: '#ff0000' };
+_group.testEmptyValue = { value: null };
+const _emptyGroup = (
+d.emptyGroup ??= {});
+const _nullishValues = (
+d.nullishValues ??= {});
+_nullishValues.a = { value: 0 };
+_nullishValues.b = { value: '' };
+_nullishValues.c = { value: '0px' };
+_nullishValues.d = { value: '0cm' };
+_nullishValues.e = { value: '0' };
+_nullishValues.f = { value: ' ' };
+_nullishValues.g = { value: '0px' };
+_nullishValues.h = { value: '0cm' };
+if ($b) {
+		const _default = (
+		d.default ??= {});
+		const _default_fill = (
+		_default.fill ??= {});
+		_default_fill.color = { value: 'orange' };
+}
+if ($c) {
+		const _default = (
+		d.default ??= {});
+		const _default_fill = (
+		_default.fill ??= {});
+		_default_fill.color = { value: 'green' };
+}
+if ($e) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#ff0000' };
+}
+if (!$e) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#ffff00' };
+}
+if ($g) {
+		const _default = (
+		d.default ??= {});
+		_default.foo = { value: 'bar' };
+}
+if ($h) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#ff0000' };
+}
+if ($i) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#00ff00' };
+}
+if (!$i) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#00ffff' };
+}
+if ($k) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#0000ff' };
+}
+if ($m) {
+		const _default = (
+		d.default ??= {});
+		_default.test = { value: 'test' };
+}
+if (!$m) {
+		const _default = (
+		d.default ??= {});
+		_default.foo = { value: 'bar' };
+}
+if (($n || $o)) {
+		const _default = (
+		d.default ??= {});
+		_default.strokeColor = { value: 'orange' };
+}
+if ($p) {
+		const _default = (
+		d.default ??= {});
+		_default.strokeColor = { value: 'orange' };
+}
+if ($q) {
+		const _default = (
+		d.default ??= {});
+		_default.lorem = { value: 'ipsum' };
+}
+if (!$q) {
+		const _default = (
+		d.default ??= {});
+		_default.lorem = { value: 'dolor' };
+}
+if ($r) {
+		const _default = (
+		d.default ??= {});
+		_default.foo = { value: 'bar' };
+}
+if ($o) {
+		const _start = (
+		d.start ??= {});
+		_start.geometry = { value: 'firstSegmentStart' };
+}
+if ($o) {
+		const _arrow = (
+		d.arrow ??= {});
+		_arrow.geometry = { value: 'intermediateSegmentEnd' };
+}
+if ($o) {
+		const _arrowLast = (
+		d.arrowLast ??= {});
+		_arrowLast.geometry = { value: 'lastSegmentEnd' };
+}
+if (!$s) {
+		const _default = (
+		d.default ??= {});
+		_default.fillColor = { value: '#ff4400' };
+}
+}
+switch (state) {
+	case 'selected':
+		const _default = (
+		d.default ??= {});
+		const _default_stroke = (
+		_default.stroke ??= {});
+		_default_stroke.color = { value: 'orange' };
+		break;
+	case 'highlighted':
+		const _default = (
+		d.default ??= {});
+		const _default_stroke = (
+		_default.stroke ??= {});
+		_default_stroke.color = { value: 'green' };
+		break;
+}
+switch (style) {
+	case 'testCircle':
+		const _default = (
+		d.default ??= {});
+		const _default_circle = (
+		_default.circle ??= {});
+		const _default_circle_stroke = (
+		_default_circle.stroke ??= {});
+		_default_circle_stroke.width = { value: 4 };
+		const _default_circle_fill = (
+		_default_circle.fill ??= {});
+		_default_circle_fill.color = { value: 'black' };
+		break;
+	case 'emptyStyle':
+		const _default = (
+		d.default ??= {});
+		break;
+	case 'features':
+		{
+		const $a = /* @__PURE__ */props['attr'];
+		const $b = /* @__PURE__ */$a == 'test';
+		
+		const _default = (
+		d.default ??= {});
+		const _default_icon = (
+		_default.icon ??= {});
+		_default_icon.sizeX = { value: 20 };
+		_default_icon.sizeY = { value: 30 };
+		_default_icon.sizeZ = { value: 30 };
+		if ($b) {
+				const _group = (
+				d.group ??= {});
+				_group.foo = { value: 'bar' };
+		}
+		}
+		break;
+}"
+`;
+
+exports[`parses and transforms full css to hash program correctly 1`] = `
+"
+{
+const $a = /* @__PURE__ */props['test'];
+const $b = /* @__PURE__ */get(props, ['path', 'to', 'test']);
+const $c = /* @__PURE__ */props['state'];
+const $d = /* @__PURE__ */$c == 'someState';
+const $e = /* @__PURE__ */$c == 'anotherState';
+const $f = /* @__PURE__ */props['attr'];
+const $g = /* @__PURE__ */$f == 'test';
+const $h = /* @__PURE__ */props['hasAttrTest'];
+const $i = /* @__PURE__ */$h;
+const $j = /* @__PURE__ */$f == 123;
+const $k = /* @__PURE__ */$f == 456;
+const $l = /* @__PURE__ */get(props, ['parking', 'capacity']);
+const $m = /* @__PURE__ */$l == 'tests nested properites';
+const $n = /* @__PURE__ */env['zoom'];
+const $o = /* @__PURE__ */$n == 2;
+const $p = /* @__PURE__ */geometryType == 'Point';
+const $q = /* @__PURE__ */geometryType == 'LineString';
+const $r = /* @__PURE__ */geometryType == 'Polygon';
+const $s = /* @__PURE__ */23 > 42;
+const $t = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
+const $u = /* @__PURE__ */$f;
+
+h(1);
+h('@' + createHash($a));
+h('@' + createHash($b));
+if ($d) {
+		h(2);
+}
+if ($e) {
+		h(3);
+}
+if ($g) {
+		h(4);
+}
+if (!$g) {
+		h(5);
+}
+if ($i) {
+		h(6);
+}
+if ($j) {
+		h(7);
+}
+if ($k) {
+		h(8);
+}
+if (!$k) {
+		h(9);
+}
+if ($m) {
+		h(10);
+}
+if ($o) {
+		h(11);
+}
+if (!$o) {
+		h(12);
+}
+if (($p || $q)) {
+		h(13);
+}
+if ($r) {
+		h(14);
+}
+if ($s) {
+		h(15);
+}
+if (!$s) {
+		h(16);
+}
+if ($t) {
+		h(17);
+}
+if ($q) {
+		h(18);
+}
+if ($q) {
+		h(19);
+}
+if ($q) {
+		h(20);
+}
+if (!$u) {
+		h(21);
+}
+}
+switch (state) {
+	case 'selected':
+		h(22);
+		break;
+	case 'highlighted':
+		h(23);
+		break;
+}
+switch (style) {
+	case 'testCircle':
+		h(24);
+		break;
+	case 'emptyStyle':
+		h(25);
+		break;
+	case 'features':
+		{
+		const $a = /* @__PURE__ */props['attr'];
+		const $b = /* @__PURE__ */$a == 'test';
+		
+		h(26);
+		if ($b) {
+				h(27);
+		}
+		}
+		break;
+}"
+`;
+
+exports[`parses full css to rules correctly 1`] = `
+{
+  "__meta": {
+    "declarationNames": [
+      "fillColor",
+      "attrTest",
+      "attrPathTest",
+      "envAttrTest",
+      "envAttrPathTest",
+      "calcTest",
+      "replaceTest",
+      "calcWithAttributesTest",
+      "circle",
+      "stroke",
+      "fill",
+      "icon",
+      "testEmptyValue",
+      "foo",
+      "test",
+      "strokeColor",
+      "lorem",
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "geometry",
+    ],
+    "groupNames": [
+      "default",
+      "group",
+      "emptyGroup",
+      "nullishValues",
+      "start",
+      "arrow",
+      "arrowLast",
+    ],
+    "stateNames": [
+      "selected",
+      "highlighted",
+      "someState",
+      "anotherState",
+    ],
+    "styleNames": [
+      "testCircle",
+      "emptyStyle",
+      "features",
+    ],
+    "stylePropExpressions": [
+      "props['test']",
+      "get(props, ['path', 'to', 'test'])",
+    ],
+    "styleProps": [
+      "test",
+      "path",
+      "state",
+      "attr",
+      "hasAttrTest",
+      "parking",
+    ],
+  },
+  "rules": [
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+          "attrTest",
+          "attrPathTest",
+          "envAttrTest",
+          "envAttrPathTest",
+          "calcTest",
+          "replaceTest",
+          "calcWithAttributesTest",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [
+          "props['test']",
+          "get(props, ['path', 'to', 'test'])",
+        ],
+        "styleProps": [
+          "test",
+          "path",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "attrPathTest": {
+            "value": "'' + get(props, ['path', 'to', 'test']) + ''",
+          },
+          "attrTest": {
+            "value": "'' + props['test'] + ''",
+          },
+          "calcTest": {
+            "value": "'' + (33 * 200 + 45) + ''",
+          },
+          "calcWithAttributesTest": {
+            "value": "'' + (3 * get(env, ['path', 'to', 'test'])) + ''",
+          },
+          "envAttrPathTest": {
+            "value": "'' + get(env, ['path', 'to', 'test']) + ''",
+          },
+          "envAttrTest": {
+            "value": "'' + env['test'] + ''",
+          },
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+          "replaceTest": {
+            "value": "'' + replace('a', 'e', 'hallo') + ''",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "circle",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [
+          "testCircle",
+        ],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "style": "testCircle",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "circle": {
+            "fill": {
+              "color": {
+                "value": "'black'",
+              },
+            },
+            "stroke": {
+              "width": {
+                "value": 4,
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "stroke",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [
+          "selected",
+        ],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "state": "selected",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "stroke": {
+            "color": {
+              "value": "'orange'",
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "stroke",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [
+          "highlighted",
+        ],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "state": "highlighted",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "stroke": {
+            "color": {
+              "value": "'green'",
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fill",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [
+          "someState",
+        ],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "state",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [
+              "someState",
+            ],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "state",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "state",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'someState'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fill": {
+            "color": {
+              "value": "'orange'",
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fill",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [
+          "anotherState",
+        ],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "state",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [
+              "anotherState",
+            ],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "state",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "state",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'anotherState'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fill": {
+            "color": {
+              "value": "'green'",
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [
+          "emptyStyle",
+        ],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "style": "emptyStyle",
+        },
+      ],
+      "declarations": {
+        "default": {},
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "icon",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [
+          "features",
+        ],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "style": "features",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "icon": {
+            "sizeX": {
+              "value": 20,
+            },
+            "sizeY": {
+              "value": 20,
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "icon",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [
+          "features",
+        ],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "default",
+          "style": "features",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "icon": {
+            "sizeY": {
+              "value": 30,
+            },
+            "sizeZ": {
+              "value": 30,
+            },
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+          "testEmptyValue",
+        ],
+        "groupNames": [
+          "group",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "group",
+        },
+      ],
+      "declarations": {
+        "group": {
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+          "testEmptyValue": {
+            "value": null,
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [],
+        "groupNames": [
+          "emptyGroup",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "emptyGroup",
+        },
+      ],
+      "declarations": {
+        "emptyGroup": {},
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'test'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": true,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'test'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#ffff00'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "foo",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "hasAttrTest",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "hasAttrTest",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "hasAttrTest",
+              ],
+              "target": "props",
+              "type": "value",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "foo": {
+            "value": "'bar'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": 123,
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": 456,
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#00ff00'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": true,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": 456,
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#00ffff'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "parking",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "parking",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "parking",
+                "capacity",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'tests nested properites'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#0000ff'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "test",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "zoom",
+              ],
+              "target": "env",
+              "type": "value",
+              "value": 2,
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "test": {
+            "value": "'test'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "foo",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": true,
+              "path": [
+                "zoom",
+              ],
+              "target": "env",
+              "type": "value",
+              "value": 2,
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "foo": {
+            "value": "'bar'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "strokeColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'Point'",
+            },
+          ],
+          "group": "default",
+        },
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'LineString'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "strokeColor": {
+            "value": "'orange'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "strokeColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'Polygon'",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "strokeColor": {
+            "value": "'orange'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "lorem",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "expression": "23 > 42",
+              "negate": false,
+              "type": "js",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "lorem": {
+            "value": "'ipsum'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "lorem",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "expression": "23 > 42",
+              "negate": true,
+              "type": "js",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "lorem": {
+            "value": "'dolor'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "foo",
+        ],
+        "groupNames": [
+          "group",
+        ],
+        "stateNames": [],
+        "styleNames": [
+          "features",
+        ],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+              "value": "'test'",
+            },
+          ],
+          "group": "group",
+          "style": "features",
+        },
+      ],
+      "declarations": {
+        "group": {
+          "foo": {
+            "value": "'bar'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "foo",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "expression": "env.zoom >= 1 && env.zoom <= 10",
+              "negate": false,
+              "type": "js",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "foo": {
+            "value": "'bar'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+        ],
+        "groupNames": [
+          "nullishValues",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "group": "nullishValues",
+        },
+      ],
+      "declarations": {
+        "nullishValues": {
+          "a": {
+            "value": 0,
+          },
+          "b": {
+            "value": "''",
+          },
+          "c": {
+            "value": "'0px'",
+          },
+          "d": {
+            "value": "'0cm'",
+          },
+          "e": {
+            "value": "'0'",
+          },
+          "f": {
+            "value": "' '",
+          },
+          "g": {
+            "value": "'0px'",
+          },
+          "h": {
+            "value": "'0cm'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "geometry",
+        ],
+        "groupNames": [
+          "start",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'LineString'",
+            },
+          ],
+          "group": "start",
+        },
+      ],
+      "declarations": {
+        "start": {
+          "geometry": {
+            "value": "'firstSegmentStart'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "geometry",
+        ],
+        "groupNames": [
+          "arrow",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'LineString'",
+            },
+          ],
+          "group": "arrow",
+        },
+      ],
+      "declarations": {
+        "arrow": {
+          "geometry": {
+            "value": "'intermediateSegmentEnd'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "geometry",
+        ],
+        "groupNames": [
+          "arrowLast",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [],
+          },
+          "checks": [
+            {
+              "negate": false,
+              "type": "geometryType",
+              "value": "'LineString'",
+            },
+          ],
+          "group": "arrowLast",
+        },
+      ],
+      "declarations": {
+        "arrowLast": {
+          "geometry": {
+            "value": "'lastSegmentEnd'",
+          },
+        },
+      },
+    },
+    {
+      "__meta": {
+        "declarationNames": [
+          "fillColor",
+        ],
+        "groupNames": [
+          "default",
+        ],
+        "stateNames": [],
+        "styleNames": [],
+        "stylePropExpressions": [],
+        "styleProps": [
+          "attr",
+        ],
+      },
+      "conditions": [
+        {
+          "__meta": {
+            "stateNames": [],
+            "stylePropExpressions": [],
+            "styleProps": [
+              "attr",
+            ],
+          },
+          "checks": [
+            {
+              "negate": true,
+              "path": [
+                "attr",
+              ],
+              "target": "props",
+              "type": "value",
+            },
+          ],
+          "group": "default",
+        },
+      ],
+      "declarations": {
+        "default": {
+          "fillColor": {
+            "value": "'#ff4400'",
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`parses full css to tree correctly 1`] = `
+{
+  "default": {
+    "default": {
+      "children": [
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "state",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'someState'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fill": {
+                "color": {
+                  "value": "'orange'",
+                },
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "state",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'anotherState'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fill": {
+                "color": {
+                  "value": "'green'",
+                },
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'test'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#ff0000'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": true,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'test'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#ffff00'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "hasAttrTest",
+                ],
+                "target": "props",
+                "type": "value",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "foo": {
+                "value": "'bar'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": 123,
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#ff0000'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": 456,
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#00ff00'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": true,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": 456,
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#00ffff'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "parking",
+                  "capacity",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'tests nested properites'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#0000ff'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "zoom",
+                ],
+                "target": "env",
+                "type": "value",
+                "value": 2,
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "test": {
+                "value": "'test'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": true,
+                "path": [
+                  "zoom",
+                ],
+                "target": "env",
+                "type": "value",
+                "value": 2,
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "foo": {
+                "value": "'bar'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'Point'",
+              },
+            ],
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'LineString'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "strokeColor": {
+                "value": "'orange'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'Polygon'",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "strokeColor": {
+                "value": "'orange'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "expression": "23 > 42",
+                "negate": false,
+                "type": "js",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "lorem": {
+                "value": "'ipsum'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "expression": "23 > 42",
+                "negate": true,
+                "type": "js",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "lorem": {
+                "value": "'dolor'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "expression": "env.zoom >= 1 && env.zoom <= 10",
+                "negate": false,
+                "type": "js",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "foo": {
+                "value": "'bar'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'LineString'",
+              },
+            ],
+          ],
+          "declarations": {
+            "start": {
+              "geometry": {
+                "value": "'firstSegmentStart'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'LineString'",
+              },
+            ],
+          ],
+          "declarations": {
+            "arrow": {
+              "geometry": {
+                "value": "'intermediateSegmentEnd'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "type": "geometryType",
+                "value": "'LineString'",
+              },
+            ],
+          ],
+          "declarations": {
+            "arrowLast": {
+              "geometry": {
+                "value": "'lastSegmentEnd'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+        {
+          "conditions": [
+            [
+              {
+                "negate": true,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+              },
+            ],
+          ],
+          "declarations": {
+            "default": {
+              "fillColor": {
+                "value": "'#ff4400'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+      ],
+      "declarations": {
+        "default": {
+          "attrPathTest": {
+            "value": "'' + get(props, ['path', 'to', 'test']) + ''",
+          },
+          "attrTest": {
+            "value": "'' + props['test'] + ''",
+          },
+          "calcTest": {
+            "value": "'' + (33 * 200 + 45) + ''",
+          },
+          "calcWithAttributesTest": {
+            "value": "'' + (3 * get(env, ['path', 'to', 'test'])) + ''",
+          },
+          "envAttrPathTest": {
+            "value": "'' + get(env, ['path', 'to', 'test']) + ''",
+          },
+          "envAttrTest": {
+            "value": "'' + env['test'] + ''",
+          },
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+          "replaceTest": {
+            "value": "'' + replace('a', 'e', 'hallo') + ''",
+          },
+        },
+        "emptyGroup": {},
+        "group": {
+          "fillColor": {
+            "value": "'#ff0000'",
+          },
+          "testEmptyValue": {
+            "value": null,
+          },
+        },
+        "nullishValues": {
+          "a": {
+            "value": 0,
+          },
+          "b": {
+            "value": "''",
+          },
+          "c": {
+            "value": "'0px'",
+          },
+          "d": {
+            "value": "'0cm'",
+          },
+          "e": {
+            "value": "'0'",
+          },
+          "f": {
+            "value": "' '",
+          },
+          "g": {
+            "value": "'0px'",
+          },
+          "h": {
+            "value": "'0cm'",
+          },
+        },
+      },
+      "stylePropExpressions": [
+        "props['test']",
+        "get(props, ['path', 'to', 'test'])",
+      ],
+    },
+    "highlighted": {
+      "children": [],
+      "declarations": {
+        "default": {
+          "stroke": {
+            "color": {
+              "value": "'green'",
+            },
+          },
+        },
+      },
+      "stylePropExpressions": [],
+    },
+    "selected": {
+      "children": [],
+      "declarations": {
+        "default": {
+          "stroke": {
+            "color": {
+              "value": "'orange'",
+            },
+          },
+        },
+      },
+      "stylePropExpressions": [],
+    },
+  },
+  "emptyStyle": {
+    "default": {
+      "children": [],
+      "declarations": {
+        "default": {},
+      },
+      "stylePropExpressions": [],
+    },
+  },
+  "features": {
+    "default": {
+      "children": [
+        {
+          "conditions": [
+            [
+              {
+                "negate": false,
+                "path": [
+                  "attr",
+                ],
+                "target": "props",
+                "type": "value",
+                "value": "'test'",
+              },
+            ],
+          ],
+          "declarations": {
+            "group": {
+              "foo": {
+                "value": "'bar'",
+              },
+            },
+          },
+          "stylePropExpressions": [],
+        },
+      ],
+      "declarations": {
+        "default": {
+          "icon": {
+            "sizeX": {
+              "value": 20,
+            },
+            "sizeY": {
+              "value": 30,
+            },
+            "sizeZ": {
+              "value": 30,
+            },
+          },
+        },
+      },
+      "stylePropExpressions": [],
+    },
+  },
+  "testCircle": {
+    "default": {
+      "children": [],
+      "declarations": {
+        "default": {
+          "circle": {
+            "fill": {
+              "color": {
+                "value": "'black'",
+              },
+            },
+            "stroke": {
+              "width": {
+                "value": 4,
+              },
+            },
+          },
+        },
+      },
+      "stylePropExpressions": [],
+    },
+  },
+}
+`;
+
+exports[`transforms tree to declaration program 1`] = `
+"
+switch (style) {
+	case 'myStyleName':
+		switch (state) {
+			case 'myStateName':
+				{
+				const $a = /* @__PURE__ */props['state'];
+				const $b = /* @__PURE__ */$a == selected;
+				const $c = /* @__PURE__ */geometryType == 'LineString';
+				
+				if ($b) {
+						const _default = (
+						d.default ??= {});
+						const _default_fill = (
+						_default.fill ??= {});
+						_default_fill.color = { value: 'orange' };
+						const _other = (
+						d.other ??= {});
+						const _other_fill = (
+						_other.fill ??= {});
+						_other_fill.color = { value: #00f };
+				}
+				if ($c) {
+				}
+				}
+				break;
+		}
+		break;
+}"
+`;
+
+exports[`transforms tree to hash program 1`] = `
+"
+switch (style) {
+	case 'myStyleName':
+		switch (state) {
+			case 'myStateName':
+				{
+				const $a = /* @__PURE__ */props['state'];
+				const $b = /* @__PURE__ */$a == selected;
+				const $c = /* @__PURE__ */geometryType == 'LineString';
+				
+				if ($b) {
+						h(1);
+				}
+				if ($c) {
+						h(2);
+				}
+				}
+				break;
+		}
+		break;
+}"
+`;

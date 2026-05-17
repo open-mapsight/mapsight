@@ -1,0 +1,46 @@
+# backupfiles
+bak
+
+# external js modules installed with npm
+node_modules/
+
+# pnpm package dir, used by CI
+/.pnpm-store/
+
+# temporary files created by build process
+/apps/*/tmp/
+/packages/*/tmp/
+.turbo/
+
+# built files that get distributed
+/apps/*/dist/
+/apps/*/dist-ssr/
+/apps/*/generated/
+/apps/*/src/generated/
+/packages/*/dist/
+
+# projectfiles
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OSX generated files
+.DS_Store
+.DS_Store?
+
+# local files
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*

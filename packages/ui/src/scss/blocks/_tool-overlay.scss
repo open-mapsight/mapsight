@@ -1,0 +1,38 @@
+@use "../variables";
+
+.ms3-tool-overlay {
+	position: relative;
+
+	min-width: 240px;
+	margin-left: 15px;
+
+	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+	background-color: white;
+
+	pointer-events: auto;
+	user-select: none;
+	touch-action: manipulation;
+
+	.ms3-wrapper--mobile & {
+		display: none;
+	}
+
+	.ms3-wrapper--mapOnly & {
+		position: absolute;
+		top: 0;
+		left: 0;
+		margin: 5px;
+	}
+
+	&__header {
+		margin: 0;
+		padding: 4px 6px;
+		font-weight: bold;
+		color: variables.$ms3-secondaryColor;
+	}
+
+	&__text {
+		margin: 10px 0;
+		padding: 0 6px;
+	}
+}

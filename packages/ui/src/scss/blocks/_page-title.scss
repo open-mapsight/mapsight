@@ -1,0 +1,19 @@
+@use "breakpoint-sass/stylesheets/breakpoint";
+@use "../variables";
+
+.ms3-page-title {
+	h2 {
+		border: 0;
+		padding: 10px 10px 5px 10px;
+		margin: 0;
+	}
+
+	@include breakpoint.breakpoint(variables.$ms3-breakpoint-desktop) {
+		display: none;
+	}
+
+	.js .ms3-wrapper--desktop &,
+	.js .ms3-wrapper--fullscreen & {
+		display: none;
+	}
+}

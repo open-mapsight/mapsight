@@ -1,0 +1,50 @@
+@use "../variables";
+
+.ms3-sticky-header {
+	&__container {
+		position: relative;
+		background: variables.$ms3-backgroundColor;
+		transition: background 600ms ease-in-out;
+	}
+
+	&__container--stuck {
+		background: variables.$ms3-backgroundColorOffset;
+	}
+
+	&__header {
+		background: transparent;
+		transition:
+			background 200ms ease-in-out,
+			border 200ms ease-in-out,
+			opacity 200ms ease-in-out;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.01);
+		opacity: 1;
+
+		&--stuck,
+		&--stuck-placeholder {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			line-height: 1;
+			background: variables.$ms3-backgroundColor;
+		}
+
+		&--sticky-placeholder,
+		&--stuck-placeholder {
+			opacity: 0;
+		}
+
+		&--stuck-placeholder {
+			z-index: 0;
+		}
+
+		&--stuck {
+			z-index: 2;
+			border-bottom: 1px solid variables.$ms3-borderColor;
+		}
+	}
+}

@@ -1,0 +1,40 @@
+import {z} from "zod/v4";
+
+export type IconVariant = z.infer<typeof IconVariantSchema>;
+export const IconVariantSchema = z.stringFormat(
+	"mapsight-icon-variant",
+	/[a-z]+/,
+);
+
+export type IconId = z.infer<typeof IconIdSchema>;
+export const IconIdSchema = z.stringFormat("mapsight-icon-id", /[0-9a-z-]+/);
+
+export type LangCode = z.infer<typeof LangCodeSchema>;
+export const LangCodeSchema = z.stringFormat("mapsight-lang-code", /[a-z]{2}/);
+
+export type IconGroupName = z.infer<typeof IconGroupNameSchema>;
+export const IconGroupNameSchema = z.stringFormat(
+	"mapsight-icon-group",
+	/[0-9a-z-]+/,
+);
+
+export type IconMeta = z.infer<typeof IconMetaSchema>;
+export const IconMetaSchema = z.object({
+	// The label object has dynamic keys for languages (e.g., "de", "en", "en_US")
+	// and string values for the text.
+	id: IconIdSchema,
+	label: z.record(LangCodeSchema, z.string()).optional(),
+	aliases: z.array(IconIdSchema).optional(),
+	groups: z.array(IconGroupNameSchema).optional(),
+	// The fallback field is optional.
+	fallback: IconIdSchema.optional(),
+});
+
+export type MetaData = z.infer<typeof DistMetaDataSchema>;
+export const DistMetaDataSchema = z.object({
+	name: z.string(),
+	version: z.string(),
+	copyright: z.string(),
+	defaultIcon: IconIdSchema,
+	icons: z.array(IconMetaSchema),
+});

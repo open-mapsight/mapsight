@@ -1,0 +1,9 @@
+.ms3-main-container {
+	display: flex;
+	flex-direction: column;
+
+	.ms3-wrapper--mapOnly &,
+	.ms3-wrapper--fullscreen & {
+		height: 100%;
+	}
+}

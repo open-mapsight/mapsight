@@ -1,0 +1,22 @@
+@use "../variables";
+
+.ms3-wrapper {
+	background: white;
+	z-index: variables.$ms3-zIndexWrapper;
+
+	&--mapOnly,
+	&--fullscreen {
+		background: white;
+		position: fixed;
+		top: variables.$ms3-fullscreen-top;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: variables.$ms3-fullscreen-zIndexWrapper;
+		overflow: hidden;
+
+		.ms3-marginal {
+			display: none;
+		}
+	}
+}
