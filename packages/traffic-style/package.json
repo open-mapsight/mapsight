@@ -19,11 +19,11 @@
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@types/fs-extra": "^11.0.4",
-		"@types/markdown-table": "^2.0.0",
+		"@types/markdown-table": "^3.0.0",
 		"@types/node": "catalog:",
 		"chokidar": "^5.0.0",
 		"fs-extra": "^11.3.5",
-		"markdown-table": "^2.0.0",
+		"markdown-table": "^3.0.4",
 		"vitest": "catalog:"
 	},
 	"main": "default.js",

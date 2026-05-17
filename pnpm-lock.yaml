@@ -550,8 +550,8 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/markdown-table':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/node':
         specifier: 'catalog:'
         version: 24.12.4
@@ -562,8 +562,8 @@ importers:
         specifier: ^11.3.5
         version: 11.3.5
       markdown-table:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^3.0.4
+        version: 3.0.4
       vitest:
         specifier: 'catalog:'
         version: 4.1.6(@types/node@24.12.4)(jsdom@29.1.1)(vite@8.0.12(@types/node@24.12.4)(jiti@2.7.0)(sass@1.99.0)(terser@5.47.1)(yaml@2.9.0))
@@ -1690,8 +1690,9 @@ packages:
   '@types/lodash@4.17.24':
     resolution: {integrity: sha512-gIW7lQLZbue7lRSWEFql49QJJWThrTFFeIMJdp3eH4tKoxm1OvEPg02rm4wCCSHS0cL3/Fizimb35b7k8atwsQ==}
 
-  '@types/markdown-table@2.0.0':
-    resolution: {integrity: sha512-fVZN/DRjZvjuk+lo7ovlI/ZycS51gpYU5vw5EcFeqkcX6lucQ+UWgEOH2O4KJHkSck4DHAY7D7CkVLD0wzc5qw==}
+  '@types/markdown-table@3.0.0':
+    resolution: {integrity: sha512-vX5zya26rnLLHdAKA3E9ZOT07CJslYp2gZfAZiXKUY5vd2RRiJyOQKrSlmUjyJ+eNoDAPkHflebG3PsfqC32aA==}
+    deprecated: This is a stub types definition. markdown-table provides its own type definitions, so you do not need this installed.
 
   '@types/modernizr@3.5.6':
     resolution: {integrity: sha512-yslwR0zZ3zAT1qXcCPxIcD23CZ6W6nKsl6JufSJHAmdwOBuYwCVJkaMsEo9yzxGV7ATfoX8S+RgtnajOEtKxYA==}
@@ -3304,8 +3305,8 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
-  markdown-table@2.0.0:
-    resolution: {integrity: sha512-Ezda85ToJUBhM6WGaG6veasyym+Tbs3cMAw/ZhOPqXiYsr0jgocBV3j3nx+4lk47plLlIqjwuTm/ywVI+zjJ/A==}
+  markdown-table@3.0.4:
+    resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -3857,10 +3858,6 @@ packages:
 
   remove-trailing-separator@1.1.0:
     resolution: {integrity: sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw==}
-
-  repeat-string@1.6.1:
-    resolution: {integrity: sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==}
-    engines: {node: '>=0.10'}
 
   replace-ext@2.0.0:
     resolution: {integrity: sha512-UszKE5KVK6JvyD92nzMn9cDapSk6w/CaFZ96CnmDMUqH9oowfxF/ZjRITD25H4DnOQClLA4/j7jLGXXLVKxAug==}
@@ -5506,7 +5503,9 @@ snapshots:
 
   '@types/lodash@4.17.24': {}
 
-  '@types/markdown-table@2.0.0': {}
+  '@types/markdown-table@3.0.0':
+    dependencies:
+      markdown-table: 3.0.4
 
   '@types/modernizr@3.5.6': {}
 
@@ -7313,9 +7312,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  markdown-table@2.0.0:
-    dependencies:
-      repeat-string: 1.6.1
+  markdown-table@3.0.4: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -7840,8 +7837,6 @@ snapshots:
       set-function-name: 2.0.2
 
   remove-trailing-separator@1.1.0: {}
-
-  repeat-string@1.6.1: {}
 
   replace-ext@2.0.0: {}
 
