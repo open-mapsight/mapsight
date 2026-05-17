@@ -1,5 +1,7 @@
 # Mapsight
 
+<img width="3220" height="1490" alt="Mapsight - Open-Source - Acessible - Privacy First" src="https://github.com/user-attachments/assets/fa502ac3-d160-47ab-8c83-e8504649517e" />
+
 [![CI](https://github.com/open-mapsight/mapsight/actions/workflows/ci.yml/badge.svg)](https://github.com/open-mapsight/mapsight/actions/workflows/ci.yml)
 
 ## Packages
