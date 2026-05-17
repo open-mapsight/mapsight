@@ -17,7 +17,7 @@
 		"react-dom": "catalog:",
 		"react-modal": "^3.16.3",
 		"react-redux": "catalog:",
-		"react-tooltip": "^4.5.1",
+		"react-tooltip": "^6.0.2",
 		"redux": "catalog:",
 		"redux-batched-actions": "catalog:",
 		"redux-undo": "^1.1.0",
