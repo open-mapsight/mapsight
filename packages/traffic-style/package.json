@@ -47,7 +47,7 @@
 		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.css dist",
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
-		"copy": "run-p copy:src copy:misc",
+		"copy": "run-p copy:src copy:misc copy:scripts",
 		"copy:misc": "cp package.json README.md *.scss dist/",
 		"copy:scripts": "mkdirp dist; cp -r scripts dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
