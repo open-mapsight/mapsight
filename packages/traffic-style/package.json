@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/traffic-style",
 	"description": "Mapsight Traffic Style",
-	"version": "5.0.2",
+	"version": "5.0.3",
 	"type": "module",
 	"bin": {
 		"traffic-icon-sprite": "scripts/traffic-icon-sprite.js",
