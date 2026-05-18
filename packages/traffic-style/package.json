@@ -4,8 +4,8 @@
 	"version": "5.0.1",
 	"type": "module",
 	"bin": {
-		"traffic-icon-sprite": "scripts/traffic-icon-sprite.ts",
-		"traffic-optimize-icons": "scripts/optimize-icons.ts"
+		"traffic-icon-sprite": "scripts/traffic-icon-sprite.js",
+		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
 	"dependencies": {
 		"@mapsight/lib-ol": "workspace:^",
@@ -33,7 +33,7 @@
 		"linkDirectory": true
 	},
 	"scripts": {
-		"build": "npm-run-all build:setup build:meta --parallel build:icons build:icons2x build:iconsSvg build:docs --sequential build:icon-sprites build:styles copy",
+		"build": "npm-run-all build:setup build:meta --parallel build:scripts build:icons build:icons2x build:iconsSvg build:docs --sequential build:icon-sprites build:styles copy",
 		"build:docs": "run-p build:docs:overview",
 		"build:docs:overview": "node scripts/create-overview-md.ts ./src/icons/ ../img/mapsight-icons-svg/ > dist/docs/overview.md",
 		"build:icon-sprites": "run-p build:icon-sprites:*",
@@ -43,13 +43,13 @@
 		"build:icons2x": "node scripts/optimize-icons.ts --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
 		"build:iconsSvg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
 		"build:meta": "node scripts/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
+		"build:scripts": "tsc",
 		"build:setup": "mkdirp dist/docs && mkdirp dist/img",
 		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.css dist",
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
-		"copy": "run-p copy:src copy:misc copy:scripts",
+		"copy": "run-p copy:src copy:misc",
 		"copy:misc": "cp package.json README.md *.scss dist/",
-		"copy:scripts": "mkdirp dist; cp -r scripts dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
 		"lint": "eslint scripts",
 		"prepublishOnly": "pnpm run clean-build",
