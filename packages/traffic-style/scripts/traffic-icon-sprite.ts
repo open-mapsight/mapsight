@@ -259,12 +259,16 @@ const {values: options, positionals} = parseArgs({
 	allowPositionals: true,
 });
 
-const srcDir = positionals[0] ?? "src/img/mapsight-icons-2x/";
+const srcDir =
+	positionals[0] ??
+	"node_modules/@mapsight/traffic-style/img/mapsight-icons-2x/";
 const absOpts: Options = {
 	srcDir: path.resolve(srcDir),
 	spriteName:
 		options["sprite-name"] ?? "mapsight-traffic-style-icon-sprite-2x",
-	metaPath: options["meta-path"] ?? "dist/meta.json",
+	metaPath:
+		options["meta-path"] ??
+		"node_modules/@mapsight/traffic-style/meta.json",
 	outputScss: options["output-scss"] ?? "dist/",
 	outputImg: options["output-img"] ?? "dist/img/",
 	groups: (options.groups?.split(",") as IconGroupName[]) ?? ["default"],
