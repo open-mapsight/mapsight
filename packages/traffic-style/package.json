@@ -26,6 +26,7 @@
 		"markdown-table": "^2.0.0",
 		"vitest": "catalog:"
 	},
+	"license": "UNLICENSED",
 	"main": "default.js",
 	"publishConfig": {
 		"directory": "dist",

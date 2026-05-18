@@ -27,7 +27,7 @@
 		"playwright": "catalog:",
 		"replace-in-file": "^8.4.0",
 		"sass": "^1.99.0",
-		"vite": "^8.0.12",
+		"vite": "^8.0.13",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -40,6 +40,7 @@
 			"default": "./dist/*.js"
 		}
 	},
+	"license": "UNLICENSED",
 	"main": "./dist/index.js",
 	"peerDependencies": {
 		"@mapsight/core": "workspace:^",

@@ -36,8 +36,9 @@
 		"autoprefixer": "^10.5.0",
 		"postcss-import": "^16.1.1",
 		"postcss-nested": "^7.0.2",
-		"vite": "^8.0.12"
+		"vite": "^8.0.13"
 	},
+	"license": "UNLICENSED",
 	"scripts": {
 		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
 		"build:app": "vite build",
