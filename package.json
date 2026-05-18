@@ -2,6 +2,7 @@
 	"name": "@mapsight/root",
 	"private": true,
 	"devDependencies": {
+		"@changesets/cli": "^2.31.0",
 		"@eslint/js": "^9.39.4",
 		"@trivago/prettier-plugin-sort-imports": "^6.0.2",
 		"@types/eslint-plugin-jsx-a11y": "^6.10.1",
@@ -37,6 +38,7 @@
 	"packageManager": "pnpm@11.1.2",
 	"scripts": {
 		"build": "turbo build",
+		"check-changeset": "changeset status --since=main",
 		"clean": "turbo clean",
 		"clean-build": "turbo clean && turbo build",
 		"format:check": "prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,tsx,json,md}\"",
@@ -44,6 +46,8 @@
 		"lint": "turbo lint",
 		"lint-staged": "pnpx lint-staged --config configs/lint-staged.mts",
 		"prepare": "husky",
+		"publish": "pnpm changeset publish",
+		"release": "run-s build changeset",
 		"syncpack:fix": "syncpack fix --config configs/syncpack.config.ts",
 		"syncpack:fix-and-format": "run-s syncpack:fix syncpack:format:write",
 		"syncpack:format:check": "syncpack format --check --config configs/syncpack.config.ts",
