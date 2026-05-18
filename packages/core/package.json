@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/core",
 	"description": "Mapsight Core",
-	"version": "14.0.0",
+	"version": "14.0.1",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
