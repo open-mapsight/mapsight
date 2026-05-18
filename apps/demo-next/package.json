@@ -27,6 +27,7 @@
 		"sass": "^1.99.0",
 		"tailwindcss": "catalog:"
 	},
+	"license": "UNLICENSED",
 	"scripts": {
 		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
 		"build:app": "next build",

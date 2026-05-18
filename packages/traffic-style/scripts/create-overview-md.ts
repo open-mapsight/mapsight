@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import {readFile, readdir} from "fs/promises";
 
 import table from "markdown-table";

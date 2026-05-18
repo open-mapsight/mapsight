@@ -2,5 +2,6 @@
 	"name": "@mapsight/lib-js",
 	"description": "Mapsight JS Library",
 	"version": "1.7.4",
-	"type": "module"
+	"type": "module",
+	"license": "UNLICENSED"
 }

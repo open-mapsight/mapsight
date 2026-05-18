@@ -28,8 +28,9 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"terser": "^5.47.1",
-		"vite": "^8.0.12"
+		"vite": "^8.0.13"
 	},
+	"license": "UNLICENSED",
 	"scripts": {
 		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
 		"build:app": "vite build --mode production --minify terser",

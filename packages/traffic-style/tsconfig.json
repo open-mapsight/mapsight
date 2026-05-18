@@ -3,6 +3,8 @@
 	"extends": "../../configs/tsconfig-base.json",
 	"include": ["scripts/**/*"],
 	"compilerOptions": {
+		"outDir": "dist/scripts",
+		"rootDir": "scripts",
 		"types": ["node"]
 	}
 }
