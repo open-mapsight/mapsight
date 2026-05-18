@@ -46,7 +46,7 @@
 		"lint": "turbo lint",
 		"lint-staged": "pnpx lint-staged --config configs/lint-staged.mts",
 		"prepare": "husky",
-		"publish": "pnpm run changeset publish",
+		"publish": "pnpm changeset publish",
 		"release": "run-s build publish",
 		"syncpack:fix": "syncpack fix --config configs/syncpack.config.ts",
 		"syncpack:fix-and-format": "run-s syncpack:fix syncpack:format:write",
