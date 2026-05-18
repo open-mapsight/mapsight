@@ -211,6 +211,10 @@ jobs:
           persist-credentials: false
           submodules: false
 
+      - uses: ./.github/actions/setup/
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Check changeset
         run: pnpm run check-changeset
 
