@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/vector-style-compiler",
 	"description": "Mapsight Vector Style Compiler",
-	"version": "8.0.0",
+	"version": "8.0.1",
 	"type": "module",
 	"bin": {
 		"vector-style-compiler": "./bin/vector-style-compiler.js"
