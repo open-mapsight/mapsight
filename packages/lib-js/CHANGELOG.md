@@ -1,5 +1,11 @@
 # @mapsight/lib-js
 
+## 3.0.3
+
+### Patch Changes
+
+- 744e584: Full release of all packages (now with github releases too?)
+
 ## 3.0.2
 
 ### Patch Changes

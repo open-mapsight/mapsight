@@ -1,5 +1,13 @@
 # @mapsight/traffic-style
 
+## 5.0.6
+
+### Patch Changes
+
+- 744e584: Full release of all packages (now with github releases too?)
+- Updated dependencies [744e584]
+    - @mapsight/lib-ol@4.0.3
+
 ## 5.0.5
 
 ### Patch Changes
