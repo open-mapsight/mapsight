@@ -23,8 +23,8 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json --outDir dist",
 		"clean": "rm -rf dist",
+		"clean-build": "run-s clean build",
 		"lint": "eslint",
-		"prepack": "pnpm run clean-build",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-p watch:*",
