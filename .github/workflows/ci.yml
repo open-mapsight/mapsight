@@ -231,6 +231,8 @@ jobs:
     # Skip on pull requests
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
+    environment: production
+
     permissions:
       contents: write
       pull-requests: write
