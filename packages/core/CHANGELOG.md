@@ -1,5 +1,15 @@
 # @mapsight/core
 
+## 14.0.2
+
+### Patch Changes
+
+- d4ec483: Full release with CI (try 2)
+- Updated dependencies [d4ec483]
+    - @mapsight/lib-js@3.0.2
+    - @mapsight/lib-ol@4.0.2
+    - @mapsight/lib-redux@2.0.2
+
 ## 14.0.1
 
 ### Patch Changes

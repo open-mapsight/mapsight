@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ui",
 	"description": "Mapsight UI for map based web applications using React and Redux",
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
