@@ -13,9 +13,7 @@ env:
   EVENT_NAME: ${{ github.event_name }}
 
 permissions:
-  contents: write
-  pull-requests: write
-  id-token: write  # Required for OIDC
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
