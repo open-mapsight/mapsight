@@ -17,6 +17,9 @@
 		}
 	},
 	"license": "UNLICENSED",
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json --outDir dist",
 		"clean": "rm -rf dist",

@@ -32,6 +32,9 @@
 		"directory": "dist",
 		"linkDirectory": true
 	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:meta --parallel build:scripts build:icons build:icons2x build:iconsSvg build:docs --sequential build:icon-sprites build:styles copy",
 		"build:docs": "run-p build:docs:overview",

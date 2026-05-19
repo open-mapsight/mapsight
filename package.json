@@ -36,6 +36,9 @@
 	},
 	"license": "UNLICENSED",
 	"packageManager": "pnpm@11.1.2",
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "turbo build",
 		"clean": "turbo clean",

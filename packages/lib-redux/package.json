@@ -36,6 +36,9 @@
 	"peerDependencies": {
 		"redux": "catalog:"
 	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules build:copy",
 		"build:copy": "cpx '{package.json,README.md}' dist/",

@@ -47,6 +47,9 @@
 		"@mapsight/lib-ol": "workspace:^",
 		"ol": "catalog:"
 	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"bench": "node __tests__/performance.engines.bench.ts",
 		"build": "run-s build:setup build:modules",
