@@ -70,7 +70,6 @@
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
-		"prepublishOnly": "pnpm run clean-build",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:*",

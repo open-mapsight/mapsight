@@ -43,7 +43,6 @@
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
-		"prepublishOnly": "pnpm run clean-build",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-p watch:*",
 		"watch:copy": "pnpm run build:copy --watch",
