@@ -58,7 +58,6 @@
 		"copy:templates": "cp src/js/template.source.js dist/template.source.js",
 		"data:sort-custom-css-properties": "json -I -f src/data/custom-css-properties.json -o jsony-tab -e 'this.sort((a, b) => a.name.localeCompare(b.name))' -A",
 		"lint": "eslint",
-		"prepublishOnly": "pnpm run clean-build",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"update-readme": "node scripts/update-readme.mts",

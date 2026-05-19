@@ -52,7 +52,6 @@
 		"copy:misc": "cp package.json README.md *.scss dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
 		"lint": "eslint scripts",
-		"prepublishOnly": "pnpm run clean-build",
 		"typecheck": "tsc --noEmit",
 		"watch": "echo \"Currently traffic-style does not support watch\""
 	}

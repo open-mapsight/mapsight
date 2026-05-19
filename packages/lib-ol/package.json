@@ -27,7 +27,6 @@
 		"build": "tsc && tsc-alias",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
-		"prepublishOnly": "pnpm run clean-build",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",
