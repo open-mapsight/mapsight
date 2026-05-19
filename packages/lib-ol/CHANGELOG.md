@@ -1,5 +1,13 @@
 # @mapsight/lib-ol
 
+## 4.0.2
+
+### Patch Changes
+
+- d4ec483: Full release with CI (try 2)
+- Updated dependencies [d4ec483]
+    - @mapsight/lib-js@3.0.2
+
 ## 4.0.1
 
 ### Patch Changes
