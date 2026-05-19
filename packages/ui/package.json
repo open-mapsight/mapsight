@@ -62,6 +62,9 @@
 		"react": "catalog:",
 		"react-dom": "catalog:"
 	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "npm-run-all build:setup --parallel build:images build:modules",
 		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/",

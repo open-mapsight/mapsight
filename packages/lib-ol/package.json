@@ -23,6 +23,9 @@
 	"peerDependencies": {
 		"ol": "catalog:"
 	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"clean": "rimraf dist/*",
