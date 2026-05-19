@@ -10,6 +10,7 @@ env:
   TURBO_TELEMETRY_DISABLED: '1'
   TURBO_SCM_BASE: main
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  EVENT_NAME: ${{ github.event_name }}
 
 permissions:
   contents: read
@@ -34,7 +35,12 @@ jobs:
       - uses: ./.github/actions/setup/
 
       - name: Run build
-        run: pnpm run build --affected
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pnpm run build --affected
+          else
+            pnpm run build
+          fi
         shell: bash
         env:
           TURBO_FORCE: false
@@ -80,7 +86,13 @@ jobs:
           path: .
 
       - name: Lint
-        run: pnpm run lint --only --affected
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pnpm run lint --only --affected
+          else
+            pnpm run lint --only
+          fi
+        shell: bash
 
   check-format:
     name: Format
@@ -128,7 +140,13 @@ jobs:
           path: .
 
       - name: Run typechecks
-        run: pnpm run typecheck --only --affected
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pnpm run typecheck --only --affected
+          else
+            pnpm run typecheck --only
+          fi
+        shell: bash
 
   test:
     name: Tests
@@ -152,7 +170,13 @@ jobs:
           path: .
 
       - name: Run tests
-        run: pnpm run test --only --affected
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pnpm run test --only --affected
+          else
+            pnpm run test --only
+          fi
+        shell: bash
 
   lint-dependencies:
     name: Lint deps/pkg
