@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/lib-ol",
 	"description": "Mapsight OpenLayers Library",
-	"version": "4.0.2",
+	"version": "4.0.3",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",

@@ -1,5 +1,15 @@
 # @mapsight/vector-style-compiler
 
+## 8.0.3
+
+### Patch Changes
+
+- 744e584: Full release of all packages (now with github releases too?)
+- Updated dependencies [744e584]
+    - @mapsight/lib-js@3.0.3
+    - @mapsight/lib-ol@4.0.3
+    - @mapsight/core@14.0.3
+
 ## 8.0.2
 
 ### Patch Changes
