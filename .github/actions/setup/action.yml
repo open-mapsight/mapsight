@@ -1,11 +1,6 @@
 name: Setup and Build
 description: Common setup steps for CI jobs (checkout, install dependencies, cache, and build)
 
-inputs:
-  github_token:
-    description: 'GitHub token for package registry authentication'
-    required: true
-
 runs:
   using: composite
   steps:
@@ -18,12 +13,6 @@ runs:
         node-version-file: .nvmrc
         cache: pnpm
 
-    - name: Authenticate GitHub Package Registry
-      run: echo "//npm.pkg.github.com/:_authToken=$GH_TOKEN" >> ~/.npmrc
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.github_token }}
-
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       shell: bash
@@ -35,3 +24,9 @@ runs:
         restore-keys: ${{ runner.os }}-turbo-
         path: .turbo
 
+    - name: Provide ref to compare against
+      if: github.event_name == 'pull_request'
+      run: git branch main "$BASE_SHA"
+      shell: bash
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
