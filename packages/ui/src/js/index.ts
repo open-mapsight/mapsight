@@ -1,5 +1,5 @@
+import {applyMiddleware, compose} from "@reduxjs/toolkit";
 import merge from "lodash/merge";
-import {applyMiddleware, compose} from "redux";
 import thunk from "redux-thunk";
 
 import {createMapsightStore} from "@mapsight/core";
@@ -25,7 +25,7 @@ import type {
 } from "./types";
 
 /**
- * Default mapsight ui renderer (Does nothing, but log a warning!).
+ * Default mapsight ui renderer (Does nothing but log a warning!).
  */
 const defaultRenderer: MapsightUiRenderer<void> = (
 	_container,

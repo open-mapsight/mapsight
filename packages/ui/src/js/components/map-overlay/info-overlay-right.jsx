@@ -4,7 +4,7 @@ import {
 } from "@mapsight/core/lib/map/selectors";
 import {memo, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {createSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {MAP} from "../../config/constants/controllers";
 

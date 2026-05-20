@@ -1,13 +1,26 @@
-import type {Store, StoreEnhancer} from "redux";
+import type {ElementType, HTMLAttributes} from "react";
+
+import type {
+	AnyAction,
+	Reducer,
+	Store,
+	StoreEnhancer,
+	ThunkAction,
+} from "@reduxjs/toolkit";
+import type {BatchAction} from "redux-batched-actions";
 
 import type {BaseController} from "@mapsight/core/lib/base/controller";
+import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
 import type {EnhancedStore, Feature, State} from "@mapsight/core/types";
 
 import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 
 import type {MapsightUiPlacesData} from "./components/feature-list-sorting/feature-list-sorting.tsx";
 import type {View} from "./config/constants/app.ts";
+import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers.ts";
 import type {MapsightUiComponents} from "./helpers/components";
+import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions.ts";
+import type {RootStateSlice} from "./store/selectors.ts";
 
 // helper type https://stackoverflow.com/a/61132308
 export type DeepPartial<T> = T extends object
@@ -16,7 +29,7 @@ export type DeepPartial<T> = T extends object
 		}
 	: T;
 
-export type MapsightUiStore = EnhancedStore<{app: UiState}>;
+export type MapsightUiStore = EnhancedStore<RootStateSlice>;
 
 /**
  * We keep a context object for each mapsight ui instance holding all the information
@@ -138,16 +151,39 @@ export type MapsightUiAsyncRenderFunction<R> = (
 
 export type MapsightUiView = View;
 
+export type LayerSwitcherConfigState = {
+	setFeatureSourceId: string[] | true | undefined;
+	grouped: boolean;
+	layerIdsSelector: (state: object) => string[];
+};
+
+export type FetchTextState = {
+	url: string | null;
+	status: FETCH_TEXT_STATUS;
+	data: string | null;
+	error: string | null;
+	lastUpdate: number | null;
+};
+
+export type FetchJsonState<TData = unknown> = {
+	url: string | null;
+	status: FETCH_JSON_STATUS;
+	data: TData | null;
+	error: string | null;
+	lastUpdate: number | null;
+};
+
+export type RegionState = {
+	label: string;
+	bounds: [number, number, number, number];
+};
+
+export type RegionsState = Record<string, RegionState>;
+
 export type FullUiState = {
 	isFullscreen: boolean;
 
-	regions: Record<
-		string,
-		{
-			label: string;
-			bounds: [number, number, number, number];
-		}
-	>;
+	regions: RegionsState;
 	selectedRegion: string;
 
 	places: MapsightUiPlacesData;
@@ -164,12 +200,8 @@ export type FullUiState = {
 
 	searchInMap: boolean;
 	searchQuery: string;
-	searchResult: {
-		url: string;
+	searchResult: FeatureSourceState & {
 		status: "error" | "loading" | "success" | null;
-		data: unknown;
-		error: unknown;
-		lastUpdate: number | null;
 	};
 	searchResultSelectionFeatures: MapsightUiFeature[];
 
@@ -227,14 +259,8 @@ export type FullUiState = {
 			internal: boolean;
 			external: boolean;
 		};
-		internal: {
-			grouped: boolean;
-			layerIdsSelector: (state: object) => string[];
-		};
-		external: {
-			grouped: boolean;
-			layerIdsSelector: (state: object) => string[];
-		};
+		internal: LayerSwitcherConfigState;
+		external: LayerSwitcherConfigState;
 	};
 	tagSwitcher: {
 		show: boolean;
@@ -246,10 +272,10 @@ export type FullUiState = {
 	map: {
 		show: boolean;
 	};
-	timeFilter: {
+	[TIME_FILTER]: {
 		show: boolean;
 	};
-	tagFilter: {
+	[TAG_FILTER]: {
 		show: boolean;
 		featureSourceId: string;
 	};
@@ -275,10 +301,11 @@ export type MapsightUiReHydrationState = {
 };
 
 // TODO: Move these to @mapsight/core types
-export type MapsightCoreAction = import("redux").AnyAction &
+export type MapsightCoreAction = AnyAction &
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	import("redux-thunk").ThunkAction<any, any, any, any> &
-	import("redux-batched-actions").BatchAction;
+	ThunkAction<any, any, any, any> &
+	BatchAction;
+
 export type MapsightCoreState =
 	| string
 	| number
@@ -287,13 +314,13 @@ export type MapsightCoreState =
 export type MapsightCoreReducer<
 	T extends MapsightCoreState = MapsightCoreState,
 	U extends MapsightCoreAction = MapsightCoreAction,
-> = import("redux").Reducer<T, U>;
+> = Reducer<T, U>;
 
 export type MapsightUiAppReducer = MapsightCoreReducer<UiState>;
 
 export type CreateOptions = {
 	// store
-	storeEnhancer?: import("redux").StoreEnhancer;
+	storeEnhancer?: StoreEnhancer;
 	reducers?: {
 		[x: string]: undefined | MapsightCoreReducer;
 		app?: MapsightUiAppReducer;
@@ -302,10 +329,7 @@ export type CreateOptions = {
 
 	// functionality
 	plugins?: PluginDefinition[];
-	controllers?: Record<
-		string,
-		import("@mapsight/core/lib/base/controller").BaseController
-	>;
+	controllers?: Record<string, BaseController>;
 
 	// rendering
 	components?: MapsightUiComponents;
@@ -364,14 +388,14 @@ export type MainPanelContextState = {
 export type MainPanelContextValue = MainPanelContextOptions &
 	MainPanelContextState;
 
-export type FeatureListProps<T extends import("react").ElementType = "div"> = {
+export type FeatureListProps<T extends ElementType = "div"> = {
 	additionalClasses?: string | null;
 	as?: T;
-	attributes?: import("react").HTMLAttributes<T>;
-	headerAs?: null | import("react").ElementType;
-	contentAs?: null | import("react").ElementType;
-	footerAs?: null | import("react").ElementType;
-	itemAs?: import("react").ElementType;
+	attributes?: HTMLAttributes<T>;
+	headerAs?: null | ElementType;
+	contentAs?: null | ElementType;
+	footerAs?: null | ElementType;
+	itemAs?: ElementType;
 	enableKeyboardControl?: boolean;
 	autoloadFeatureSource?: boolean;
 };

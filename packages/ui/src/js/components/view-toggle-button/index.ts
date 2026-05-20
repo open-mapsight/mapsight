@@ -1,12 +1,12 @@
 import {connect} from "react-redux";
 
-import {createStructuredSelector} from "reselect";
-
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
+import type {View} from "../../config/constants/app.ts";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import {setView} from "../../store/actions.ts";
+import type {RootStateSlice} from "../../store/selectors.ts";
 import {
 	isMapOutOfViewportSelector,
 	isViewMobile,
@@ -16,19 +16,22 @@ import {
 import ViewToggleButton from "./view-toggle-button";
 
 export default connect(
-	createStructuredSelector({
-		view: viewSelector,
-		isMapOutOfViewport: isMapOutOfViewportSelector,
-		options: viewToggleOptionsSelector,
+	(state: RootStateSlice) => ({
+		view: viewSelector(state),
+		isMapOutOfViewport: isMapOutOfViewportSelector(state),
+		options: viewToggleOptionsSelector(state),
 	}),
 	null,
 	({options, ...stateProps}, {dispatch}, ownProps) => ({
 		...stateProps,
 		dispatch: dispatch,
-		changeView: (currentView, nextView) => {
+		changeView: (currentView: View, nextView: View) => {
 			dispatch(setView(nextView));
 
-			if (options.deselectFeaturesOnToggle && isViewMobile(currentView)) {
+			if (
+				options?.deselectFeaturesOnToggle &&
+				isViewMobile(currentView)
+			) {
 				dispatch(
 					deselectAll(FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT),
 				);

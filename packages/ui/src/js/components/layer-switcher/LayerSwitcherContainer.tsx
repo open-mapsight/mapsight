@@ -1,3 +1,6 @@
+import type {ElementType} from "react";
+import {memo, useCallback} from "react";
+
 import {
 	layerIdsIntegratedSwitcherSelector,
 	makeFeatureSourceFromLayerIdSelector,
@@ -6,29 +9,35 @@ import {
 	makeLayerTitleSelector,
 	makeLayerVisibleSelector,
 } from "@mapsight/core/lib/map/selectors";
-import {memo, useCallback} from "react";
+import type {MapState} from "@mapsight/core/lib/map/types";
 
 import {translate} from "../../helpers/i18n";
-
 import GroupedLayerSwitcher from "./GroupedLayerSwitcher";
-import LayerSwitcher from "./LayerSwitcher";
-import LayerSwitcherEntry from "./LayerSwitcherEntry";
+import LayerSwitcher from "./LayerSwitcher.ts";
+import LayerSwitcherEntry from "./LayerSwitcherEntry.ts";
 
 // TODO das berechnen der LayerListen (abhängig von grouped und layerIdSelector) in einen Selector packen,
 //  damit diese Berechnung nur bei Änderungen am store berechnet neu wird
 // TODO für das visible eine eigenes connect, damit der Tree nicht dauernd neu berechnet wird
 
-function LayerSwitcherContainer(props) {
-	const {
-		as: T = "div",
-		baseClassName = "ms3-layer-switcher-container", // TODO: Use generic class name
-		onClose,
-		layerIdsSelector = layerIdsIntegratedSwitcherSelector,
-		setFeatureSourceIdPath,
-		grouped = false,
-		...attributes
-	} = props;
+export type LayerSwitcherContainerProps = {
+	as?: ElementType;
+	baseClassName?: string;
+	onClose?: () => void;
+	layerIdsSelector?: (state: MapState) => string[];
+	grouped?: boolean;
+	setFeatureSourceIdPath?: unknown;
+};
 
+function LayerSwitcherContainer({
+	as: T = "div",
+	baseClassName = "ms3-layer-switcher-container", // TODO: Use generic class name
+	onClose,
+	layerIdsSelector = layerIdsIntegratedSwitcherSelector,
+	grouped = false,
+	setFeatureSourceIdPath: _,
+	...attributes
+}: LayerSwitcherContainerProps) {
 	const renderLayerEntry = useCallback(
 		(id) => (
 			// TODO: memo comp instance & selectors
@@ -42,10 +51,9 @@ function LayerSwitcherContainer(props) {
 				featureSourceIdSelector={makeFeatureSourceIdFromLayerIdSelector(
 					id,
 				)}
-				setFeatureSourceIdPath={setFeatureSourceIdPath}
 			/>
 		),
-		[setFeatureSourceIdPath],
+		[],
 	);
 
 	const Switcher = grouped ? GroupedLayerSwitcher : LayerSwitcher;

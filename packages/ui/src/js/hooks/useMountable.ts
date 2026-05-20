@@ -1,12 +1,21 @@
 import {useEffect, useState} from "react";
 
-type Mountable = {
+export type Mountable = {
 	/** mount function, receives element as parameter */
 	mount(element: Element): void;
 
 	/** unmount function, receives element as parameter */
 	unmount(element: Element): void;
 };
+
+export function isMountable(obj: object): obj is Mountable {
+	return (
+		"mount" in obj &&
+		typeof obj.mount === "function" &&
+		"unmount" in obj &&
+		typeof obj.unmount === "function"
+	);
+}
 
 /**
  * Mounts the mountable object to the element

@@ -1,4 +1,4 @@
-import type {Action, AnyAction} from "redux";
+import type {Action, AnyAction} from "@reduxjs/toolkit";
 
 import getPath from "@mapsight/lib-js/object/getPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";

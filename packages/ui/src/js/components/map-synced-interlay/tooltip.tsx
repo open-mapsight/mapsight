@@ -9,7 +9,7 @@ import {
 } from "react";
 import {useSelector} from "react-redux";
 
-import {createSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {
 	type FeatureSelectionState,

@@ -16,7 +16,7 @@ function Attribution({children}: PropsWithChildren) {
 	const attributions = useSelector(selectVisibleLayerAttributions);
 
 	return (
-		<AttributionEntries attributions={attributions}>
+		<AttributionEntries attributions={attributions ?? undefined}>
 			{children}
 		</AttributionEntries>
 	);

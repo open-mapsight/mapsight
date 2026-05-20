@@ -21,7 +21,13 @@ import {
 	FEATURE_SELECTION_PRESELECT,
 	FEATURE_SELECTION_SELECT,
 } from "../config/feature/selections";
-import type {FullUiState, MapsightUiFeatureId, UiState} from "../types.ts";
+import type {
+	FetchTextState,
+	FullUiState,
+	MapsightUiFeatureId,
+	UiState,
+} from "../types.ts";
+import type {RootStateSlice} from "./selectors";
 import {featureDetailsUrlSelector, regionsSelector} from "./selectors";
 
 function ensureFullUrl(url: string) {
@@ -367,13 +373,18 @@ export function fetchTextSuccess(key: string, data: unknown) {
 	};
 }
 
+export type FETCH_TEXT_STATUS =
+	| typeof FETCH_TEXT_STATUS_LOADING
+	| typeof FETCH_TEXT_STATUS_ERROR
+	| typeof FETCH_TEXT_STATUS_SUCCESS;
+
 export const FETCH_TEXT_STATUS_LOADING = "loading";
 export const FETCH_TEXT_STATUS_ERROR = "error";
 export const FETCH_TEXT_STATUS_SUCCESS = "success";
 
 export function fetchText(key: string, url: string): ThunkAction {
-	return function (dispatch, getState) {
-		const selectState = () => (getState().app as UiState)[key] || {};
+	return function (dispatch, getState: () => RootStateSlice) {
+		const selectState = () => (getState().app[key] as FetchTextState) || {};
 
 		// do not fetch again if already running
 		const state = selectState();
@@ -462,6 +473,11 @@ export function fetchJsonReset(key: string) {
 	};
 }
 
+export type FETCH_JSON_STATUS =
+	| typeof FETCH_JSON_STATUS_LOADING
+	| typeof FETCH_JSON_STATUS_ERROR
+	| typeof FETCH_JSON_STATUS_SUCCESS;
+
 export const FETCH_JSON_STATUS_LOADING = "loading";
 export const FETCH_JSON_STATUS_ERROR = "error";
 export const FETCH_JSON_STATUS_SUCCESS = "success";
@@ -549,10 +565,8 @@ export const selectSearchResult = (feature: MapsightUiFeatureId) => ({
 
 export const setFeatureDetailsUrl =
 	(detailsUrl: string): ThunkAction =>
-	(dispatch, getState) => {
-		const currentUrl = featureDetailsUrlSelector(
-			getState() as {app: UiState},
-		);
+	(dispatch, getState: () => RootStateSlice) => {
+		const currentUrl = featureDetailsUrlSelector(getState());
 		if (currentUrl !== detailsUrl) {
 			if (detailsUrl) {
 				dispatch(fetchText(DETAILS_CONTENT_STATE_KEY, detailsUrl));
@@ -621,12 +635,12 @@ export function setSelectedRegionIdAndAnimateMap(
 		return setSelectedRegionId(regionId);
 	}
 
-	return (dispatch, getState) => {
+	return (dispatch, getState: () => RootStateSlice) => {
 		dispatch(setSelectedRegionId(regionId));
 
 		// TODO: use `selectedRegionSelector`, not sure if it's safe to rely on the state
 		// change here
-		const regions = regionsSelector(getState() as {app: UiState});
+		const regions = regionsSelector(getState());
 
 		if (
 			regions &&

@@ -1,4 +1,4 @@
-import {compose} from "redux";
+import {compose} from "@reduxjs/toolkit";
 
 import type {LoadOptions} from "@mapsight/core/lib/feature-sources/actions";
 import {

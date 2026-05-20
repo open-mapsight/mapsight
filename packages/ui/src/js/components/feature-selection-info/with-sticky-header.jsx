@@ -1,15 +1,14 @@
 import {useSelector} from "react-redux";
+
 import useStickyHeader from "../../hooks/useStickyHeader";
-
-import {featureSelectionInfoStuckHeaderHeightSelector} from "../../store/selectors.ts";
-
+import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors.ts";
 import Container from "./container";
 
 const stopEventPropagation = (e) => e.stopPropagation();
 
 function WithStickyHeader({header, content, feature, close, renderWrapper}) {
-	const stuckHeaderHeight = useSelector(
-		featureSelectionInfoStuckHeaderHeightSelector,
+	const {stuckHeaderSize} = useSelector(
+		featureSelectionInfoUiOptionsSelector,
 	);
 	const {isHeaderStuck, stickyHeaderRef, stickyScrollAreaRef, onScroll} =
 		useStickyHeader({

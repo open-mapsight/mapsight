@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import type {Store} from "redux";
+import type {Store} from "@reduxjs/toolkit";
 
 import {updateMapSize} from "@mapsight/core/lib/map/actions";
 

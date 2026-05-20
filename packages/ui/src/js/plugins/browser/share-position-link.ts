@@ -1,5 +1,5 @@
+import {createSelector} from "@reduxjs/toolkit";
 import proj4 from "proj4";
-import {createSelector} from "reselect";
 
 import {mergeAll, set} from "@mapsight/core/lib/base/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";

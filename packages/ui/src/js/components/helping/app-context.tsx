@@ -1,6 +1,6 @@
 import {Provider as ReduxProvider} from "react-redux";
 
-import type {Store} from "redux";
+import type {Store} from "@reduxjs/toolkit";
 
 import type {MapsightUiComponents} from "../../helpers/components";
 import {ComponentsContext} from "../../helpers/components";

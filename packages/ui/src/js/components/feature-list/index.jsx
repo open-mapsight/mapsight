@@ -17,8 +17,8 @@ import {
 	APP_EVENT_SCROLL_TO_FEATURE_LIST,
 	useAppChannelEventListener,
 } from "../helping/app-channel";
-import LayerSwitcher from "../layer-switcher";
-import TagSwitcher from "../tag-switcher";
+import LayerSwitcher from "../layer-switcher/index.ts";
+import TagSwitcher from "../tag-switcher/index.ts";
 
 import {FeatureListContextProvider} from "./context";
 

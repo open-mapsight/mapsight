@@ -1,5 +1,5 @@
-import type {Store} from "redux";
-import {createSelector} from "reselect";
+import type {Store} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {mergeAll} from "@mapsight/core/lib/base/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";

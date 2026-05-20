@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import type {Dispatch} from "redux";
+import type {Dispatch} from "@reduxjs/toolkit";
 
 import useUpdateMapSizeCallback from "./useUpdateMapSizeCallback";
 

@@ -1,7 +1,9 @@
 import {Fragment} from "react";
 import {useSelector} from "react-redux";
-import {createSelector} from "reselect";
 
+import {createSelector} from "@reduxjs/toolkit";
+
+import {useContextComponentWithFallback} from "../helpers/components";
 import {
 	isViewFullscreen,
 	isViewMapOnly,
@@ -18,26 +20,20 @@ import {
 	viewSelector,
 } from "../store/selectors.ts";
 import FeatureList from "./feature-list";
-import {useContextComponentWithFallback} from "../helpers/components";
-
 import VisibilityWrapper from "./helping/visibility-wrapper";
-
-import LayerSwitcher from "./layer-switcher";
+import LayerSwitcher from "./layer-switcher/index.ts";
 import AdditionalContainer from "./layout/additional-container";
 import AdditionalContent from "./layout/additional-container/content";
 import Marginal from "./layout/additional-container/marginal";
 import MainContainer from "./layout/main-container";
 import MapRow from "./layout/map-row";
 import TitleBar from "./layout/title-bar";
-
 // Layout
 import AppWrapper from "./layout/wrapper";
 import MainPanel from "./main-panel";
 import MainPanelContainer from "./main-panel/container";
-
 import {MainPanelContextProvider} from "./main-panel/context";
 import MainPanelListToggleButton from "./main-panel/list-toggle-button";
-
 // Components
 import Map from "./map";
 import MapOverlay from "./map-overlay";
@@ -53,13 +49,12 @@ import RegionSelector from "./map-overlay/region-selector";
 import SearchOverlay from "./map-overlay/search-overlay";
 import UserGeoLocationButton from "./map-overlay/user-geo-location-button";
 import ZoomButtons from "./map-overlay/zoom-buttons";
-import MapSyncedInterlay from "./map-synced-interlay";
+import MapSyncedInterlay from "./map-synced-interlay/index";
 import MapWrapper from "./map-wrapper";
-import TagSwitcher from "./tag-switcher";
+import TagSwitcher from "./tag-switcher/index";
 import TimeFilter from "./time-filter";
 import DesktopViewToggleButton from "./view-toggle-button/desktop-button";
 import MobileViewToggleButton from "./view-toggle-button/mobile-button";
-
 import ViewportViewToggleButton from "./view-toggle-button/viewport-button";
 
 const marginalLeftSelector = createSelector(
@@ -195,8 +190,8 @@ function App() {
 					<VisibilityWrapper visibleSelector={marginalLeftSelector}>
 						<Marginal position="left">
 							<VisibilityWrapper
-								visibleSelector={
-									layerSwitcherConfigExternalSelector
+								visibleSelector={(state) =>
+									!!layerSwitcherConfigExternalSelector(state)
 								}
 							>
 								<LayerSwitcher

@@ -1,4 +1,4 @@
-import {compose} from "redux";
+import {compose} from "@reduxjs/toolkit";
 
 import type {FeatureSelectionsState} from "@mapsight/core/lib/feature-selections/selectors";
 import {LOAD_FEATURE_SOURCE_SUCCESS} from "@mapsight/core/lib/feature-sources/actions";
