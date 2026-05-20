@@ -1,4 +1,4 @@
-import type {Selector} from "reselect";
+import type {Selector} from "@reduxjs/toolkit";
 
 import {mergeAll} from "@/lib/base/actions";
 import type {EnhancedStore} from "@/types";
@@ -66,7 +66,7 @@ export default class Mixin<TOptions = null> {
 		return {};
 	}
 
-	bindSelectors() {
+	bindSelectors(): Record<string, Selector> {
 		return {};
 	}
 }

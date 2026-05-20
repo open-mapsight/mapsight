@@ -5,7 +5,7 @@ import type OlGeometry from "ol/geom/Geometry";
 import type {ProjectionLike} from "ol/proj";
 import VectorSource from "ol/source/Vector";
 
-import type {Unsubscribe} from "redux";
+import type {Unsubscribe} from "@reduxjs/toolkit";
 
 import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 

@@ -1,6 +1,6 @@
+import type {Observable, Reducer, Store, Unsubscribe} from "@reduxjs/toolkit";
+import {compose} from "@reduxjs/toolkit";
 import {EventEmitter} from "eventemitter3";
-import type {Observable, Reducer, Store, Unsubscribe} from "redux";
-import {compose} from "redux";
 
 import {baseReducer} from "@/lib/base/reducer";
 import type {

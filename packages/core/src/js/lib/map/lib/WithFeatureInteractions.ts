@@ -3,7 +3,6 @@ import type Feature from "ol/Feature";
 import forEach from "lodash/forEach";
 import type {MapBrowserEvent} from "ol";
 import {batchActions} from "redux-batched-actions";
-import {createStructuredSelector} from "reselect";
 
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 
@@ -446,13 +445,12 @@ export default class WithFeatureInteractions extends WithMap {
 		};
 
 		this.getAndObserveUncontrolled(
-			createStructuredSelector({
-				featureInteractions: (state) =>
-					state.featureInteractions as Record<
-						InteractionName,
-						FeatureInteraction
-					>,
-				featureSelectionsControllerName: (state) =>
+			(state) => ({
+				featureInteractions: state.featureInteractions as Record<
+					InteractionName,
+					FeatureInteraction
+				>,
+				featureSelectionsControllerName:
 					state.featureSelectionsControllerName as string,
 			}),
 			(state) => {

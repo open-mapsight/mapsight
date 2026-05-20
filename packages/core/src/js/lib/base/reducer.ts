@@ -1,4 +1,4 @@
-import type {Reducer} from "redux";
+import type {Reducer} from "@reduxjs/toolkit";
 
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
