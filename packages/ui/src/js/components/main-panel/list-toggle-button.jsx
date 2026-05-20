@@ -5,7 +5,7 @@ import {toggleUserPreferenceListVisible} from "../../store/actions";
 
 import {userPreferenceListVisibleSelector} from "../../store/selectors";
 
-import {useMainPanelContext} from "./context.tsx";
+import {useMainPanelContext} from "./context";
 
 function MainPanelListToggleButton() {
 	const {collapsible, contentType} = useMainPanelContext();
