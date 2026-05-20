@@ -1,3 +1,4 @@
+import type {Store} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
 
 import {mergeAll} from "@mapsight/core/lib/base/actions";
@@ -13,7 +14,6 @@ import {
 import type {Definition} from "@mapsight/core/ol-proxy";
 import {di} from "@mapsight/core/ol-proxy";
 import DrawInteraction from "@mapsight/core/ol-proxy/definitions/interaction/DrawInteraction";
-import type {EnhancedStore} from "@mapsight/core/types";
 
 import {observeState} from "@mapsight/lib-redux/observe-state";
 
@@ -23,7 +23,7 @@ import {
 	MAP,
 } from "../../config/constants/controllers";
 import {getDictionary} from "../../helpers/i18n";
-import type {PluginInstance} from "../../types";
+import type {PluginInstance} from "../../types.ts";
 
 export const createActivateAction = (mapController: string, name: string) =>
 	activateInteraction(mapController, `${name}_drawInteraction`);
@@ -49,7 +49,7 @@ function setupDrawInteraction({
 	drawStyle,
 	displayStyle,
 }: {
-	store: EnhancedStore;
+	store: Store;
 	name: string;
 	featureSourcesControllerName: string;
 	featureSelectionsControllerName: string;

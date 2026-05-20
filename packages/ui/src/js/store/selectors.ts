@@ -28,7 +28,7 @@ import type {MapState} from "@mapsight/core/lib/map/types";
 import type {UserGeolocationState} from "@mapsight/core/lib/user-geolocation/selectors";
 import type {State} from "@mapsight/core/types";
 
-import type {MapsightUiPlacesData} from "../components/feature-list-sorting/feature-list-sorting";
+import type {MapsightUiPlacesData} from "../components/feature-list-sorting/feature-list-sorting.tsx";
 import type {View} from "../config/constants/app";
 import {
 	DETAILS_CONTENT_STATE_KEY,
@@ -58,14 +58,14 @@ import type {
 	MapsightUiFeature,
 	RegionState,
 	UiState,
-} from "../types";
+} from "../types.ts";
 import {
 	FETCH_JSON_STATUS_ERROR,
 	FETCH_JSON_STATUS_LOADING,
 	FETCH_JSON_STATUS_SUCCESS,
 	FETCH_TEXT_STATUS_ERROR,
 	FETCH_TEXT_STATUS_SUCCESS,
-} from "./actions";
+} from "./actions.ts";
 
 type SEARCH_STATUS =
 	| typeof SEARCH_STATUS_INACTIVE

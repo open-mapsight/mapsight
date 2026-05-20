@@ -13,8 +13,8 @@ import type {MapState} from "@mapsight/core/lib/map/types";
 
 import {translate} from "../../helpers/i18n";
 import GroupedLayerSwitcher from "./GroupedLayerSwitcher";
-import LayerSwitcher from "./LayerSwitcher";
-import LayerSwitcherEntry from "./LayerSwitcherEntry";
+import LayerSwitcher from "./LayerSwitcher.ts";
+import LayerSwitcherEntry from "./LayerSwitcherEntry.ts";
 
 // TODO das berechnen der LayerListen (abhängig von grouped und layerIdSelector) in einen Selector packen,
 //  damit diese Berechnung nur bei Änderungen am store berechnet neu wird

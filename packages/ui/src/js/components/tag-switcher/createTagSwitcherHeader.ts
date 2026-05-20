@@ -1,10 +1,10 @@
 import {connect} from "react-redux";
 
-import {setTagGroupVisible} from "../../store/actions";
+import {setTagGroupVisible} from "../../store/actions.ts";
 import {
 	type RootStateSlice,
 	createTagGroupVisibleSelector,
-} from "../../store/selectors";
+} from "../../store/selectors.ts";
 import SwitcherHeader from "../switcher/SwitcherHeader";
 
 type Props = {

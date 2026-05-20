@@ -1,6 +1,6 @@
 import {applyMiddleware, compose} from "@reduxjs/toolkit";
 import merge from "lodash/merge";
-import {thunk} from "redux-thunk";
+import thunk from "redux-thunk";
 
 import {createMapsightStore} from "@mapsight/core";
 import {layerIdsExternalSwitcherSelector} from "@mapsight/core/lib/map/selectors";
@@ -189,7 +189,6 @@ export function create(
 
 	// store enhancer
 	const uiStoreEnhancer = applyMiddleware(thunk);
-	// @ts-expect-error TODO
 	context.storeEnhancer = context.createOptions.storeEnhancer
 		? compose(uiStoreEnhancer, context.createOptions.storeEnhancer)
 		: uiStoreEnhancer;

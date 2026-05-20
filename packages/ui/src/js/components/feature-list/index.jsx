@@ -8,7 +8,7 @@ import {
 	layerSwitcherConfigExternalSelector,
 	listUiOptionsSelector,
 	viewSelector,
-} from "../../store/selectors";
+} from "../../store/selectors.ts";
 import FeatureCycling from "../feature-list-cycling";
 
 import FeatureSorter from "../feature-list-sorting";
@@ -17,8 +17,8 @@ import {
 	APP_EVENT_SCROLL_TO_FEATURE_LIST,
 	useAppChannelEventListener,
 } from "../helping/app-channel";
-import LayerSwitcher from "../layer-switcher/index";
-import TagSwitcher from "../tag-switcher/index";
+import LayerSwitcher from "../layer-switcher/index.ts";
+import TagSwitcher from "../tag-switcher/index.ts";
 
 import {FeatureListContextProvider} from "./context";
 
@@ -31,7 +31,7 @@ import useFeatureListState from "./hooks/useFeatureListState";
 import {useMakeHeaderSticky} from "./hooks/useMakeHeaderSticky";
 import useRestoreDocumentScroll from "./hooks/useRestoreDocumentScroll";
 import useSelectFeature from "./hooks/useSelectFeature";
-import Pagination from "./pagination";
+import Pagination from "./pagination.tsx";
 
 export const DEFAULT_LIST_RENDER_AS = "ul";
 

@@ -5,7 +5,7 @@ import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 import {VIEW_FULLSCREEN, VIEW_MAP_ONLY} from "../../config/constants/app";
 import type {RootStateSlice} from "../../store/selectors";
 import {viewSelector} from "../../store/selectors";
-import type {PluginInstance} from "../../types";
+import type {PluginInstance} from "../../types.ts";
 
 function onTouchMoveNoScroll(e: TouchEvent) {
 	e.preventDefault();

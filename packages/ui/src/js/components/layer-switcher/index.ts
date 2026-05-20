@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 
 import type {Selector} from "@mapsight/core/types";
 
-import {FEATURE_LIST} from "../../config/constants/controllers";
+import {FEATURE_LIST} from "../../config/constants/controllers.ts";
 import type {RootStateSlice} from "../../store/selectors";
 import {layerSwitcherConfigInternalSelector} from "../../store/selectors";
 import type {LayerSwitcherConfigState} from "../../types";

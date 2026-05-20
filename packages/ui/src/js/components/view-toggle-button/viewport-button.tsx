@@ -1,4 +1,4 @@
-import ViewToggleButton from "./index";
+import ViewToggleButton from "./index.ts";
 
 function ViewportViewToggleButton() {
 	return (

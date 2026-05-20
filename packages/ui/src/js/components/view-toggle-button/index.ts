@@ -2,17 +2,17 @@ import {connect} from "react-redux";
 
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
-import type {View} from "../../config/constants/app";
+import type {View} from "../../config/constants/app.ts";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
-import {setView} from "../../store/actions";
-import type {RootStateSlice} from "../../store/selectors";
+import {setView} from "../../store/actions.ts";
+import type {RootStateSlice} from "../../store/selectors.ts";
 import {
 	isMapOutOfViewportSelector,
 	isViewMobile,
 	viewSelector,
 	viewToggleOptionsSelector,
-} from "../../store/selectors";
+} from "../../store/selectors.ts";
 import ViewToggleButton from "./view-toggle-button";
 
 export default connect(

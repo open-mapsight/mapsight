@@ -29,8 +29,8 @@ const mapStatusLabel = (status: string) =>
 	translate("ui.switcher.entry.label" + status);
 
 const determineDisplayStatus = (
-	status?: FeatureSourceStatus,
-	active: boolean = false,
+	status: FeatureSourceStatus,
+	active: boolean,
 ): SwitcherEntryStatus => {
 	if (!status || status === STATUS_OK) {
 		return active ? STATUS_ACTIVE : STATUS_INACTIVE;
@@ -51,7 +51,7 @@ export type SwitcherEntryProps = {
 	active?: boolean;
 	activeCheckbox?: boolean;
 	activeText?: boolean;
-	status?: FeatureSourceStatus;
+	status: FeatureSourceStatus;
 	locked?: boolean;
 };
 

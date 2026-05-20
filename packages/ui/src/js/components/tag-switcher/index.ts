@@ -1,12 +1,12 @@
 import {connect} from "react-redux";
 
-import type {RootStateSlice} from "../../store/selectors";
+import type {RootStateSlice} from "../../store/selectors.ts";
 import {
 	tagSwitcherFeatureSourceIdSelector,
 	tagSwitcherSortTags,
 	tagSwitcherTagsSelector,
 	tagSwitcherToggleableGroups,
-} from "../../store/selectors";
+} from "../../store/selectors.ts";
 import TagSwitcher from "./TagSwitcher";
 
 export default connect((state: RootStateSlice) => ({

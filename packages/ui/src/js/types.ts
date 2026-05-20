@@ -15,12 +15,12 @@ import type {EnhancedStore, Feature, State} from "@mapsight/core/types";
 
 import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 
-import type {MapsightUiPlacesData} from "./components/feature-list-sorting/feature-list-sorting";
-import type {View} from "./config/constants/app";
-import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers";
+import type {MapsightUiPlacesData} from "./components/feature-list-sorting/feature-list-sorting.tsx";
+import type {View} from "./config/constants/app.ts";
+import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers.ts";
 import type {MapsightUiComponents} from "./helpers/components";
-import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions";
-import type {RootStateSlice} from "./store/selectors";
+import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions.ts";
+import type {RootStateSlice} from "./store/selectors.ts";
 
 // helper type https://stackoverflow.com/a/61132308
 export type DeepPartial<T> = T extends object
