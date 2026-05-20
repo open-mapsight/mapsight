@@ -1,10 +1,4 @@
-import type {
-	AnyAction,
-	Observable,
-	Reducer,
-	Store,
-	Unsubscribe,
-} from "@reduxjs/toolkit";
+import type {Observable, Reducer, Store, Unsubscribe} from "@reduxjs/toolkit";
 import {compose} from "@reduxjs/toolkit";
 import {EventEmitter} from "eventemitter3";
 
@@ -20,14 +14,14 @@ import type {
 
 export class BaseController<TState extends State = State>
 	extends EventEmitter
-	implements Store<TState, AnyAction>
+	implements Store<unknown>
 {
 	// TODO: Should we also implement: observe, getAndObserve and getAndSubscribe?
 
 	readonly #name: string;
 	#store: EnhancedStore<TState> | null = null;
 	#selector: Selector<TState> | null = null;
-	#reducers: Array<(state: TState, action: AnyAction) => TState>;
+	#reducers: Array<Reducer<TState>>;
 
 	constructor(controllerName: string) {
 		super();
@@ -36,7 +30,7 @@ export class BaseController<TState extends State = State>
 		this.#reducers = [];
 	}
 
-	replaceReducer(_nextReducer: Reducer<TState, AnyAction>): void {}
+	replaceReducer(_nextReducer: Reducer<TState>): void {}
 
 	[Symbol.observable](): Observable<unknown> {
 		throw new Error("Method not implemented.");
@@ -222,7 +216,7 @@ export class BaseController<TState extends State = State>
 		// empty
 	}
 
-	registerReducer(reducer: (state: TState, action: AnyAction) => TState) {
+	registerReducer(reducer: Reducer) {
 		this.#reducers.push(reducer);
 	}
 
