@@ -1,8 +1,8 @@
 import {connect} from "react-redux";
 
-import {setTagVisible} from "../../store/actions.ts";
-import type {RootStateSlice} from "../../store/selectors.ts";
-import {createTagVisibleSelector} from "../../store/selectors.ts";
+import {setTagVisible} from "../../store/actions";
+import type {RootStateSlice} from "../../store/selectors";
+import {createTagVisibleSelector} from "../../store/selectors";
 import SwitcherEntry from "../switcher/SwitcherEntry";
 
 export default function createTagSwitcherEntry(

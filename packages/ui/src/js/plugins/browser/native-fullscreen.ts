@@ -1,8 +1,8 @@
 import {observeState} from "@mapsight/lib-redux/observe-state";
 
-import type {View} from "../../config/constants/app.ts";
+import type {View} from "../../config/constants/app";
 import {viewSelector} from "../../store/selectors";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 /**
  * This plugin will request native fullscreen when entering one of the

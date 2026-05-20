@@ -18,10 +18,10 @@ import {
 	tagSwitcherShowSelector,
 	timeFilterVisible,
 	viewSelector,
-} from "../store/selectors.ts";
+} from "../store/selectors";
 import FeatureList from "./feature-list";
 import VisibilityWrapper from "./helping/visibility-wrapper";
-import LayerSwitcher from "./layer-switcher/index.ts";
+import LayerSwitcher from "./layer-switcher/index";
 import AdditionalContainer from "./layout/additional-container";
 import AdditionalContent from "./layout/additional-container/content";
 import Marginal from "./layout/additional-container/marginal";

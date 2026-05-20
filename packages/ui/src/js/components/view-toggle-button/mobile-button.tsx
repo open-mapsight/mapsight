@@ -1,4 +1,4 @@
-import ViewToggleButton from "./index.ts";
+import ViewToggleButton from "./index";
 
 function MobileViewToggleButton() {
 	return (

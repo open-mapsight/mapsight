@@ -1,5 +1,5 @@
 import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "../../components/helping/app-channel";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 /**
  * This plugin will call the partialChangeHandler (@see {CreateOptions.partialChangeHandler}) when some partial content

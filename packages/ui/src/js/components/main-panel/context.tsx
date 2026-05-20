@@ -2,11 +2,8 @@ import type {PropsWithChildren} from "react";
 import {createContext, useContext, useMemo} from "react";
 import {useSelector} from "react-redux";
 
-import {createMainPanelContentTypeSelector} from "../../store/selectors.ts";
-import type {
-	MainPanelContextOptions,
-	MainPanelContextValue,
-} from "../../types.ts";
+import {createMainPanelContentTypeSelector} from "../../store/selectors";
+import type {MainPanelContextOptions, MainPanelContextValue} from "../../types";
 
 const MainPanelContext = createContext<MainPanelContextValue>({
 	showSelectionInfo: false,

@@ -15,8 +15,8 @@ import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
 
-import {setView} from "../../store/actions.ts";
-import {viewSelector} from "../../store/selectors.ts";
+import {setView} from "../../store/actions";
+import {viewSelector} from "../../store/selectors";
 
 import {
 	APP_EVENT_PARTIAL_CONTENT_CHANGED,

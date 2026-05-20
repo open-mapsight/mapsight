@@ -1,11 +1,11 @@
 import {useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {translate} from "../../helpers/i18n";
-import {toggleUserPreferenceListVisible} from "../../store/actions.ts";
+import {toggleUserPreferenceListVisible} from "../../store/actions";
 
-import {userPreferenceListVisibleSelector} from "../../store/selectors.ts";
+import {userPreferenceListVisibleSelector} from "../../store/selectors";
 
-import {useMainPanelContext} from "./context.tsx";
+import {useMainPanelContext} from "./context";
 
 function MainPanelListToggleButton() {
 	const {collapsible, contentType} = useMainPanelContext();

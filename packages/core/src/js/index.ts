@@ -104,7 +104,7 @@ export function createMapsightStore<
 			predicate: defaultPredicate,
 			...reduxDevToolsOptions,
 		});
-		enhancer = devCompose(...enhancers) as StoreEnhancer;
+		enhancer = devCompose(...enhancers);
 	} else {
 		enhancer = compose(...enhancers);
 	}

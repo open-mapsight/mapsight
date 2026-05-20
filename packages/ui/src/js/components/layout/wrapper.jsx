@@ -5,7 +5,7 @@ import {
 	isEmbeddedMapSelector,
 	mapVisible,
 	viewSelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 
 function AppWrapper({children, ...attributes}) {
 	const view = useSelector(viewSelector);

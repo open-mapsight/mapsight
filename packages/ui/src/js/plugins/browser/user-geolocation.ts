@@ -17,7 +17,7 @@ import {
 } from "@mapsight/lib-redux/observe-state";
 
 import * as c from "../../config/constants/controllers";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultFeatureSourceId = "userGeolocation";
 const defaultFeatureSourcesControllerName = c.FEATURE_SOURCES;

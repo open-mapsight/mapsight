@@ -26,7 +26,7 @@ import {
 } from "../../config/constants/controllers";
 import {features, metaData} from "../../config/map/layers";
 import {translate} from "../../helpers/i18n";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 export const createActivateAction = (mapController, name) =>
 	activateInteraction(mapController, `${name}_drawInteraction`);

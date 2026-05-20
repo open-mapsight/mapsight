@@ -14,7 +14,7 @@ import {
 	FEATURE_SOURCES,
 } from "../../config/constants/controllers";
 import createActionWatcher from "../../helpers/create-action-watcher";
-import type {MapsightUiContext, PluginInstance} from "../../types.ts";
+import type {MapsightUiContext, PluginInstance} from "../../types";
 
 const defaultLoadOptions: LoadOptions = {};
 const defaultListControllerName = FEATURE_LIST;
@@ -44,6 +44,7 @@ export default function createPlugin(
 		afterInit: function renderAwaitListFeatureSourcesLoadedInitPlugin(
 			context,
 		) {
+			// @ts-expect-error TODO
 			context.storeEnhancer = context.storeEnhancer
 				? compose(context.storeEnhancer, actionWatcher.enhancer)
 				: actionWatcher.enhancer;

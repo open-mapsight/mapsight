@@ -9,7 +9,7 @@ import {createSelector} from "@reduxjs/toolkit";
 import {MAP} from "../../config/constants/controllers";
 
 import {translate} from "../../helpers/i18n";
-import {setOverlayModalVisible} from "../../store/actions.ts";
+import {setOverlayModalVisible} from "../../store/actions";
 
 import Attribution from "./attribution";
 

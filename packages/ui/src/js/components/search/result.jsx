@@ -10,7 +10,7 @@ import {
 	SEARCH_STATUS_LOADING,
 	searchResultFeaturesSelector,
 	searchStatusSelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 
 import SearchResultEntry from "./result-entry";
 

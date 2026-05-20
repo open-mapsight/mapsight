@@ -26,7 +26,7 @@ import type {
 	FullUiState,
 	MapsightUiFeatureId,
 	UiState,
-} from "../types.ts";
+} from "../types";
 import type {RootStateSlice} from "./selectors";
 import {featureDetailsUrlSelector, regionsSelector} from "./selectors";
 
@@ -261,7 +261,7 @@ export function setMiniLegendLayer(layerId: string | null) {
 	};
 }
 
-export const SET_VIEW_BREAKPOINTS = "SET_VIEW_BREAKPOINTS";
+export const SET_VIEW_BREAKPOINTS = "SET_VIEW_BREAKPOI";
 
 export function setViewBreakpoints(value: FullUiState["viewBreakpoints"]) {
 	return {

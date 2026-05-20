@@ -21,7 +21,7 @@ import type {
 	MapsightUiFeature,
 	MapsightUiFeatureProperty,
 	PluginInstance,
-} from "../../types.ts";
+} from "../../types";
 
 const defaultFeatureSelection = "select";
 const defaultFeatureSelectionsController = FEATURE_SELECTIONS;
@@ -54,6 +54,7 @@ export default function createFeatureDetailsLoadedPlugin(
 
 	return {
 		afterInit: function runAwaitFeatureDetailsLoadedInitPlugin(context) {
+			// @ts-expect-error TODO
 			context.storeEnhancer = context.storeEnhancer
 				? compose(
 						context.storeEnhancer,

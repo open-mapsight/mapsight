@@ -13,7 +13,7 @@ import type {
 	MapsightUiFeature,
 	MapsightUiFeatureProperty,
 	PluginInstance,
-} from "../../types.ts";
+} from "../../types";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSourcesController = c.FEATURE_SOURCES;

@@ -17,7 +17,7 @@ export default function createActionWatcher(): Result {
 	};
 
 	context.enhancer = applyMiddleware(
-		(_store) => (nextMiddleware) => (action) => {
+		(_store) => (nextMiddleware) => (action: AnyAction) => {
 			const result = nextMiddleware(action);
 
 			if (isNonNullable(context.handler)) {

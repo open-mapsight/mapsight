@@ -5,7 +5,7 @@ import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
-import {search, selectSearchResult} from "../../store/actions.ts";
+import {search, selectSearchResult} from "../../store/actions";
 
 function SearchResultEntry({closeSearch, onReturnFocus, feature}) {
 	const dispatch = useDispatch();
