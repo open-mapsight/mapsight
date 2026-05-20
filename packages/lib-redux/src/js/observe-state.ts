@@ -1,4 +1,4 @@
-import {Store} from "redux";
+import type {Store} from "@reduxjs/toolkit";
 
 function strictEqualCompare<T>(a: T, b: T): boolean {
 	return a === b;

@@ -1,4 +1,5 @@
-import {AnyAction, Reducer, combineReducers} from "redux";
+import type {AnyAction, Reducer} from "@reduxjs/toolkit";
+import {combineReducers} from "@reduxjs/toolkit";
 
 import cloneAction from "./clone-action";
 

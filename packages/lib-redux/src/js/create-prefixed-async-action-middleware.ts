@@ -1,3 +1,5 @@
+import type {Middleware, MiddlewareAPI} from "@reduxjs/toolkit";
+
 /**
  * Creates a redux middleware that allows dispatching of functions as actions, when the action
  * exposes the defined actionFlag. If a prefix is provided, the action function will receive a
@@ -11,8 +13,6 @@
  *
  * @returns {function(*=): function(*): Function} resulting middleware
  */
-import {Middleware, MiddlewareAPI} from "redux";
-
 export default function createPrefixedAsyncActionMiddleware<
 	Prefix extends string | undefined,
 >(
