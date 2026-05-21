@@ -36,7 +36,7 @@ const determineDisplayStatus = (
 		return active ? STATUS_ACTIVE : STATUS_INACTIVE;
 	}
 
-	return status ?? STATUS_INACTIVE;
+	return status;
 };
 
 export type SwitcherEntryProps = {
