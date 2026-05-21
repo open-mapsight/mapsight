@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/vector-editor",
 	"description": "Mapsight Vector Editor",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"private": true,
 	"type": "module",
 	"dependencies": {
