@@ -1,5 +1,12 @@
 # @mapsight/vector-style-compiler
 
+## 9.0.0
+
+### Patch Changes
+
+- Updated dependencies [5eede53]
+    - @mapsight/core@14.1.0
+
 ## 8.0.3
 
 ### Patch Changes

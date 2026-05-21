@@ -1,5 +1,11 @@
 # @mapsight/lib-redux
 
+## 2.1.0
+
+### Minor Changes
+
+- 5eede53: Prepare to move to redux toolkit, cleanup types, cleanup code
+
 ## 2.0.3
 
 ### Patch Changes
