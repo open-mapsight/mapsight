@@ -2,7 +2,7 @@ import {FeatureSourcesController} from "@mapsight/core/lib/feature-sources/contr
 
 import * as c from "../../config/constants/controllers";
 import {searchResultSelectionFeatureSourceSelector} from "../../store/selectors";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultFeatureSourceId = "searchResult";
 const defaultFeatureSourcesControllerName = c.FEATURE_SOURCES;

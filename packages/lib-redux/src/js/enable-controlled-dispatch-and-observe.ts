@@ -1,4 +1,4 @@
-import {AnyAction, Dispatch, Store} from "redux";
+import type {AnyAction, Dispatch, Store} from "@reduxjs/toolkit";
 
 type CompareFunction = (a: unknown, b: unknown) => boolean;
 

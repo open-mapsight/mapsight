@@ -2,7 +2,7 @@ import {useCallback, useLayoutEffect, useRef, useState} from "react";
 import {Provider} from "react-redux";
 import ReactTooltip from "react-tooltip";
 
-import type {AnyAction} from "redux";
+import type {AnyAction} from "@reduxjs/toolkit";
 
 import {
 	STATUS_OK,

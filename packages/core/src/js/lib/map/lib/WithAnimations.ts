@@ -10,8 +10,6 @@ import type {CenterOnFeatureOptions} from "@mapsight/lib-ol/view/centerOnFeature
 import centerViewOnFeature from "@mapsight/lib-ol/view/centerOnFeature";
 import centerViewOnFeatures from "@mapsight/lib-ol/view/centerOnFeatures";
 
-import type {Reducer} from "@/types";
-
 import {ANIMATE} from "../actions";
 import WithMap from "./WithMap";
 
@@ -44,7 +42,7 @@ export default class WithAnimations extends WithMap {
 
 		map.on("postrender", postRenderAnimationHandler);
 
-		const reduceWithAnimations: Reducer = (state = {}, action) => {
+		this.registerReducer((state, action) => {
 			if (action.type === ANIMATE) {
 				const {center, resolution, bounds, zoom, ...options} =
 					action.options;
@@ -64,9 +62,7 @@ export default class WithAnimations extends WithMap {
 			}
 
 			return state;
-		};
-
-		this.registerReducer(reduceWithAnimations);
+		});
 	}
 
 	fit(bounds: SimpleGeometry | Extent, options?: FitOptions) {

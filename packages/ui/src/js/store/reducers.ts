@@ -1,4 +1,4 @@
-import type {Action, AnyAction} from "redux";
+import type {Action, AnyAction} from "@reduxjs/toolkit";
 
 import getPath from "@mapsight/lib-js/object/getPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
@@ -10,7 +10,7 @@ import {
 	VIEW_MOBILE,
 } from "../config/constants/app";
 import {TAG_FILTER} from "../config/constants/controllers";
-import type {UiState} from "../types.ts";
+import type {UiState} from "../types";
 import {
 	FETCH_JSON_FAILURE,
 	FETCH_JSON_REQUEST,
@@ -63,7 +63,7 @@ import {
 	SET_VIEW_BREAKPOINTS,
 	SORT_LIST,
 	TOGGLE_USER_PREFERENCE_LIST_VISIBLE,
-} from "./actions.ts";
+} from "./actions";
 
 function determineView(state: UiState, isMobile: boolean) {
 	const {

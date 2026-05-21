@@ -1,19 +1,19 @@
 import {FEATURE_SELECTION_PRESELECT} from "../config/feature/selections";
-import type {PluginDefinition} from "../types.ts";
-import createAppTitlePlugin from "./browser/app-title.ts";
-import createFeatureDeepLinkPlugin from "./browser/feature-deep-link.ts";
-import createLocalStoragePlugin from "./browser/local-storage.ts";
-import createNoScrollPlugin from "./browser/no-scroll.ts";
-import createPiwikTrackFeatureSelectionEventPlugin from "./browser/piwik-track-feature-selection-event.ts";
-import createPiwikTrackFullscreenToggleEventPlugin from "./browser/piwik-track-fullscreen-toggle-event.ts";
+import type {PluginDefinition} from "../types";
+import createAppTitlePlugin from "./browser/app-title";
+import createFeatureDeepLinkPlugin from "./browser/feature-deep-link";
+import createLocalStoragePlugin from "./browser/local-storage";
+import createNoScrollPlugin from "./browser/no-scroll";
+import createPiwikTrackFeatureSelectionEventPlugin from "./browser/piwik-track-feature-selection-event";
+import createPiwikTrackFullscreenToggleEventPlugin from "./browser/piwik-track-fullscreen-toggle-event";
 //import createQuitFullscreenOnRenderPlugin from './browser/quit-fullscreen-on-render';
-import createSearchPlugin from "./browser/search.ts";
-import createToggleMobileViewsPlugin from "./browser/toggle-mobile-views.ts";
-import createUserGeolocationPlugin from "./browser/user-geolocation.ts";
-import createViewsPlugin from "./browser/views.ts";
-import createFeatureSelectionDetailsUrlPlugin from "./common/feature-selection-details-url.ts";
-import createLangPlugin from "./common/lang.ts";
-import createOlProxyPlugin from "./common/ol-proxy.ts";
+import createSearchPlugin from "./browser/search";
+import createToggleMobileViewsPlugin from "./browser/toggle-mobile-views";
+import createUserGeolocationPlugin from "./browser/user-geolocation";
+import createViewsPlugin from "./browser/views";
+import createFeatureSelectionDetailsUrlPlugin from "./common/feature-selection-details-url";
+import createLangPlugin from "./common/lang";
+import createOlProxyPlugin from "./common/ol-proxy";
 
 /**
  * Create the default set of plugins for use in the browser IN ORDER!

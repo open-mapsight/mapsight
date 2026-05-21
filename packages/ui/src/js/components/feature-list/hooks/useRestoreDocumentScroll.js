@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import {isViewFullscreen, isViewMobile} from "../../../store/selectors.ts";
+import {isViewFullscreen, isViewMobile} from "../../../store/selectors";
 
 export default function useRestoreDocumentScroll(view, scrollPosition) {
 	useEffect(() => {

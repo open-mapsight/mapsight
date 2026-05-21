@@ -1,8 +1,8 @@
-import type {PluginDefinition} from "../types.ts";
-import createFeatureSelectionDetailsUrlPlugin from "./common/feature-selection-details-url.ts";
-import createLangPlugin from "./common/lang.ts";
-import createOlProxyPlugin from "./common/ol-proxy.ts";
-import createFeatureDeepLinkPlugin from "./server/feature-deep-link.ts";
+import type {PluginDefinition} from "../types";
+import createFeatureSelectionDetailsUrlPlugin from "./common/feature-selection-details-url";
+import createLangPlugin from "./common/lang";
+import createOlProxyPlugin from "./common/ol-proxy";
+import createFeatureDeepLinkPlugin from "./server/feature-deep-link";
 
 /**
  * Create the default set of plugins for use on the server IN ORDER!

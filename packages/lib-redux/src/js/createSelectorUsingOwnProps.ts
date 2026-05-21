@@ -31,7 +31,7 @@ type SelectorFactory<
  * @param [options] optional options
  * @param [options.equals] function that check equality, defaults to strict equality (===)
  * @returns selector function to be used as mapState in react-redux's connect() function.
- *                 May be combined with createSelector/createStructuredSelector or any other function as
+ *                 May be combined with createSelector or any other function as
  *                 long as the selector is called with state as first and own props as second argument.
  */
 export default function createSelectorUsingOwnProps<

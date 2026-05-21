@@ -16,7 +16,7 @@ import TileWMSSource from "@mapsight/core/ol-proxy/definitions/source/TileWMSSou
 import VectorFeatureSource from "@mapsight/core/ol-proxy/definitions/source/VectorFeatureSource";
 import VectorSource from "@mapsight/core/ol-proxy/definitions/source/VectorSource";
 
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 /**
  * This plugin will inject the ol-proxy dependencies required by default.

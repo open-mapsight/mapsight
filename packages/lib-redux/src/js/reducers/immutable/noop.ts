@@ -1,4 +1,4 @@
-import {Reducer} from "redux";
+import type {Reducer} from "@reduxjs/toolkit";
 
 const noopReducer: Reducer = <T>(state: T): T => state;
 

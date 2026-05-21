@@ -4,7 +4,7 @@ import {VIEW_MAP_ONLY, VIEW_MOBILE} from "../../config/constants/app";
 import * as c from "../../config/constants/controllers";
 import {setView} from "../../store/actions";
 import {isEmbeddedMapSelector, viewSelector} from "../../store/selectors";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultMapControllerName = c.MAP;
 const defaultToggleBrowserEvent = "click";

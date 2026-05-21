@@ -1,7 +1,7 @@
 import  {memo} from "react";
 import {useSelector} from "react-redux";
 
-import {isViewMobileOrMapOnlySelector} from "../../store/selectors.ts";
+import {isViewMobileOrMapOnlySelector} from "../../store/selectors";
 
 import Tooltip from "./tooltip";
 

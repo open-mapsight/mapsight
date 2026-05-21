@@ -6,7 +6,7 @@ import type {
 	MapsightUiContext,
 	MapsightUiView,
 	PluginInstance,
-} from "../../types.ts";
+} from "../../types";
 
 const getViewportWidth = () =>
 	Math.max(document.documentElement.clientWidth, window.innerWidth || 0);

@@ -7,7 +7,7 @@ import {removeFrom} from "@mapsight/core/lib/base/actions";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
-import {featureSelectionInfoStickyHeaderSelector} from "../../store/selectors";
+import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
 import CloseButton from "./close-button";
@@ -25,8 +25,8 @@ export default function FeatureSelectionInfo({
 }) {
 	const dispatch = useDispatch();
 	const hasStickyHeader = useSelector(
-		featureSelectionInfoStickyHeaderSelector,
-	);
+		featureSelectionInfoUiOptionsSelector,
+	).stickyHeader;
 	const renderWrapper = useCallback(
 		(attrs) => (
 			<Wrapper

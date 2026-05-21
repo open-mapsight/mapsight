@@ -154,11 +154,11 @@ export default class WithLayers extends WithAnimations {
 				);
 				if (
 					layerId !== undefined &&
-					state.layers[layerId].metaData.isBaseLayer
+					state.layers[layerId]?.metaData?.isBaseLayer
 				) {
 					// go through all base layers and set invisible
 					for (const id of Object.keys(state.layers)) {
-						if (state.layers[id].metaData?.isBaseLayer) {
+						if (state.layers[id]?.metaData?.isBaseLayer) {
 							state = reducers.set?.(state, {
 								type: "set",
 								value: false,

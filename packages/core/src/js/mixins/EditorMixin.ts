@@ -1,7 +1,8 @@
 import type {ProjectionLike} from "ol/proj";
 
+import type {Selector} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 import {batchActions} from "redux-batched-actions";
-import {createSelector} from "reselect";
 
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 import type {MapsightStyleFunctionEnv} from "@mapsight/lib-ol/style/styleFunction";
@@ -16,6 +17,7 @@ import {
 	setLayerStyle,
 } from "@/lib/map/actions";
 import type {InteractionsSelections} from "@/lib/map/types";
+import type {State} from "@/types";
 
 type Style = string | MapsightStyleFunctionEnv;
 
@@ -100,8 +102,8 @@ export default class EditorMixin extends Mixin<EditorMixinOptions> {
 					this.controllers.map,
 				),
 				(state) => state?.data?.features,
-			),
-		};
+			) as Selector<State, FeatureSourceData["features"]>,
+		} as const;
 	}
 
 	override bindActions() {

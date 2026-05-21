@@ -4,12 +4,12 @@ import {
 } from "@mapsight/core/lib/map/selectors";
 import {memo, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {createSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {MAP} from "../../config/constants/controllers";
 
 import {translate} from "../../helpers/i18n";
-import {setOverlayModalVisible} from "../../store/actions.ts";
+import {setOverlayModalVisible} from "../../store/actions";
 
 import Attribution from "./attribution";
 

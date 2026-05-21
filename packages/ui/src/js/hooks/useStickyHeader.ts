@@ -2,18 +2,17 @@ import type {DependencyList} from "react";
 import {useCallback, useEffect, useRef, useState} from "react";
 
 type Options = {
-	stuckHeaderSize?: number;
+	stuckHeaderHeight?: number;
 	resetDeps?: DependencyList;
 };
 
-export default function useStickyHeader({
-	stuckHeaderSize = 30,
-	resetDeps = [],
-}: Options) {
+export default function useStickyHeader<
+	TElement extends HTMLElement = HTMLElement,
+>({stuckHeaderHeight = 30, resetDeps = []}: Options) {
 	const [isHeaderStuck, setIsHeaderStuck] = useState(false);
 	const [stickThreshold, setStickThreshold] = useState(0);
 
-	const stickyHeaderRef = useRef<HTMLElement | null>(null);
+	const stickyHeaderRef = useRef<TElement | null>(null);
 	const stickyScrollAreaRef = useRef<{scrollTop: number} | null>(null);
 
 	const onScroll = useCallback(
@@ -38,9 +37,9 @@ export default function useStickyHeader({
 	useEffect(() => {
 		if (stickyHeaderRef.current) {
 			const headerSize = stickyHeaderRef.current.offsetHeight;
-			setStickThreshold(headerSize - stuckHeaderSize);
+			setStickThreshold(headerSize - stuckHeaderHeight);
 		}
-	}, [stickyHeaderRef.current?.offsetHeight, stuckHeaderSize]);
+	}, [stickyHeaderRef.current?.offsetHeight, stuckHeaderHeight]);
 
 	return {
 		isHeaderStuck,

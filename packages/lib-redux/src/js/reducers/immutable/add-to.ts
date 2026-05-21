@@ -1,4 +1,4 @@
-import {Reducer} from "redux";
+import type {Reducer} from "@reduxjs/toolkit";
 
 const addTo: Reducer<Array<unknown>> = (state, action) =>
 	(state || []).concat([action.element]);

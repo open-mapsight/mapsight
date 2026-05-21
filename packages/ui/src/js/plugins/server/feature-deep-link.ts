@@ -7,7 +7,7 @@ import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import type {
 	ExternalMapsightUiRendererProps,
 	PluginInstance,
-} from "../../types.ts";
+} from "../../types";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;

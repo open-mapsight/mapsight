@@ -1,20 +1,16 @@
 import {connect} from "react-redux";
 
-import {createStructuredSelector} from "reselect";
-
 import {
 	featureDetailsHasErrorSelector,
 	featureDetailsHtmlSelector,
 	isEmbeddedMapSelector,
 	viewSelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 import FeatureDetailsContent from "./feature-details-content";
 
-export default connect(
-	createStructuredSelector({
-		view: viewSelector,
-		isEmbeddedMap: isEmbeddedMapSelector,
-		hasError: featureDetailsHasErrorSelector,
-		html: featureDetailsHtmlSelector,
-	}),
-)(FeatureDetailsContent);
+export default connect((state) => ({
+	view: viewSelector(state),
+	isEmbeddedMap: isEmbeddedMapSelector(state),
+	hasError: featureDetailsHasErrorSelector(state),
+	html: featureDetailsHtmlSelector(state),
+}))(FeatureDetailsContent);

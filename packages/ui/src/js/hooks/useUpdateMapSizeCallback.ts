@@ -1,7 +1,7 @@
 import type {RefObject} from "react";
 import {useCallback} from "react";
 
-import type {Dispatch} from "redux";
+import type {Dispatch} from "@reduxjs/toolkit";
 
 import {async} from "@mapsight/core/lib/base/actions";
 import {updateMapSize} from "@mapsight/core/lib/map/actions";

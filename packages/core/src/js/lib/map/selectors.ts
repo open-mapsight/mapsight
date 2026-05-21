@@ -1,11 +1,15 @@
+import type {Selector} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 import unique from "lodash/uniq";
-import {createSelector} from "reselect";
 
-import * as nonNull from "@mapsight/lib-js/nonNullable";
+import {isNonNullable, mapNonNullable} from "@mapsight/lib-js/nonNullable";
 import reduceByKeys from "@mapsight/lib-redux/reducers/reduce-by-keys";
 
-import type {FeatureSourcesState} from "@/lib/feature-sources/types";
-import type {InteractionName, MapState} from "@/lib/map/types";
+import type {
+	FeatureSourceState,
+	FeatureSourcesState,
+} from "@/lib/feature-sources/types";
+import type {InteractionName, LayerState, MapState} from "@/lib/map/types";
 import type {State} from "@/types";
 
 /**
@@ -14,57 +18,52 @@ import type {State} from "@/types";
 export const layersSelector = (state: MapState) => state.layers;
 
 export const makeLayerTitleSelector = (id: string) => (state: MapState) =>
-	state.layers[id]?.metaData?.title;
+	state.layers[id]?.metaData?.title ?? "";
 export const makeLayerLockedInLayerSwitcherSelector =
 	(id: string) => (state: MapState) =>
-		state.layers[id]?.metaData?.lockedInLayerSwitcher;
+		state.layers[id]?.metaData?.lockedInLayerSwitcher ?? false;
 
 export const makeLayerSelectionSelector =
 	(id: string, interactionName: InteractionName) => (state: MapState) =>
 		state.layers[id]?.options?.selections?.[interactionName];
 
-export const layerIdsIntegratedSwitcherSelector = createSelector(
-	(state: MapState) =>
-		state.layers
-			? Object.keys(state.layers).filter(
-					(id) => state.layers[id]?.metaData?.visibleInLayerSwitcher,
-				)
-			: [],
-	(_) => _, // cache result of above to deliver reference equality if array has the same contents
-);
-export const layerIdsExternalSwitcherSelector = createSelector(
-	(state: MapState) =>
-		state.layers
-			? Object.keys(state.layers).filter(
-					(id) =>
-						state.layers[id]?.metaData
-							?.visibleInExternalLayerSwitcher,
-				)
-			: [],
-	(_) => _, // cache result of above to deliver reference equality if array has the same contents
-);
-
-// createSelector only caches the very last one result, so we have to create a new selector per ID, see ""But there is a problem!", https://github.com/reduxjs/reselect#selectorstodoselectorsjs
-export const makeLayerVisibleSelector = (id: string) =>
+export const layerIdsIntegratedSwitcherSelector: Selector<MapState, string[]> =
 	createSelector(
-		[(state: MapState) => state.layers[id]],
-		(layer) => layer?.options?.visible ?? false,
+		(state: MapState) =>
+			state.layers
+				? Object.keys(state.layers).filter(
+						(id) =>
+							state.layers[id]?.metaData?.visibleInLayerSwitcher,
+					)
+				: [],
+		(_) => _, // cache result of above to deliver reference equality if array has the same contents
 	);
 
-export const makeFeatureSourceIdFromLayerIdSelector = (layerId: string) =>
+export const layerIdsExternalSwitcherSelector: Selector<MapState, string[]> =
 	createSelector(
-		[(state: MapState) => state.layers[layerId]],
-		(layer) => layer?.options?.source?.options?.featureSourceId,
+		(state: MapState) =>
+			state.layers
+				? Object.keys(state.layers).filter(
+						(id) =>
+							state.layers[id]?.metaData
+								?.visibleInExternalLayerSwitcher,
+					)
+				: [],
+		(_) => _, // cache result of above to deliver reference equality if array has the same contents
 	);
 
-export const makeFeatureSourceControllerNameFromLayerIdSelector = (
-	layerId: string,
-) =>
-	createSelector(
-		[(state: MapState) => state.layers[layerId]],
-		(layer) =>
-			layer?.options?.source?.options?.featureSourcesControllerName,
-	);
+export const makeLayerVisibleSelector =
+	(layerId: string) => (state: MapState) =>
+		state.layers[layerId]?.options?.visible ?? false;
+
+export const makeFeatureSourceIdFromLayerIdSelector =
+	(layerId: string) => (state: MapState) =>
+		state.layers[layerId]?.options?.source?.options?.featureSourceId;
+
+export const makeFeatureSourceControllerNameFromLayerIdSelector =
+	(layerId: string) => (state: MapState) =>
+		state.layers[layerId]?.options?.source?.options
+			?.featureSourcesControllerName;
 
 /**
  * create selector for featureState corresponding to the featureSource used by a layer
@@ -72,21 +71,25 @@ export const makeFeatureSourceControllerNameFromLayerIdSelector = (
  * @param layerId id of the layer for which the selector will be created
  * @returns selector with parameters state (mapsight selected already) and globalFeatureState (featureSources _not_ selected)
  */
-export const makeFeatureSourceFromLayerIdSelector = (layerId: string) =>
+export const makeFeatureSourceFromLayerIdSelector = (
+	layerId: string,
+): Selector<MapState, FeatureSourceState | null, [State]> =>
 	createSelector(
 		[
 			(_, state: State) => state,
 			makeFeatureSourceControllerNameFromLayerIdSelector(layerId),
 			makeFeatureSourceIdFromLayerIdSelector(layerId),
 		],
-		(state, featureControllerName, featureSourceId) =>
-			featureControllerName &&
-			featureSourceId &&
-			state[featureControllerName]
-				? (state[featureControllerName] as FeatureSourcesState)[
+		(state, featureControllerName, featureSourceId) => {
+			if (featureControllerName && featureSourceId) {
+				return (
+					(state[featureControllerName] as FeatureSourcesState)[
 						featureSourceId
-					]
-				: null,
+					] ?? null
+				);
+			}
+			return null;
+		},
 	);
 
 export const mapSizeSelector = (state: MapState) => state.size;
@@ -107,37 +110,45 @@ export const reduceLayersToAttributions = (
 
 	const entries = Object.keys(layers)
 		.map((layerId) =>
-			nonNull.map(
+			mapNonNullable(
 				layers[layerId]?.metaData?.attribution,
 				(attribution) => [layerId, attribution] as const,
 			),
 		)
-		.filter(nonNull.is);
+		.filter(isNonNullable);
 	return Object.fromEntries(entries);
 };
 
-export const layerAttributionsSelector = createSelector(
-	[layersSelector],
-	reduceLayersToAttributions,
-);
+export const layerAttributionsSelector: Selector<
+	MapState,
+	LayerAttributions | null
+> = createSelector([layersSelector], reduceLayersToAttributions);
 
 // TODO Dokumentation notwendig
 export const getVisibleLayerAttributions = (
 	visibleLayers: string[] | undefined,
-	layerAttributions: LayerAttributions,
+	layerAttributions: LayerAttributions | null,
 ): LayerAttributions => {
-	const entries = unique(visibleLayers ?? [])
+	if (visibleLayers === undefined || layerAttributions === null) {
+		return {};
+	}
+
+	const entries = unique(visibleLayers)
 		.map((layerId) =>
-			nonNull.map(
+			mapNonNullable(
 				layerAttributions[layerId],
-				(attribution) => [layerId, attribution] as const,
+				(attribution: string | undefined) =>
+					attribution ? ([layerId, attribution] as const) : null,
 			),
 		)
-		.filter(nonNull.is);
+		.filter(isNonNullable);
 	return Object.fromEntries(entries);
 };
 
-export const visibleLayerAttributionsSelector = createSelector(
+export const visibleLayerAttributionsSelector: Selector<
+	MapState,
+	LayerAttributions | null
+> = createSelector(
 	[visibleLayersSelector, layerAttributionsSelector],
 	getVisibleLayerAttributions,
 );
@@ -149,12 +160,12 @@ export const reduceLayersToLegends = (
 ): LayerLegends => {
 	const entries = Object.entries(layers)
 		.map(([layerId, layer]) =>
-			nonNull.map(
+			mapNonNullable(
 				layer.metaData?.legend,
 				(legend) => [layerId, legend] as const,
 			),
 		)
-		.filter(nonNull.is);
+		.filter(isNonNullable);
 	return Object.fromEntries(entries);
 };
 
@@ -174,20 +185,23 @@ export const reduceToLayersWithMiniLegends = (
 	return Object.fromEntries(entries);
 };
 
-export const layersWithLegendsSelector = createSelector(
-	layersSelector,
-	reduceToLayersWithLegends,
-);
-export const layersWithMiniLegendsSelector = createSelector(
-	layersSelector,
-	reduceToLayersWithMiniLegends,
-);
+export const layersWithLegendsSelector: Selector<MapState, LayerState> =
+	createSelector(layersSelector, reduceToLayersWithLegends);
 
-export const visibleLayersWithLegendsSelector = createSelector(
+export const layersWithMiniLegendsSelector: Selector<MapState, LayerState> =
+	createSelector(layersSelector, reduceToLayersWithMiniLegends);
+
+export const visibleLayersWithLegendsSelector: Selector<
+	MapState,
+	Record<string, LayerState>
+> = createSelector(
 	[visibleLayersSelector, layersWithLegendsSelector],
 	reduceByKeys,
 );
-export const visibleLayersWithMiniLegendsSelector = createSelector(
+export const visibleLayersWithMiniLegendsSelector: Selector<
+	MapState,
+	Record<string, LayerState>
+> = createSelector(
 	[visibleLayersSelector, layersWithMiniLegendsSelector],
 	reduceByKeys,
 );

@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom";
+import {createRoot, hydrateRoot} from "react-dom/client";
 
 import App from "../components/app";
 import AppContext from "../components/helping/app-context";
@@ -12,12 +12,16 @@ const mapsightUiBrowserDomRenderer: MapsightUiRenderer = (
 	props,
 	hydrate = false,
 ) => {
-	ReactDOM[hydrate ? "hydrate" : "render"](
+	if (!container) return;
+
+	const app = (
 		<AppContext {...props}>
 			<App />
-		</AppContext>,
-		container,
+		</AppContext>
 	);
+
+	const root = hydrate ? hydrateRoot(container, app) : createRoot(container);
+	root.render(app);
 };
 
 export default mapsightUiBrowserDomRenderer;

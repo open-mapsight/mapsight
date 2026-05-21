@@ -1,6 +1,6 @@
 // FIXME: use es once default export is fixed in @mapsight/lib-redux
-import type {AnyAction, StoreEnhancer} from "redux";
-import {applyMiddleware} from "redux";
+import type {AnyAction, StoreEnhancer} from "@reduxjs/toolkit";
+import {applyMiddleware} from "@reduxjs/toolkit";
 
 import {isNonNullable} from "@mapsight/lib-js/nonNullable";
 import flattenActions from "@mapsight/lib-redux/flatten-actions";
@@ -17,7 +17,7 @@ export default function createActionWatcher(): Result {
 	};
 
 	context.enhancer = applyMiddleware(
-		(_store) => (nextMiddleware) => (action) => {
+		(_store) => (nextMiddleware) => (action: AnyAction) => {
 			const result = nextMiddleware(action);
 
 			if (isNonNullable(context.handler)) {

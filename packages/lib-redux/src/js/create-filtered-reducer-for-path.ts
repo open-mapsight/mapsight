@@ -1,4 +1,4 @@
-import {AnyAction, Reducer} from "redux";
+import type {AnyAction, Reducer} from "@reduxjs/toolkit";
 
 import cloneAction from "./clone-action";
 

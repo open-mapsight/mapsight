@@ -11,10 +11,7 @@
 		"eventemitter3": "^5.0.4",
 		"lodash": "catalog:",
 		"minimatch": "^10.2.5",
-		"redux": "catalog:",
-		"redux-batched-actions": "catalog:",
-		"redux-thunk": "catalog:",
-		"reselect": "catalog:"
+		"redux-batched-actions": "catalog:"
 	},
 	"devDependencies": {
 		"@redux-devtools/extension": "^3.3.0",

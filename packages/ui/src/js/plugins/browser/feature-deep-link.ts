@@ -1,4 +1,4 @@
-import type {Store} from "redux";
+import type {Store} from "@reduxjs/toolkit";
 
 import {
 	deselectAll,
@@ -15,8 +15,9 @@ import {VIEW_MAP_ONLY} from "../../config/constants/app";
 import * as c from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import {setView} from "../../store/actions";
+import type {RootStateSlice} from "../../store/selectors";
 import {isViewMobile, viewSelector} from "../../store/selectors";
-import type {PluginInstance, UiState} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
@@ -40,7 +41,7 @@ function selectFeature(
 
 	if (
 		setMapOnlyViewInMobile &&
-		isViewMobile(viewSelector(store.getState() as {app: UiState}))
+		isViewMobile(viewSelector(store.getState() as RootStateSlice))
 	) {
 		store.dispatch(setView(VIEW_MAP_ONLY));
 	}

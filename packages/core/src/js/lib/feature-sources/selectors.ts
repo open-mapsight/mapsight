@@ -1,5 +1,5 @@
-import type {Selector} from "reselect";
-import {createSelector, createStructuredSelector} from "reselect";
+import type {Selector} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 
 import type {
 	FeatureSourceData,
@@ -8,6 +8,11 @@ import type {
 } from "@/lib/feature-sources/types";
 import {applyFilters} from "@/lib/filter/selectors";
 import type {Feature, FeatureId, State} from "@/types";
+
+export type FeatureSourceStatus =
+	| typeof STATUS_OK
+	| typeof STATUS_LOADING
+	| typeof STATUS_ERROR;
 
 export const STATUS_OK = "ok";
 export const STATUS_LOADING = "loading";
@@ -159,18 +164,13 @@ export function createFilteredFeatureSourceSelector(
 			if (filterNames !== cache.filterNames) {
 				cache.filterNames = filterNames;
 
-				const filterSelectors: Record<
-					string,
-					(state: State) => string
-				> = {};
-				if (filterNames) {
-					filterNames.forEach((filter) => {
-						filterSelectors[filter] = (filterState) =>
-							filterState[filter] as string;
-					});
-				}
-
-				filtersSelector = createStructuredSelector(filterSelectors);
+				filtersSelector = (state) =>
+					Object.fromEntries(
+						filterNames?.map((filter) => [
+							filter,
+							state[filter] as string,
+						]) ?? [],
+					);
 			}
 		}
 
@@ -293,7 +293,7 @@ export function getGroupedTagsWithCountFromFeatures(features: Array<Feature>) {
 export function createTagsWithCountFromFeatureSourceSelector(
 	featureSourcesControllerName: string,
 	featureSourceId: string,
-) {
+): Selector<State, Record<string, TagGroupWithCount>> {
 	const featureSourceSelector = createUnfilteredFeaturesSelector(
 		featureSourcesControllerName,
 		featureSourceId,

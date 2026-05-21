@@ -7,7 +7,7 @@ import type {State} from "@mapsight/core/types";
 import pickPaths from "@mapsight/lib-js/object/pickPaths";
 import {createStorage} from "@mapsight/lib-redux/local-storage";
 
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultLocalStorageKey = "mapsight--v3-ui";
 const defaultLocalStoragePaths = [
