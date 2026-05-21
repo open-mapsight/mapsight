@@ -2,7 +2,7 @@ import type React from "react";
 import {useMemo} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
-import {createSelector} from "@reduxjs/toolkit";
+import {type UnknownAction, createSelector} from "@reduxjs/toolkit";
 import {batchActions} from "redux-batched-actions";
 
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
@@ -53,7 +53,7 @@ function DeleteButton({
 					featureIds,
 				),
 				deselectAll(editor.controllers.featureSelections!, "select"),
-			]),
+			]) as unknown as UnknownAction,
 		);
 	};
 
