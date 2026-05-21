@@ -8,8 +8,8 @@ import type LineString from "ol/geom/LineString";
 import type Polygon from "ol/geom/Polygon";
 import {getArea, getLength} from "ol/sphere";
 
+import {createSelector} from "@reduxjs/toolkit";
 import {type Feature} from "geojson";
-import {createSelector} from "reselect";
 
 import {
 	deselect,

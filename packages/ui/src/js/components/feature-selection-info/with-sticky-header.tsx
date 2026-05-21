@@ -1,19 +1,34 @@
+import type {ReactNode} from "react";
 import {useSelector} from "react-redux";
+
 import useStickyHeader from "../../hooks/useStickyHeader";
-
-import {featureSelectionInfoStuckHeaderHeightSelector} from "../../store/selectors.ts";
-
+import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors";
+import type {MapsightUiFeature} from "../../types";
 import Container from "./container";
 
 const stopEventPropagation = (e) => e.stopPropagation();
 
-function WithStickyHeader({header, content, feature, close, renderWrapper}) {
-	const stuckHeaderHeight = useSelector(
-		featureSelectionInfoStuckHeaderHeightSelector,
+type WithStickyHeaderProps = {
+	header: ReactNode;
+	feature: MapsightUiFeature;
+	content: ReactNode;
+	close: ReactNode;
+	renderWrapper: (props: any) => ReactNode;
+};
+
+function WithStickyHeader({
+	header,
+	content,
+	feature,
+	close,
+	renderWrapper,
+}: WithStickyHeaderProps) {
+	const {stuckHeaderHeight} = useSelector(
+		featureSelectionInfoUiOptionsSelector,
 	);
 	const {isHeaderStuck, stickyHeaderRef, stickyScrollAreaRef, onScroll} =
-		useStickyHeader({
-			stuckHeaderSize: stuckHeaderHeight,
+		useStickyHeader<HTMLDivElement>({
+			stuckHeaderHeight,
 			resetDeps: [feature.id],
 		});
 

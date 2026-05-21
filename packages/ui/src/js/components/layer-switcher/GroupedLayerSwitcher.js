@@ -1,6 +1,6 @@
 import {connect, shallowEqual} from "react-redux";
 
-import {createSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {MAP} from "../../config/constants/controllers";
 import GroupedSwitcher from "../switcher/GroupedSwitcher";

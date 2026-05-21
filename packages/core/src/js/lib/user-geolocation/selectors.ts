@@ -1,6 +1,8 @@
-import {createSelector} from "reselect";
+import type {Selector} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 
 import type {FeatureSourceState} from "@/lib/feature-sources/types";
+import type {State} from "@/types";
 
 import type {UserGeolocationError} from "./actions";
 import {ERROR_NOT_ACCURATE} from "./actions";
@@ -8,7 +10,10 @@ import {ERROR_NOT_ACCURATE} from "./actions";
 export const STATUS_LOADING = "loading";
 export const STATUS_ERROR = "error";
 
-export const geolocationStatusSelector = createSelector(
+export const geolocationStatusSelector: Selector<
+	UserGeolocationState,
+	string | null
+> = createSelector(
 	[
 		(state: UserGeolocationState) => state.error,
 		(state: UserGeolocationState) => state.isRequesting,
@@ -27,25 +32,20 @@ export type UserGeolocationState = {
 	lastUpdated?: number;
 };
 
-export function createUserGeolocationIsEnabledSelector(
-	userGeolocationControllerName: string,
-) {
-	return createSelector(
-		[
-			(state) =>
-				state[userGeolocationControllerName] as UserGeolocationState,
-		],
-		(geoLoc) => geoLoc.isEnabled ?? false,
-	);
-}
+const createUserGeolocationIsEnabledSelector =
+	(userGeolocationControllerName: string) => (state: State) =>
+		(state[userGeolocationControllerName] as UserGeolocationState)
+			?.isEnabled ?? false;
 
-export function createUserGeolocationSelector(
+export default createUserGeolocationIsEnabledSelector;
+
+export const createUserGeolocationSelector = (
 	userGeolocationControllerName: string,
 	{minimumAccuracy}: {minimumAccuracy?: number} = {},
-) {
-	return createSelector(
+): Selector<State, UserGeolocationState> =>
+	createSelector(
 		[
-			(state) =>
+			(state: State) =>
 				state[userGeolocationControllerName] as UserGeolocationState,
 		],
 		(geoLoc) => {
@@ -61,12 +61,11 @@ export function createUserGeolocationSelector(
 			return geoLoc;
 		},
 	);
-}
 
 export const createUserGeolocationAsFeatureSelector = (
 	userGeolocationControllerName: string,
 	{minimumAccuracy}: {minimumAccuracy?: number} = {},
-) =>
+): Selector<State, FeatureSourceState> =>
 	createSelector(
 		createUserGeolocationSelector(userGeolocationControllerName, {
 			minimumAccuracy,

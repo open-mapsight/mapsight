@@ -1,13 +1,13 @@
 import type {Config as DevToolsConfig} from "@redux-devtools/extension";
-import forEach from "lodash/forEach";
-import mapValues from "lodash/mapValues";
-import type {Reducer, StoreEnhancer} from "redux";
+import type {Reducer, StoreEnhancer} from "@reduxjs/toolkit";
 import {
 	applyMiddleware,
 	combineReducers,
 	compose,
 	legacy_createStore as reduxCreateStore,
-} from "redux";
+} from "@reduxjs/toolkit";
+import forEach from "lodash/forEach";
+import mapValues from "lodash/mapValues";
 import {batchDispatchMiddleware} from "redux-batched-actions";
 
 import {ensureNonNullable, isNonNullable} from "@mapsight/lib-js/nonNullable";
@@ -104,7 +104,7 @@ export function createMapsightStore<
 			predicate: defaultPredicate,
 			...reduxDevToolsOptions,
 		});
-		enhancer = devCompose(...enhancers) as StoreEnhancer;
+		enhancer = devCompose(...enhancers);
 	} else {
 		enhancer = compose(...enhancers);
 	}

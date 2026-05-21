@@ -1,4 +1,4 @@
-import {AnyAction} from "redux";
+import type {AnyAction} from "@reduxjs/toolkit";
 
 function shallowCloneObject<T>(o: T): T {
 	return {...o};

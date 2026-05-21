@@ -1,7 +1,7 @@
 import type {RefObject} from "react";
 import {useEffect} from "react";
 
-import type {Dispatch} from "redux";
+import type {Dispatch} from "@reduxjs/toolkit";
 
 import type {MainPanelPosition} from "../types";
 import useUpdateMapSizeCallback from "./useUpdateMapSizeCallback";

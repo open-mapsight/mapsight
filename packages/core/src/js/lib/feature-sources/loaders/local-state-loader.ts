@@ -1,4 +1,4 @@
-import type {Store as ReduxStore} from "redux";
+import type {Store as ReduxStore} from "@reduxjs/toolkit";
 
 import {ERROR} from "@/lib/feature-sources/selectors";
 import type {

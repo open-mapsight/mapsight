@@ -2,8 +2,8 @@ import {memo, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
 
-import {filterListQuery} from "../../store/actions.ts";
-import {listQuerySelector} from "../../store/selectors.ts";
+import {filterListQuery} from "../../store/actions";
+import {listQuerySelector} from "../../store/selectors";
 
 import FeaturesQueryInput from "./query-input";
 

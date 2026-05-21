@@ -1,28 +1,26 @@
 import {connect} from "react-redux";
 
-import {createStructuredSelector} from "reselect";
-
-import {setTagVisible} from "../../store/actions.ts";
-import {createTagVisibleSelector} from "../../store/selectors.ts";
+import {setTagVisible} from "../../store/actions";
+import type {RootStateSlice} from "../../store/selectors";
+import {createTagVisibleSelector} from "../../store/selectors";
 import SwitcherEntry from "../switcher/SwitcherEntry";
 
 export default function createTagSwitcherEntry(
-	featureSourceId,
-	tagGroup,
-	tagName,
+	featureSourceId: string,
+	tagGroup: string,
+	tagName: string,
 ) {
+	const visibilitySelector = createTagVisibleSelector(
+		featureSourceId,
+		tagGroup,
+		tagName,
+	);
+
 	return connect(
-		// mapStateToProps:
-		createStructuredSelector({
-			visibility: createTagVisibleSelector(
-				featureSourceId,
-				tagGroup,
-				tagName,
-			),
+		(state: RootStateSlice) => ({
+			visibility: visibilitySelector(state),
 		}),
-		// mapDispatchToProps:
 		null,
-		// mergeProps:
 		({visibility}, {dispatch}, {...ownProps}) => ({
 			title: tagName,
 			active: visibility,

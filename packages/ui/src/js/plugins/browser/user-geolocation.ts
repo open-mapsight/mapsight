@@ -1,13 +1,14 @@
-import {createSelector, createStructuredSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {set} from "@mapsight/core/lib/base/actions";
 import {FeatureSourcesController} from "@mapsight/core/lib/feature-sources/controller";
 import {getGeolocation} from "@mapsight/core/lib/user-geolocation/actions";
-import {
+import type {UserGeolocationState} from "@mapsight/core/lib/user-geolocation/selectors";
+import createUserGeolocationIsEnabledSelector, {
 	createUserGeolocationAsFeatureSelector,
-	createUserGeolocationIsEnabledSelector,
 	geolocationStatusSelector,
 } from "@mapsight/core/lib/user-geolocation/selectors";
+import type {State} from "@mapsight/core/types";
 
 import {createStorage} from "@mapsight/lib-redux/local-storage";
 import {
@@ -16,7 +17,7 @@ import {
 } from "@mapsight/lib-redux/observe-state";
 
 import * as c from "../../config/constants/controllers";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultFeatureSourceId = "userGeolocation";
 const defaultFeatureSourcesControllerName = c.FEATURE_SOURCES;
@@ -103,19 +104,26 @@ export default function createPlugin(
 				);
 
 			const geoLocStatusSelector = createSelector(
-				(state) => state[userGeolocationControllerName],
+				(state: State) =>
+					state[
+						userGeolocationControllerName
+					] as UserGeolocationState,
 				geolocationStatusSelector,
+			);
+			const alreadyRequestedSelector = createSelector(
+				geoLocStatusSelector,
+				(status) => status === "loading" || status === "error",
 			);
 
 			getAndObserveState(
 				store,
-				createStructuredSelector({
-					isEnabled: geoLocIsEnabledSelector,
-					alreadyRequested: createSelector(
-						geoLocStatusSelector,
-						(status) => status === "loading" || status === "error",
-					),
-				}),
+				createSelector(
+					[geoLocIsEnabledSelector, alreadyRequestedSelector],
+					(isEnabled, alreadyRequested) => ({
+						isEnabled,
+						alreadyRequested,
+					}),
+				),
 				({isEnabled, alreadyRequested}) => {
 					if (alreadyRequested) {
 						return AbortObserving;

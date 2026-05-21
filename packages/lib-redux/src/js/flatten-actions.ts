@@ -1,4 +1,4 @@
-import {AnyAction} from "redux";
+import type {AnyAction} from "@reduxjs/toolkit";
 
 /**
  * Flattens (deeply) batched actions into a flat array of actions

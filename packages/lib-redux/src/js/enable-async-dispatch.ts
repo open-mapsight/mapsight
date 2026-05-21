@@ -1,4 +1,4 @@
-import {AnyAction, Store} from "redux";
+import type {AnyAction, Store} from "@reduxjs/toolkit";
 
 function runAsync(fn: () => void) {
 	return setTimeout(() => fn(), 10);

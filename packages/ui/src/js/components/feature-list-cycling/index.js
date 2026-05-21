@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 
+import {createSelector} from "@reduxjs/toolkit";
 import {batchActions} from "redux-batched-actions";
-import {createSelector} from "reselect";
 
 import {
 	deselectAll,

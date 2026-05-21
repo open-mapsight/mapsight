@@ -2,7 +2,7 @@ import {trackEvent} from "@mapsight/lib-js/misc/piwik";
 import {observeState} from "@mapsight/lib-redux/observe-state";
 
 import {isFullscreenSelector} from "../../store/selectors";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultCategory = "Mapsight";
 const defaultActionEnabled = "FullscreenEnabled";

@@ -1,5 +1,5 @@
+import {createSelector} from "@reduxjs/toolkit";
 import proj4 from "proj4";
-import {createSelector} from "reselect";
 
 import {mergeAll, set} from "@mapsight/core/lib/base/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
@@ -26,7 +26,7 @@ import {
 } from "../../config/constants/controllers";
 import {features, metaData} from "../../config/map/layers";
 import {translate} from "../../helpers/i18n";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 export const createActivateAction = (mapController, name) =>
 	activateInteraction(mapController, `${name}_drawInteraction`);

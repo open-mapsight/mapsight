@@ -1,4 +1,4 @@
-import type {Dispatch} from "redux";
+import type {Dispatch} from "@reduxjs/toolkit";
 
 import type {ActionOrThunk, ThunkAction} from "@/types";
 

@@ -1,7 +1,7 @@
 import {useEffect} from "react";
 import {useDispatch} from "react-redux";
 
-import type {AnyAction} from "redux";
+import type {AnyAction} from "@reduxjs/toolkit";
 
 import {async} from "@mapsight/core/lib/base/actions";
 import {load} from "@mapsight/core/lib/feature-sources/actions";

@@ -5,13 +5,12 @@
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
-		"lodash": "catalog:",
-		"redux-thunk": "catalog:"
+		"@reduxjs/toolkit": "catalog:",
+		"@types/lodash": "catalog:",
+		"lodash": "catalog:"
 	},
 	"devDependencies": {
-		"@types/lodash": "catalog:",
-		"cpx2": "^8.0.2",
-		"redux": "catalog:"
+		"cpx2": "^8.0.2"
 	},
 	"exports": {
 		".": {
@@ -33,9 +32,6 @@
 	},
 	"license": "UNLICENSED",
 	"main": "index.js",
-	"peerDependencies": {
-		"redux": "catalog:"
-	},
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
 	},

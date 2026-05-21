@@ -1,5 +1,5 @@
+import type {AnyAction, Reducer} from "@reduxjs/toolkit";
 import get from "lodash/get";
-import {AnyAction, Reducer} from "redux";
 
 import deepChangeState from "./deep-change-state";
 

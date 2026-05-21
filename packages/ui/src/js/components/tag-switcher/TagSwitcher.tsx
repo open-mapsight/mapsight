@@ -1,8 +1,7 @@
 import {memo, useMemo} from "react";
+
 import {getDocumentLanguage} from "../../helpers/i18n";
-
 import GroupedSwitcher from "../switcher/GroupedSwitcher";
-
 import createTagSwitcherEntry from "./createTagSwitcherEntry";
 import createTagSwitcherHeader from "./createTagSwitcherHeader";
 

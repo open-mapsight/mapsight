@@ -8,7 +8,14 @@ import {
 } from "@mapsight/core/lib/feature-sources/selectors";
 
 import {FEATURE_LIST} from "../../../config/constants/controllers";
-import {featureListContextSelector} from "../../../store/selectors";
+import {
+	highlightSelectionSelector,
+	lastListScrollPositionSelector,
+	layerSwitcherShowExternalSelector,
+	preselectSelectionSelector,
+	selectSelectionSelector,
+	tagSwitcherShowSelector,
+} from "../../../store/selectors";
 import type {FullUiState} from "../../../types";
 import useFeatureListFeatureSource from "./useFeatureListFeatureSource";
 import type {PaginatedFilteredFeaturesState} from "./usePaginatedFilteredFeatures";
@@ -35,14 +42,15 @@ export default function useFeatureListState(
 ) {
 	const {featureSourceId, featureSource} =
 		useFeatureListFeatureSource(listControllerName);
-	const {
-		tagSwitcherShow,
-		layerSwitcherShowExternal,
-		scrollPosition,
-		selectSelection,
-		preselectSelection,
-		highlightSelection,
-	} = useSelector(featureListContextSelector);
+	const tagSwitcherShow = useSelector(tagSwitcherShowSelector);
+	const layerSwitcherShowExternal = useSelector(
+		layerSwitcherShowExternalSelector,
+	);
+	const scrollPosition = useSelector(lastListScrollPositionSelector);
+	const selectSelection = useSelector(selectSelectionSelector);
+	const preselectSelection = useSelector(preselectSelectionSelector);
+	const highlightSelection = useSelector(highlightSelectionSelector);
+
 	const paginatedFilteredFeaturesState = usePaginatedFilteredFeatures(
 		featureSource,
 		listUiOptions,

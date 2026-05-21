@@ -3,8 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {translate} from "../../helpers/i18n";
 import useDebounce from "../../hooks/useDebounce";
-import {search} from "../../store/actions.ts";
-import {searchQuerySelector} from "../../store/selectors.ts";
+import {search} from "../../store/actions";
+import {searchQuerySelector} from "../../store/selectors";
 
 import SearchQueryInput from "./query-input";
 import SearchResult from "./result";

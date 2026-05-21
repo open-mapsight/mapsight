@@ -1,16 +1,15 @@
-import "@redux-devtools/extension";
-
+import type {
+	ThunkAction as BaseThunkAction,
+	Action as ReduxAction,
+	Reducer as ReduxReducer,
+	Selector as ReduxSelector,
+	Store as ReduxStore,
+	ThunkDispatch,
+} from "@reduxjs/toolkit";
 import type {
 	Feature as GeoJSONFeature,
 	Geometry as GeoJSONGeometry,
 } from "geojson";
-import type {
-	Action as ReduxAction,
-	Reducer as ReduxReducer,
-	Store as ReduxStore,
-} from "redux";
-import type {ThunkAction as BaseThunkAction, ThunkDispatch} from "redux-thunk";
-import type {Selector as ReduxSelector} from "reselect";
 
 import type {
 	ObserveHandler as BaseObserveHandler,

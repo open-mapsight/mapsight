@@ -1,4 +1,4 @@
-import {AnyAction, Reducer} from "redux";
+import type {AnyAction, Reducer} from "@reduxjs/toolkit";
 
 const removeFromReducer: Reducer = <T extends Array<unknown>>(
 	state: T,

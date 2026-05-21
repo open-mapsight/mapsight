@@ -1,7 +1,7 @@
 import {Fragment, useCallback, useEffect, useMemo} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
-import {createSelector} from "reselect";
+import {createSelector} from "@reduxjs/toolkit";
 
 import {removeAllFeatures} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";

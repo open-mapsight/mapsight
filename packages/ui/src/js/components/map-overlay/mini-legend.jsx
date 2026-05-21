@@ -7,11 +7,11 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
-import {setMiniLegendLayer, setOverlayModalVisible} from "../../store/actions.ts";
+import {setMiniLegendLayer, setOverlayModalVisible} from "../../store/actions";
 import {
 	isOverlayModalVisibleSelector,
 	miniLegendLayerIdSelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 
 const layersSelector = (state) =>
 	visibleLayersWithMiniLegendsSelector(state[MAP]);

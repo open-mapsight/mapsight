@@ -37,7 +37,7 @@ export function useContextComponentWithFallback<
 	N extends keyof ComponentPropsWithFallback,
 >(
 	componentName: N,
-): (fallback: ReactNode, props: ComponentPropsWithFallback[N]) => ReactNode {
+): (fallback?: ReactNode, props?: ComponentPropsWithFallback[N]) => ReactNode {
 	const Comp = useContext(ComponentsContext)[componentName];
 	return useCallback(
 		(fallback, props) => {

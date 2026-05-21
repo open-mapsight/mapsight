@@ -8,20 +8,20 @@ import {
 	selectExclusively,
 } from "@mapsight/core/lib/feature-selections/actions";
 
-import {VIEW_MAP_ONLY} from "../../../config/constants/app.ts";
-import {FEATURE_SELECTIONS} from "../../../config/constants/controllers.ts";
-import {FEATURE_SELECTION_HIGHLIGHT} from "../../../config/feature/selections.ts";
-import {setLastListScrollPosition, setView} from "../../../store/actions.ts";
+import {VIEW_MAP_ONLY} from "../../../config/constants/app";
+import {FEATURE_SELECTIONS} from "../../../config/constants/controllers";
+import {FEATURE_SELECTION_HIGHLIGHT} from "../../../config/feature/selections";
+import {setLastListScrollPosition, setView} from "../../../store/actions";
 import {
 	listUiOptionSelectedOnlySelector,
 	listUiOptionSelectionBehaviorSelector,
 	listUiOptionSelectionSelectionSelector,
 	viewSelector,
-} from "../../../store/selectors.ts";
+} from "../../../store/selectors";
 import {
 	APP_EVENT_SCROLL_TO_MAP,
 	useAppChannelDispatchEvent,
-} from "../../helping/app-channel.tsx";
+} from "../../helping/app-channel";
 
 const getDocumentScroll = () =>
 	window.document.documentElement.scrollTop ||

@@ -1,4 +1,5 @@
-import {createSelector, createStructuredSelector} from "reselect";
+import type {Selector} from "@reduxjs/toolkit";
+import {createSelector} from "@reduxjs/toolkit";
 
 import type {
 	FeatureSelectionId,
@@ -13,7 +14,10 @@ import {
 	findFeatureInFeatureSourcesById,
 	mapFeaturesToFeatureSource,
 } from "@mapsight/core/lib/feature-sources/selectors";
-import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
+import type {
+	FeatureSourceState,
+	FeatureSourcesState,
+} from "@mapsight/core/lib/feature-sources/types";
 import {
 	createListFeatureSelector,
 	featureSourceIdSelector,
@@ -24,9 +28,7 @@ import type {MapState} from "@mapsight/core/lib/map/types";
 import type {UserGeolocationState} from "@mapsight/core/lib/user-geolocation/selectors";
 import type {State} from "@mapsight/core/types";
 
-import getPath from "@mapsight/lib-js/object/getPath";
-
-import type {MapsightUiPlacesData} from "../components/feature-list-sorting/feature-list-sorting.tsx";
+import type {MapsightUiPlacesData} from "../components/feature-list-sorting/feature-list-sorting";
 import type {View} from "../config/constants/app";
 import {
 	DETAILS_CONTENT_STATE_KEY,
@@ -48,19 +50,29 @@ import {
 	FEATURE_SELECTION_SELECT,
 } from "../config/feature/selections";
 import type {
+	FetchTextState,
 	FullUiState,
+	LayerSwitcherConfigState,
 	MainPanelContentType,
 	MainPanelContextOptions,
 	MapsightUiFeature,
+	RegionState,
 	UiState,
-} from "../types.ts";
+} from "../types";
 import {
 	FETCH_JSON_STATUS_ERROR,
 	FETCH_JSON_STATUS_LOADING,
 	FETCH_JSON_STATUS_SUCCESS,
 	FETCH_TEXT_STATUS_ERROR,
 	FETCH_TEXT_STATUS_SUCCESS,
-} from "./actions.ts";
+} from "./actions";
+
+type SEARCH_STATUS =
+	| typeof SEARCH_STATUS_INACTIVE
+	| typeof SEARCH_STATUS_EMPTY
+	| typeof SEARCH_STATUS_FOUND
+	| typeof SEARCH_STATUS_LOADING
+	| typeof SEARCH_STATUS_ERROR;
 
 export const SEARCH_STATUS_INACTIVE = "inactive";
 export const SEARCH_STATUS_EMPTY = "empty";
@@ -68,8 +80,19 @@ export const SEARCH_STATUS_FOUND = "found";
 export const SEARCH_STATUS_LOADING = "loading";
 export const SEARCH_STATUS_ERROR = "error";
 
-type RootStateSlice = {
+export type RootStateSlice = {
 	app: UiState;
+	[TAG_FILTER]: {
+		featureSourceId: string;
+		visibleTags: {
+			[tagGroup: string]: {
+				[tag: string]: boolean;
+			};
+		};
+		visibleTagGroups: {
+			[tagGroup: string]: boolean;
+		};
+	};
 };
 
 export const viewSelector = (state: RootStateSlice) => state.app.view!;
@@ -84,28 +107,25 @@ export const isViewMobile = (view: View | undefined) =>
 
 export const isViewMapOnly = (view: View) => view === VIEW_MAP_ONLY;
 
-export const isViewMobileOrMapOnlySelector = createSelector(
-	viewSelector,
-	isViewMobile,
-);
-export const isViewMapOnlySelector = createSelector(
-	viewSelector,
-	isViewMapOnly,
-);
-export const isFullscreenSelector = createSelector(
-	viewSelector,
-	isViewFullscreen,
-);
+export const isViewMobileOrMapOnlySelector: Selector<RootStateSlice, boolean> =
+	createSelector(viewSelector, isViewMobile);
+export const isViewMapOnlySelector: Selector<RootStateSlice, boolean> =
+	createSelector(viewSelector, isViewMapOnly);
+export const isFullscreenSelector: Selector<RootStateSlice, boolean> =
+	createSelector(viewSelector, isViewFullscreen);
 
-export const mapVisible = (state: RootStateSlice) => state.app.map?.show;
-export const listVisible = (state: RootStateSlice) => state.app.list?.show;
+export const mapVisible = (state: RootStateSlice) =>
+	state.app.map?.show ?? false;
+export const listVisible = (state: RootStateSlice) =>
+	state.app.list?.show ?? false;
 export const timeFilterVisible = (state: RootStateSlice) =>
-	state.app.timeFilter?.show;
+	state.app.timeFilter?.show ?? false;
 
-export const mapAndListVisible = createSelector(
-	[mapVisible, listVisible],
-	(map, list) => map && list,
-);
+export const mapAndListVisible: Selector<RootStateSlice, boolean> =
+	createSelector(
+		[mapVisible, listVisible],
+		(map, list) => map !== undefined && list !== undefined,
+	);
 
 export const viewBreakpointsSelector = (state: RootStateSlice) =>
 	state.app.viewBreakpoints;
@@ -126,45 +146,50 @@ export const listSortingSelector = (state: RootStateSlice) =>
 export const listQuerySelector = (state: RootStateSlice) => state.app.listQuery;
 export const listPageSelector = (state: RootStateSlice) =>
 	state.app.listPage || 0;
-export const listFilterOptionsSelector = createStructuredSelector({
-	query: listQuerySelector,
-	sorting: listSortingSelector,
-	places: createSelector(
-		[
-			(state: State) => state[USER_GEOLOCATION] as UserGeolocationState,
-			placesSelector,
-		],
-		(userGeolocation, places): MapsightUiPlacesData => {
-			return userGeolocation.longitude && userGeolocation.latitude
-				? {
-						...places,
-						geolocation: {
-							title: "",
-							x: userGeolocation.longitude,
-							y: userGeolocation.latitude,
-						},
-					}
-				: places
-					? places
-					: {};
-		},
-	),
+
+const placesWithGeoLocationSelector: Selector<
+	RootStateSlice,
+	MapsightUiPlacesData
+> = createSelector(
+	[
+		(state: State) => state[USER_GEOLOCATION] as UserGeolocationState,
+		placesSelector,
+	],
+	(userGeolocation, places) =>
+		userGeolocation.longitude && userGeolocation.latitude
+			? {
+					...places,
+					geolocation: {
+						title: "",
+						x: userGeolocation.longitude,
+						y: userGeolocation.latitude,
+					},
+				}
+			: places
+				? places
+				: {},
+);
+
+export const listFilterOptionsSelector = (state: RootStateSlice) => ({
+	query: listQuerySelector(state),
+	sorting: listSortingSelector(state),
+	places: placesWithGeoLocationSelector(state),
 });
 
 export const searchQuerySelector = (state: RootStateSlice) =>
 	state.app.searchQuery;
 export const searchResultSelector = (state: RootStateSlice) =>
-	getPath(state, ["app", "searchResult"]);
+	state.app.searchResult;
 export const getSearchResultStatus = (
 	searchResult?: FullUiState["searchResult"],
 ) => searchResult?.status;
-export const getSearchResultFeatures = (
-	searchResult?: FullUiState["searchResult"],
-) => getPath(searchResult, ["data", "features"], []) as MapsightUiFeature[];
-export const searchResultFeaturesSelector = createSelector(
-	searchResultSelector,
-	getSearchResultFeatures,
-);
+
+const getSearchResultFeatures = (searchResult?: FullUiState["searchResult"]) =>
+	(searchResult?.data?.features ?? []) as MapsightUiFeature[];
+export const searchResultFeaturesSelector: Selector<
+	RootStateSlice,
+	MapsightUiFeature[]
+> = createSelector(searchResultSelector, getSearchResultFeatures);
 
 export const haveSearchInMapSelector = (state: RootStateSlice) =>
 	state.app.searchInMap;
@@ -197,15 +222,15 @@ export const layerSwitcherShowInternalSelector = (state: RootStateSlice) =>
 export const layerSwitcherShowExternalSelector = (state: RootStateSlice) =>
 	state.app.layerSwitcher?.show?.external;
 export const layerSwitcherConfigInternalSelector = (state: RootStateSlice) =>
-	state.app.layerSwitcher?.internal;
+	state.app.layerSwitcher?.internal as LayerSwitcherConfigState | undefined;
 export const layerSwitcherConfigExternalSelector = (state: RootStateSlice) =>
-	state.app.layerSwitcher?.external;
+	state.app.layerSwitcher?.external as LayerSwitcherConfigState | undefined;
 
 export const pageTitleShowSelector = (state: RootStateSlice) =>
-	state.app.pageTitle?.show;
+	state.app.pageTitle?.show ?? false;
 
 export const tagSwitcherShowSelector = (state: RootStateSlice) =>
-	state.app.tagSwitcher?.show;
+	state.app.tagSwitcher?.show ?? false;
 export const tagSwitcherToggleableGroups = (state: RootStateSlice) =>
 	state.app.tagSwitcher?.toggleableGroups;
 export const tagSwitcherSortTags = (state: RootStateSlice) =>
@@ -234,76 +259,80 @@ export const viewToggleShowSelector = (state: RootStateSlice) =>
 export const viewToggleOptionsSelector = (state: RootStateSlice) =>
 	state.app.viewToggle;
 
-export const searchStatusSelector = createSelector(
-	searchResultSelector,
-	searchQuerySelector,
+export const searchStatusSelector: Selector<RootStateSlice, SEARCH_STATUS> =
 	createSelector(
-		getSearchResultStatus,
-		getSearchResultFeatures,
-		(_, query) => !!query,
-		(status, features: MapsightUiFeature[], hasQuery: boolean) => {
-			switch (status) {
-				case FETCH_JSON_STATUS_ERROR:
-					return SEARCH_STATUS_ERROR;
-				case FETCH_JSON_STATUS_LOADING:
-					return SEARCH_STATUS_LOADING;
-				case FETCH_JSON_STATUS_SUCCESS:
-					return hasQuery
-						? features.length
-							? SEARCH_STATUS_FOUND
-							: SEARCH_STATUS_EMPTY
-						: SEARCH_STATUS_INACTIVE;
-			}
-		},
-	),
-);
+		searchResultSelector,
+		searchQuerySelector,
+		createSelector(
+			getSearchResultStatus,
+			getSearchResultFeatures,
+			(_: unknown, query: string | undefined) => !!query,
+			(
+				status: FullUiState["searchResult"]["status"],
+				features: MapsightUiFeature[],
+				hasQuery: boolean,
+			) => {
+				switch (status) {
+					case FETCH_JSON_STATUS_ERROR:
+						return SEARCH_STATUS_ERROR;
+					case FETCH_JSON_STATUS_LOADING:
+						return SEARCH_STATUS_LOADING;
+					case FETCH_JSON_STATUS_SUCCESS:
+						return hasQuery
+							? features.length
+								? SEARCH_STATUS_FOUND
+								: SEARCH_STATUS_EMPTY
+							: SEARCH_STATUS_INACTIVE;
+				}
+			},
+		) as Selector<
+			FullUiState["searchResult"],
+			SEARCH_STATUS,
+			[string | undefined]
+		>,
+	);
 export const userPreferenceListVisibleSelector = (state: RootStateSlice) =>
 	state.app.userPreferenceListVisible;
 
 export const searchResultSelectionFeaturesSelector = (state: RootStateSlice) =>
 	state.app.searchResultSelectionFeatures;
-export const searchResultSelectionFeatureSourceSelector = createSelector(
+export const searchResultSelectionFeatureSourceSelector: Selector<
+	RootStateSlice,
+	FeatureSourceState
+> = createSelector(
 	searchResultSelectionFeaturesSelector,
 	mapFeaturesToFeatureSource<MapsightUiFeature>,
 );
 
 export const featureDetailsSelector = (state: RootStateSlice) =>
-	state.app[DETAILS_CONTENT_STATE_KEY];
+	state.app[DETAILS_CONTENT_STATE_KEY] as FetchTextState;
 export const featureDetailsUrlSelector = (state: RootStateSlice) =>
-	state.app[DETAILS_CONTENT_STATE_KEY]?.url;
+	(state.app[DETAILS_CONTENT_STATE_KEY] as FetchTextState)?.url;
 
-export const featureDetailsHasErrorSelector = createSelector(
-	featureDetailsSelector,
-	(detailsContent) =>
-		detailsContent && detailsContent.status === FETCH_TEXT_STATUS_ERROR,
-);
+export const featureDetailsHasErrorSelector: Selector<RootStateSlice, boolean> =
+	createSelector(featureDetailsSelector, (detailsContent) =>
+		detailsContent
+			? detailsContent.status === FETCH_TEXT_STATUS_ERROR
+			: false,
+	);
 
-export const featureDetailsHtmlSelector = createSelector(
-	featureDetailsSelector,
-	(detailsContent) =>
-		detailsContent?.status === FETCH_TEXT_STATUS_SUCCESS
-			? detailsContent.data
-			: null,
+export const featureDetailsHtmlSelector: Selector<
+	RootStateSlice,
+	string | null
+> = createSelector(featureDetailsSelector, (detailsContent) =>
+	detailsContent?.status === FETCH_TEXT_STATUS_SUCCESS
+		? detailsContent.data
+		: null,
 );
 
 export const createTagVisibleSelector =
-	(featureSourceId, tagGroup, tag) => (state) =>
-		!!getPath(state, [
-			TAG_FILTER,
-			"visibleTags",
-			featureSourceId,
-			tagGroup,
-			tag,
-		]);
+	(featureSourceId: string, tagGroup: string, tag: string) =>
+	(state: RootStateSlice) =>
+		!!state[TAG_FILTER]?.visibleTags?.[featureSourceId]?.[tagGroup]?.[tag];
 
 export const createTagGroupVisibleSelector =
-	(featureSourceId, tagGroup) => (state) =>
-		!!getPath(state, [
-			TAG_FILTER,
-			"visibleTagGroups",
-			featureSourceId,
-			tagGroup,
-		]);
+	(featureSourceId: string, tagGroup: string) => (state: RootStateSlice) =>
+		!!state[TAG_FILTER]?.visibleTagGroups?.[featureSourceId]?.[tagGroup];
 
 export const isOverlayModalVisibleSelector = (state: RootStateSlice) =>
 	state.app.isOverlayModalVisible === true;
@@ -311,14 +340,18 @@ export const isOverlayModalVisibleSelector = (state: RootStateSlice) =>
 export const selectedRegionIdSelector = (state: RootStateSlice) =>
 	state.app.selectedRegion || null;
 
-export const selectedRegionSelector = createSelector(
-	selectedRegionIdSelector,
-	regionsSelector,
-	(id, regions) => (id && regions && regions[id]) || null,
+export const selectedRegionSelector: Selector<
+	RootStateSlice,
+	RegionState | null
+> = createSelector(selectedRegionIdSelector, regionsSelector, (id, regions) =>
+	id !== null && regions !== undefined ? (regions[id] as RegionState) : null,
 );
 
-export const miniLegendLayerIdSelector = createSelector(
-	(state: State) =>
+export const miniLegendLayerIdSelector: Selector<
+	RootStateSlice,
+	string | null
+> = createSelector(
+	(state: RootStateSlice) =>
 		visibleLayersWithMiniLegendsSelector(state[MAP] as MapState),
 	(state: RootStateSlice) => state.app.miniLegendLayer,
 	(visibleLayers, layerId) => {
@@ -339,7 +372,10 @@ export const miniLegendLayerIdSelector = createSelector(
 	},
 );
 
-export const selectedFeatureSelector = createSelector(
+export const selectedFeatureSelector: Selector<
+	State,
+	MapsightUiFeature | null
+> = createSelector(
 	(state: State) =>
 		(state[FEATURE_SELECTIONS] as FeatureSelectionsState)[
 			FEATURE_SELECTION_SELECT
@@ -349,17 +385,26 @@ export const selectedFeatureSelector = createSelector(
 		const features = getFilteredFeatures(featureSelection);
 		const featureId = features && features[0];
 		return featureId
-			? findFeatureInFeatureSourcesById(featureSources, featureId)
+			? (findFeatureInFeatureSourcesById(
+					featureSources,
+					featureId,
+				) as MapsightUiFeature | null)
 			: null;
 	},
 );
+
+type MainPanelState = {
+	feature: MapsightUiFeature | null;
+	contentType: MainPanelContentType | null;
+	collapsed: boolean;
+};
 
 export const createMainPanelContentTypeSelector = (
 	options: Pick<
 		MainPanelContextOptions,
 		"showSelectionInfo" | "showList" | "collapsible"
 	>,
-) =>
+): Selector<State, MainPanelState> =>
 	createSelector(
 		selectedFeatureSelector,
 		userPreferenceListVisibleSelector,
@@ -381,15 +426,15 @@ export const createMainPanelContentTypeSelector = (
 					(contentType === "list" &&
 						collapsible &&
 						!userPreferenceListVisible),
-			};
+			} as const;
 		},
 	);
 
-export function createSelectionIndexSelector(
+export const createSelectionIndexSelector = (
 	featureIds: Array<string>,
 	targetSelection: FeatureSelectionId,
-) {
-	return createSelector(
+): Selector<State, number> =>
+	createSelector(
 		(state: State) =>
 			(state[FEATURE_SELECTIONS] as FeatureSelectionsState)[
 				targetSelection
@@ -399,51 +444,40 @@ export function createSelectionIndexSelector(
 				? featureIds.indexOf(selection[0]!)
 				: -1,
 	);
-}
 
 export const featureSelectionInfoUiOptionsSelector = (state: RootStateSlice) =>
 	state.app.featureSelectionInfo || {};
-export const featureSelectionInfoStickyHeaderSelector = createSelector(
-	featureSelectionInfoUiOptionsSelector,
-	({stickyHeader}) => stickyHeader,
-);
-export const featureSelectionInfoStuckHeaderHeightSelector = createSelector(
-	featureSelectionInfoUiOptionsSelector,
-	({stuckHeaderHeight}) => stuckHeaderHeight,
-);
 
-const selectSelectionSelector = createFeatureSelectionSelector(
+export const selectSelectionSelector = createFeatureSelectionSelector(
 	FEATURE_SELECTIONS,
 	FEATURE_SELECTION_SELECT,
 );
-const preselectSelectionSelector = createFeatureSelectionSelector(
+export const preselectSelectionSelector = createFeatureSelectionSelector(
 	FEATURE_SELECTIONS,
 	FEATURE_SELECTION_PRESELECT,
 );
-const highlightSelectionSelector = createFeatureSelectionSelector(
+export const highlightSelectionSelector = createFeatureSelectionSelector(
 	FEATURE_SELECTIONS,
 	FEATURE_SELECTION_HIGHLIGHT,
 );
 
-export const featureListContextSelector = createStructuredSelector({
-	tagSwitcherShow: tagSwitcherShowSelector,
-	layerSwitcherShowExternal: layerSwitcherShowExternalSelector,
-	scrollPosition: lastListScrollPositionSelector,
-	selectSelection: selectSelectionSelector,
-	preselectSelection: preselectSelectionSelector,
-	highlightSelection: highlightSelectionSelector,
-});
-
 export const createFeatureSourceSelector = (
 	listControllerName = FEATURE_LIST,
-) =>
-	createStructuredSelector({
-		featureSourceId: createSelector(
-			(state: State) => state[listControllerName] as ListState,
-			featureSourceIdSelector,
-		),
-		featureSource: createListFeatureSelector(
-			listControllerName,
-			FEATURE_SOURCES,
-		),
+): Selector<
+	RootStateSlice,
+	{featureSourceId?: string; featureSource?: FeatureSourceState}
+> => {
+	const listFeatureSourceIdSelector = createSelector(
+		(state: State) => state[listControllerName] as ListState,
+		featureSourceIdSelector,
+	);
+	const listFeatureSourceSelector = createListFeatureSelector(
+		listControllerName,
+		FEATURE_SOURCES,
+	);
+
+	return (state) => ({
+		featureSourceId: listFeatureSourceIdSelector(state),
+		featureSource: listFeatureSourceSelector(state),
 	});
+};

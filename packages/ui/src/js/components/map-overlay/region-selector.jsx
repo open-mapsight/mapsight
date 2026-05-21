@@ -1,8 +1,8 @@
 import  {memo, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {setSelectedRegionIdAndAnimateMap} from "../../store/actions.ts";
+import {setSelectedRegionIdAndAnimateMap} from "../../store/actions";
 
-import {regionsSelector, selectedRegionIdSelector} from "../../store/selectors.ts";
+import {regionsSelector, selectedRegionIdSelector} from "../../store/selectors";
 
 const RegionSelectorEntry = memo(
 	/**

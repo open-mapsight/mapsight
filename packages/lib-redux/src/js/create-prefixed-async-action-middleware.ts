@@ -1,3 +1,5 @@
+import type {Middleware, MiddlewareAPI} from "@reduxjs/toolkit";
+
 /**
  * Creates a redux middleware that allows dispatching of functions as actions, when the action
  * exposes the defined actionFlag. If a prefix is provided, the action function will receive a
@@ -11,8 +13,6 @@
  *
  * @returns {function(*=): function(*): Function} resulting middleware
  */
-import {Middleware, MiddlewareAPI} from "redux";
-
 export default function createPrefixedAsyncActionMiddleware<
 	Prefix extends string | undefined,
 >(
@@ -33,13 +33,16 @@ export default function createPrefixedAsyncActionMiddleware<
 
 		return function (next) {
 			return function prefixedAsyncActionMiddlewareWithAction(action) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (typeof action === "function" && action.meta?.[actionFlag]) {
+				if (
+					typeof action === "function" &&
+					"meta" in action &&
+					typeof action.meta === "object" &&
+					(action.meta as Record<string, unknown>)[actionFlag]
+				) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
 					return action(api.dispatch, getState, extraArgument);
 				}
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 				return next(action);
 			};
 		};

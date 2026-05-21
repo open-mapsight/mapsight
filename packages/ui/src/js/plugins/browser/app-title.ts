@@ -1,5 +1,5 @@
 import {setAppTitle} from "../../store/actions";
-import type {PluginInstance} from "../../types.ts";
+import type {PluginInstance} from "../../types";
 
 const defaultRendererPropName = "title";
 

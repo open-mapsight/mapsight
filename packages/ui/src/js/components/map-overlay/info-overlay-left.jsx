@@ -3,12 +3,12 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {translate} from "../../helpers/i18n";
 
-import {setOverlayModalVisible} from "../../store/actions.ts";
+import {setOverlayModalVisible} from "../../store/actions";
 
 import {
 	isOverlayModalVisibleSelector,
 	isViewMobileOrMapOnlySelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 
 import Logo from "./logo";
 

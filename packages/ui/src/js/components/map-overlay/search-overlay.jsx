@@ -5,7 +5,7 @@ import {translate} from "../../helpers/i18n";
 import {
 	haveSearchInMapSelector,
 	isViewMobileOrMapOnlySelector,
-} from "../../store/selectors.ts";
+} from "../../store/selectors";
 import Modal from "../modal";
 
 import Search from "../search";

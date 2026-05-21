@@ -1,6 +1,6 @@
+import type {Store} from "@reduxjs/toolkit";
 import get from "lodash/get";
 import set from "lodash/set";
-import {Store} from "redux";
 
 import {observeState} from "./observe-state";
 

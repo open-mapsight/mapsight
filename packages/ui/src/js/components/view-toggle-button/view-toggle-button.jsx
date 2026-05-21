@@ -8,7 +8,7 @@ import {
 	VIEW_MOBILE,
 } from "../../config/constants/app";
 import {translate} from "../../helpers/i18n";
-import {viewSelector} from "../../store/selectors.ts";
+import {viewSelector} from "../../store/selectors";
 
 function getOtherView(view) {
 	switch (view) {
