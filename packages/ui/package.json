@@ -54,6 +54,10 @@
 		"./config/*": {
 			"types": "./dist/config/*.d.ts",
 			"default": "./dist/config/*.js"
+		},
+		"./embed/*": {
+			"types": "./dist/embed/*.d.ts",
+			"default": "./dist/embed/*.js"
 		}
 	},
 	"license": "UNLICENSED",
