@@ -23,7 +23,7 @@
 		"@types/react-dom": "catalog:",
 		"babel-plugin-react-compiler": "1.0.0",
 		"eslint-config-next": "16.2.6",
-		"postcss": "^8.5.14",
+		"postcss": "^8.5.15",
 		"sass": "^1.99.0",
 		"tailwindcss": "catalog:"
 	},
