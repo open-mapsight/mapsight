@@ -160,7 +160,7 @@ function getSelectionId(
 	layerId: string,
 	interactionName: FeatureInteractionName,
 	state: MapState,
-): string {
+): string | undefined {
 	return makeLayerSelectionSelector(layerId, interactionName)(state);
 }
 

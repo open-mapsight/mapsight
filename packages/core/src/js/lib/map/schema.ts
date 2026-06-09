@@ -102,7 +102,11 @@ export type VectorFeatureSourceState = z.infer<
 	options: VectorFeatureSourceOptions;
 };
 export type LayerSourceState = z.infer<typeof layerSourceStateSchema>;
-export type LayerOptions = LooseOptions<typeof layerOptionsSchema>;
+export type LayerOptions = {
+	visible?: boolean;
+	selections?: InteractionsSelections;
+	source?: LayerSourceState;
+} & Omit<Options, "visible" | "selections" | "source">;
 
 type WithLayerOptions<T extends {options?: unknown}> = Omit<T, "options"> & {
 	options?: LayerOptions;
