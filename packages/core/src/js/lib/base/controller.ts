@@ -109,11 +109,13 @@ export class BaseController<TState extends State = State>
 	 *
 	 * @param selector observe selector
 	 * @param handler observe handler
+	 * @param compare optional custom equality function
 	 * @returns unsubscribe function
 	 */
 	getAndObserveUncontrolled<TValue = unknown>(
 		selector: Selector<TValue>,
 		handler: ObserveHandler<TValue>,
+		compare?: (previousValue: TValue, newValue: TValue) => boolean,
 	) {
 		const store = this.getStore();
 		if (!store) {
@@ -127,6 +129,7 @@ export class BaseController<TState extends State = State>
 		const unsubscribe = store.observeUncontrolled(
 			composedSelector,
 			boundHandler as ObserveHandler,
+			compare ? (a, b) => compare(a as TValue, b as TValue) : undefined,
 		);
 		boundHandler(composedSelector(store.getState()));
 		return unsubscribe;
