@@ -11,6 +11,7 @@ node_modules/
 /apps/*/tmp/
 /packages/*/tmp/
 .turbo/
+tsconfig.node.tsbuildinfo
 
 # built files that get distributed
 /apps/*/dist/
