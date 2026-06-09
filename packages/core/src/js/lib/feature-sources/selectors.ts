@@ -1,6 +1,8 @@
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
 
+import shallowEqualRecords from "@mapsight/lib-js/object/shallowEqualRecords";
+
 import type {
 	FeatureSourceData,
 	FeatureSourceState,
@@ -119,6 +121,8 @@ type FilteredFeatureSourceSelectorCache = {
 	state?: FeatureSourceState;
 };
 
+const EMPTY_FILTERS: Record<string, string> = {};
+
 export function createFilteredFeatureSourceSelector(
 	featureSourcesControllerName: string,
 	featureSourceId: string,
@@ -128,7 +132,8 @@ export function createFilteredFeatureSourceSelector(
 		featureSourcesControllerName,
 		featureSourceId,
 	);
-	let filtersSelector: Selector<State, Record<string, string>> = () => ({});
+	let filtersSelector: Selector<State, Record<string, string>> = () =>
+		EMPTY_FILTERS;
 
 	// internal state holding
 	const cache: FilteredFeatureSourceSelectorCache = {};
@@ -175,7 +180,7 @@ export function createFilteredFeatureSourceSelector(
 		}
 
 		const filters = filtersSelector(state);
-		if (filters !== cache.filters) {
+		if (!shallowEqualRecords(filters, cache.filters)) {
 			cache.filters = filters;
 			hasChanged = true;
 		}
