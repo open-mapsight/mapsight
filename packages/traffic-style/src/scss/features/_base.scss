@@ -10,15 +10,15 @@
 	@include icon-base.iconBase;
 	@include auto-icon.autoIcon("default");
 
-	[|js="env.zoom >= 1 && env.zoom <= 10"]
+	[|js="env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL}"]
 		:not([state="highlight"])
 		:not([state="select"]) {
 		@include auto-icon.autoIcon("xsmall");
 	}
 
-	[|js="env.zoom >= 11 && env.zoom <= 12"]
-		:not([state="highlight"])
-		:not([state="select"]) {
+	[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL} && env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT}"]
+	:not([state="highlight"])
+	:not([state="select"]) {
 		@include auto-icon.autoIcon("small");
 	}
 
