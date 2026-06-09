@@ -22,20 +22,18 @@ import type {Action} from "@/types";
 import {setMapCursor} from "../actions";
 import {makeLayerSelectionSelector} from "../selectors";
 import WithMap from "./WithMap";
+import {
+	type FeatureInteractionName,
+	FeatureInteractionNames,
+} from "./featureInteractionNames";
 import {getIdForLayer} from "./tagLayer";
+
+export {FeatureInteractionNames, type FeatureInteractionName};
 
 type MapEventEmitter = Pick<
 	MapController,
 	"getMap" | "getStore" | "getState" | "dispatch" | "getName"
 >;
-
-export const FeatureInteractionNames = [
-	"mousedown",
-	"mouseover",
-	"touch",
-] as const;
-
-export type FeatureInteractionName = (typeof FeatureInteractionNames)[number];
 
 export type FeatureInteractionOptions = {
 	cursor?: string;

@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 import {type Options, optionsSchema} from "@/lib/helpers/schema";
-import {FeatureInteractionNames} from "@/lib/map/lib/WithFeatureInteractions";
+import {FeatureInteractionNames} from "@/lib/map/lib/featureInteractionNames";
 
 export const interactionsSelectionsSchema = z.partialRecord(
 	z.enum(FeatureInteractionNames),
