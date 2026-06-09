@@ -93,7 +93,7 @@
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",
-		"watch:build:modules": "tsc --watch",
+		"watch:build:modules": "tsc --watch --preserveWatchOutput",
 		"watch:build:paths": "tsc-alias --watch"
 	}
 }

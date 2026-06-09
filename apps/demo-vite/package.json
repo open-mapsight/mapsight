@@ -3,6 +3,7 @@
 	"description": "Mapsight Demo Vite",
 	"version": "0.0.6",
 	"private": true,
+	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
 		"@mapsight/lib-js": "workspace:^",
@@ -28,7 +29,7 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"terser": "^5.47.1",
-		"vite": "^8.0.13"
+		"vite": "^8.0.14"
 	},
 	"license": "UNLICENSED",
 	"repository": {
@@ -45,8 +46,10 @@
 		"copy:ui": "mkdirp public/img && cp -R node_modules/@mapsight/ui/dist/img/* public/img/",
 		"dev": "npm-run-all --parallel build:mapsightStyle copy --sequential dev:app",
 		"dev:app": "vite",
+		"dev:linked": "npm-run-all --parallel dev:packages dev",
+		"dev:packages": "turbo watch watch --filter=@mapsight/core --filter=@mapsight/ui --filter=@mapsight/lib-js --filter=@mapsight/lib-ol --filter=@mapsight/lib-redux",
 		"lint": "eslint",
 		"start": "vite preview",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
 	}
 }

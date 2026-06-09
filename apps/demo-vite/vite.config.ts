@@ -3,9 +3,26 @@ import {join} from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import {defineConfig} from "vite";
 
-export default defineConfig({
+import {
+	createWorkspaceDevAliases,
+	workspacePackages,
+} from "../../configs/vite-workspace-dev.mts";
+
+export default defineConfig(({command}) => ({
 	root: "src",
 	publicDir: "../public",
+	resolve: {
+		alias: [
+			...(command === "serve" ? createWorkspaceDevAliases() : []),
+			{
+				find: /~(.+)/,
+				replacement: join(process.cwd(), "node_modules/$1"),
+			},
+		],
+	},
+	optimizeDeps: {
+		exclude: [...workspacePackages],
+	},
 	build: {
 		outDir: "../dist",
 		emptyOutDir: true,
@@ -38,13 +55,10 @@ export default defineConfig({
 			},
 		},
 	},
-	resolve: {
-		alias: [
-			{
-				find: /~(.+)/,
-				replacement: join(process.cwd(), "node_modules/$1"),
-			},
-		],
+	server: {
+		watch: {
+			ignored: ["**/node_modules/**", "!**/node_modules/@mapsight/**"],
+		},
 	},
 	plugins: [tailwindcss()],
 	css: {
@@ -56,4 +70,4 @@ export default defineConfig({
 			},
 		},
 	},
-});
+}));

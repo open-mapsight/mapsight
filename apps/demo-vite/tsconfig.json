@@ -2,6 +2,7 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../configs/tsconfig-base-app.json",
 	"include": ["src/**/*"],
+	"references": [{"path": "./tsconfig.node.json"}],
 	"compilerOptions": {
 		"types": ["@types/node"]
 	}
