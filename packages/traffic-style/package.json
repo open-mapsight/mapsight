@@ -52,7 +52,7 @@
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:src copy:misc",
-		"copy:misc": "rimraf dist/*.scss; cp package.json README.md *.scss dist/",
+		"copy:misc": "cp package.json README.md base.scss full.scss dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
 		"lint": "eslint scripts",
 		"typecheck": "tsc --noEmit",
