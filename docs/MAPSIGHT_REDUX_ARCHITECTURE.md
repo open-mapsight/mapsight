@@ -209,7 +209,7 @@ This lets one action type work across all slices without slice-specific action c
 | Async      | `MAPSIGHT_ASYNC_ACTION`      | Queue dispatch to avoid dispatch-during-dispatch. Often wraps thunks that dispatch controlled actions. |
 | Quiet      | `MAPSIGHT_QUIET_ACTION`      | Hide from Redux DevTools (high-frequency updates like zoom).                                           |
 
-Helpers: `controlled(action)`, `async(action)`, `quiet(action)` — recursively applied inside batched actions.
+Helpers: `controlled(action)`, `async(action)`, `quiet(action)` — recursively applied inside batched actions. See [Batched actions caveat](#batched-actions-caveat-redux-batched-actions) below for why that recursion matters.
 
 ---
 
@@ -260,6 +260,54 @@ this.getAndObserveUncontrolled(
 	},
 );
 ```
+
+### Batched actions caveat (`redux-batched-actions`)
+
+Mapsight batches related dispatches with `batchActions()` from `redux-batched-actions`. The
+`batchDispatchMiddleware` does **not** treat a batch as one atomic dispatch — it unwraps the
+wrapper and calls `store.dispatch` once per child action.
+
+`enableControlledDispatchAndObserve` mirrors that: it sets a `wasControlled` flag on **each**
+`dispatch` call, based only on whether **that** action carries
+`meta.MAPSIGHT_CONTROLLED_ACTION`. After every dispatch (including each child inside a batch),
+the store subscription runs and `observeUncontrolled` listeners fire when `wasControlled` is
+false.
+
+**Implication:** marking only the outer batch wrapper as controlled is not enough. If children
+are dispatched without the flag, observers treat them as uncontrolled and may sync state back
+to OpenLayers — reintroducing the feedback loop the controlled flag exists to prevent.
+
+**What Mapsight does:** `controlled()` (and `quiet()`) recurse into batched payloads and apply
+the flag to every child:
+
+```typescript
+// packages/core/src/js/lib/base/actions.ts
+export function controlled(action: Action) {
+	action.meta = action.meta || {};
+	action.meta[CONTROLLED_ACTION_FLAG] = true;
+
+	if (isBatchedAction(action)) {
+		action.payload = action.payload.map((batchedAction) =>
+			controlled(batchedAction),
+		);
+	}
+
+	return action;
+}
+```
+
+So `dispatch(controlled(batchActions([setA, setB])))` results in two child dispatches, each
+individually flagged — observers stay quiet for the whole batch.
+
+**Contributor checklist:**
+
+| Do                                                                         | Don't                                                                 |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Use `controlled(batchActions([…]))` or `controlled()` per child            | Hand-roll `{ meta: { batch: true }, payload: […] }` without recursing |
+| Copy the recurse pattern when adding new meta-flag helpers                 | Assume the outer batch wrapper propagates flags to children           |
+| Use `flattenActions()` when inspecting batch contents (DevTools, watchers) | Rely on the wrapper action alone for controlled / quiet semantics     |
+
+See also: `packages/lib-redux/src/js/flatten-actions.ts` (deep flatten for nested batches).
 
 ---
 
