@@ -24,7 +24,8 @@
 		"react-paginate": "^8.3.0",
 		"react-redux": "catalog:",
 		"redux-batched-actions": "catalog:",
-		"redux-thunk": "catalog:"
+		"redux-thunk": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@types/lodash": "catalog:",
@@ -34,7 +35,8 @@
 		"chokidar": "^5.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"svgo": "^4.0.1"
+		"svgo": "^4.0.1",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		"./*": {
@@ -76,6 +78,7 @@
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
+		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:*",

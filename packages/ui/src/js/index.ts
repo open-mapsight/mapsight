@@ -3,8 +3,8 @@ import merge from "lodash/merge";
 import {thunk} from "redux-thunk";
 
 import {createMapsightStore} from "@mapsight/core";
+import {isDevelopment} from "@mapsight/core/lib/helpers";
 import {layerIdsExternalSwitcherSelector} from "@mapsight/core/lib/map/selectors";
-import {type State} from "@mapsight/core/types";
 
 import * as nonNull from "@mapsight/lib-js/nonNullable";
 import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
@@ -12,6 +12,8 @@ import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 import {siteConfig} from "./config";
 import {VIEW_MOBILE} from "./config/constants/app";
 import * as c from "./config/constants/controllers";
+import type {MapsightConfig} from "./config/schema";
+import {validateMapsightConfig} from "./config/schema/validate";
 import {createDefaultControllers} from "./controllers/defaults";
 import uiReducers from "./store/reducers";
 import type {
@@ -144,15 +146,24 @@ const defaultCreateOptions: CreateOptions = {
 export function create(
 	container: HTMLElement | null,
 	styleFunction: MapsightStyleFunction,
-	baseMapsightConfig: Partial<State> = {},
+	baseMapsightConfig: Partial<MapsightConfig> = {},
 	createOptions: CreateOptions = {},
 ): MapsightUiContext {
+	const mergedCreateOptions = merge({}, defaultCreateOptions, createOptions);
+	const shouldValidate =
+		mergedCreateOptions.validateConfig ?? isDevelopment();
+	const validatedBaseMapsightConfig = shouldValidate
+		? validateMapsightConfig(baseMapsightConfig, {
+				context: "create()",
+			})
+		: baseMapsightConfig;
+
 	const context: MapsightUiContext = {
 		hasRendered: false,
 		container: container,
 		styleFunction: styleFunction,
-		baseMapsightConfig: baseMapsightConfig,
-		createOptions: merge({}, defaultCreateOptions, createOptions),
+		baseMapsightConfig: validatedBaseMapsightConfig,
+		createOptions: mergedCreateOptions,
 		appChannelListeners: [],
 	};
 

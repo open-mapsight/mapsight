@@ -11,7 +11,8 @@
 		"eventemitter3": "^5.0.4",
 		"lodash": "catalog:",
 		"minimatch": "^10.2.5",
-		"redux-batched-actions": "catalog:"
+		"redux-batched-actions": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@redux-devtools/extension": "^3.3.0",
@@ -23,7 +24,8 @@
 		"ol": "catalog:",
 		"proj4": "catalog:",
 		"tsc-alias": "^1.8.17",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		".": {
@@ -37,6 +39,10 @@
 		"./lib/*": {
 			"types": "./dist/lib/*.d.ts",
 			"import": "./dist/lib/*.js"
+		},
+		"./lib/*/schema": {
+			"types": "./dist/lib/*/schema.d.ts",
+			"import": "./dist/lib/*/schema.js"
 		},
 		"./lib/helpers": {
 			"types": "./dist/lib/helpers/index.d.ts",
@@ -57,6 +63,10 @@
 		"./env/ssr-simulated-browser": {
 			"types": "./dist/env/ssr-simulated-browser.d.ts",
 			"import": "./dist/env/ssr-simulated-browser.js"
+		},
+		"./schema": {
+			"types": "./dist/schema/index.d.ts",
+			"import": "./dist/schema/index.js"
 		}
 	},
 	"license": "UNLICENSED",
@@ -90,6 +100,7 @@
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
+		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",

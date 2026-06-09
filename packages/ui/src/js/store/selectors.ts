@@ -49,6 +49,7 @@ import {
 	FEATURE_SELECTION_PRESELECT,
 	FEATURE_SELECTION_SELECT,
 } from "../config/feature/selections";
+import type {TagFilterState} from "../filters/tag-filter";
 import type {
 	FetchTextState,
 	FullUiState,
@@ -82,17 +83,7 @@ export const SEARCH_STATUS_ERROR = "error";
 
 export type RootStateSlice = {
 	app: UiState;
-	[TAG_FILTER]: {
-		featureSourceId: string;
-		visibleTags: {
-			[tagGroup: string]: {
-				[tag: string]: boolean;
-			};
-		};
-		visibleTagGroups: {
-			[tagGroup: string]: boolean;
-		};
-	};
+	[TAG_FILTER]: TagFilterState;
 };
 
 export const viewSelector = (state: RootStateSlice) => state.app.view!;

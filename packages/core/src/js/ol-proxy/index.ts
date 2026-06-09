@@ -396,7 +396,7 @@ export function updateProxyObject<
 	// TODO: remove "old" prefix, there's only one object, no "old" nor "new"
 	oldObject?: TObject;
 	oldDefinition?: Description;
-	newDefinition: Description;
+	newDefinition?: Description;
 	remover?: (object: TObject, parentObject?: TParentObject) => void;
 	adder?: (object: TObject, parentObject?: TParentObject) => void;
 	parentObject?: TParentObject;

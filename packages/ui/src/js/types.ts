@@ -18,6 +18,7 @@ import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 import type {MapsightUiPlacesData} from "./components/feature-list-sorting/feature-list-sorting";
 import type {View} from "./config/constants/app";
 import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers";
+import type {MapsightConfig} from "./config/schema";
 import type {MapsightUiComponents} from "./helpers/components";
 import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions";
 import type {RootStateSlice} from "./store/selectors";
@@ -43,7 +44,7 @@ export type MapsightUiContext = {
 	/** the mapsight core vector style function (see @mapsight/core) (available after init) */
 	styleFunction: MapsightStyleFunction;
 	/** base mapsight config (available after init) TODO: document further */
-	baseMapsightConfig: Partial<State>;
+	baseMapsightConfig: Partial<MapsightConfig>;
 	/** options on how to create the mapsight app (available after init) */
 	createOptions: CreateOptions;
 	/** array of app channel listener definitions (available after init) */
@@ -306,11 +307,16 @@ export type MapsightCoreAction = AnyAction &
 	ThunkAction<any, any, any, any> &
 	BatchAction;
 
+/**
+ * @deprecated Use `State` from `@mapsight/core/types` or `MapsightConfig` from
+ * `@mapsight/ui/schema` for config ingress. Kept for legacy app reducer typing.
+ */
 export type MapsightCoreState =
 	| string
 	| number
 	| Array<MapsightCoreState | null | undefined>
 	| object;
+/** @deprecated Prefer `Reducer<T, MapsightCoreAction>` with a concrete slice type. */
 export type MapsightCoreReducer<
 	T extends MapsightCoreState = MapsightCoreState,
 	U extends MapsightCoreAction = MapsightCoreAction,
@@ -319,6 +325,9 @@ export type MapsightCoreReducer<
 export type MapsightUiAppReducer = MapsightCoreReducer<UiState>;
 
 export type CreateOptions = {
+	/** Validate Mapsight config ingress in development (default: true in dev). */
+	validateConfig?: boolean;
+
 	// store
 	storeEnhancer?: StoreEnhancer;
 	reducers?: {

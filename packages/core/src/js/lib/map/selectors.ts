@@ -185,11 +185,15 @@ export const reduceToLayersWithMiniLegends = (
 	return Object.fromEntries(entries);
 };
 
-export const layersWithLegendsSelector: Selector<MapState, LayerState> =
-	createSelector(layersSelector, reduceToLayersWithLegends);
+export const layersWithLegendsSelector: Selector<
+	MapState,
+	Record<string, LayerState>
+> = createSelector(layersSelector, reduceToLayersWithLegends);
 
-export const layersWithMiniLegendsSelector: Selector<MapState, LayerState> =
-	createSelector(layersSelector, reduceToLayersWithMiniLegends);
+export const layersWithMiniLegendsSelector: Selector<
+	MapState,
+	Record<string, LayerState>
+> = createSelector(layersSelector, reduceToLayersWithMiniLegends);
 
 export const visibleLayersWithLegendsSelector: Selector<
 	MapState,

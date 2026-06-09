@@ -1,3 +1,5 @@
+export {isDevelopment} from "./isDevelopment";
+
 export const hasGeolocationSupport = (() => {
 	// eslint-disable-next-line n/no-unsupported-features/node-builtins
 	if (typeof window === "undefined" || !("geolocation" in navigator)) {

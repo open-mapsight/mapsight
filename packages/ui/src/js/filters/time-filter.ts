@@ -1,17 +1,20 @@
+import {z} from "zod";
+
 import type {FilterFunction} from "@mapsight/core/lib/filter/types";
 
 import {unreachable} from "@mapsight/lib-js/unreachable";
 
-type TimeFilterState = {
-	options?: {
-		/** from datetime in ISO 8601 (Y-m-d\TH:i:sP) */
-		fromDate?: string;
-		/** to datetime in ISO 8601 (Y-m-d\TH:i:sP) */
-		toDate?: string;
-		/** if set to true the filter will filter even if neither from nor to date are set. */
-		allowEmpty?: boolean;
-	};
-};
+export const timeFilterConfigSchema = z.looseObject({
+	options: z
+		.looseObject({
+			fromDate: z.string().optional(),
+			toDate: z.string().optional(),
+			allowEmpty: z.boolean().optional(),
+		})
+		.optional(),
+});
+
+export type TimeFilterState = z.infer<typeof timeFilterConfigSchema>;
 
 // TODO: document/collect magic property names
 export interface FeatureWithWhen {
