@@ -15,16 +15,20 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@playwright/test": "catalog:",
 		"@redux-devtools/extension": "^3.3.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/jsdom": "catalog:",
 		"@types/lodash": "catalog:",
 		"@types/node": "catalog:",
+		"canvas": "catalog:",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
+		"playwright": "catalog:",
 		"proj4": "catalog:",
 		"tsc-alias": "^1.8.17",
 		"typescript": "catalog:",
+		"vite": "^8.0.14",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -112,6 +116,8 @@
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
 		"test": "vitest run",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",

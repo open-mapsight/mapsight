@@ -4,12 +4,16 @@ packages:
   - "apps/*"
 allowBuilds:
   '@parcel/watcher': true
+  canvas: true
+  esbuild: true
   fsevents: true
   unrs-resolver: true
   sharp: true
 catalog:
   "@reduxjs/toolkit": "^2.11.2"
+  "@playwright/test": "^1.60.0"
   "@types/jsdom": "^28.0.3"
+  "canvas": "^3.1.0"
   "@types/lodash": "^4.17.24"
   "@types/node": "^24.12.4"
   "@types/react": "^19.2.15"

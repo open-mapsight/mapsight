@@ -13,5 +13,9 @@ export default defineConfig({
 	},
 	test: {
 		include: ["src/js/**/*.test.ts"],
+		setupFiles: [
+			"src/js/test/setup-dom.ts",
+			"src/js/test/inject-default-ol-proxy.ts",
+		],
 	},
 });
