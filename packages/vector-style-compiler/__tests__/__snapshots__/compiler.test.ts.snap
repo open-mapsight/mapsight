@@ -76,27 +76,27 @@ style: __vectorStyle_style,},
 
 		
 		{
-		const $a = /* @__PURE__ */props['test'];
-		const $b = /* @__PURE__ */get(props, ['path', 'to', 'test']);
-		const $c = /* @__PURE__ */props['state'];
-		const $d = /* @__PURE__ */$c == 'someState';
-		const $e = /* @__PURE__ */$c == 'anotherState';
-		const $f = /* @__PURE__ */props['attr'];
-		const $g = /* @__PURE__ */$f == 'test';
-		const $h = /* @__PURE__ */props['hasAttrTest'];
-		const $i = /* @__PURE__ */$h;
-		const $j = /* @__PURE__ */$f == 123;
-		const $k = /* @__PURE__ */$f == 456;
-		const $l = /* @__PURE__ */get(props, ['parking', 'capacity']);
-		const $m = /* @__PURE__ */$l == 'tests nested properites';
-		const $n = /* @__PURE__ */env['zoom'];
-		const $o = /* @__PURE__ */$n == 2;
-		const $p = /* @__PURE__ */geometryType == 'Point';
-		const $q = /* @__PURE__ */geometryType == 'LineString';
-		const $r = /* @__PURE__ */geometryType == 'Polygon';
-		const $s = /* @__PURE__ */23 > 42;
-		const $t = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
-		const $u = /* @__PURE__ */$f;
+		const $a = props['test'];
+		const $b = get(props, ['path', 'to', 'test']);
+		const $c = props['state'];
+		const $d = $c/* props['state'] */ == 'someState';
+		const $e = $c/* props['state'] */ == 'anotherState';
+		const $f = props['attr'];
+		const $g = $f/* props['attr'] */ == 'test';
+		const $h = props['hasAttrTest'];
+		const $i = $h/* props['hasAttrTest'] */;
+		const $j = $f/* props['attr'] */ == 123;
+		const $k = $f/* props['attr'] */ == 456;
+		const $l = get(props, ['parking', 'capacity']);
+		const $m = $l/* get(props, ['parking', 'capacity']) */ == 'tests nested properites';
+		const $n = env['zoom'];
+		const $o = $n/* env['zoom'] */ == 2;
+		const $p = geometryType == 'Point';
+		const $q = geometryType == 'LineString';
+		const $r = geometryType == 'Polygon';
+		const $s = 23 > 42;
+		const $t = env.zoom >= 1 && env.zoom <= 10;
+		const $u = $f/* props['attr'] */;
 		
 		h(1);
 		h('@' + createHash($a));
@@ -179,8 +179,8 @@ style: __vectorStyle_style,},
 				break;
 			case 'features':
 				{
-				const $a = /* @__PURE__ */props['attr'];
-				const $b = /* @__PURE__ */$a == 'test';
+				const $a = props['attr'];
+				const $b = $a/* props['attr'] */ == 'test';
 				
 				h(26);
 				if ($b) {
@@ -198,25 +198,25 @@ style: __vectorStyle_style,},
 
 		
 		{
-		const $a = /* @__PURE__ */props['state'];
-		const $b = /* @__PURE__ */$a == 'someState';
-		const $c = /* @__PURE__ */$a == 'anotherState';
-		const $d = /* @__PURE__ */props['attr'];
-		const $e = /* @__PURE__ */$d == 'test';
-		const $f = /* @__PURE__ */props['hasAttrTest'];
-		const $g = /* @__PURE__ */$f;
-		const $h = /* @__PURE__ */$d == 123;
-		const $i = /* @__PURE__ */$d == 456;
-		const $j = /* @__PURE__ */get(props, ['parking', 'capacity']);
-		const $k = /* @__PURE__ */$j == 'tests nested properites';
-		const $l = /* @__PURE__ */env['zoom'];
-		const $m = /* @__PURE__ */$l == 2;
-		const $n = /* @__PURE__ */geometryType == 'Point';
-		const $o = /* @__PURE__ */geometryType == 'LineString';
-		const $p = /* @__PURE__ */geometryType == 'Polygon';
-		const $q = /* @__PURE__ */23 > 42;
-		const $r = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
-		const $s = /* @__PURE__ */$d;
+		const $a = props['state'];
+		const $b = $a/* props['state'] */ == 'someState';
+		const $c = $a/* props['state'] */ == 'anotherState';
+		const $d = props['attr'];
+		const $e = $d/* props['attr'] */ == 'test';
+		const $f = props['hasAttrTest'];
+		const $g = $f/* props['hasAttrTest'] */;
+		const $h = $d/* props['attr'] */ == 123;
+		const $i = $d/* props['attr'] */ == 456;
+		const $j = get(props, ['parking', 'capacity']);
+		const $k = $j/* get(props, ['parking', 'capacity']) */ == 'tests nested properites';
+		const $l = env['zoom'];
+		const $m = $l/* env['zoom'] */ == 2;
+		const $n = geometryType == 'Point';
+		const $o = geometryType == 'LineString';
+		const $p = geometryType == 'Polygon';
+		const $q = 23 > 42;
+		const $r = env.zoom >= 1 && env.zoom <= 10;
+		const $s = $d/* props['attr'] */;
 		
 		const _default = (
 		d.default ??= {});
@@ -384,8 +384,8 @@ style: __vectorStyle_style,},
 				break;
 			case 'features':
 				{
-				const $a = /* @__PURE__ */props['attr'];
-				const $b = /* @__PURE__ */$a == 'test';
+				const $a = props['attr'];
+				const $b = $a/* props['attr'] */ == 'test';
 				
 				const _default = (
 				d.default ??= {});
@@ -414,25 +414,25 @@ export default createCachedStyleFunction(styleOptions);
 exports[`parses and transforms full css to declaration program correctly 1`] = `
 "
 {
-const $a = /* @__PURE__ */props['state'];
-const $b = /* @__PURE__ */$a == 'someState';
-const $c = /* @__PURE__ */$a == 'anotherState';
-const $d = /* @__PURE__ */props['attr'];
-const $e = /* @__PURE__ */$d == 'test';
-const $f = /* @__PURE__ */props['hasAttrTest'];
-const $g = /* @__PURE__ */$f;
-const $h = /* @__PURE__ */$d == 123;
-const $i = /* @__PURE__ */$d == 456;
-const $j = /* @__PURE__ */get(props, ['parking', 'capacity']);
-const $k = /* @__PURE__ */$j == 'tests nested properites';
-const $l = /* @__PURE__ */env['zoom'];
-const $m = /* @__PURE__ */$l == 2;
-const $n = /* @__PURE__ */geometryType == 'Point';
-const $o = /* @__PURE__ */geometryType == 'LineString';
-const $p = /* @__PURE__ */geometryType == 'Polygon';
-const $q = /* @__PURE__ */23 > 42;
-const $r = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
-const $s = /* @__PURE__ */$d;
+const $a = props['state'];
+const $b = $a/* props['state'] */ == 'someState';
+const $c = $a/* props['state'] */ == 'anotherState';
+const $d = props['attr'];
+const $e = $d/* props['attr'] */ == 'test';
+const $f = props['hasAttrTest'];
+const $g = $f/* props['hasAttrTest'] */;
+const $h = $d/* props['attr'] */ == 123;
+const $i = $d/* props['attr'] */ == 456;
+const $j = get(props, ['parking', 'capacity']);
+const $k = $j/* get(props, ['parking', 'capacity']) */ == 'tests nested properites';
+const $l = env['zoom'];
+const $m = $l/* env['zoom'] */ == 2;
+const $n = geometryType == 'Point';
+const $o = geometryType == 'LineString';
+const $p = geometryType == 'Polygon';
+const $q = 23 > 42;
+const $r = env.zoom >= 1 && env.zoom <= 10;
+const $s = $d/* props['attr'] */;
 
 const _default = (
 d.default ??= {});
@@ -600,8 +600,8 @@ switch (style) {
 		break;
 	case 'features':
 		{
-		const $a = /* @__PURE__ */props['attr'];
-		const $b = /* @__PURE__ */$a == 'test';
+		const $a = props['attr'];
+		const $b = $a/* props['attr'] */ == 'test';
 		
 		const _default = (
 		d.default ??= {});
@@ -623,27 +623,27 @@ switch (style) {
 exports[`parses and transforms full css to hash program correctly 1`] = `
 "
 {
-const $a = /* @__PURE__ */props['test'];
-const $b = /* @__PURE__ */get(props, ['path', 'to', 'test']);
-const $c = /* @__PURE__ */props['state'];
-const $d = /* @__PURE__ */$c == 'someState';
-const $e = /* @__PURE__ */$c == 'anotherState';
-const $f = /* @__PURE__ */props['attr'];
-const $g = /* @__PURE__ */$f == 'test';
-const $h = /* @__PURE__ */props['hasAttrTest'];
-const $i = /* @__PURE__ */$h;
-const $j = /* @__PURE__ */$f == 123;
-const $k = /* @__PURE__ */$f == 456;
-const $l = /* @__PURE__ */get(props, ['parking', 'capacity']);
-const $m = /* @__PURE__ */$l == 'tests nested properites';
-const $n = /* @__PURE__ */env['zoom'];
-const $o = /* @__PURE__ */$n == 2;
-const $p = /* @__PURE__ */geometryType == 'Point';
-const $q = /* @__PURE__ */geometryType == 'LineString';
-const $r = /* @__PURE__ */geometryType == 'Polygon';
-const $s = /* @__PURE__ */23 > 42;
-const $t = /* @__PURE__ */env.zoom >= 1 && env.zoom <= 10;
-const $u = /* @__PURE__ */$f;
+const $a = props['test'];
+const $b = get(props, ['path', 'to', 'test']);
+const $c = props['state'];
+const $d = $c/* props['state'] */ == 'someState';
+const $e = $c/* props['state'] */ == 'anotherState';
+const $f = props['attr'];
+const $g = $f/* props['attr'] */ == 'test';
+const $h = props['hasAttrTest'];
+const $i = $h/* props['hasAttrTest'] */;
+const $j = $f/* props['attr'] */ == 123;
+const $k = $f/* props['attr'] */ == 456;
+const $l = get(props, ['parking', 'capacity']);
+const $m = $l/* get(props, ['parking', 'capacity']) */ == 'tests nested properites';
+const $n = env['zoom'];
+const $o = $n/* env['zoom'] */ == 2;
+const $p = geometryType == 'Point';
+const $q = geometryType == 'LineString';
+const $r = geometryType == 'Polygon';
+const $s = 23 > 42;
+const $t = env.zoom >= 1 && env.zoom <= 10;
+const $u = $f/* props['attr'] */;
 
 h(1);
 h('@' + createHash($a));
@@ -726,8 +726,8 @@ switch (style) {
 		break;
 	case 'features':
 		{
-		const $a = /* @__PURE__ */props['attr'];
-		const $b = /* @__PURE__ */$a == 'test';
+		const $a = props['attr'];
+		const $b = $a/* props['attr'] */ == 'test';
 		
 		h(26);
 		if ($b) {
@@ -2760,9 +2760,9 @@ switch (style) {
 		switch (state) {
 			case 'myStateName':
 				{
-				const $a = /* @__PURE__ */props['state'];
-				const $b = /* @__PURE__ */$a == selected;
-				const $c = /* @__PURE__ */geometryType == 'LineString';
+				const $a = props['state'];
+				const $b = $a/* props['state'] */ == selected;
+				const $c = geometryType == 'LineString';
 				
 				if ($b) {
 						const _default = (
@@ -2792,9 +2792,9 @@ switch (style) {
 		switch (state) {
 			case 'myStateName':
 				{
-				const $a = /* @__PURE__ */props['state'];
-				const $b = /* @__PURE__ */$a == selected;
-				const $c = /* @__PURE__ */geometryType == 'LineString';
+				const $a = props['state'];
+				const $b = $a/* props['state'] */ == selected;
+				const $c = geometryType == 'LineString';
 				
 				if ($b) {
 						h(1);
