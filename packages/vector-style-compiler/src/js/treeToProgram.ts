@@ -68,14 +68,15 @@ function checkToExpression(check: Check, aliases?: Map<string, string>) {
 		case "geometryType":
 			return `geometryType == ${check.value}`;
 		case "value": {
-			let property = pathToExpression(check.target, check.path);
+			const realProperty = pathToExpression(check.target, check.path);
+			let property = realProperty;
 			if (aliases) {
 				if (aliases.has(property)) {
-					property = aliases.get(property)!;
+					property = aliases.get(property)! + `/* ${realProperty} */`;
 				} else {
 					const alias = aliasName(aliases.size + 1);
 					aliases.set(property, alias);
-					property = alias;
+					property = `${alias}/* ${realProperty} */`;
 				}
 			}
 
@@ -181,8 +182,7 @@ export default function treeToProgram(
 		}
 
 		const aliasesPrograms = Array.from(aliases.entries()).map(
-			([expression, alias]) =>
-				`const ${alias} = /* @__PURE__ */${expression};`,
+			([expression, alias]) => `const ${alias} = ${expression};`,
 		);
 
 		if (aliasesPrograms.length) {

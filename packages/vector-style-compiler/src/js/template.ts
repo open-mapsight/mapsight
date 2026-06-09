@@ -44,6 +44,9 @@ const defaultTemplate = ({__meta, program1, program2}: TemplateArgs) => {
 	result = replaceTag(result, "program1", program1);
 	result = replaceTag(result, "program2", program2);
 
+	// Remove any source map comments
+	result = result.replace(/\/\/# sourceMappingURL=.*\n/g, "");
+
 	return result;
 };
 
