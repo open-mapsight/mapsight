@@ -240,6 +240,12 @@ export const tagSwitcherFeatureSourceIdSelector = (state: RootStateSlice) =>
 export const tagSwitcherFeatureSourcesControllerNameSelector = (
 	state: RootStateSlice,
 ) => state.app.tagSwitcher?.featureSourcesControllerName;
+
+let tagSwitcherTagsCachedKey: string | undefined;
+let tagSwitcherTagsCachedSelector: ReturnType<
+	typeof createTagsWithCountFromFeatureSourceSelector
+>;
+
 export const tagSwitcherTagsSelector = (state: RootStateSlice) => {
 	const controllerName =
 		tagSwitcherFeatureSourcesControllerNameSelector(state);
@@ -248,10 +254,17 @@ export const tagSwitcherTagsSelector = (state: RootStateSlice) => {
 		return {};
 	}
 
-	return createTagsWithCountFromFeatureSourceSelector(
-		controllerName,
-		featureSourceId,
-	)(state);
+	const key = `${controllerName}:${featureSourceId}`;
+	if (key !== tagSwitcherTagsCachedKey) {
+		tagSwitcherTagsCachedKey = key;
+		tagSwitcherTagsCachedSelector =
+			createTagsWithCountFromFeatureSourceSelector(
+				controllerName,
+				featureSourceId,
+			);
+	}
+
+	return tagSwitcherTagsCachedSelector(state);
 };
 
 export const viewToggleShowSelector = (state: RootStateSlice) =>
