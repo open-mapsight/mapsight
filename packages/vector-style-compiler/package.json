@@ -52,7 +52,7 @@
 	},
 	"scripts": {
 		"bench": "node __tests__/performance.engines.bench.ts",
-		"build": "run-s build:setup build:modules",
+		"build": "run-s build:setup build:modules copy:templates",
 		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist",
@@ -64,7 +64,7 @@
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"update-readme": "node scripts/update-readme.mts",
-		"watch": "tsc -p tsconfig.build.json --watch"
+		"watch": "run-s copy:templates \"tsc -p tsconfig.build.json --watch\""
 	},
 	"types": "./dist/index.d.ts"
 }
