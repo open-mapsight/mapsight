@@ -16,7 +16,7 @@
 		"sharp": "^0.34.5",
 		"svgo": "^4.0.1",
 		"vinyl": "^3.0.1",
-		"zod": "^4.4.3"
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
