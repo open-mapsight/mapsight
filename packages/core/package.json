@@ -40,6 +40,14 @@
 			"types": "./dist/lib/*.d.ts",
 			"import": "./dist/lib/*.js"
 		},
+		"./lib/*/*": {
+			"types": "./dist/lib/*/*.d.ts",
+			"import": "./dist/lib/*/*.js"
+		},
+		"./lib/*/lib/*": {
+			"types": "./dist/lib/*/lib/*.d.ts",
+			"import": "./dist/lib/*/lib/*.js"
+		},
 		"./lib/*/schema": {
 			"types": "./dist/lib/*/schema.d.ts",
 			"import": "./dist/lib/*/schema.js"

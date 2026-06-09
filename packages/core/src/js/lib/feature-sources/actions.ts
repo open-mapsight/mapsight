@@ -1,4 +1,5 @@
 import {async, controlled, withPath} from "@/lib/base/actions";
+import * as combined from "@/lib/feature-sources/loaders/combined-loader";
 import * as local from "@/lib/feature-sources/loaders/local-state-loader";
 import type {LocalStateLoaderOptions} from "@/lib/feature-sources/loaders/local-state-loader";
 import * as noop from "@/lib/feature-sources/loaders/noop-loader";
@@ -17,6 +18,8 @@ function getLoader(type: FeatureSourceType) {
 			return local;
 		case "xhr-json":
 			return xhrJson;
+		case "combined":
+			return combined;
 		default:
 			return noop;
 	}
@@ -343,7 +346,13 @@ export const load = (
 		);
 
 		return Promise.all([
-			loadWithCache(currentState, getState, id, options).then(
+			loadWithCache(
+				currentState,
+				getState,
+				id,
+				controllerName,
+				options,
+			).then(
 				function handleLoadResolved(data) {
 					dispatch(loadSuccess(controllerName, id, data));
 				},
@@ -415,6 +424,7 @@ async function loadWithCache(
 	state: FeatureSourceState,
 	getState: () => unknown,
 	id: string,
+	controllerName: string,
 	options: LoadOptions = {},
 ) {
 	const {
@@ -434,5 +444,10 @@ async function loadWithCache(
 		return Promise.resolve(state.data);
 	}
 
-	return getLoader(state.type).load(state, loaderOptions, id, getState);
+	return getLoader(state.type).load(
+		state,
+		{...loaderOptions, controllerName},
+		id,
+		getState,
+	);
 }

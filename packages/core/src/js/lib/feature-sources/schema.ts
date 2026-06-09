@@ -1,11 +1,17 @@
 import {z} from "zod";
 
-export const featureSourceTypeSchema = z.enum(["local", "xhr-json", "noop"]);
+export const featureSourceTypeSchema = z.enum([
+	"local",
+	"xhr-json",
+	"noop",
+	"combined",
+]);
 
 export const featureSourceConfigSchema = z
 	.object({
 		type: featureSourceTypeSchema,
 		url: z.string().optional(),
+		featureSourceNames: z.array(z.string()).optional(),
 		filters: z.array(z.string()).optional(),
 		doRefresh: z.boolean().optional(),
 		timer: z.number().optional(),
