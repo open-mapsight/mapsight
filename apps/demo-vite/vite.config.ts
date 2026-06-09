@@ -22,6 +22,8 @@ export default defineConfig(({command}) => ({
 	},
 	optimizeDeps: {
 		exclude: [...workspacePackages],
+		// build.rolldownOptions.input paths are relative to `root`; dep scan resolves from cwd.
+		entries: ["**/*.html"],
 	},
 	build: {
 		outDir: "../dist",
@@ -34,6 +36,7 @@ export default defineConfig(({command}) => ({
 				"simple-map.html",
 				"router/index.html",
 				"full/index.html",
+				"combined-list/index.html",
 			],
 			output: {
 				codeSplitting: {

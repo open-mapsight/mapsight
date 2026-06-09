@@ -45,10 +45,13 @@ const clusterFeaturesOptions = {
 };
 
 function withClustering(layer: LayerDefinition): LayerDefinition {
-	Object.assign(layer.options.source.options, {
-		clusterFeatures: true,
-		clusterFeaturesOptions: clusterFeaturesOptions,
-	});
+	const source = layer.options?.source;
+	if (source?.type === "VectorFeatureSource" && source.options) {
+		Object.assign(source.options, {
+			clusterFeatures: true,
+			clusterFeaturesOptions: clusterFeaturesOptions,
+		});
+	}
 	return layer;
 }
 

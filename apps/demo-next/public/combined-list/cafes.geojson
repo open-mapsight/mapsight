@@ -1,0 +1,47 @@
+{
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "demo-cafe-corner",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5214, 52.2661]
+			},
+			"properties": {
+				"id": "demo-cafe-corner",
+				"name": "Corner Cafe",
+				"listInformation": "Coffee and pastries",
+				"description": "<p>Cozy neighborhood cafe with outdoor seating.</p>"
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "demo-cafe-market",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5278, 52.2635]
+			},
+			"properties": {
+				"id": "demo-cafe-market",
+				"name": "Market Square Bistro",
+				"listInformation": "Lunch menu and espresso bar",
+				"description": "<p>Busy spot next to the weekly market.</p>"
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "demo-cafe-garden",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5159, 52.2697]
+			},
+			"properties": {
+				"id": "demo-cafe-garden",
+				"name": "Garden Terrace",
+				"listInformation": "Brunch and herbal tea",
+				"description": "<p>Relaxed cafe behind a courtyard garden.</p>"
+			}
+		}
+	]
+}

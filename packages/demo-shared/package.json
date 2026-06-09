@@ -1,0 +1,30 @@
+{
+	"name": "@mapsight/demo-shared",
+	"description": "Shared Mapsight demo configurations",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@mapsight/ui": "workspace:^"
+	},
+	"devDependencies": {
+		"@types/react": "catalog:",
+		"typescript": "catalog:"
+	},
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		}
+	},
+	"license": "UNLICENSED",
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json --outDir dist",
+		"clean": "rm -rf dist",
+		"clean-build": "run-s clean build",
+		"typecheck": "tsc --noEmit"
+	}
+}

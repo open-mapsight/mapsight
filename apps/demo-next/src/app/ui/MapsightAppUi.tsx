@@ -154,6 +154,9 @@ export default function MapsightAppUi() {
 
 	return (
 		<div>
+			<p>
+				<a href="/combined-list">Combined list demo &rarr;</a>
+			</p>
 			<h1>Mapsight Map</h1>
 			<Instance
 				baseMapsightConfig={bmc}
