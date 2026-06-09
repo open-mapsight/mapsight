@@ -4,7 +4,7 @@ import type {
 	Description,
 	LayerMetaData,
 	OptionValue,
-	Options,
+	VectorFeatureSourceOptions,
 } from "@mapsight/core/lib/map/types";
 
 import type {MapsightStyleFunctionEnv} from "@mapsight/lib-ol/style/styleFunction";
@@ -21,7 +21,7 @@ export function features(
 	interactive = false,
 	_metaData: LayerMetaData = {},
 	style: string | MapsightStyleFunctionEnv = "features",
-	sourceOptions?: Options,
+	sourceOptions?: Partial<VectorFeatureSourceOptions>,
 ): Description {
 	return {
 		type: "VectorLayer",
@@ -55,11 +55,11 @@ export function features(
 }
 
 export function interactiveFeatures(
-	featureSourceId,
+	featureSourceId: string,
 	visible = false,
 	_metaData = {},
 	style: string | MapsightStyleFunctionEnv = "features",
-	sourceOptions?: Options,
+	sourceOptions?: Partial<VectorFeatureSourceOptions>,
 ) {
 	return features(
 		featureSourceId,
@@ -76,7 +76,7 @@ export function userGeolocation(
 	visible = false,
 	_metaData: LayerMetaData = {},
 	style: string | MapsightStyleFunctionEnv = "userGeolocation",
-	sourceOptions?: Options,
+	sourceOptions?: Partial<VectorFeatureSourceOptions>,
 ) {
 	const base = features(
 		featureSourceId,

@@ -16,7 +16,7 @@ import type {FeatureSelectionsState} from "@/lib/feature-selections/selectors";
 import {getOlFeatureId} from "@/lib/helpers/ol";
 import {typeSafeObjectKeys} from "@/lib/helpers/types";
 import type {MapController} from "@/lib/map/controller";
-import type {InteractionName, MapState} from "@/lib/map/types";
+import type {MapState} from "@/lib/map/types";
 import type {Action} from "@/types";
 
 import {setMapCursor} from "../actions";
@@ -28,6 +28,14 @@ type MapEventEmitter = Pick<
 	MapController,
 	"getMap" | "getStore" | "getState" | "dispatch" | "getName"
 >;
+
+export const FeatureInteractionNames = [
+	"mousedown",
+	"mouseover",
+	"touch",
+] as const;
+
+export type FeatureInteractionName = (typeof FeatureInteractionNames)[number];
 
 export type FeatureInteractionOptions = {
 	cursor?: string;
@@ -57,11 +65,14 @@ type AnyFeatureInteractionOptions = FeatureInteractionOptions &
 	FeatureInteractionOverrides;
 
 export type FeatureInteraction = {
-	selection: InteractionName;
+	selection: FeatureInteractionName;
 	options: AnyFeatureInteractionOptions;
 };
 
-export type FeatureInteractions = Record<InteractionName, FeatureInteraction>;
+export type FeatureInteractions = Record<
+	FeatureInteractionName,
+	FeatureInteraction
+>;
 
 const FEATURE_PROPERTY_NAME_SELECTABLE = "selectable";
 
@@ -147,9 +158,9 @@ const defaultFeatureInteractions = {
 
 function getSelectionId(
 	layerId: string,
-	interactionName: InteractionName,
+	interactionName: FeatureInteractionName,
 	state: MapState,
-) {
+): string {
 	return makeLayerSelectionSelector(layerId, interactionName)(state);
 }
 
@@ -225,7 +236,7 @@ type FeatureInteractionEventCache = {
 function handleEvent(
 	mapController: MapEventEmitter,
 	featureSelectionsControllerName: string,
-	interactionName: InteractionName,
+	interactionName: FeatureInteractionName,
 	options: FeatureInteractionOptions = {},
 	cache: FeatureInteractionEventCache | null = null,
 	event: MapBrowserEvent,
@@ -455,7 +466,7 @@ export default class WithFeatureInteractions extends WithMap {
 		}
 
 		const handlers: Record<
-			InteractionName,
+			FeatureInteractionName,
 			ReturnType<typeof createHandler>
 		> = {
 			mouseover: null,
@@ -466,7 +477,7 @@ export default class WithFeatureInteractions extends WithMap {
 		this.getAndObserveUncontrolled(
 			(state) => ({
 				featureInteractions: state.featureInteractions as Record<
-					InteractionName,
+					FeatureInteractionName,
 					FeatureInteraction
 				>,
 				featureSelectionsControllerName:

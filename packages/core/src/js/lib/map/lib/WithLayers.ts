@@ -9,8 +9,8 @@ import matchesPath from "@mapsight/lib-redux/matchesPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
 import type {MapController} from "@/lib/map/controller";
-import type {LayerConfig} from "@/lib/map/schema";
-import {di, updateProxyObject} from "@/ol-proxy/index";
+import type {LayerState} from "@/lib/map/types";
+import {di, updateProxyObject} from "@/ol-proxy";
 
 import {ACTION_SET} from "../../base/reducer";
 import {
@@ -21,7 +21,7 @@ import WithAnimations from "./WithAnimations";
 import proxyPassOpenLayersEventsToMapController from "./proxyPassOpenLayersEventsToMapController";
 import {getGroupForLayer, tagLayer} from "./tagLayer";
 
-export type LayerDefinition = LayerConfig;
+export type LayerDefinition = LayerState;
 
 export const LAYER_GROUP_DEFAULT = "default";
 
@@ -97,6 +97,12 @@ export default class WithLayers extends WithAnimations {
 					ensureNonNullable(this._groups[group]).layers[id] = layer;
 					tagLayer(layer, this, id, group);
 					layerGroup.getLayers().push(layer);
+					if (!newDefinition.type) {
+						console.error(
+							`Could not wire layer events for "${id}". Layer definition is missing type.`,
+						);
+						return;
+					}
 					proxyPassOpenLayersEventsToMapController(
 						this as unknown as MapController,
 						layer,

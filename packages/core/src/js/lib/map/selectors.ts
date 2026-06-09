@@ -9,7 +9,9 @@ import type {
 	FeatureSourceState,
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
-import type {InteractionName, LayerState, MapState} from "@/lib/map/types";
+import type {FeatureInteractionName} from "@/lib/map/lib/WithFeatureInteractions";
+import type {LayerState, MapState} from "@/lib/map/types";
+import {isVectorFeatureSource} from "@/lib/map/types";
 import type {State} from "@/types";
 
 /**
@@ -24,7 +26,8 @@ export const makeLayerLockedInLayerSwitcherSelector =
 		state.layers[id]?.metaData?.lockedInLayerSwitcher ?? false;
 
 export const makeLayerSelectionSelector =
-	(id: string, interactionName: InteractionName) => (state: MapState) =>
+	(id: string, interactionName: FeatureInteractionName) =>
+	(state: MapState) =>
 		state.layers[id]?.options?.selections?.[interactionName];
 
 export const layerIdsIntegratedSwitcherSelector: Selector<MapState, string[]> =
@@ -57,13 +60,22 @@ export const makeLayerVisibleSelector =
 		state.layers[layerId]?.options?.visible ?? false;
 
 export const makeFeatureSourceIdFromLayerIdSelector =
-	(layerId: string) => (state: MapState) =>
-		state.layers[layerId]?.options?.source?.options?.featureSourceId;
+	(layerId: string) => (state: MapState) => {
+		const source = state.layers[layerId]?.options?.source;
+		if (!isVectorFeatureSource(source)) {
+			return undefined;
+		}
+		return source.options.featureSourceId;
+	};
 
 export const makeFeatureSourceControllerNameFromLayerIdSelector =
-	(layerId: string) => (state: MapState) =>
-		state.layers[layerId]?.options?.source?.options
-			?.featureSourcesControllerName;
+	(layerId: string) => (state: MapState) => {
+		const source = state.layers[layerId]?.options?.source;
+		if (!isVectorFeatureSource(source)) {
+			return undefined;
+		}
+		return source.options.featureSourcesControllerName;
+	};
 
 /**
  * create selector for featureState corresponding to the featureSource used by a layer

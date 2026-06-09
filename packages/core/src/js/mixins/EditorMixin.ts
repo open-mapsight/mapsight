@@ -35,7 +35,7 @@ export const DEFAULT_SELECTIONS = {
 	mousedown: "select",
 	mouseover: "highlight",
 	touch: "select",
-};
+} satisfies InteractionsSelections;
 
 export const DEFAULT_CONTROLLER_NAMES = {
 	map: "map",

@@ -3,47 +3,58 @@ import type OlLayer from "ol/layer/Layer";
 import type {OptionValue, Options} from "@/lib/helpers/schema";
 import type {VectorFeatureSource} from "@/lib/map/lib/VectorFeatureSource";
 import type {ViewportAnchor} from "@/lib/map/lib/WithAnchoredViewport";
-import type {Description, LayerConfig, LayerMetaData} from "@/lib/map/schema";
+import {
+	type Description,
+	type InteractionsSelections,
+	type LayerConfig,
+	type LayerMetaData,
+	type LayerOptions,
+	type LayerSourceState,
+	type VectorFeatureSourceOptions,
+	type VectorFeatureSourceState,
+	descriptionSchema,
+	vectorFeatureSourceStateSchema,
+} from "@/lib/map/schema";
 
-export type {Description, LayerMetaData, OptionValue, Options};
+export type {
+	Description,
+	InteractionsSelections,
+	LayerMetaData,
+	LayerOptions,
+	LayerSourceState,
+	OptionValue,
+	Options,
+	VectorFeatureSourceOptions,
+	VectorFeatureSourceState,
+};
 
 export const isDescription = (value: unknown): value is Description =>
-	typeof value === "object" &&
-	value !== null &&
-	"type" in value &&
-	typeof value.type === "string";
+	descriptionSchema.safeParse(value).success;
 
-export type LayerOptions = {
-	visible?: boolean;
-	selections?: InteractionsSelections;
-	source?: LayerSourceState;
-} & Options;
+/** Runtime layer options; ol-proxy keys beyond the config schema remain valid. */
+export type RuntimeLayerOptions = LayerOptions;
 
 /** Runtime layer state; `type` is required in config ingress (`LayerConfig`). */
-export type LayerState = Omit<LayerConfig, "type"> & {
+export type LayerState = Omit<LayerConfig, "type" | "options" | "metaData"> & {
 	type?: string;
-	[key: string]: unknown;
 	metaData?: LayerMetaData;
-	options?: LayerOptions;
-};
+	options?: RuntimeLayerOptions;
+} & Record<string, unknown>;
 
-type VectorFeatureSourceOptions = {
-	featureSourceId?: string;
-	featureSourcesControllerName?: string;
-	featureSelectionsControllerName?: string;
-	keepFeaturesInViewOptions?: Options;
-	fitFeaturesInViewOptions?: Options;
-	clusterFeatures?: boolean;
-	clusterFeaturesOptions?: Options;
-	[key: string]: OptionValue;
-};
+export const isVectorFeatureSource = (
+	source: unknown,
+): source is VectorFeatureSourceState =>
+	vectorFeatureSourceStateSchema.safeParse(source).success;
 
-type VectorFeatureSourceState = {
-	type: "VectorFeatureSource";
-	options: VectorFeatureSourceOptions;
-};
-
-export type LayerSourceState = VectorFeatureSourceState; // TODO: add other types
+export function getVectorFeatureSource(
+	layer: LayerState,
+): VectorFeatureSourceState {
+	const source = layer.options?.source;
+	if (!isVectorFeatureSource(source)) {
+		throw new Error("Expected layer with VectorFeatureSource source");
+	}
+	return source;
+}
 
 export interface MapState {
 	[key: string]: unknown;
@@ -60,7 +71,3 @@ export type VectorFeatureSourceLayer = OlLayer<VectorFeatureSource>;
 export interface LayerStyleProps {}
 
 export type LayerStyleState = string | LayerStyleProps;
-
-export type InteractionName = "mousedown" | "mouseover" | "touch";
-
-export type InteractionsSelections = Record<InteractionName, string>;

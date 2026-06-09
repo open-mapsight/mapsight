@@ -1,12 +1,20 @@
 import isEqual from "lodash/isEqual";
 
-import type {Description, OptionValue, Options} from "@/lib/map/types";
+import type {
+	Description,
+	LayerState,
+	OptionValue,
+	Options,
+} from "@/lib/map/types";
 import {isDescription} from "@/lib/map/types";
 
 import DependencyManager from "./DependencyManager";
 
 export {isDescription} from "@/lib/map/types";
 export type {Description} from "@/lib/map/types";
+
+/** Config ingress or runtime layer definition accepted by ol-proxy. */
+export type LayerProxyDefinition = Description | LayerState;
 
 // TODO: use symbols?
 export const OPTION_SET = "__set__";
@@ -395,8 +403,8 @@ export function updateProxyObject<
 	di: DependencyManager;
 	// TODO: remove "old" prefix, there's only one object, no "old" nor "new"
 	oldObject?: TObject;
-	oldDefinition?: Description;
-	newDefinition?: Description;
+	oldDefinition?: LayerProxyDefinition;
+	newDefinition?: LayerProxyDefinition;
 	remover?: (object: TObject, parentObject?: TParentObject) => void;
 	adder?: (object: TObject, parentObject?: TParentObject) => void;
 	parentObject?: TParentObject;
