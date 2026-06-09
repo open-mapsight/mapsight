@@ -16,6 +16,9 @@
 			"import": "./dist/*.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"

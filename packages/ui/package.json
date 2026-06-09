@@ -62,6 +62,9 @@
 			"default": "./dist/embed/*.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
 		"react": "catalog:",

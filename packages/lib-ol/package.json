@@ -18,6 +18,9 @@
 			"default": "./dist/*.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"main": "index.js",
 	"peerDependencies": {

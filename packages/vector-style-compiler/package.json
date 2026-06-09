@@ -40,6 +40,10 @@
 			"default": "./dist/*.js"
 		}
 	},
+	"files": [
+		"dist",
+		"bin"
+	],
 	"license": "UNLICENSED",
 	"main": "./dist/index.js",
 	"peerDependencies": {

@@ -1,2 +1,3 @@
-*
-!/dist/**/*
+# Published via publishConfig.directory (dist as package root).
+**/__tests__/**
+**/*.test.*
