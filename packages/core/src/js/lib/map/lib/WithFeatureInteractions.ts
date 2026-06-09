@@ -6,6 +6,7 @@ import {batchActions} from "redux-batched-actions";
 
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 
+import {quiet} from "@/lib/base/actions";
 import {
 	deselect,
 	select,
@@ -66,6 +67,11 @@ const FEATURE_PROPERTY_NAME_SELECTABLE = "selectable";
 
 // TODO: Keep default?
 const defaultFeatureSelectionsControllerName = "featureSelections";
+const HIGHLIGHT_SELECTION_ID = "highlight";
+
+function quietIfHighlight(action: Action, selectionId: string) {
+	return selectionId === HIGHLIGHT_SELECTION_ID ? quiet(action) : action;
+}
 
 // TODO: Support button_s_?
 // See https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
@@ -332,7 +338,10 @@ function handleEvent(
 			if (shouldBeAdded) {
 				hasAdded = true;
 				actions.push(
-					selectAction(featureSelectionsControllerName, s, f),
+					quietIfHighlight(
+						selectAction(featureSelectionsControllerName, s, f),
+						s,
+					),
 				);
 			}
 		});
@@ -345,7 +354,12 @@ function handleEvent(
 			// Determine if the cached feature selection is invalid by comparing with new selection
 			const shouldBeRemoved = newSelections[s] !== f;
 			if (shouldBeRemoved) {
-				actions.push(deselect(featureSelectionsControllerName, s, f));
+				actions.push(
+					quietIfHighlight(
+						deselect(featureSelectionsControllerName, s, f),
+						s,
+					),
+				);
 			}
 		});
 	}
@@ -366,7 +380,10 @@ function handleEvent(
 				)
 				.forEach((f) =>
 					actions.push(
-						deselect(featureSelectionsControllerName, s, f),
+						quietIfHighlight(
+							deselect(featureSelectionsControllerName, s, f),
+							s,
+						),
 					),
 				);
 		});
@@ -383,7 +400,9 @@ function handleEvent(
 		}
 
 		if (!cache || newCursor !== cache.cursor) {
-			cursorAction = setMapCursor(mapController.getName(), newCursor);
+			cursorAction = quiet(
+				setMapCursor(mapController.getName(), newCursor),
+			);
 		}
 	}
 

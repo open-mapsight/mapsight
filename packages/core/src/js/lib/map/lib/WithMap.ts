@@ -8,7 +8,7 @@ import {di, setOptions, updateProxyObject} from "@/ol-proxy";
 import Map from "@/ol-proxy/definitions/Map";
 import View from "@/ol-proxy/definitions/View";
 
-import {async, controlled} from "../../base/actions";
+import {async, controlled, quiet} from "../../base/actions";
 import {BaseController} from "../../base/controller";
 import {
 	setViewCenter,
@@ -81,11 +81,13 @@ export default class WithMap extends BaseController<MapState> {
 									const resolution = view?.getResolution();
 									if (zoom && resolution) {
 										this.dispatch(
-											controlled(
-												setViewZoomAndResolution(
-													name,
-													zoom,
-													resolution,
+											quiet(
+												controlled(
+													setViewZoomAndResolution(
+														name,
+														zoom,
+														resolution,
+													),
 												),
 											),
 										);
@@ -100,8 +102,10 @@ export default class WithMap extends BaseController<MapState> {
 									const center = view?.getCenter();
 									if (center) {
 										this.dispatch(
-											controlled(
-												setViewCenter(name, center),
+											quiet(
+												controlled(
+													setViewCenter(name, center),
+												),
 											),
 										);
 									}
@@ -115,8 +119,13 @@ export default class WithMap extends BaseController<MapState> {
 									const rotation = view?.getRotation();
 									if (rotation) {
 										this.dispatch(
-											controlled(
-												setViewRotation(name, rotation),
+											quiet(
+												controlled(
+													setViewRotation(
+														name,
+														rotation,
+													),
+												),
 											),
 										);
 									}
@@ -158,7 +167,6 @@ export default class WithMap extends BaseController<MapState> {
 		);
 
 		this._map = map;
-		console.log("added map", this);
 
 		//updateSizeOnTransitionEnd(map);
 		//canvasSizeFixer(map);
