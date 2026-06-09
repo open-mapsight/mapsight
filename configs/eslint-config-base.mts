@@ -33,6 +33,7 @@ export default defineConfig([
 						"gulpfile.mts",
 						"vite.config.ts",
 						"vite.config.mts",
+						"vitest.config.ts",
 						"prettier.config.mjs",
 						"postcss.config.mts",
 					],
