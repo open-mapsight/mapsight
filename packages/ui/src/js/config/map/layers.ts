@@ -77,7 +77,7 @@ export function userGeolocation(
 	_metaData: LayerMetaData = {},
 	style: string | MapsightStyleFunctionEnv = "userGeolocation",
 	sourceOptions?: Partial<VectorFeatureSourceOptions>,
-) {
+): Description {
 	const base = features(
 		featureSourceId,
 		visible,
@@ -95,7 +95,7 @@ export function userGeolocation(
 			updateWhileInteracting: true,
 			renderBuffer: 400,
 		},
-	};
+	} as Description;
 }
 
 export function osm(url: string, visible = false, _metaData = {}) {
