@@ -45,4 +45,13 @@ it("mapValue", () => {
 		},
 		value: "'' + (props['test'] + get(env, ['to', 'test'])) + ''",
 	});
+	expect(
+		mapValue('calc(mapsightRuntimeIcon(attr(mapsightIconId), "default"))'),
+	).toStrictEqual({
+		__meta: {
+			stylePropExpressions: ["props['mapsightIconId']"],
+			styleProps: ["mapsightIconId"],
+		},
+		value: "'' + (mapsightRuntimeIcon(props['mapsightIconId'], \"default\")) + ''",
+	});
 });
