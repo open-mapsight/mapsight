@@ -62,6 +62,7 @@ export default function rulesToTree(rules: Rules["rules"]) {
 						declarations: rule.declarations,
 						stylePropExpressions: rule.__meta.stylePropExpressions,
 					});
+					styleTree[state] = stateTree;
 					return;
 				}
 				stateTree.stylePropExpressions = (
