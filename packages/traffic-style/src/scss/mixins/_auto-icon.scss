@@ -8,6 +8,10 @@
 
 @use "./get-icon-dimensions";
 
+@mixin spriteIconSrc {
+	icon-src: variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH;
+}
+
 @mixin autoIcon(
 	$state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
 	$iconDefault: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_DEFAULT,
@@ -45,6 +49,7 @@
 			}
 
 			#{list-to-string.list-to-string($selectors, ", ")} {
+				@include spriteIconSrc;
 				@include get-icon-dimensions.getIconDimension($fallbackIcon);
 			}
 		} @else {
@@ -61,6 +66,7 @@
 
 			[mapsightIconId="#{$iconId}"],
 			[env|mapsightIconId="#{$iconId}"] {
+				@include spriteIconSrc;
 				@include get-icon-dimensions.getIconDimension($dimensions);
 			}
 		}
@@ -76,6 +82,7 @@
 					$iconId: str-replace.str-replace($iconName, $stateSuffix, "");
 
 					[env|mapsightIconId="#{$iconId}"] {
+						@include spriteIconSrc;
 						@include get-icon-dimensions.getIconDimension($dimensions);
 					}
 				}

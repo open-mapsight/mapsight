@@ -15,6 +15,14 @@ const styleOptions = {
 	constructorsMap: {style: __vectorStyle_style,},
 	allowedStyles: [],
 	allowedProps: [],
+	volatileHashFunction: (env, props, geometryType, style) => {
+		/** @type {Array<string|number>} */
+		const parts = [];
+
+		
+
+		return createHash(parts);
+	},
 	declarationHashFunction: (env, props, hashPrefix, geometryType, style) => {
 		/** @type {Array<string|number>} */
 		const hash = [hashPrefix, geometryType];
@@ -65,6 +73,14 @@ icon: __vectorStyle_icon,
 style: __vectorStyle_style,},
 	allowedStyles: ["testCircle","emptyStyle","features"],
 	allowedProps: ["test","path","state","attr","hasAttrTest","parking"],
+	volatileHashFunction: (env, props, geometryType, style) => {
+		/** @type {Array<string|number>} */
+		const parts = [];
+
+		
+
+		return createHash(parts);
+	},
 	declarationHashFunction: (env, props, hashPrefix, geometryType, style) => {
 		/** @type {Array<string|number>} */
 		const hash = [hashPrefix, geometryType];
@@ -801,6 +817,7 @@ exports[`parses full css to rules correctly 1`] = `
       "hasAttrTest",
       "parking",
     ],
+    "volatileCalcExpressions": [],
   },
   "rules": [
     {
@@ -828,6 +845,7 @@ exports[`parses full css to rules correctly 1`] = `
           "test",
           "path",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -882,6 +900,7 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -925,6 +944,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -961,6 +981,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -999,6 +1020,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "state",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1051,6 +1073,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "state",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1099,6 +1122,7 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1129,6 +1153,7 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1168,6 +1193,7 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1206,6 +1232,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1238,6 +1265,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1267,6 +1295,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1313,6 +1342,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1359,6 +1389,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "hasAttrTest",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1404,6 +1435,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1450,6 +1482,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1496,6 +1529,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1542,6 +1576,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "parking",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1587,6 +1622,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1629,6 +1665,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1671,6 +1708,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1724,6 +1762,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1762,6 +1801,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1800,6 +1840,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1842,6 +1883,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1887,6 +1929,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1932,6 +1975,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -1984,6 +2028,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -2022,6 +2067,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -2060,6 +2106,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [],
         "stylePropExpressions": [],
         "styleProps": [],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -2100,6 +2147,7 @@ exports[`parses full css to rules correctly 1`] = `
         "styleProps": [
           "attr",
         ],
+        "volatileCalcExpressions": [],
       },
       "conditions": [
         {
@@ -2164,6 +2212,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2189,6 +2238,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2212,6 +2262,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2235,6 +2286,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2257,6 +2309,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2280,6 +2333,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2303,6 +2357,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2326,6 +2381,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2350,6 +2406,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2373,6 +2430,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2396,6 +2454,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2422,6 +2481,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2441,6 +2501,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2460,6 +2521,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2479,6 +2541,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2498,6 +2561,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2517,6 +2581,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2536,6 +2601,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2555,6 +2621,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
         {
           "conditions": [
@@ -2577,6 +2644,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
       ],
       "declarations": {
@@ -2646,6 +2714,7 @@ exports[`parses full css to tree correctly 1`] = `
         "props['test']",
         "get(props, ['path', 'to', 'test'])",
       ],
+      "volatileCalcExpressions": [],
     },
     "highlighted": {
       "children": [],
@@ -2659,6 +2728,7 @@ exports[`parses full css to tree correctly 1`] = `
         },
       },
       "stylePropExpressions": [],
+      "volatileCalcExpressions": [],
     },
     "selected": {
       "children": [],
@@ -2672,6 +2742,7 @@ exports[`parses full css to tree correctly 1`] = `
         },
       },
       "stylePropExpressions": [],
+      "volatileCalcExpressions": [],
     },
   },
   "emptyStyle": {
@@ -2681,6 +2752,7 @@ exports[`parses full css to tree correctly 1`] = `
         "default": {},
       },
       "stylePropExpressions": [],
+      "volatileCalcExpressions": [],
     },
   },
   "features": {
@@ -2708,6 +2780,7 @@ exports[`parses full css to tree correctly 1`] = `
             },
           },
           "stylePropExpressions": [],
+          "volatileCalcExpressions": [],
         },
       ],
       "declarations": {
@@ -2726,6 +2799,7 @@ exports[`parses full css to tree correctly 1`] = `
         },
       },
       "stylePropExpressions": [],
+      "volatileCalcExpressions": [],
     },
   },
   "testCircle": {
@@ -2748,6 +2822,7 @@ exports[`parses full css to tree correctly 1`] = `
         },
       },
       "stylePropExpressions": [],
+      "volatileCalcExpressions": [],
     },
   },
 }

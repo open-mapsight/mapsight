@@ -14,6 +14,7 @@ import createViewsPlugin from "./browser/views";
 import createFeatureSelectionDetailsUrlPlugin from "./common/feature-selection-details-url";
 import createLangPlugin from "./common/lang";
 import createOlProxyPlugin from "./common/ol-proxy";
+import createRuntimeIconStylePlugin from "./common/runtime-icon-style";
 
 /**
  * Create the default set of plugins for use in the browser IN ORDER!
@@ -24,6 +25,7 @@ import createOlProxyPlugin from "./common/ol-proxy";
 export default function createDefaultPlugins(
 	options: {
 		olProxy?: Parameters<typeof createOlProxyPlugin>[0];
+		runtimeIconStyle?: Parameters<typeof createRuntimeIconStylePlugin>[0];
 		appTitle?: Parameters<typeof createAppTitlePlugin>[0];
 		featurePreselectDeepLink?: Parameters<
 			typeof createFeatureDeepLinkPlugin
@@ -49,6 +51,10 @@ export default function createDefaultPlugins(
 	return [
 		["lang", createLangPlugin()],
 		["olProxy", createOlProxyPlugin(options.olProxy)],
+		[
+			"runtimeIconStyle",
+			createRuntimeIconStylePlugin(options.runtimeIconStyle),
+		],
 		["appTitle", createAppTitlePlugin(options.appTitle)],
 		[
 			"featurePreselectDeepLink",

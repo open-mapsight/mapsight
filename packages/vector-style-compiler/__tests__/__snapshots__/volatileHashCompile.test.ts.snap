@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transforms tree to volatile hash program 1`] = `
+"
+switch (style) {
+	case 'features':
+		{
+		const $a = props['mapsightIconId'];
+		const $b = $a/* props['mapsightIconId'] */;
+		
+		if ($b) {
+				parts.push(String(mapsightRuntimeIcon(props['mapsightIconId'], "default")));
+		}
+		}
+		break;
+}"
+`;

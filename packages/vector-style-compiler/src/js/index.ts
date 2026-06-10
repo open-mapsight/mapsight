@@ -21,6 +21,10 @@ export default function compileMapsightVectorStyle(
 	const tree = rulesToTree(rules.rules);
 	return template({
 		__meta: rules.__meta,
+		program0:
+			rules.__meta.volatileCalcExpressions.length > 0
+				? treeToProgram(tree, "volatileHash", baseIndent)
+				: "",
 		program1: treeToProgram(tree, "hash", baseIndent),
 		program2: treeToProgram(tree, "declaration", baseIndent),
 		...additionalData,

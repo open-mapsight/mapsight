@@ -37,6 +37,11 @@ export default function mapRule(rule: css.Rule) {
 			(declaration) => declaration.__meta.stylePropExpressions,
 		),
 	);
+	const mergedVolatileCalcExpressions = unique(
+		declarations.flatMap(
+			(declaration) => declaration.__meta.volatileCalcExpressions,
+		),
+	);
 
 	const selectors = uniqueSerialized(rule.selectors?.map(mapSelector) ?? []);
 	const groupedSelectors: Record<string, Array<Selector>> = {};
@@ -92,6 +97,7 @@ export default function mapRule(rule: css.Rule) {
 					...mergedConditionStylePropExpressions,
 					...mergedStylePropExpressions,
 				],
+				volatileCalcExpressions: mergedVolatileCalcExpressions,
 			},
 		};
 	});

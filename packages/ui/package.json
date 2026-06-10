@@ -8,6 +8,7 @@
 		"@mapsight/lib-js": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
 		"@mapsight/lib-redux": "workspace:^",
+		"@mapsight/traffic-style": "workspace:^",
 		"@reduxjs/toolkit": "catalog:",
 		"@types/react-redux": "catalog:",
 		"breakpoint-sass": "^3.0.0",

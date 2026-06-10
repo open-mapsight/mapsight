@@ -5,10 +5,14 @@ import baseConfig from "../../configs/eslint-config-base.mts";
 export default defineConfig([
 	baseConfig,
 	{
-		files: ["scripts/*.ts"],
+		ignores: ["scripts/**/*.test.ts"],
+	},
+	{
+		files: ["scripts/**/*.ts"],
 		ignores: ["**/*.test.ts"],
 		rules: {
 			"n/hashbang": "off",
+			"n/no-unpublished-import": "off",
 		},
 	},
 ]);

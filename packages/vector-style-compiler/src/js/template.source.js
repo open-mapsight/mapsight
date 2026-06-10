@@ -1,10 +1,10 @@
 import get from "@mapsight/lib-js/object/getPath";
 import replace from "@mapsight/lib-js/string/replaceRegex";
 import createCachedStyleFunction from "@mapsight/lib-ol/style/createCachedStyleFunction";
-/* styleImports-start: */
+/* imports-start: */
 import __vectorStyle_circle from "ol/style/Circle";
 
-/* :styleImports-end */
+/* :imports-end */
 
 /** @type {(value: unknown) => string} */
 const createHash = /* @__PURE__ */ (value) =>
@@ -16,6 +16,20 @@ const styleOptions = {
 	} /* :constructorMap-end */,
 	allowedStyles: /* styleNames-start: */ [] /* :styleNames-end */,
 	allowedProps: /* styleProps-start: */ ["test"] /* :styleProps-end */,
+	volatileHashFunction: (env, props, geometryType, style) => {
+		/** @type {Array<string|number>} */
+		const parts = [];
+
+		/* program0-start: */
+		parts.push(geometryType);
+		parts.push("@" + createHash(style));
+		parts.push("@" + createHash(props["test"]));
+		parts.push("@" + createHash(env["test"]));
+		parts.push("@" + createHash(get(props, ["path", "to", "test"])));
+		/* :program0-end */
+
+		return createHash(parts);
+	},
 	declarationHashFunction: (env, props, hashPrefix, geometryType, style) => {
 		/** @type {Array<string|number>} */
 		const hash = [hashPrefix, geometryType];

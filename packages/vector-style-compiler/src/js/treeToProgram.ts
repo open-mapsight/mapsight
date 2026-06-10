@@ -152,6 +152,16 @@ export default function treeToProgram(
 			}
 		}
 
+		if (target === "volatileHash") {
+			if (subTree.volatileCalcExpressions) {
+				subTree.volatileCalcExpressions.forEach(
+					(volatileCalcExpression) => {
+						result += `${_}parts.push(String(${volatileCalcExpression}));`;
+					},
+				);
+			}
+		}
+
 		if (target === "declaration") {
 			const block = encodeDeclarationNode(subTree.declarations);
 			if (block) {

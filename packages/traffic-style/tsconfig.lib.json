@@ -1,0 +1,15 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "../../configs/tsconfig-base.json",
+	"include": ["src/lib/**/*", "src/generated/pictograms/**/*"],
+	"exclude": ["src/lib/**/*.test.ts"],
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "dist",
+		"declaration": true,
+		"declarationMap": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true
+	}
+}

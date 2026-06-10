@@ -1,5 +1,5 @@
-import type {Type as GeometryType} from "ol/geom/Geometry";
 import type Geometry from "ol/geom/Geometry";
+import type {Type as GeometryType} from "ol/geom/Geometry";
 import type GeometryCollection from "ol/geom/GeometryCollection";
 import LRUCache from "ol/structs/LRUCache";
 import type Style from "ol/style/Style";
@@ -11,6 +11,7 @@ import deriveGeometriesFromBase from "../geometry/deriveGeometriesFromBase.ts";
 import type {GroupedRootStyleDeclaration} from "../index.ts";
 import declarationToGeometry from "./declarationToGeometry.ts";
 import declarationToStyle from "./declarationToStyle.ts";
+import {enterStyleFeatureScope} from "./styleFeatureScope.ts";
 import type {
 	MapsightStyleFunction,
 	MapsightStyleFunctionEnv,
@@ -69,6 +70,12 @@ export type StyleFunctionOptions = {
 		geometryType: GeometryType,
 		styleName: string,
 	) => unknown; // Using GroupedRootStyleDeclaration here breaks tsc, probably because the object is too big/complex
+	volatileHashFunction?: (
+		env: MapsightStyleFunctionEnv,
+		props: MapsightStyleFunctionProps,
+		geometryType: GeometryType,
+		styleName: string,
+	) => string;
 	allowedProps?: Array<string> | false;
 	allowedStyles?: Array<string> | false;
 	cacheLevel1Size?: number;
@@ -83,6 +90,7 @@ export type StyleFunctionOptions = {
  * @param [metricsCollector] optional callback receiving per-invocation runtime metrics (hash timing, cache hit/miss, and declaration/style timings)
  * @param declarationHashFunction style declaration hash function
  * @param declarationFunction style declaration function
+ * @param [volatileHashFunction] optional volatile hash function for values that should trigger a cache miss when changed, even if the declaration hash is the same (e.g. for time-based styling)
  * @param [allowedProps=false] list of props allowed, false = all allowed
  * @param [allowedStyles=false] list of styles allowed, false = all allowed
  * @param [cacheLevel1Size=100] size of first level cache that caches feature geometry styles based on feature and environment state
@@ -96,6 +104,7 @@ export default function createCachedStyleFunction({
 	metricsCollector,
 	declarationHashFunction,
 	declarationFunction,
+	volatileHashFunction,
 	allowedProps = false,
 	allowedStyles = false,
 	cacheLevel1Size = DEFAULT_CACHE_LEVEL_1_SIZE,
@@ -110,6 +119,24 @@ export default function createCachedStyleFunction({
 	const cacheLevel2 = new LRUCache<CachedValues>(cacheLevel2Size); // the second level cache caches style objects based on the rules that apply and the environment state
 	const cacheLevel3 = new LRUCache<Style | null>(cacheLevel3Size); // the third level cache caches style objects based on the rules that apply and the environment state
 
+	function resolveStyleName(env: MapsightStyleFunctionEnv): string {
+		let styleName: string = DEFAULT_STYLE;
+
+		const envStyle = env[STYLE_ENV_FIELD_NAME];
+		if (typeof envStyle === "string") {
+			if (allowedStyles === false) {
+				styleName = envStyle;
+			} else {
+				styleName =
+					allowedStyles.indexOf(envStyle) > -1
+						? envStyle
+						: DEFAULT_STYLE;
+			}
+		}
+
+		return styleName;
+	}
+
 	function level1(
 		env: MapsightStyleFunctionEnv,
 		props: MapsightStyleFunctionProps,
@@ -118,8 +145,18 @@ export default function createCachedStyleFunction({
 		geometryType: GeometryType,
 		metrics?: StyleFunctionMetrics,
 	): CachedValues {
+		const volatileHash = volatileHashFunction
+			? volatileHashFunction(
+					env,
+					props,
+					geometryType,
+					resolveStyleName(env),
+				)
+			: "";
 		const cacheHashL1 =
 			envHash +
+			HASH_STRING_DELIMITER +
+			volatileHash +
 			HASH_STRING_DELIMITER +
 			geometryType +
 			HASH_STRING_DELIMITER +
@@ -136,7 +173,15 @@ export default function createCachedStyleFunction({
 		if (!hasLevel1) {
 			cacheLevel1.set(
 				cacheHashL1,
-				level2(env, props, envHash, propsHash, geometryType, metrics),
+				level2(
+					env,
+					props,
+					envHash,
+					propsHash,
+					geometryType,
+					volatileHash,
+					metrics,
+				),
 			);
 		}
 
@@ -149,29 +194,21 @@ export default function createCachedStyleFunction({
 		envHash: string,
 		propsHash: string,
 		geometryType: GeometryType,
+		volatileHash: string,
 		metrics?: StyleFunctionMetrics,
 	): CachedValues {
-		let styleName: string = DEFAULT_STYLE;
+		const styleName = resolveStyleName(env);
 
-		const envStyle = env[STYLE_ENV_FIELD_NAME];
-		if (typeof envStyle === "string") {
-			if (allowedStyles === false) {
-				styleName = envStyle;
-			} else {
-				styleName =
-					allowedStyles.indexOf(envStyle) > -1
-						? envStyle
-						: DEFAULT_STYLE;
-			}
-		}
-
-		const cacheHashL2 = declarationHashFunction(
-			env,
-			props,
-			envHash,
-			geometryType,
-			styleName,
-		);
+		const cacheHashL2 =
+			declarationHashFunction(
+				env,
+				props,
+				envHash,
+				geometryType,
+				styleName,
+			) +
+			HASH_STRING_DELIMITER +
+			volatileHash;
 		if (cacheLevel2.containsKey(cacheHashL2)) {
 			if (metrics) {
 				metrics.level2Hits += 1;
@@ -309,6 +346,8 @@ export default function createCachedStyleFunction({
 				}
 			: undefined;
 
+		const exit = enterStyleFeatureScope(feature);
+
 		// subset of feature properties that are relevant for styling (also used for caching decisions)
 		const filteredProps = filterProps(feature.getProperties());
 		const envHashStart = hasMetricsCollector ? performance.now() : 0;
@@ -330,6 +369,8 @@ export default function createCachedStyleFunction({
 			feature.getGeometry() as Geometry,
 			metrics,
 		);
+
+		exit();
 
 		if (metrics && metricsCollector) {
 			metrics.outputStylesCount = styles.length;

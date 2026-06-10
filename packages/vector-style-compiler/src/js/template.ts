@@ -1,6 +1,7 @@
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 
+import createHelperImportsFromProgram from "./helpers/createHelperImportsFromProgram.ts";
 import createModulesMapFromDependencies from "./helpers/createModulesMapFromDependencies.ts";
 
 export type TemplateArgs<
@@ -16,6 +17,7 @@ export type TemplateArgs<
 	};
 	program1: string;
 	program2: string;
+	program0?: string;
 };
 export type Template<
 	TAdditionalData extends Record<string, unknown> = Record<string, unknown>,
@@ -31,16 +33,28 @@ const replaceTag = (content: string, tag: string, value: string) => {
 	return content.replace(new RegExp(pattern, "g"), () => value);
 };
 
-const defaultTemplate = ({__meta, program1, program2}: TemplateArgs) => {
+const defaultTemplate = ({
+	__meta,
+	program1,
+	program2,
+	program0 = "",
+}: TemplateArgs) => {
 	const {declarationNames, styleProps, styleNames} = __meta;
 	const {map: constructorMap, imports: styleImports} =
 		createModulesMapFromDependencies(declarationNames);
+	const helperImports = createHelperImportsFromProgram(
+		`${program0}\n${program1}\n${program2}`,
+	);
+	const combinedImports = [styleImports, helperImports]
+		.filter(Boolean)
+		.join("\n");
 
 	let result = "// @ts-nocheck\n" + templateSource;
-	result = replaceTag(result, "styleImports", styleImports);
+	result = replaceTag(result, "imports", combinedImports);
 	result = replaceTag(result, "constructorMap", constructorMap);
 	result = replaceTag(result, "styleNames", JSON.stringify(styleNames));
 	result = replaceTag(result, "styleProps", JSON.stringify(styleProps));
+	result = replaceTag(result, "program0", program0);
 	result = replaceTag(result, "program1", program1);
 	result = replaceTag(result, "program2", program2);
 

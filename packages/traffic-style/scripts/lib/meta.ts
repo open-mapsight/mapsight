@@ -18,6 +18,15 @@ export const IconGroupNameSchema = z.stringFormat(
 	/[0-9a-z-]+/,
 );
 
+export type IconRenderMode = z.infer<typeof IconRenderModeSchema>;
+export const IconRenderModeSchema = z.enum(["sprite", "composable"]);
+
+export type IconColors = z.infer<typeof IconColorsSchema>;
+export const IconColorsSchema = z.object({
+	background: z.string().optional(),
+	foreground: z.string().optional(),
+});
+
 export type IconMeta = z.infer<typeof IconMetaSchema>;
 export const IconMetaSchema = z.object({
 	// The label object has dynamic keys for languages (e.g., "de", "en", "en_US")
@@ -26,9 +35,15 @@ export const IconMetaSchema = z.object({
 	label: z.record(LangCodeSchema, z.string()).optional(),
 	aliases: z.array(IconIdSchema).optional(),
 	groups: z.array(IconGroupNameSchema).optional(),
+	render: IconRenderModeSchema.optional(),
+	colors: IconColorsSchema.optional(),
 	// The fallback field is optional.
 	fallback: IconIdSchema.optional(),
 });
+
+/** Authoring meta entries keyed by icon id (no embedded `id` field). */
+export type SourceIconMeta = z.infer<typeof SourceIconMetaSchema>;
+export const SourceIconMetaSchema = IconMetaSchema.omit({id: true});
 
 export type MetaData = z.infer<typeof DistMetaDataSchema>;
 export const DistMetaDataSchema = z.object({
