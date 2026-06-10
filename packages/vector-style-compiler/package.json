@@ -26,8 +26,8 @@
 		"pidusage": "catalog:",
 		"playwright": "catalog:",
 		"replace-in-file": "^8.4.0",
-		"sass": "^1.99.0",
-		"vite": "^8.0.13",
+		"sass": "^1.100.0",
+		"vite": "^8.0.16",
 		"vitest": "catalog:"
 	},
 	"exports": {

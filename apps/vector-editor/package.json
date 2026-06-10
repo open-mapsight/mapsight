@@ -35,7 +35,7 @@
 		"autoprefixer": "^10.5.0",
 		"postcss-import": "^16.1.1",
 		"postcss-nested": "^7.0.2",
-		"vite": "^8.0.13"
+		"vite": "^8.0.16"
 	},
 	"license": "UNLICENSED",
 	"repository": {
