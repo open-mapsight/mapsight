@@ -33,7 +33,7 @@ pre-optimized icon PNGs in the package. Icons with `"render": "composable"` in
 
 ### Example
 
-From a consuming app (similar to `apps/braunschweig`):
+From a consuming app (similar to a private host app under `private/apps/`):
 
 ```json
 {

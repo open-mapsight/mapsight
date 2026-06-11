@@ -1,0 +1,92 @@
+@use "../variables";
+@use "./runtime-icon-dimensions";
+
+@mixin runtimeIconSrc($state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT) {
+	[env|mapsightIconId] {
+		icon-src: calc(
+			mapsightRuntimeIcon(
+				attr(--env-mapsightIconId),
+				"#{$state}"
+			)
+		);
+
+		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+	}
+
+	[mapsightIconId] {
+		icon-src: calc(
+			mapsightRuntimeIcon(
+				attr(mapsightIconId),
+				"#{$state}"
+			)
+		);
+
+		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+	}
+
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_ENABLE_FORCE_BY_ENV {
+		[env|mapsightIconUse="force"] {
+			[env|mapsightIconId] {
+				icon-src: calc(
+					mapsightRuntimeIcon(
+						attr(--env-mapsightIconId),
+						"#{$state}"
+					)
+				);
+
+				@include runtime-icon-dimensions.runtimeIconDimensions($state);
+			}
+		}
+	}
+}
+
+@mixin runtimeIcon($state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT) {
+	[env|mapsightIconId] {
+		image-type: icon;
+
+		icon: {
+			scale: variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE;
+			src: calc(
+				mapsightRuntimeIcon(
+					attr(--env-mapsightIconId),
+					"#{$state}"
+				)
+			);
+			snapToPixel: true;
+		}
+
+		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+	}
+
+	[mapsightIconId] {
+		image-type: icon;
+
+		icon: {
+			scale: variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE;
+			src: calc(
+				mapsightRuntimeIcon(
+					attr(mapsightIconId),
+					"#{$state}"
+				)
+			);
+			snapToPixel: true;
+		}
+
+		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+	}
+
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_ENABLE_FORCE_BY_ENV {
+		[env|mapsightIconUse="force"] {
+			[env|mapsightIconId] {
+				icon-src: calc(
+					mapsightRuntimeIcon(
+						attr(--env-mapsightIconId),
+						"#{$state}"
+					)
+				);
+
+				@include runtime-icon-dimensions.runtimeIconDimensions($state);
+			}
+		}
+	}
+}

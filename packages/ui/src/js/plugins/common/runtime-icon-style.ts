@@ -1,14 +1,19 @@
 import {
+	bindRuntimeIconStyleFeatureScope,
 	onRuntimeIconChange,
 	setRuntimeIconMapRenderCallback,
 } from "@mapsight/traffic-style/runtime";
 
 import {MapController} from "@mapsight/core/lib/map/controller";
 
+import {addStyleFeatureScopeHooks} from "@mapsight/lib-ol/style/styleFeatureScope";
+
 import {MAP} from "../../config/constants/controllers";
 import type {PluginInstance} from "../../types";
 
 type MapLike = {render: () => void} | null | undefined;
+
+bindRuntimeIconStyleFeatureScope(addStyleFeatureScopeHooks);
 
 let unregisterRuntimeIconChangeListener: (() => void) | null = null;
 

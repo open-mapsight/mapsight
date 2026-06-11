@@ -53,7 +53,6 @@ overrides into `variables`:
 @use "@mapsight/traffic-style/src/scss/icons-2x" with (
 	$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH:
 		"/img/mapsight-traffic-style-icon-sprite-2x.png?v=2026-01-01",
-	$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED: true,
 	$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT: 14
 );
 
@@ -170,13 +169,12 @@ these zoom thresholds. The compact `mapsightIconId` string does not carry varian
 
 ### Runtime (composable) icons
 
-| Variable                                         | Default | Effect                                               |
-| ------------------------------------------------ | ------- | ---------------------------------------------------- |
-| `$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED` | `true`  | Emit `mapsightRuntimeIcon` rules in `features/_base` |
-| `$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE`    | `0.5`   | Icon scale for client-composed icons                 |
+| Variable                                      | Default | Effect                               |
+| --------------------------------------------- | ------- | ------------------------------------ |
+| `$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE` | `0.5`   | Icon scale for client-composed icons |
 
-When enabled, composable `mapsightIconId` values are drawn at runtime; sprite ids
-are still routed to the sheet via `auto-icon` mixins.
+Composable `mapsightIconId` values are drawn at runtime; sprite ids are still
+routed to the sheet via `auto-icon` mixins.
 
 ### Global geometry and labels
 

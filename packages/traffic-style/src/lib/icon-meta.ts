@@ -13,7 +13,8 @@ type SourceMeta = {
 const sourceMeta = meta as SourceMeta;
 
 export function getIconRenderMode(id: string): IconRenderMode {
-	const icon = sourceMeta.icons?.[id];
+	const baseId = id.split("/")[0]!;
+	const icon = sourceMeta.icons?.[baseId];
 	return icon?.render ?? "sprite";
 }
 

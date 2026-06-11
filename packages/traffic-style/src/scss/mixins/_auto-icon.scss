@@ -12,6 +12,22 @@
 	icon-src: variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH;
 }
 
+@mixin autoIconDefault(
+	$state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
+	$iconDefault: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_DEFAULT,
+	$icons: variables.$MAPSIGHT_TRAFFIC_STYLE__ICONS
+) {
+	// default fallback
+	$id: $iconDefault + "-" + $state;
+	$dimensions: map.get($icons, $id);
+	@if $dimensions {
+		@include spriteIconSrc;
+		@include get-icon-dimensions.getIconDimension($dimensions);
+	} @else {
+		@debug "Default icon not found: " + $id;
+	}
+}
+
 @mixin autoIcon(
 	$state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
 	$iconDefault: variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_DEFAULT,
@@ -19,15 +35,6 @@
 	$icons: variables.$MAPSIGHT_TRAFFIC_STYLE__ICONS
 ) {
 	$stateSuffix: "-" + $state;
-
-	// default fallback
-	$defaultName: $iconDefault + $stateSuffix;
-	$defaultDimensions: map.get($icons, $defaultName);
-	@if $defaultDimensions {
-		@include get-icon-dimensions.getIconDimension($defaultDimensions);
-	} @else {
-		@debug "Default icon not found: " + $defaultName;
-	}
 
 	// fallback icons
 	@each $fallbackId, $iconIds in $iconFallbackMap {
