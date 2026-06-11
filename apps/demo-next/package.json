@@ -5,7 +5,6 @@
 	"private": true,
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
-		"@mapsight/demo-shared": "workspace:^",
 		"@mapsight/lib-js": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
 		"@mapsight/traffic-style": "workspace:^",
@@ -39,7 +38,6 @@
 		"clean": "rimraf dist .next src/generated public/img/mapsight*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:*",
-		"copy:demo-data": "mkdirp public/combined-list && cp ../../packages/demo-shared/data/*.geojson public/combined-list/",
 		"copy:traffic-style": "mkdirp public/img && cp -R node_modules/@mapsight/traffic-style/img/* public/img/",
 		"copy:ui": "mkdirp public/img && cp -R node_modules/@mapsight/ui/dist/img/* public/img/",
 		"dev": "npm-run-all --parallel build:mapsightStyle copy --sequential dev:app",

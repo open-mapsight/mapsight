@@ -12,7 +12,6 @@ export const repoRoot = path.resolve(configDir, "..");
 /** Workspace packages resolved from source during Vite dev (serve). */
 export const workspacePackages = [
 	"@mapsight/core",
-	"@mapsight/demo-shared",
 	"@mapsight/ui",
 	"@mapsight/lib-js",
 	"@mapsight/lib-ol",
@@ -21,7 +20,6 @@ export const workspacePackages = [
 
 const packageSourceRoots = {
 	"@mapsight/core": path.join(repoRoot, "packages/core/src/js"),
-	"@mapsight/demo-shared": path.join(repoRoot, "packages/demo-shared/src"),
 	"@mapsight/ui": path.join(repoRoot, "packages/ui/src/js"),
 	"@mapsight/lib-js": path.join(repoRoot, "packages/lib-js/src/js"),
 	"@mapsight/lib-ol": path.join(repoRoot, "packages/lib-ol/src/js"),
