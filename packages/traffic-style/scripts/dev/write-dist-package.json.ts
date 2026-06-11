@@ -19,7 +19,12 @@ async function main() {
 	const raw = await readFile(sourcePath, "utf8");
 	const pkg = JSON.parse(raw) as PackageJson;
 
-	const {scripts, devDependencies, publishConfig, ...distPkg} = pkg;
+	const {
+		scripts: _scripts,
+		devDependencies: _devDependencies,
+		publishConfig: _publishConfig,
+		...distPkg
+	} = pkg;
 
 	if (
 		distPkg.imports &&
@@ -44,5 +49,5 @@ async function main() {
 
 main().catch((error: unknown) => {
 	console.error(error);
-	process.exit(1);
+	process.exitCode = 1;
 });

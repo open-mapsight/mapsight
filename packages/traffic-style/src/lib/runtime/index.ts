@@ -6,5 +6,6 @@ export {
 	addRuntimeIconMapRenderCallback,
 	mapsightRuntimeIcon,
 	bindRuntimeIconStyleFeatureScope,
+	onRuntimeIconChange,
 	setRuntimeIconMapRenderCallback,
 } from "./icon-style.ts";

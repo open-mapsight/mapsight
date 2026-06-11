@@ -6,7 +6,7 @@ describe("createHelperImportsFromProgram", () => {
 	it("imports runtime icon helpers when referenced in compiled programs", () => {
 		const imports = createHelperImportsFromProgram(
 			`if (props['mapsightIconId']) {
-				d.icon.src = { value: '' + (mapsightRuntimeIcon(props['mapsightIconId'], \"default\")) + '' };
+				d.icon.src = { value: '' + (mapsightRuntimeIcon(props['mapsightIconId'], "default")) + '' };
 			}`,
 		);
 		expect(imports).toContain("mapsightRuntimeIcon");

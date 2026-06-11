@@ -171,9 +171,7 @@ export default class EditorMixin extends Mixin<EditorMixinOptions> {
 				setInteractionSelections(
 					ensureNonNullable(this.controllers.map),
 					ensureNonNullable(this.ids.layer),
-					(status
-						? this.getSelections()
-						: {}) as InteractionsSelections,
+					status ? this.getSelections() : {},
 				),
 			set: (options: Partial<EditorMixinOptions> = {}) => {
 				const {

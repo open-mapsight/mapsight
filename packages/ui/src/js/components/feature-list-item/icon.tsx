@@ -2,10 +2,9 @@ import type {ElementType} from "react";
 import {memo} from "react";
 
 import {isComposableIcon} from "@mapsight/traffic-style/icon-meta";
-import {iconSpecFromMapsightIconId} from "@mapsight/traffic-style/runtime";
 
 import {siteConfig} from "../../config";
-import {useMapsightIcon} from "../../hooks/use-mapsight-icon";
+import {useMapsightIcon} from "../../hooks/useMapsightIcon";
 
 function SpriteMapsightIcon({id}: {id: string}) {
 	const iconFileName = `${id}-plain.png`;
@@ -18,10 +17,7 @@ function SpriteMapsightIcon({id}: {id: string}) {
 }
 
 function ComposableMapsightIcon({id}: {id: string}) {
-	const {src, error} = useMapsightIcon({
-		...iconSpecFromMapsightIconId(id),
-		variant: "plain",
-	});
+	const {src, error} = useMapsightIcon(id, "plain");
 
 	if (error) {
 		return <SpriteMapsightIcon id={id} />;

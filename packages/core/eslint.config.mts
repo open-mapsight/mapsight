@@ -5,6 +5,14 @@ import baseConfig from "../../configs/eslint-config-base.mts";
 export default defineConfig([
 	baseConfig,
 	{
+		ignores: [
+			"e2e/**",
+			"playwright.config.ts",
+			"**/*.test.ts",
+			"src/js/test/**",
+		],
+	},
+	{
 		name: "todos",
 		rules: {
 			// FIXME:
