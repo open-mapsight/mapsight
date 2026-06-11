@@ -1,12 +1,15 @@
 @use "sass:map";
+@use "../variables";
+
 @mixin getIconDimension($dimensions) {
+	$padding: variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PADDING;
 	$x: map.get($dimensions, x);
 	$y: map.get($dimensions, y);
 	$width: map.get($dimensions, width);
 	$height: map.get($dimensions, height);
 
-	icon-offsetX: $x;
-	icon-offsetY: $y;
-	icon-sizeX: $width;
-	icon-sizeY: $height;
+	icon-offsetX: $x + $padding;
+	icon-offsetY: $y + $padding;
+	icon-sizeX: $width - 2 * $padding;
+	icon-sizeY: $height - 2 * $padding;
 }

@@ -228,10 +228,8 @@ async function buildIcons(opts: Options): Promise<void> {
 	});
 	const composites = items.map((item) => ({
 		input: item.meta.buffer,
-		left: item.x,
-		top: item.y,
-		width: item.width,
-		height: item.height,
+		left: item.x + marginNum,
+		top: item.y + marginNum,
 	}));
 	await spriteSharp.composite(composites).png({effort: 10}).toFile(pngFile);
 	console.log(`Generated PNG: ${pngFile} (${layoutWidth}x${layoutHeight})`);
