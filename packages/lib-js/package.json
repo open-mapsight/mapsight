@@ -16,6 +16,9 @@
 			"import": "./dist/*.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
@@ -27,8 +30,7 @@
 		"lint": "eslint",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
-		"watch": "run-p watch:*",
-		"watch:cjs": "pnpm run build:cjs --watch",
-		"watch:esm": "pnpm run build:esm --watch"
+		"watch": "run-s build watch:build",
+		"watch:build": "tsc --project tsconfig.build.json --outDir dist --watch"
 	}
 }

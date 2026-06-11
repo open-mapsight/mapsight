@@ -24,7 +24,7 @@
 		"babel-plugin-react-compiler": "1.0.0",
 		"eslint-config-next": "16.2.6",
 		"postcss": "^8.5.14",
-		"sass": "^1.99.0",
+		"sass": "^1.100.0",
 		"tailwindcss": "catalog:"
 	},
 	"license": "UNLICENSED",

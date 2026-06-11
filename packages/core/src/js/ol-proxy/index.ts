@@ -1,12 +1,43 @@
 import isEqual from "lodash/isEqual";
 
-import type {Description, OptionValue, Options} from "@/lib/map/types";
+import {isDevelopment} from "@/lib/helpers/isDevelopment";
+import type {
+	Description,
+	LayerState,
+	OptionValue,
+	Options,
+} from "@/lib/map/types";
 import {isDescription} from "@/lib/map/types";
 
 import DependencyManager from "./DependencyManager";
 
+function isMapsightDebugEnabled(): boolean {
+	if (typeof process !== "undefined" && process.env.MAPSIGHT_DEBUG) {
+		const flag = process.env.MAPSIGHT_DEBUG;
+		return flag !== "0" && flag !== "false";
+	}
+
+	if (typeof import.meta !== "undefined") {
+		const flag = (
+			import.meta as ImportMeta & {env?: {MAPSIGHT_DEBUG?: string}}
+		).env?.MAPSIGHT_DEBUG;
+		return flag != null && flag !== "" && flag !== "0" && flag !== "false";
+	}
+
+	return false;
+}
+
+function olProxyDebug(...args: Parameters<typeof console.debug>) {
+	if (isDevelopment() || isMapsightDebugEnabled()) {
+		console.debug(...args);
+	}
+}
+
 export {isDescription} from "@/lib/map/types";
 export type {Description} from "@/lib/map/types";
+
+/** Config ingress or runtime layer definition accepted by ol-proxy. */
+export type LayerProxyDefinition = Description | LayerState;
 
 // TODO: use symbols?
 export const OPTION_SET = "__set__";
@@ -337,7 +368,7 @@ function hasSomeOptionChanged(
 		const hasChanged = !isEqual(newOptions[key], oldOptions[key]);
 
 		if (hasChanged) {
-			console.debug("ol-proxy: v UPDATE triggered by", key);
+			olProxyDebug("ol-proxy: v UPDATE triggered by", key);
 		}
 
 		return hasChanged;
@@ -395,8 +426,8 @@ export function updateProxyObject<
 	di: DependencyManager;
 	// TODO: remove "old" prefix, there's only one object, no "old" nor "new"
 	oldObject?: TObject;
-	oldDefinition?: Description;
-	newDefinition: Description;
+	oldDefinition?: LayerProxyDefinition;
+	newDefinition?: LayerProxyDefinition;
 	remover?: (object: TObject, parentObject?: TParentObject) => void;
 	adder?: (object: TObject, parentObject?: TParentObject) => void;
 	parentObject?: TParentObject;
@@ -450,7 +481,7 @@ export function updateProxyObject<
 			adder,
 			parentObject,
 		);
-		console.debug(
+		olProxyDebug(
 			"ol-proxy: CREATE",
 			creationReason === "new"
 				? "new"
@@ -482,7 +513,7 @@ export function updateProxyObject<
 				))) &&
 		object
 	) {
-		console.debug("ol-proxy: UPDATE", type);
+		olProxyDebug("ol-proxy: UPDATE", type);
 		setOptions(
 			object,
 			oldOptions,

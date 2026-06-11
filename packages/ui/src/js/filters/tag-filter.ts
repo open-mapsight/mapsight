@@ -1,8 +1,25 @@
+import {z} from "zod";
+
 import type {FilterFunction} from "@mapsight/core/lib/filter/types";
 
 import getPath from "@mapsight/lib-js/object/getPath";
 
 import type {MapsightUiFeature} from "../types";
+
+export const tagFilterConfigSchema = z.looseObject({
+	featureSourceId: z.string().optional(),
+	visibleTags: z
+		.record(
+			z.string(),
+			z.record(z.string(), z.record(z.string(), z.boolean())),
+		)
+		.optional(),
+	visibleTagGroups: z
+		.record(z.string(), z.record(z.string(), z.boolean()))
+		.optional(),
+});
+
+export type TagFilterState = z.infer<typeof tagFilterConfigSchema>;
 
 type CacheEntry = {
 	features: Array<MapsightUiFeature>;

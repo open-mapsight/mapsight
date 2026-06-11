@@ -4,19 +4,22 @@
 	"version": "5.0.6",
 	"type": "module",
 	"bin": {
+		"traffic-composable-icons": "scripts/traffic-composable-icons.js",
 		"traffic-icon-sprite": "scripts/traffic-icon-sprite.js",
 		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
 	"dependencies": {
+		"@fortawesome/free-solid-svg-icons": "^6.7.2",
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^5.0.0",
 		"fs-extra": "^11.3.5",
+		"lru-cache": "^11.2.2",
 		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
 		"sharp": "^0.34.5",
 		"svgo": "^4.0.1",
 		"vinyl": "^3.0.1",
-		"zod": "^4.4.3"
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
@@ -26,8 +29,53 @@
 		"markdown-table": "^2.0.0",
 		"vitest": "catalog:"
 	},
+	"exports": {
+		"./pictograms": {
+			"types": "./lib/pictograms/index.d.ts",
+			"default": "./lib/pictograms/index.js"
+		},
+		"./pictograms-fontawesome": {
+			"types": "./lib/pictograms/fontawesome.d.ts",
+			"default": "./lib/pictograms/fontawesome.js"
+		},
+		"./icon-meta": {
+			"types": "./lib/icon-meta.d.ts",
+			"default": "./lib/icon-meta.js"
+		},
+		"./icon": {
+			"types": "./lib/icon/index.d.ts",
+			"default": "./lib/icon/index.js"
+		},
+		"./runtime": {
+			"types": "./lib/runtime/index.d.ts",
+			"default": "./lib/runtime/index.js"
+		},
+		"./runtime-dev": {
+			"types": "./lib/runtime/runtime-dev.d.ts",
+			"default": "./lib/runtime/runtime-dev.js"
+		},
+		"./icon-style": {
+			"types": "./lib/runtime/icon-style.d.ts",
+			"default": "./lib/runtime/icon-style.js"
+		}
+	},
+	"imports": {
+		"#icon/*": "./dist/lib/icon/*"
+	},
 	"license": "UNLICENSED",
 	"main": "default.js",
+	"peerDependencies": {
+		"ol": "catalog:",
+		"react": "catalog:"
+	},
+	"peerDependenciesMeta": {
+		"ol": {
+			"optional": true
+		},
+		"react": {
+			"optional": true
+		}
+	},
 	"publishConfig": {
 		"directory": "dist",
 		"linkDirectory": true
@@ -36,26 +84,35 @@
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
 	"scripts": {
-		"build": "npm-run-all build:setup build:meta --parallel build:scripts build:icons build:icons2x build:iconsSvg build:docs --sequential build:icon-sprites build:styles copy",
+		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:icons2x build:iconsSvg build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
+		"build:composable-icons": "run-p build:composable-icons:*",
+		"build:composable-icons:1x": "node scripts/dev/build-composable-icons.ts --scale 1",
+		"build:composable-icons:2x": "node scripts/dev/build-composable-icons.ts --scale 2",
+		"build:composable-icons:svg": "node scripts/dev/build-composable-icons.ts svg",
 		"build:docs": "run-p build:docs:overview",
-		"build:docs:overview": "node scripts/create-overview-md.ts ./src/icons/ ../img/mapsight-icons-svg/ > dist/docs/overview.md",
+		"build:docs:overview": "node scripts/dev/create-overview-md.ts ./src/icons/ ../img/mapsight-icons-svg/ > dist/docs/overview.md",
 		"build:icon-sprites": "run-p build:icon-sprites:*",
 		"build:icon-sprites:1x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-1x",
 		"build:icon-sprites:2x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons-2x/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-2x",
 		"build:icons": "node scripts/optimize-icons.ts --src ./src/icons/ --dest ./dist/img/mapsight-icons/",
 		"build:icons2x": "node scripts/optimize-icons.ts --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
 		"build:iconsSvg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
-		"build:meta": "node scripts/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
-		"build:scripts": "tsc",
+		"build:meta": "node scripts/dev/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
+		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:pictograms:modules",
+		"build:pictograms:fontawesome": "node scripts/dev/import-fontawesome.ts",
+		"build:pictograms:modules": "tsc --project tsconfig.lib.json",
+		"build:pictograms:traffic-style": "node scripts/dev/import-pictograms.ts",
+		"build:scripts": "rimraf dist/scripts && tsc --project tsconfig.scripts.json",
 		"build:setup": "mkdirp dist/docs && mkdirp dist/img",
 		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.css dist",
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:src copy:misc",
-		"copy:misc": "cp package.json README.md *.scss dist/",
+		"copy:misc": "node scripts/dev/write-dist-package.json.ts && cp README.md base.scss full.scss dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
-		"lint": "eslint scripts",
-		"typecheck": "tsc --noEmit",
+		"lint": "eslint scripts scripts/dev src/lib/icon src/lib/runtime",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.lib.json",
 		"watch": "echo \"Currently traffic-style does not support watch\""
 	}
 }

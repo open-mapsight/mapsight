@@ -8,12 +8,14 @@ export type TreeLeaf = {
 	declarations?: DeclarationNode;
 	children: Child[];
 	stylePropExpressions?: Array<string>;
+	volatileCalcExpressions?: Array<string>;
 };
 
 export type Child = {
 	conditions: Array<Array<Check>>;
 	declarations?: DeclarationNode;
 	stylePropExpressions?: Array<string>;
+	volatileCalcExpressions?: Array<string>;
 };
 
 export type Tree = {
@@ -61,12 +63,18 @@ export default function rulesToTree(rules: Rules["rules"]) {
 						conditions: conditions,
 						declarations: rule.declarations,
 						stylePropExpressions: rule.__meta.stylePropExpressions,
+						volatileCalcExpressions:
+							rule.__meta.volatileCalcExpressions,
 					});
+					styleTree[state] = stateTree;
 					return;
 				}
 				stateTree.stylePropExpressions = (
 					stateTree.stylePropExpressions || []
 				).concat(rule.__meta.stylePropExpressions);
+				stateTree.volatileCalcExpressions = (
+					stateTree.volatileCalcExpressions || []
+				).concat(rule.__meta.volatileCalcExpressions);
 
 				stateTree.declarations = deepExtend(
 					stateTree.declarations || {},

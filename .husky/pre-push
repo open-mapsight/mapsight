@@ -1,0 +1,44 @@
+#!/usr/bin/env sh
+
+remote="$1"
+
+# Block pushing private/* branches to any remote except "private".
+if [ "$remote" != "private" ]; then
+	blocked=""
+
+	while read -r local_ref local_sha remote_ref remote_sha; do
+		[ -z "$local_ref" ] && continue
+
+		# Allow deleting private branches from non-private remotes (cleanup after accidents).
+		if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+			continue
+		fi
+
+		local_branch="${local_ref#refs/heads/}"
+		remote_branch="${remote_ref#refs/heads/}"
+
+		case "$local_branch" in
+		private/*)
+			blocked="${blocked}
+  - ${local_branch}"
+			;;
+		esac
+
+		case "$remote_branch" in
+		private/*)
+			if ! printf '%s' "$blocked" | grep -Fq "  - ${remote_branch}"; then
+				blocked="${blocked}
+  - ${remote_branch}"
+			fi
+			;;
+		esac
+	done
+
+	if [ -n "$blocked" ]; then
+		echo "error: refusing to push private branches to remote '$remote'."
+		echo "Use the private remote instead, for example:"
+		echo "  git push private <branch>"
+		printf 'Blocked branch(es):%s\n' "$blocked"
+		exit 1
+	fi
+fi

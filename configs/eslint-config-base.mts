@@ -32,6 +32,8 @@ export default defineConfig([
 						"eslint.config.mts",
 						"gulpfile.mts",
 						"vite.config.ts",
+						"vite.config.mts",
+						"vitest.config.ts",
 						"prettier.config.mjs",
 						"postcss.config.mts",
 					],

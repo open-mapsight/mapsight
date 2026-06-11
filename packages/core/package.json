@@ -11,19 +11,25 @@
 		"eventemitter3": "^5.0.4",
 		"lodash": "catalog:",
 		"minimatch": "^10.2.5",
-		"redux-batched-actions": "catalog:"
+		"redux-batched-actions": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@playwright/test": "catalog:",
 		"@redux-devtools/extension": "^3.3.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/jsdom": "catalog:",
 		"@types/lodash": "catalog:",
 		"@types/node": "catalog:",
+		"canvas": "catalog:",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
+		"playwright": "catalog:",
 		"proj4": "catalog:",
 		"tsc-alias": "^1.8.17",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vite": "^8.0.14",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		".": {
@@ -37,6 +43,18 @@
 		"./lib/*": {
 			"types": "./dist/lib/*.d.ts",
 			"import": "./dist/lib/*.js"
+		},
+		"./lib/*/*": {
+			"types": "./dist/lib/*/*.d.ts",
+			"import": "./dist/lib/*/*.js"
+		},
+		"./lib/*/lib/*": {
+			"types": "./dist/lib/*/lib/*.d.ts",
+			"import": "./dist/lib/*/lib/*.js"
+		},
+		"./lib/*/schema": {
+			"types": "./dist/lib/*/schema.d.ts",
+			"import": "./dist/lib/*/schema.js"
 		},
 		"./lib/helpers": {
 			"types": "./dist/lib/helpers/index.d.ts",
@@ -57,8 +75,15 @@
 		"./env/ssr-simulated-browser": {
 			"types": "./dist/env/ssr-simulated-browser.d.ts",
 			"import": "./dist/env/ssr-simulated-browser.js"
+		},
+		"./schema": {
+			"types": "./dist/schema/index.d.ts",
+			"import": "./dist/schema/index.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
 		"@redux-devtools/extension": "^3.3.0",
@@ -90,10 +115,13 @@
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
+		"test": "vitest run",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",
-		"watch:build:modules": "tsc --watch",
+		"watch:build:modules": "tsc --watch --preserveWatchOutput",
 		"watch:build:paths": "tsc-alias --watch"
 	}
 }

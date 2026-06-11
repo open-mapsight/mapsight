@@ -26,8 +26,8 @@
 		"pidusage": "catalog:",
 		"playwright": "catalog:",
 		"replace-in-file": "^8.4.0",
-		"sass": "^1.99.0",
-		"vite": "^8.0.13",
+		"sass": "^1.100.0",
+		"vite": "^8.0.14",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -40,6 +40,10 @@
 			"default": "./dist/*.js"
 		}
 	},
+	"files": [
+		"dist",
+		"bin"
+	],
 	"license": "UNLICENSED",
 	"main": "./dist/index.js",
 	"peerDependencies": {
@@ -52,7 +56,7 @@
 	},
 	"scripts": {
 		"bench": "node __tests__/performance.engines.bench.ts",
-		"build": "run-s build:setup build:modules",
+		"build": "run-s build:setup build:modules copy:templates",
 		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist",
@@ -64,7 +68,7 @@
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"update-readme": "node scripts/update-readme.mts",
-		"watch": "tsc --watch"
+		"watch": "run-s copy:templates \"tsc -p tsconfig.build.json --watch\""
 	},
 	"types": "./dist/index.d.ts"
 }

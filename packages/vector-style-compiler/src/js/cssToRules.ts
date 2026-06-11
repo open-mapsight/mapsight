@@ -44,6 +44,10 @@ export default function cssToRules(content: string) {
 			declarationNames: collectMeta(rules, "declarationNames"),
 			styleProps: collectMeta(rules, "styleProps"),
 			stylePropExpressions: collectMeta(rules, "stylePropExpressions"),
+			volatileCalcExpressions: collectMeta(
+				rules,
+				"volatileCalcExpressions",
+			),
 		},
 	};
 }

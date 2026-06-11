@@ -8,6 +8,7 @@ import {ProjectionsController} from "@mapsight/core/lib/projections/controller";
 import {UserGeolocationController} from "@mapsight/core/lib/user-geolocation/controller";
 
 import * as c from "../config/constants/controllers";
+import type {mapsightConfigSchemas} from "../config/schema";
 import {createTagFilterFunction} from "../filters/tag-filter";
 import timeFilter from "../filters/time-filter";
 import type {MapsightUiContext} from "../types";
@@ -32,5 +33,5 @@ export function createDefaultControllers(
 		[c.FEATURE_SELECTIONS]: new FeatureSelectionsController(
 			c.FEATURE_SELECTIONS,
 		),
-	};
+	} satisfies Record<keyof typeof mapsightConfigSchemas, BaseController>;
 }

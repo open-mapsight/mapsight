@@ -1,4 +1,4 @@
-import {async, controlled, set} from "../../base/actions";
+import {async, controlled, quiet, set} from "../../base/actions";
 import WithMap from "./WithMap";
 
 export default class WithSize extends WithMap {
@@ -19,7 +19,9 @@ export default class WithSize extends WithMap {
 					oldValue[0] !== newValue[0] ||
 					oldValue[1] !== newValue[1])
 			) {
-				this.dispatch(controlled(async(set([name, "size"], newValue))));
+				this.dispatch(
+					quiet(controlled(async(set([name, "size"], newValue)))),
+				);
 			}
 		});
 	}

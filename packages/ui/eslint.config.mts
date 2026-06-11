@@ -5,6 +5,9 @@ import baseConfig from "../../configs/eslint-config-base-react.mts";
 export default defineConfig([
 	baseConfig,
 	{
+		ignores: ["**/*.test.ts"],
+	},
+	{
 		name: "todos",
 		rules: {
 			// FIXME:

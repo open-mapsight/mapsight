@@ -30,6 +30,9 @@
 			"import": "./dist/reducers/immutable-path/index.js"
 		}
 	},
+	"files": [
+		"dist"
+	],
 	"license": "UNLICENSED",
 	"main": "index.js",
 	"repository": {
@@ -43,8 +46,7 @@
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"typecheck": "tsc --noEmit",
-		"watch": "run-p watch:*",
-		"watch:copy": "pnpm run build:copy --watch",
-		"watch:modules": "pnpm run build:modules --watch"
+		"watch": "run-s build:setup build:modules watch:build",
+		"watch:build": "tsc --watch"
 	}
 }

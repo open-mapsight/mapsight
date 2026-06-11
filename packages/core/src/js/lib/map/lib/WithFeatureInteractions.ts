@@ -1,11 +1,13 @@
 import type Feature from "ol/Feature";
 
 import forEach from "lodash/forEach";
+import isEqual from "lodash/isEqual";
 import type {MapBrowserEvent} from "ol";
 import {batchActions} from "redux-batched-actions";
 
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 
+import {quiet} from "@/lib/base/actions";
 import {
 	deselect,
 	select,
@@ -15,13 +17,19 @@ import type {FeatureSelectionsState} from "@/lib/feature-selections/selectors";
 import {getOlFeatureId} from "@/lib/helpers/ol";
 import {typeSafeObjectKeys} from "@/lib/helpers/types";
 import type {MapController} from "@/lib/map/controller";
-import type {InteractionName, MapState} from "@/lib/map/types";
+import type {MapState} from "@/lib/map/types";
 import type {Action} from "@/types";
 
 import {setMapCursor} from "../actions";
 import {makeLayerSelectionSelector} from "../selectors";
 import WithMap from "./WithMap";
+import {
+	type FeatureInteractionName,
+	FeatureInteractionNames,
+} from "./featureInteractionNames";
 import {getIdForLayer} from "./tagLayer";
+
+export {FeatureInteractionNames, type FeatureInteractionName};
 
 type MapEventEmitter = Pick<
 	MapController,
@@ -56,16 +64,37 @@ type AnyFeatureInteractionOptions = FeatureInteractionOptions &
 	FeatureInteractionOverrides;
 
 export type FeatureInteraction = {
-	selection: InteractionName;
+	selection: FeatureInteractionName;
 	options: AnyFeatureInteractionOptions;
 };
 
-export type FeatureInteractions = Record<InteractionName, FeatureInteraction>;
+export type FeatureInteractions = Record<
+	FeatureInteractionName,
+	FeatureInteraction
+>;
 
 const FEATURE_PROPERTY_NAME_SELECTABLE = "selectable";
 
 // TODO: Keep default?
 const defaultFeatureSelectionsControllerName = "featureSelections";
+const HIGHLIGHT_SELECTION_ID = "highlight";
+
+/** See {@link createHandler} — matches `enableAsyncDispatch` deferral timing elsewhere. */
+const FEATURE_INTERACTION_DISPATCH_DELAY_MS = 10;
+
+type PendingInteractionDispatch = {
+	actions: Array<Action>;
+	cursorAction: Action | null;
+};
+
+type HandleEventResult = {
+	cache: FeatureInteractionEventCache | null;
+	pendingDispatch: PendingInteractionDispatch | null;
+};
+
+function quietIfHighlight(action: Action, selectionId: string) {
+	return selectionId === HIGHLIGHT_SELECTION_ID ? quiet(action) : action;
+}
 
 // TODO: Support button_s_?
 // See https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
@@ -141,9 +170,9 @@ const defaultFeatureInteractions = {
 
 function getSelectionId(
 	layerId: string,
-	interactionName: InteractionName,
+	interactionName: FeatureInteractionName,
 	state: MapState,
-) {
+): string | undefined {
 	return makeLayerSelectionSelector(layerId, interactionName)(state);
 }
 
@@ -211,33 +240,33 @@ type FeatureInteractionEventCache = {
  * @param [options.selectExclusively=true] set to false to keep uncontrolled selections
  * @param [options.removeUncontrolled=false] set to true to remove selections when they were not done through this interaction handler
  * @param [options.hitTolerance=5] pixel tolerance when determining hit features
- * @param cache previous cache object controlled by parent
+ * @param cache hover state used to diff the next hit; see {@link createHandler}
  * @param event openlayers event object
  *
- * @returns {FeatureInteractionEventCache|null} new cache object to be kept by parent
+ * @returns computed hover state and any redux actions to dispatch (may be deferred)
  */
 function handleEvent(
 	mapController: MapEventEmitter,
 	featureSelectionsControllerName: string,
-	interactionName: InteractionName,
+	interactionName: FeatureInteractionName,
 	options: FeatureInteractionOptions = {},
 	cache: FeatureInteractionEventCache | null = null,
 	event: MapBrowserEvent,
-): FeatureInteractionEventCache | null {
+): HandleEventResult {
 	if (!interactionName) {
-		return cache;
+		return {cache, pendingDispatch: null};
 	}
 
 	// TODO: Move code accessing ._map to the controller?
 	const map = mapController.getMap();
 	if (!map) {
-		return cache;
+		return {cache, pendingDispatch: null};
 	}
 
 	// TODO: Allow interaction during animation for some event types?
 	const view = map.getView();
 	if (!view || view.getAnimating() || view.getInteracting()) {
-		return cache;
+		return {cache, pendingDispatch: null};
 	}
 
 	if (event.originalEvent) {
@@ -245,7 +274,7 @@ function handleEvent(
 		const appliedOptions = overrideOptionsForEvent(options, originalEvent);
 
 		if (appliedOptions === false) {
-			return cache;
+			return {cache, pendingDispatch: null};
 		}
 	}
 
@@ -332,7 +361,10 @@ function handleEvent(
 			if (shouldBeAdded) {
 				hasAdded = true;
 				actions.push(
-					selectAction(featureSelectionsControllerName, s, f),
+					quietIfHighlight(
+						selectAction(featureSelectionsControllerName, s, f),
+						s,
+					),
 				);
 			}
 		});
@@ -345,7 +377,12 @@ function handleEvent(
 			// Determine if the cached feature selection is invalid by comparing with new selection
 			const shouldBeRemoved = newSelections[s] !== f;
 			if (shouldBeRemoved) {
-				actions.push(deselect(featureSelectionsControllerName, s, f));
+				actions.push(
+					quietIfHighlight(
+						deselect(featureSelectionsControllerName, s, f),
+						s,
+					),
+				);
 			}
 		});
 	}
@@ -366,14 +403,17 @@ function handleEvent(
 				)
 				.forEach((f) =>
 					actions.push(
-						deselect(featureSelectionsControllerName, s, f),
+						quietIfHighlight(
+							deselect(featureSelectionsControllerName, s, f),
+							s,
+						),
 					),
 				);
 		});
 	}
 
 	if (!actions.length) {
-		return cache;
+		return {cache, pendingDispatch: null};
 	}
 
 	let cursorAction: Action | null = null;
@@ -383,26 +423,53 @@ function handleEvent(
 		}
 
 		if (!cache || newCursor !== cache.cursor) {
-			cursorAction = setMapCursor(mapController.getName(), newCursor);
+			cursorAction = quiet(
+				setMapCursor(mapController.getName(), newCursor),
+			);
 		}
 	}
 
-	// TODO: Check and document why we delay using setTimeout!
-	setTimeout(function () {
-		if (cursorAction) {
-			mapController.dispatch(cursorAction);
-		}
-
-		if (actions.length === 1) {
-			mapController.dispatch(ensureNonNullable(actions[0]));
-		} else {
-			mapController.dispatch(batchActions(actions));
-		}
-	}, 10);
-
-	return {selections: newSelections, cursor: newCursor};
+	return {
+		cache: {selections: newSelections, cursor: newCursor},
+		pendingDispatch: {actions, cursorAction},
+	};
 }
 
+function dispatchInteractionActions(
+	mapController: MapEventEmitter,
+	pendingDispatch: PendingInteractionDispatch,
+) {
+	if (pendingDispatch.cursorAction) {
+		mapController.dispatch(pendingDispatch.cursorAction);
+	}
+
+	if (pendingDispatch.actions.length === 1) {
+		mapController.dispatch(ensureNonNullable(pendingDispatch.actions[0]));
+	} else {
+		mapController.dispatch(batchActions(pendingDispatch.actions));
+	}
+}
+
+/**
+ * Returns an OL event handler that maps pointer hits to feature-selection actions.
+ *
+ * **Deferred dispatch.** Selection actions are not dispatched synchronously inside the
+ * OL event handler. Each new event cancels any pending dispatch and schedules a fresh
+ * one after {@link FEATURE_INTERACTION_DISPATCH_DELAY_MS}. That serves two purposes:
+ *
+ * 1. **Hover coalescing** — rapid `pointermove` across hit-tolerance edges (see default
+ *    `hitTolerance: 5`) would otherwise select/deselect on every pixel. A short window
+ *    lets a brief miss be cancelled when the pointer re-enters the feature.
+ * 2. **Defer out of the OL stack** — dispatching immediately would run selection
+ *    observers (style / `FeatureSelectionConnector`) during `pointermove`. This mirrors
+ *    the motivation for `async()` elsewhere, but hover needs cancel-on-new-event, not
+ *    the action queue that `enableAsyncDispatch` provides.
+ *
+ * **Cache update.** When a dispatch is pending, in-memory `cache` is not updated until
+ * the timeout fires. Otherwise a follow-up move off the feature can cancel the pending
+ * deselect while `cache` is already empty, leaving highlight stuck in redux (see
+ * `highlight-hover.test.ts` / `e2e/highlight.spec.ts`).
+ */
 function createHandler(
 	mapController: MapEventEmitter,
 	featureSelectionsControllerName: string,
@@ -413,8 +480,19 @@ function createHandler(
 	}
 
 	let cache: FeatureInteractionEventCache | null = null;
+	let pendingDispatchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	const clearPendingDispatch = () => {
+		if (pendingDispatchTimeout !== null) {
+			clearTimeout(pendingDispatchTimeout);
+			pendingDispatchTimeout = null;
+		}
+	};
+
 	return function interactionHandler(event: MapBrowserEvent) {
-		cache = handleEvent(
+		clearPendingDispatch();
+
+		const {cache: nextCache, pendingDispatch} = handleEvent(
 			mapController,
 			featureSelectionsControllerName,
 			options.selection,
@@ -422,6 +500,16 @@ function createHandler(
 			cache,
 			event,
 		);
+
+		if (pendingDispatch) {
+			pendingDispatchTimeout = setTimeout(() => {
+				pendingDispatchTimeout = null;
+				cache = nextCache;
+				dispatchInteractionActions(mapController, pendingDispatch);
+			}, FEATURE_INTERACTION_DISPATCH_DELAY_MS);
+		} else {
+			cache = nextCache;
+		}
 	};
 }
 
@@ -436,7 +524,7 @@ export default class WithFeatureInteractions extends WithMap {
 		}
 
 		const handlers: Record<
-			InteractionName,
+			FeatureInteractionName,
 			ReturnType<typeof createHandler>
 		> = {
 			mouseover: null,
@@ -447,7 +535,7 @@ export default class WithFeatureInteractions extends WithMap {
 		this.getAndObserveUncontrolled(
 			(state) => ({
 				featureInteractions: state.featureInteractions as Record<
-					InteractionName,
+					FeatureInteractionName,
 					FeatureInteraction
 				>,
 				featureSelectionsControllerName:
@@ -477,6 +565,7 @@ export default class WithFeatureInteractions extends WithMap {
 					),
 				});
 			},
+			isEqual,
 		);
 
 		map.on("pointermove", function onPointerMove(e) {

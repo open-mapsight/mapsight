@@ -1,6 +1,7 @@
 import type {ElementType} from "react";
 import {memo, useCallback} from "react";
 
+import type {ActionPath} from "@mapsight/core/lib/base/actions";
 import {
 	layerIdsIntegratedSwitcherSelector,
 	makeFeatureSourceFromLayerIdSelector,
@@ -26,7 +27,7 @@ export type LayerSwitcherContainerProps = {
 	onClose?: () => void;
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
-	setFeatureSourceIdPath?: unknown;
+	setFeatureSourceIdPath?: ActionPath | null;
 };
 
 function LayerSwitcherContainer({
@@ -35,12 +36,11 @@ function LayerSwitcherContainer({
 	onClose,
 	layerIdsSelector = layerIdsIntegratedSwitcherSelector,
 	grouped = false,
-	setFeatureSourceIdPath: _,
+	setFeatureSourceIdPath,
 	...attributes
 }: LayerSwitcherContainerProps) {
 	const renderLayerEntry = useCallback(
-		(id) => (
-			// TODO: memo comp instance & selectors
+		(id: string) => (
 			<LayerSwitcherEntry
 				key={id}
 				layerId={id}
@@ -51,9 +51,10 @@ function LayerSwitcherContainer({
 				featureSourceIdSelector={makeFeatureSourceIdFromLayerIdSelector(
 					id,
 				)}
+				setFeatureSourceIdPath={setFeatureSourceIdPath}
 			/>
 		),
-		[],
+		[setFeatureSourceIdPath],
 	);
 
 	const Switcher = grouped ? GroupedLayerSwitcher : LayerSwitcher;

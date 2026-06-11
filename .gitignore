@@ -11,6 +11,7 @@ node_modules/
 /apps/*/tmp/
 /packages/*/tmp/
 .turbo/
+tsconfig.node.tsbuildinfo
 
 # built files that get distributed
 /apps/*/dist/
@@ -35,6 +36,11 @@ node_modules/
 
 # local files
 *.local
+
+# Test runners (Playwright, etc.)
+test-results/
+playwright-report/
+blob-report/
 
 # Logs
 logs

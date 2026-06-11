@@ -1,3 +1,3 @@
-export type ListState = {
-	featureSource?: string;
-};
+import type {ListConfig} from "@/lib/list/schema";
+
+export type ListState = ListConfig;

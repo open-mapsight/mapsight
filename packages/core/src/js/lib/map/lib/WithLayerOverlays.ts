@@ -32,26 +32,28 @@ export default class WithLayerOverlays extends WithMap {
 
 		const updateLayerOverlay = (
 			id: string,
-			newDefinition: LayerDefinition,
-			oldDefinitions: LayerDefinition,
+			newDefinition: LayerDefinition | undefined,
+			oldDefinitions: Record<string, LayerDefinition>,
 		) => {
 			const oldDefinition = oldDefinitions[id];
-			newDefinition = newDefinition && {
+			const overlayDefinition = newDefinition && {
 				zIndex: Z_INDEX_OVERLAY,
 				...newDefinition,
 			};
 
 			// update overlay
 			// TODO: make overlay optional?
-			const featureSelections = newDefinition?.options?.selections;
+			const featureSelections = overlayDefinition?.options?.selections;
 			updateProxyObject({
 				di: di,
 				oldObject: this._overlays[id],
-				oldDefinition: {...oldDefinition, type: LAYER_TYPE},
-				newDefinition: featureSelections && {
-					...newDefinition,
-					type: LAYER_TYPE,
-				},
+				oldDefinition: oldDefinition
+					? {...oldDefinition, type: LAYER_TYPE}
+					: undefined,
+				newDefinition:
+					featureSelections && overlayDefinition
+						? {...overlayDefinition, type: LAYER_TYPE}
+						: undefined,
 				remover: () => {
 					this._overlays[id]?.setMap(null);
 					delete this._overlays[id];

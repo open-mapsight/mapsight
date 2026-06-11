@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-	<g fill="none" fill-rule="evenodd">
-		<rect width="25" height="25" x="7.5" y="7.5" fill="#FFF" stroke="#000" rx="4" />
-		<text fill="#000" font-family="Arial-BoldMT, Arial" font-size="18" font-weight="bold">
-			<tspan x="13.5" y="26">K</tspan>
-		</text>
-	</g>
-</svg>

@@ -1,0 +1,60 @@
+{
+	"name": "@mapsight/showcase",
+	"description": "Mapsight ecosystem showcase — UI demo, icon catalog, and package overview",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@mapsight/core": "workspace:^",
+		"@mapsight/lib-js": "workspace:^",
+		"@mapsight/lib-ol": "workspace:^",
+		"@mapsight/lib-redux": "workspace:^",
+		"@mapsight/traffic-style": "workspace:^",
+		"@mapsight/ui": "workspace:^",
+		"breakpoint-sass": "^3.0.0",
+		"lodash": "catalog:",
+		"ol": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"react-redux": "catalog:",
+		"react-router-dom": "^7.15.0",
+		"reselect": "catalog:",
+		"tailwindcss": "catalog:"
+	},
+	"devDependencies": {
+		"@mapsight/vector-style-compiler": "workspace:^",
+		"@tailwindcss/vite": "^4.3.0",
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"mkdirp": "^3.0.1",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^6.1.3",
+		"terser": "^5.47.1",
+		"typescript": "catalog:",
+		"vite": "^8.0.14"
+	},
+	"license": "UNLICENSED",
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
+	"scripts": {
+		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
+		"build:app": "vite build --mode production --minify terser",
+		"build:mapsightStyle": "npm-run-all build:mapsightStyle:*",
+		"build:mapsightStyle:demo": "vector-style-compiler src/vector-styles/demo.scss --output src/generated/mapsight-vector-styles --name demo",
+		"build:mapsightStyle:icons": "vector-style-compiler src/vector-styles/icon-demo.scss --output src/generated/mapsight-vector-styles --name icon-demo",
+		"clean": "rimraf dist node_modules/.vite src/generated public/img/mapsight*",
+		"clean-build": "run-s clean build",
+		"copy": "run-p copy:*",
+		"copy:traffic-style": "mkdirp public/img && cp -R node_modules/@mapsight/traffic-style/img/* public/img/",
+		"copy:ui": "mkdirp public/img && cp -R node_modules/@mapsight/ui/dist/img/* public/img/",
+		"dev": "npm-run-all --parallel build:mapsightStyle copy --sequential dev:app",
+		"dev:app": "vite",
+		"dev:linked": "npm-run-all --parallel dev:packages dev",
+		"dev:packages": "turbo watch watch --filter=@mapsight/core --filter=@mapsight/ui --filter=@mapsight/lib-js --filter=@mapsight/lib-ol --filter=@mapsight/lib-redux",
+		"lint": "eslint",
+		"start": "vite preview",
+		"typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
+	}
+}

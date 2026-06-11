@@ -1,4 +1,3 @@
-*
-!/bin/*
-!/dist/**/*
-!/src/**/*
+# Publish surface is package.json "files" (dist + bin).
+**/__tests__/**
+**/*.test.*

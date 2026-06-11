@@ -6,6 +6,7 @@ bak
 
 # temporary files created by build process
 /tmp/
+/src/generated/
 
 # built files that get distributed
 /dist/

@@ -7,6 +7,7 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: [],
 			styleProps: [],
+			volatileCalcExpressions: [],
 		},
 		value: 1,
 	});
@@ -14,6 +15,7 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: [],
 			styleProps: [],
+			volatileCalcExpressions: [],
 		},
 		value: "'rgba(0,0, 0, 0.4)'",
 	});
@@ -21,6 +23,7 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: [],
 			styleProps: [],
+			volatileCalcExpressions: [],
 		},
 		value: "'' + env['test'] + ''",
 	});
@@ -28,6 +31,7 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: ["get(props, ['path', 'to', 'test'])"],
 			styleProps: ["path"],
+			volatileCalcExpressions: [],
 		},
 		value: "'' + get(props, ['path', 'to', 'test']) + ''",
 	});
@@ -35,6 +39,7 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: [],
 			styleProps: [],
+			volatileCalcExpressions: [],
 		},
 		value: "'' + (10 + 50) + ''",
 	});
@@ -42,7 +47,20 @@ it("mapValue", () => {
 		__meta: {
 			stylePropExpressions: ["props['test']"],
 			styleProps: ["test"],
+			volatileCalcExpressions: [],
 		},
 		value: "'' + (props['test'] + get(env, ['to', 'test'])) + ''",
+	});
+	expect(
+		mapValue('calc(mapsightRuntimeIcon(attr(mapsightIconId), "default"))'),
+	).toStrictEqual({
+		__meta: {
+			stylePropExpressions: ["props['mapsightIconId']"],
+			styleProps: ["mapsightIconId"],
+			volatileCalcExpressions: [
+				"mapsightRuntimeIcon(props['mapsightIconId'], \"default\")",
+			],
+		},
+		value: "'' + (mapsightRuntimeIcon(props['mapsightIconId'], \"default\")) + ''",
 	});
 });

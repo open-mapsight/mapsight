@@ -1,0 +1,166 @@
+@use "~@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-borderRadius: 0,
+	$ms3-option-mapOverlayButtonsShowLabel: false,
+	$ms3-rem-px-ratio: 13,
+);
+@use "~@mapsight/ui/src/scss/reset";
+@use "~@mapsight/ui/src/scss/default";
+@use "~@mapsight/ui/src/scss/themes/2022-03" as theme;
+
+.ms3-wrapper--desktop .ms3-map-wrapper {
+	min-height: 500px;
+}
+
+html {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 0.825em;
+}
+
+.ms3-list__info,
+.ms3-feature-details-content {
+	line-height: 1.5;
+
+	ul,
+	ol,
+	table,
+	p {
+		margin: 0.5em 0;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-weight: bold;
+	}
+}
+
+.ms3-feature-selection-info {
+	&__header {
+		padding: 10px 40px 10px 10px;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+	}
+
+	&__headline {
+		font-size: variables.$ms3-fontSizeHeadline;
+		font-weight: bold;
+		line-height: 1.3;
+	}
+
+	&__content {
+		padding: 10px;
+	}
+}
+
+.ms3-map-row {
+	border: 1px solid variables.$ms3-borderColor;
+}
+
+.ms3-panel-wrapper {
+}
+
+.ms3-panel-container {
+	overflow: hidden;
+}
+
+.ms3-panel {
+	&--docked-left {
+		border-right: 1px solid variables.$ms3-borderColor;
+	}
+}
+
+.ms3-map-wrapper {
+	.ms3-wrapper--desktop & {
+		min-height: theme.$ms3-theme-desktop-map-min-height;
+	}
+}
+
+.ms3-attribution {
+	padding: 4px 7px;
+}
+
+.ms3-list {
+	&__item {
+		&:not(:first-of-type) {
+			border-top: 1px solid variables.$ms3-borderColor;
+		}
+
+		&__head {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 10px;
+		}
+
+		&--highlight,
+		&--preselected {
+			background: #f5f5f5;
+		}
+
+		&--selected {
+			background: #eee;
+		}
+	}
+
+	&__icon {
+	}
+
+	&__main {
+		font-size: variables.$ms3-fontSizeHeadline;
+		font-weight: bold;
+	}
+
+	&__info {
+		display: block;
+		width: 100%;
+		padding: {
+			top: 5px;
+			bottom: 5px;
+			right: 10px;
+			left: 42px;
+		}
+	}
+}
+
+.ms3-list-header {
+	padding: 10px 0;
+
+	.ms3-features-sorting {
+		position: absolute;
+		top: 0;
+		right: 0;
+		text-align: right;
+	}
+}
+
+.ms3-switcher-header {
+	&__label {
+		font-weight: bold;
+	}
+}
+
+.ms3-layer-switcher-container {
+	.ms3-layer-switcher-overlay & {
+		top: 5px;
+	}
+}
+
+.ms3-tool-overlay {
+	&__text {
+		max-width: 360px;
+	}
+}
+
+.ms3-measure-distance {
+	border-top: 1px solid #ccc;
+	padding: 10px 6px 10px 6px;
+}
+
+// ---------------- BS -----------------------
+
+.bs-contact__header {
+	display: none;
+}

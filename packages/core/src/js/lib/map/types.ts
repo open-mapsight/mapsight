@@ -1,67 +1,60 @@
 import type OlLayer from "ol/layer/Layer";
 
+import type {OptionValue, Options} from "@/lib/helpers/schema";
 import type {VectorFeatureSource} from "@/lib/map/lib/VectorFeatureSource";
 import type {ViewportAnchor} from "@/lib/map/lib/WithAnchoredViewport";
+import {
+	type Description,
+	type InteractionsSelections,
+	type LayerConfig,
+	type LayerMetaData,
+	type LayerOptions,
+	type LayerSourceState,
+	type VectorFeatureSourceOptions,
+	type VectorFeatureSourceState,
+	descriptionSchema,
+	vectorFeatureSourceStateSchema,
+} from "@/lib/map/schema";
 
-// TODO: find a better name? "TargetState"?
-/** Describes the target state of an ol object (comparable to one entry in the vdom of react) */
-export type Description = {
-	type: string;
-	options?: Options;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	metaData?: any; // TODO: type the metadata
+export type {
+	Description,
+	InteractionsSelections,
+	LayerMetaData,
+	LayerOptions,
+	LayerSourceState,
+	OptionValue,
+	Options,
+	VectorFeatureSourceOptions,
+	VectorFeatureSourceState,
 };
 
 export const isDescription = (value: unknown): value is Description =>
-	typeof value === "object" &&
-	value !== null &&
-	"type" in value &&
-	typeof value.type === "string";
+	descriptionSchema.safeParse(value).success;
 
-export type Options = {[k: string]: OptionValue};
+/** Runtime layer options; ol-proxy keys beyond the config schema remain valid. */
+export type RuntimeLayerOptions = LayerOptions;
 
-// Needs to be serializable
-export type OptionValue =
-	| string
-	| boolean
-	| number
-	| Array<OptionValue>
-	| Options
-	| undefined
-	| null;
-
-export interface LayerMetaData {
-	title?: string;
-	group?: string;
-	isBaseLayer?: boolean;
-	attribution?: string;
-	legend?: string;
-	miniLegend?: string;
-	lockedInLayerSwitcher?: boolean;
-	visibleInLayerSwitcher?: boolean;
-	visibleInExternalLayerSwitcher?: boolean;
-}
-
-export interface LayerState {
-	[key: string]: unknown;
+/** Runtime layer state; `type` is required in config ingress (`LayerConfig`). */
+export type LayerState = Omit<LayerConfig, "type" | "options" | "metaData"> & {
+	type?: string;
 	metaData?: LayerMetaData;
-	options?: {
-		visible?: boolean;
-		selections?: InteractionsSelections;
-		source?: LayerSourceState;
-	};
+	options?: RuntimeLayerOptions;
+} & Record<string, unknown>;
+
+export const isVectorFeatureSource = (
+	source: unknown,
+): source is VectorFeatureSourceState =>
+	vectorFeatureSourceStateSchema.safeParse(source).success;
+
+export function getVectorFeatureSource(
+	layer: LayerState,
+): VectorFeatureSourceState {
+	const source = layer.options?.source;
+	if (!isVectorFeatureSource(source)) {
+		throw new Error("Expected layer with VectorFeatureSource source");
+	}
+	return source;
 }
-
-type VectorFeatureSourceState = {
-	type: "VectorFeatureSource";
-	options: {
-		featureSourceId?: string;
-		featureSourcesControllerName?: string;
-		featureSelectionsControllerName?: string;
-	};
-};
-
-export type LayerSourceState = VectorFeatureSourceState; // TODO: add other types
 
 export interface MapState {
 	[key: string]: unknown;
@@ -78,7 +71,3 @@ export type VectorFeatureSourceLayer = OlLayer<VectorFeatureSource>;
 export interface LayerStyleProps {}
 
 export type LayerStyleState = string | LayerStyleProps;
-
-export type InteractionName = "mousedown" | "mouseover" | "touch";
-
-export type InteractionsSelections = Record<InteractionName, string>;

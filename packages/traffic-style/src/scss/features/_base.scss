@@ -8,15 +8,64 @@
 
 	// Icon
 	@include icon-base.iconBase;
+
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED {
+		[mapsightIconId],
+		[env|mapsightIconId] {
+			image-type: icon;
+
+			icon: {
+				scale: variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE;
+				src: calc(
+					mapsightRuntimeIcon(
+						attr(mapsightIconId),
+						"default"
+					)
+				);
+				snapToPixel: true;
+			}
+		}
+	}
+
 	@include auto-icon.autoIcon("default");
 
-	[|js="env.zoom >= 1 && env.zoom <= 10"]
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED {
+		[|js="env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL}"]
+			:not([state="highlight"])
+			:not([state="select"]) {
+			[mapsightIconId],
+			[env|mapsightIconId] {
+				icon-src: calc(
+					mapsightRuntimeIcon(
+						attr(mapsightIconId),
+						"xsmall"
+					)
+				);
+			}
+		}
+
+		[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL} && env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT}"]
+			:not([state="highlight"])
+			:not([state="select"]) {
+			[mapsightIconId],
+			[env|mapsightIconId] {
+				icon-src: calc(
+					mapsightRuntimeIcon(
+						attr(mapsightIconId),
+						"small"
+					)
+				);
+			}
+		}
+	}
+
+	[|js="env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL}"]
 		:not([state="highlight"])
 		:not([state="select"]) {
 		@include auto-icon.autoIcon("xsmall");
 	}
 
-	[|js="env.zoom >= 11 && env.zoom <= 12"]
+	[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL} && env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT}"]
 		:not([state="highlight"])
 		:not([state="select"]) {
 		@include auto-icon.autoIcon("small");

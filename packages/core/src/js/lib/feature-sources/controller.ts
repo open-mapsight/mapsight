@@ -1,7 +1,10 @@
 import isEqual from "lodash/isEqual";
 
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
-import {observeState} from "@mapsight/lib-redux/observe-state";
+import {
+	getAndObserveState,
+	observeState,
+} from "@mapsight/lib-redux/observe-state";
 
 import {async} from "@/lib/base/actions";
 import {BaseController} from "@/lib/base/controller";
@@ -26,6 +29,10 @@ import {
 	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
 	setDataOrError,
 } from "@/lib/feature-sources/actions";
+import {
+	createCombinedFeatureSourceSelector,
+	getCombinedFeatureSourceBindings,
+} from "@/lib/feature-sources/lib/combined";
 import {
 	nextDataHistory,
 	redoChange,
@@ -97,7 +104,106 @@ function reduceUncontrolledFeatureSourceChanges(
 
 const emptyFeaturesArray: Array<Feature> = [];
 
+type CombinedFeatureSourceBinding = {
+	featureSourceNames: string[];
+	unsubscribe: () => void;
+};
+
 export class FeatureSourcesController extends BaseController {
+	#combinedFeatureSourceBindings = new Map<
+		string,
+		CombinedFeatureSourceBinding
+	>();
+
+	override init() {
+		const store = this.getStore();
+		if (!store) {
+			return;
+		}
+
+		this.syncCombinedFeatureSourceBindings();
+
+		const controllerName = this.getName();
+		observeState(
+			store,
+			(state) =>
+				getCombinedFeatureSourceBindings(
+					state[controllerName] as FeatureSourcesState,
+				),
+			() => this.syncCombinedFeatureSourceBindings(),
+			isEqual,
+		);
+	}
+
+	syncCombinedFeatureSourceBindings() {
+		const sources = this.getState() as FeatureSourcesState;
+		const activeIds = new Set<string>();
+
+		for (const [id, source] of Object.entries(sources)) {
+			if (source.type !== "combined") {
+				continue;
+			}
+
+			const featureSourceNames = source.featureSourceNames ?? [];
+			activeIds.add(id);
+			const existing = this.#combinedFeatureSourceBindings.get(id);
+			if (
+				existing &&
+				isEqual(existing.featureSourceNames, featureSourceNames)
+			) {
+				continue;
+			}
+
+			existing?.unsubscribe();
+			this.#combinedFeatureSourceBindings.set(id, {
+				featureSourceNames,
+				unsubscribe: this.bindCombinedFeatureSource(id, source),
+			});
+		}
+
+		for (const [id, binding] of this.#combinedFeatureSourceBindings) {
+			if (!activeIds.has(id)) {
+				binding.unsubscribe();
+				this.#combinedFeatureSourceBindings.delete(id);
+			}
+		}
+	}
+
+	bindCombinedFeatureSource(
+		featureSourceId: string,
+		source: FeatureSourceState,
+	) {
+		const controllerName = this.getName();
+		const store = this.getStore();
+		if (!store) {
+			console.error(
+				"Can't bind combined feature source: store is not set",
+			);
+			return () => undefined;
+		}
+
+		const selector = createCombinedFeatureSourceSelector(
+			source.featureSourceNames ?? [],
+			controllerName,
+		);
+
+		return getAndObserveState(
+			store,
+			selector,
+			({data, error}) => {
+				this.dispatch(
+					async(
+						setDataOrError(controllerName, featureSourceId, {
+							data,
+							error,
+						}),
+					),
+				);
+			},
+			isEqual,
+		);
+	}
+
 	bindFeatureSourceToStore(
 		featureSourceId: string,
 		selector: (state: State) => FeatureSourceState,

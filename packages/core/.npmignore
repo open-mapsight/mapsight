@@ -1,4 +1,4 @@
-*
-
-!/dist/**/*
-!/src/**/*
+# Publish surface is package.json "files" (dist only).
+# Exclude test output if it ever lands in dist.
+**/__tests__/**
+**/*.test.*

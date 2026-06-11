@@ -6,6 +6,7 @@ import {batchActions} from "redux-batched-actions";
 
 import {mergeAll} from "@mapsight/core/lib/base/actions";
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
+import {isDevelopment} from "@mapsight/core/lib/helpers";
 import {animate as animateMap} from "@mapsight/core/lib/map/actions";
 import type {ActionOrThunk, State, ThunkAction} from "@mapsight/core/types";
 
@@ -21,6 +22,7 @@ import {
 	FEATURE_SELECTION_PRESELECT,
 	FEATURE_SELECTION_SELECT,
 } from "../config/feature/selections";
+import {validateMapsightConfig} from "../config/schema/validate";
 import type {
 	FetchTextState,
 	FullUiState,
@@ -39,11 +41,15 @@ function ensureFullUrl(url: string) {
 }
 
 export function resetMapsightCore(config: Partial<State>) {
+	const validatedConfig = isDevelopment()
+		? validateMapsightConfig(config, {context: "resetMapsightCore"})
+		: config;
+
 	return batchActions([
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_HIGHLIGHT),
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_PRESELECT),
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT),
-		mergeAll(config),
+		mergeAll(validatedConfig),
 	]);
 }
 

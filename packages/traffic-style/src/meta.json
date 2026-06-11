@@ -2,59 +2,103 @@
 	"defaultIcon": "ort",
 	"icons": {
 		"0": {
-			"label": {"de": "0 (Null)", "en": "0 (Zero)"},
+			"label": {
+				"de": "0 (Null)",
+				"en": "0 (Zero)"
+			},
 			"aliases": ["null", "zero"],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"1": {
-			"label": {"de": "1 (Eins)", "en": "1 (One)"},
+			"label": {
+				"de": "1 (Eins)",
+				"en": "1 (One)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"2": {
-			"label": {"de": "2 (Zwei)", "en": "2 (Two)"},
+			"label": {
+				"de": "2 (Zwei)",
+				"en": "2 (Two)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"3": {
-			"label": {"de": "3 (Drei)", "en": "3 (Three)"},
+			"label": {
+				"de": "3 (Drei)",
+				"en": "3 (Three)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"4": {
-			"label": {"de": "4 (Vier)", "en": "4 (Four)"},
+			"label": {
+				"de": "4 (Vier)",
+				"en": "4 (Four)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"5": {
-			"label": {"de": "5 (Fünf)", "en": "5 (Five)"},
+			"label": {
+				"de": "5 (Fünf)",
+				"en": "5 (Five)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"6": {
-			"label": {"de": "6 (Sechs)", "en": "6 (Six)"},
+			"label": {
+				"de": "6 (Sechs)",
+				"en": "6 (Six)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"7": {
-			"label": {"de": "7 (Sieben)", "en": "7 (Seven)"},
+			"label": {
+				"de": "7 (Sieben)",
+				"en": "7 (Seven)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"8": {
-			"label": {"de": "8 (Acht)", "en": "8 (Eight)"},
+			"label": {
+				"de": "8 (Acht)",
+				"en": "8 (Eight)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"9": {
-			"label": {"de": "9 (Neun)", "en": "9 (Nine)"},
+			"label": {
+				"de": "9 (Neun)",
+				"en": "9 (Nine)"
+			},
 			"aliases": [],
-			"groups": ["default", "numbers"]
+			"groups": ["default", "numbers"],
+			"render": "composable"
 		},
 		"a": {
-			"label": {"de": "A", "en": "A"},
+			"label": {
+				"de": "A",
+				"en": "A"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"abfall_recycling": {
 			"label": {
@@ -62,22 +106,31 @@
 				"en": "Garbage/Waste/Recycling"
 			},
 			"aliases": ["garbage", "recycling", "waste", "trash"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"ampel": {
-			"label": {"de": "Ampel", "en": "Traffic lights"},
+			"label": {
+				"de": "Ampel",
+				"en": "Traffic lights"
+			},
 			"aliases": [
 				"traffic-lights",
 				"lichtsignalanlage",
 				"lichtzeichenanlage",
 				"stvo-131"
 			],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"b": {
-			"label": {"de": "B", "en": ""},
+			"label": {
+				"de": "B",
+				"en": ""
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"baustelle": {
 			"label": {
@@ -85,44 +138,73 @@
 				"en": "Construction work"
 			},
 			"aliases": ["arbeitsstelle", "construction-work", "stvo-123"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"behindertenparken": {
-			"label": {"de": "Behindertenparken", "en": "Disabled parking"},
+			"label": {
+				"de": "Behindertenparken",
+				"en": "Disabled parking"
+			},
 			"aliases": ["parking-disabled"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"bike": {
-			"label": {"de": "Fahrradzähler", "en": "Bicycle counter"},
+			"label": {
+				"de": "Fahrradzähler",
+				"en": "Bicycle counter"
+			},
 			"aliases": ["bicycle-counter"],
-			"groups": ["default", "poi", "poi-transport"]
+			"groups": ["default", "poi", "poi-transport"],
+			"render": "composable"
 		},
 		"bilbiothek_archiv": {
-			"label": {"de": "Bilbiothek/Archiv", "en": "Library/Archive"},
+			"label": {
+				"de": "Bilbiothek/Archiv",
+				"en": "Library/Archive"
+			},
 			"aliases": ["library", "archive"],
-			"groups": ["default", "poi", "poi-service", "poi-leisure"]
+			"groups": ["default", "poi", "poi-service", "poi-leisure"],
+			"render": "composable"
 		},
 		"breitenbeschraenkung": {
-			"label": {"de": "Breitenbeschraenkung", "en": "Width restriction"},
+			"label": {
+				"de": "Breitenbeschraenkung",
+				"en": "Width restriction"
+			},
 			"aliases": ["width-restriction", "stvo-264"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"bundr": {
-			"label": {"de": "Bike and Ride", "en": "Bike and Ride"},
+			"label": {
+				"de": "Bike and Ride",
+				"en": "Bike and Ride"
+			},
 			"aliases": ["bike-and-ride"],
-			"groups": ["default", "poi", "poi-parking", "poi-transport"]
+			"groups": ["default", "poi", "poi-parking", "poi-transport"],
+			"render": "composable"
 		},
 		"busparkplatz": {
-			"label": {"de": "Busparkplatz", "en": "Bus parking"},
+			"label": {
+				"de": "Busparkplatz",
+				"en": "Bus parking"
+			},
 			"aliases": ["parking-bus"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"c": {
-			"label": {"de": "C", "en": "C"},
+			"label": {
+				"de": "C",
+				"en": "C"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"cam": {
 			"label": {
@@ -130,7 +212,8 @@
 				"en": "Webcam/Traffic camera"
 			},
 			"aliases": [],
-			"groups": ["default", "traffic", "poi", "poi-services"]
+			"groups": ["default", "traffic", "poi", "poi-services"],
+			"render": "sprite"
 		},
 		"charging-station": {
 			"label": {
@@ -138,122 +221,314 @@
 				"en": "Car charging station"
 			},
 			"aliases": ["ladesaeule"],
-			"groups": ["default", "traffic", "poi", "poi-services"]
+			"groups": ["default", "traffic", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"d": {
-			"label": {"de": "D", "en": "D"},
+			"label": {
+				"de": "D",
+				"en": "D"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"db": {
-			"label": {"de": "Eisenbahn", "en": "Railroad"},
+			"label": {
+				"de": "Eisenbahn",
+				"en": "Railroad"
+			},
 			"aliases": ["railroad", "railway"],
-			"groups": ["default", "poi", "poi-transport"]
+			"groups": ["default", "poi", "poi-transport"],
+			"render": "composable"
 		},
 		"dot": {
-			"label": {"de": "Kleiner Punkt", "en": "Small dot"},
+			"label": {
+				"de": "Kleiner Punkt",
+				"en": "Small dot"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-generic"]
+			"groups": ["default", "poi", "poi-generic"],
+			"render": "composable"
 		},
 		"e": {
-			"label": {"de": "E", "en": "E"},
+			"label": {
+				"de": "E",
+				"en": "E"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"einbahnstrasse": {
-			"label": {"de": "Einbahnstrasse", "en": "One-way street"},
+			"label": {
+				"de": "Einbahnstrasse",
+				"en": "One-way street"
+			},
 			"aliases": ["one-way"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"f": {
-			"label": {"de": "F", "en": "F"},
+			"label": {
+				"de": "F",
+				"en": "F"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"faehre": {
-			"label": {"de": "Fähre", "en": "Ferry"},
+			"label": {
+				"de": "Fähre",
+				"en": "Ferry"
+			},
 			"aliases": ["ferry"],
-			"groups": ["default", "poi", "poi-transport"]
+			"groups": ["default", "poi", "poi-transport"],
+			"render": "composable"
 		},
 		"fahrbahnverengung": {
-			"label": {"de": "Verengte Fahrbahn", "en": "Road constriction"},
+			"label": {
+				"de": "Verengte Fahrbahn",
+				"en": "Road constriction"
+			},
 			"aliases": ["road-construction", "stvo-120"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"flughafen": {
-			"label": {"de": "Flughafen", "en": "Airport"},
+			"label": {
+				"de": "Flughafen",
+				"en": "Airport"
+			},
 			"aliases": ["airport"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"forschung": {
-			"label": {"de": "Forschung", "en": "Research"},
+			"label": {
+				"de": "Forschung",
+				"en": "Research"
+			},
 			"aliases": ["research"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"friedhof": {
-			"label": {"de": "Friedhof", "en": "Cemetery"},
+			"label": {
+				"de": "Friedhof",
+				"en": "Cemetery"
+			},
 			"aliases": ["cemetery"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"g": {
-			"label": {"de": "G", "en": "G"},
+			"label": {
+				"de": "G",
+				"en": "G"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"gegenverkehr": {
-			"label": {"de": "Gegenverkehr", "en": "Opposite traffic"},
+			"label": {
+				"de": "Gegenverkehr",
+				"en": "Opposite traffic"
+			},
 			"aliases": ["opposite-traffic", "stvo-125"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"gewerbe": {
-			"label": {"de": "Gewerbegebiet", "en": "Commercial district"},
+			"label": {
+				"de": "Gewerbegebiet",
+				"en": "Commercial district"
+			},
 			"aliases": ["commercial-district"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"h": {
-			"label": {"de": "H", "en": "H"},
+			"label": {
+				"de": "H",
+				"en": "H"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"haltestelle": {
-			"label": {"de": "Haltestelle", "en": "Public transport stop"},
+			"label": {
+				"de": "Haltestelle",
+				"en": "Public transport stop"
+			},
 			"aliases": ["public-transport-stop", "stvo-224"],
-			"groups": ["default", "poi", "poi-transport"]
+			"groups": ["default", "poi", "poi-transport"],
+			"render": "composable"
 		},
 		"hoehenbeschraenkung": {
-			"label": {"de": "Höhenbeschräkung", "en": "Height restriction"},
+			"label": {
+				"de": "Höhenbeschräkung",
+				"en": "Height restriction"
+			},
 			"aliases": ["height-restriction", "stvo-265"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"hotel": {
-			"label": {"de": "Hotel", "en": "Hotel"},
+			"label": {
+				"de": "Hotel",
+				"en": "Hotel"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"i": {
-			"label": {"de": "I", "en": "I"},
+			"label": {
+				"de": "I",
+				"en": "I"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
+		},
+		"fa-bicycle": {
+			"label": {
+				"de": "Fahrrad",
+				"en": "Bicycle"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-bolt": {
+			"label": {
+				"de": "Energie",
+				"en": "Energy"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-bus": {
+			"label": {
+				"de": "Bus",
+				"en": "Bus"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-cafe": {
+			"label": {
+				"de": "Café",
+				"en": "Cafe"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-car": {
+			"label": {
+				"de": "Auto",
+				"en": "Car"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-charging-station": {
+			"label": {
+				"de": "Ladestation (FA)",
+				"en": "Charging station (FA)"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-hospital": {
+			"label": {
+				"de": "Krankenhaus",
+				"en": "Hospital"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-marker": {
+			"label": {
+				"de": "Marker (FA)",
+				"en": "Marker (FA)"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-generic"],
+			"render": "composable"
+		},
+		"fa-school": {
+			"label": {
+				"de": "Schule (FA)",
+				"en": "School (FA)"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-tree": {
+			"label": {
+				"de": "Park",
+				"en": "Park"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-utensils": {
+			"label": {
+				"de": "Gastronomie",
+				"en": "Restaurant"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"info": {
-			"label": {"de": "Info", "en": "Info"},
+			"label": {
+				"de": "Info",
+				"en": "Info"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-generic"]
+			"groups": ["default", "poi", "poi-generic"],
+			"render": "composable"
 		},
 		"j": {
-			"label": {"de": "J", "en": "J"},
+			"label": {
+				"de": "J",
+				"en": "J"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"k": {
-			"label": {"de": "K", "en": "K"},
+			"label": {
+				"de": "K",
+				"en": "K"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"kita": {
-			"label": {"de": "KiTa", "en": "Daycare facility for children"},
+			"label": {
+				"de": "KiTa",
+				"en": "Daycare facility for children"
+			},
 			"aliases": ["day-care-children"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"krankenhaus_klinik": {
 			"label": {
@@ -261,30 +536,50 @@
 				"en": "Hospital/Medical clinic"
 			},
 			"aliases": ["hospital", "medical-clinic", "medical-center"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"l": {
-			"label": {"de": "L", "en": "L"},
+			"label": {
+				"de": "L",
+				"en": "L"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"lkwsperrung": {
-			"label": {"de": "LKW-Sperrung", "en": "Closed for trucks"},
+			"label": {
+				"de": "LKW-Sperrung",
+				"en": "Closed for trucks"
+			},
 			"aliases": ["truck-closure", "stvo-253"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"m": {
-			"label": {"de": "M", "en": "M"},
+			"label": {
+				"de": "M",
+				"en": "M"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"marker": {
-			"label": {"de": "Markierung", "en": "Marker"},
+			"label": {
+				"de": "Markierung",
+				"en": "Marker"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-generic"]
+			"groups": ["default", "poi", "poi-generic"],
+			"render": "composable"
 		},
 		"meldung": {
-			"label": {"de": "Meldung/Gefahrstelle", "en": "Traffic message"},
+			"label": {
+				"de": "Meldung/Gefahrstelle",
+				"en": "Traffic message"
+			},
 			"aliases": [
 				"traffic-message",
 				"gefahrstelle",
@@ -292,7 +587,8 @@
 				"traffic-warning",
 				"stvo-101"
 			],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"motorradstellplatz": {
 			"label": {
@@ -301,37 +597,62 @@
 			},
 			"aliases": ["parking-motorbike"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"museum": {
-			"label": {"de": "Museum", "en": "Museum"},
+			"label": {
+				"de": "Museum",
+				"en": "Museum"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"n": {
-			"label": {"de": "N", "en": "N"},
+			"label": {
+				"de": "N",
+				"en": "N"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"o": {
-			"label": {"de": "O", "en": "O"},
+			"label": {
+				"de": "O",
+				"en": "O"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"ort": {
-			"label": {"de": "Ort", "en": "Place"},
+			"label": {
+				"de": "Ort",
+				"en": "Place"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-generic"]
+			"groups": ["default", "poi", "poi-generic"],
+			"render": "composable"
 		},
 		"p": {
-			"label": {"de": "P", "en": "P"},
+			"label": {
+				"de": "P",
+				"en": "P"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"parkanlage": {
-			"label": {"de": "Parkanlage", "en": "Park"},
+			"label": {
+				"de": "Parkanlage",
+				"en": "Park"
+			},
 			"aliases": ["park"],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"parkflaeche": {
 			"label": {
@@ -340,7 +661,8 @@
 				"en_US": "Parking lot"
 			},
 			"aliases": ["parking-area", "parking-lot"],
-			"groups": ["default", "poi", "poi-parking"]
+			"groups": ["default", "poi", "poi-parking"],
+			"render": "sprite"
 		},
 		"parkhaus": {
 			"label": {
@@ -350,133 +672,234 @@
 			},
 			"aliases": ["car-park", "parking-garage"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"pundr": {
-			"label": {"de": "Park and Ride (P+R)", "en": "Park and Ride (P+R)"},
+			"label": {
+				"de": "Park and Ride (P+R)",
+				"en": "Park and Ride (P+R)"
+			},
 			"aliases": ["park-and-ride"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"q": {
-			"label": {"de": "Q", "en": "Q"},
+			"label": {
+				"de": "Q",
+				"en": "Q"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"r": {
-			"label": {"de": "R", "en": "R"},
+			"label": {
+				"de": "R",
+				"en": "R"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"religion": {
-			"label": {"de": "Religion", "en": "Religion"},
-			"aliases": ["poi", "poi-leisure"]
+			"label": {
+				"de": "Religion",
+				"en": "Religion"
+			},
+			"aliases": ["poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"s": {
-			"label": {"de": "S", "en": "S"},
+			"label": {
+				"de": "S",
+				"en": "S"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"schule": {
-			"label": {"de": "Schule", "en": "School"},
+			"label": {
+				"de": "Schule",
+				"en": "School"
+			},
 			"aliases": ["school"],
-			"groups": ["default", "poi", "poi-services"]
+			"groups": ["default", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"sehenswuerdigkeit": {
-			"label": {"de": "Sehenswürdigkeit", "en": "Sight"},
+			"label": {
+				"de": "Sehenswürdigkeit",
+				"en": "Sight"
+			},
 			"aliases": ["sight"],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"sport": {
-			"label": {"de": "Sport", "en": "Sports"},
+			"label": {
+				"de": "Sport",
+				"en": "Sports"
+			},
 			"aliases": ["sports"],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"sportanlage": {
-			"label": {"de": "Sportanlage", "en": "Sports facility"},
+			"label": {
+				"de": "Sportanlage",
+				"en": "Sports facility"
+			},
 			"aliases": ["sports-facility"],
-			"groups": ["default", "poi", "poi-leisure"]
+			"groups": ["default", "poi", "poi-leisure"],
+			"render": "composable"
 		},
 		"stadtteil": {
-			"label": {"de": "Stadtteil", "en": "City district"},
+			"label": {
+				"de": "Stadtteil",
+				"en": "City district"
+			},
 			"aliases": ["big-dot"],
-			"groups": ["default", "poi", "poi-generic"]
+			"groups": ["default", "poi", "poi-generic"],
+			"render": "sprite"
 		},
 		"stau": {
-			"label": {"de": "Stau", "en": "Traffic jam"},
+			"label": {
+				"de": "Stau",
+				"en": "Traffic jam"
+			},
 			"aliases": ["traffic-jam"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"t": {
-			"label": {"de": "T", "en": "T"},
+			"label": {
+				"de": "T",
+				"en": "T"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"taxi": {
-			"label": {"de": "Taxi", "en": "Taxi"},
+			"label": {
+				"de": "Taxi",
+				"en": "Taxi"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-transport"]
+			"groups": ["default", "poi", "poi-transport"],
+			"render": "composable"
 		},
 		"theater": {
-			"label": {"de": "Theater", "en": "Theater"},
+			"label": {
+				"de": "Theater",
+				"en": "Theater"
+			},
 			"aliases": [],
-			"groups": ["default", "poi", "poi-cultural"]
+			"groups": ["default", "poi", "poi-cultural"],
+			"render": "composable"
 		},
 		"tiefgarage": {
-			"label": {"de": "Tiefgarage", "en": "Underground parking"},
+			"label": {
+				"de": "Tiefgarage",
+				"en": "Underground parking"
+			},
 			"aliases": ["underground-parking"],
 			"groups": ["default", "poi", "poi-parking"],
-			"fallback": "parkflaeche"
+			"fallback": "parkflaeche",
+			"render": "sprite"
 		},
 		"tonnage": {
-			"label": {"de": "Tonnage", "en": "Tonnage"},
+			"label": {
+				"de": "Tonnage",
+				"en": "Tonnage"
+			},
 			"aliases": [],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"u": {
-			"label": {"de": "U", "en": "U"},
+			"label": {
+				"de": "U",
+				"en": "U"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"umleitung": {
-			"label": {"de": "Umleitung", "en": "Detour"},
+			"label": {
+				"de": "Umleitung",
+				"en": "Detour"
+			},
 			"aliases": ["detour", "diversion"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"v": {
-			"label": {"de": "V", "en": "V"},
+			"label": {
+				"de": "V",
+				"en": "V"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"vollsperrung": {
-			"label": {"de": "Vollsperrung", "en": "Full closure"},
+			"label": {
+				"de": "Vollsperrung",
+				"en": "Full closure"
+			},
 			"aliases": ["full-closure"],
-			"groups": ["default", "traffic"]
+			"groups": ["default", "traffic"],
+			"render": "sprite"
 		},
 		"w": {
-			"label": {"de": "W", "en": "W"},
+			"label": {
+				"de": "W",
+				"en": "W"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"x": {
-			"label": {"de": "X", "en": "X"},
+			"label": {
+				"de": "X",
+				"en": "X"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"y": {
-			"label": {"de": "Y", "en": "Y"},
+			"label": {
+				"de": "Y",
+				"en": "Y"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"z": {
-			"label": {"de": "Z", "en": "Z"},
+			"label": {
+				"de": "Z",
+				"en": "Z"
+			},
 			"aliases": [],
-			"groups": ["default", "letters"]
+			"groups": ["default", "letters"],
+			"render": "composable"
 		},
 		"flag": {
-			"label": {"de": "Flagge (leer)", "en": "Flag (empty)"},
+			"label": {
+				"de": "Flagge (leer)",
+				"en": "Flag (empty)"
+			},
 			"aliases": [],
-			"groups": ["default", "routing"]
+			"groups": ["default", "routing"],
+			"render": "sprite"
 		},
 		"flag-start": {
 			"label": {
@@ -484,7 +907,8 @@
 				"en": "Start (flag with arrow pointing right)"
 			},
 			"aliases": ["flag-right"],
-			"groups": ["default", "routing"]
+			"groups": ["default", "routing"],
+			"render": "sprite"
 		},
 		"flag-finish": {
 			"label": {
@@ -492,7 +916,8 @@
 				"en": "Finish (checkered flag)"
 			},
 			"aliases": ["flag-checkered"],
-			"groups": ["default", "routing"]
+			"groups": ["default", "routing"],
+			"render": "sprite"
 		},
 		"bildung-allgemein": {
 			"label": {
@@ -500,12 +925,17 @@
 				"en": "Education (Overarching/General)"
 			},
 			"aliases": ["education-general"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-ausbildung": {
-			"label": {"de": "Ausbildung", "en": "Training/Apprenticeship"},
+			"label": {
+				"de": "Ausbildung",
+				"en": "Training/Apprenticeship"
+			},
 			"aliases": ["education-training"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-grundschule": {
 			"label": {
@@ -514,7 +944,8 @@
 				"en_US": "Elementary school education"
 			},
 			"aliases": ["education-primary", "education-elementary"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-kind": {
 			"label": {
@@ -522,7 +953,8 @@
 				"en": "Early childhood education"
 			},
 			"aliases": ["education-early-childhood"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-senior": {
 			"label": {
@@ -530,7 +962,8 @@
 				"en": "Education for the elderly"
 			},
 			"aliases": ["education-seniors"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-weiterbildung": {
 			"label": {
@@ -538,7 +971,8 @@
 				"en": "Further education/advanced postgraduate training"
 			},
 			"aliases": ["education-advanced-training"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"bildung-weiterfuehrend": {
 			"label": {
@@ -546,12 +980,17 @@
 				"en": "Secondary school education"
 			},
 			"aliases": ["education-secondary"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		},
 		"hochschule": {
-			"label": {"de": "Hochschule", "en": "University"},
+			"label": {
+				"de": "Hochschule",
+				"en": "University"
+			},
 			"aliases": ["university"],
-			"groups": ["education", "poi", "poi-services"]
+			"groups": ["education", "poi", "poi-services"],
+			"render": "composable"
 		}
 	}
 }

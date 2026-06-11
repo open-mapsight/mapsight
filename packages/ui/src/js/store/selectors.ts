@@ -49,6 +49,7 @@ import {
 	FEATURE_SELECTION_PRESELECT,
 	FEATURE_SELECTION_SELECT,
 } from "../config/feature/selections";
+import type {TagFilterState} from "../filters/tag-filter";
 import type {
 	FetchTextState,
 	FullUiState,
@@ -82,17 +83,7 @@ export const SEARCH_STATUS_ERROR = "error";
 
 export type RootStateSlice = {
 	app: UiState;
-	[TAG_FILTER]: {
-		featureSourceId: string;
-		visibleTags: {
-			[tagGroup: string]: {
-				[tag: string]: boolean;
-			};
-		};
-		visibleTagGroups: {
-			[tagGroup: string]: boolean;
-		};
-	};
+	[TAG_FILTER]: TagFilterState;
 };
 
 export const viewSelector = (state: RootStateSlice) => state.app.view!;
@@ -240,6 +231,12 @@ export const tagSwitcherFeatureSourceIdSelector = (state: RootStateSlice) =>
 export const tagSwitcherFeatureSourcesControllerNameSelector = (
 	state: RootStateSlice,
 ) => state.app.tagSwitcher?.featureSourcesControllerName;
+
+let tagSwitcherTagsCachedKey: string | undefined;
+let tagSwitcherTagsCachedSelector: ReturnType<
+	typeof createTagsWithCountFromFeatureSourceSelector
+>;
+
 export const tagSwitcherTagsSelector = (state: RootStateSlice) => {
 	const controllerName =
 		tagSwitcherFeatureSourcesControllerNameSelector(state);
@@ -248,10 +245,17 @@ export const tagSwitcherTagsSelector = (state: RootStateSlice) => {
 		return {};
 	}
 
-	return createTagsWithCountFromFeatureSourceSelector(
-		controllerName,
-		featureSourceId,
-	)(state);
+	const key = `${controllerName}:${featureSourceId}`;
+	if (key !== tagSwitcherTagsCachedKey) {
+		tagSwitcherTagsCachedKey = key;
+		tagSwitcherTagsCachedSelector =
+			createTagsWithCountFromFeatureSourceSelector(
+				controllerName,
+				featureSourceId,
+			);
+	}
+
+	return tagSwitcherTagsCachedSelector(state);
 };
 
 export const viewToggleShowSelector = (state: RootStateSlice) =>

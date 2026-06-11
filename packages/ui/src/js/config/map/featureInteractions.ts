@@ -49,5 +49,5 @@ export default function createFeatureInteractions({
 				hitTolerance: hitTolerance,
 			},
 		},
-	};
+	} satisfies FeatureInteractions;
 }

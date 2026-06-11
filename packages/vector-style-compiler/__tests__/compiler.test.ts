@@ -225,6 +225,12 @@ it("transforms tree to declaration program", () => {
 	expect(program).toMatchSnapshot();
 });
 
+it("transforms tree to volatile hash NOP program", () => {
+	const program = treeToProgram(exampleTree, "volatileHash");
+
+	expect(program).not.toContain("parts.push");
+});
+
 it("throws exception on invalid :not() selector", () => {
 	expect(() => cssToRules(":not(*) {}")).toThrowError(
 		"Cannot negate selector part [*] with :not().",

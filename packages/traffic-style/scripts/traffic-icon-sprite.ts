@@ -51,7 +51,11 @@ const calcGlobs = (
 	fileType: string,
 ): string[] => {
 	const globs: string[] = [];
-	metaData.icons.forEach((iconMeta) =>
+	metaData.icons.forEach((iconMeta) => {
+		if (iconMeta.render === "composable") {
+			return;
+		}
+
 		groups.forEach((group: IconGroupName) => {
 			if (iconMeta.groups && iconMeta.groups.includes(group)) {
 				variants
@@ -63,8 +67,8 @@ const calcGlobs = (
 						globs.push(glob);
 					});
 			}
-		}),
-	);
+		});
+	});
 	return globs;
 };
 

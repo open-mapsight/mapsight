@@ -2,6 +2,7 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "./tsconfig.json",
 	"include": ["src/js/**/*"],
+	"exclude": ["src/js/template.source.js", "**/__tests__/**", "**/*.test.ts"],
 	"compilerOptions": {
 		"outDir": "dist",
 		"rootDir": "src/js"

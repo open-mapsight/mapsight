@@ -1,5 +1,5 @@
 import type {PropsWithChildren, RefCallback} from "react";
-import {memo, useCallback, useRef} from "react";
+import {useCallback, useRef} from "react";
 import {useInView} from "react-intersection-observer";
 import {useDispatch, useSelector, useStore} from "react-redux";
 
@@ -13,8 +13,10 @@ import {
 	useAppChannelEventListener,
 } from "./helping/app-channel";
 
-function MapWrapper(props: PropsWithChildren) {
-	const {children} = props;
+export default function MapWrapper(
+	props: PropsWithChildren<{anchor?: "right" | "bottom"}>,
+) {
+	const {children, anchor} = props;
 
 	const dispatch = useDispatch();
 	const mapWrapperRef = useRef<HTMLDivElement | undefined>(undefined);
@@ -54,12 +56,9 @@ function MapWrapper(props: PropsWithChildren) {
 	return (
 		<div
 			ref={setRef}
-			// ms3-map-wrapper--anchored-${anchor}
-			className={`ms3-map-wrapper [ ms3-flex ms3-flex--column ] [ ms3-scroll-target ]`}
+			className={`ms3-map-wrapper ms3-map-wrapper--anchored-${anchor} [ ms3-flex ms3-flex--column ] [ ms3-scroll-target ]`}
 		>
 			{children}
 		</div>
 	);
 }
-
-export default memo(MapWrapper);

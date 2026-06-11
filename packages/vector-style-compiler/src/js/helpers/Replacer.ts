@@ -1,5 +1,3 @@
-const RE_FUNCTION_PARAMETER = "([^\\)]*?)";
-const RE_DOUBLE_QUOTES_IN_PARIS_ONLY = '(?:(?:[^"]*"){2})*[^"]*$';
 const TAG_DELIMITER = "%%%";
 
 export type ReplacerFn = (
@@ -7,6 +5,46 @@ export type ReplacerFn = (
 	parameter: string,
 	replacer: Replacer,
 ) => string;
+
+function findBalancedParameterEnd(
+	value: string,
+	openParenIndex: number,
+): number {
+	let depth = 0;
+	let inString = false;
+	let stringChar = "";
+
+	for (let i = openParenIndex; i < value.length; i++) {
+		const char = value[i]!;
+
+		if (inString) {
+			if (char === stringChar && value[i - 1] !== "\\") {
+				inString = false;
+			}
+			continue;
+		}
+
+		if (char === `"` || char === `'`) {
+			inString = true;
+			stringChar = char;
+			continue;
+		}
+
+		if (char === "(") {
+			depth += 1;
+			continue;
+		}
+
+		if (char === ")") {
+			depth -= 1;
+			if (depth === 0) {
+				return i;
+			}
+		}
+	}
+
+	return -1;
+}
 
 export default class Replacer {
 	private replacementCounter: number = 0;
@@ -20,19 +58,41 @@ export default class Replacer {
 	}
 
 	addFunction(functionName: string, replacer: ReplacerFn) {
-		const regex = new RegExp(
-			`(${functionName}\\(${RE_FUNCTION_PARAMETER}\\))(?=${RE_DOUBLE_QUOTES_IN_PARIS_ONLY})`,
-			"ig",
-		);
-		const fn = (value: string): string =>
-			value.replace(regex, (match, _, parameter) => {
+		const fn = (value: string): string => {
+			const pattern = new RegExp(`\\b${functionName}\\(`, "ig");
+			let result = "";
+			let cursor = 0;
+			let match: RegExpExecArray | null;
+
+			while ((match = pattern.exec(value)) !== null) {
+				const openParenIndex = match.index + match[0].length - 1;
+				const closeParenIndex = findBalancedParameterEnd(
+					value,
+					openParenIndex,
+				);
+
+				if (closeParenIndex === -1) {
+					continue;
+				}
+
+				result += value.slice(cursor, match.index);
+				const fullMatch = value.slice(match.index, closeParenIndex + 1);
+				const parameter = value.slice(
+					openParenIndex + 1,
+					closeParenIndex,
+				);
 				const tag =
 					TAG_DELIMITER + this.replacementCounter++ + TAG_DELIMITER;
-				const replacement = replacer(match, parameter as string, this);
+				const replacement = replacer(fullMatch, parameter, this);
 				this.replacements.push({tag, replacement});
+				result += tag;
+				cursor = closeParenIndex + 1;
+				pattern.lastIndex = cursor;
+			}
 
-				return tag;
-			});
+			return result + value.slice(cursor);
+		};
+
 		this.functions.push(fn);
 	}
 

@@ -8,7 +8,7 @@ import {layerSwitcherConfigInternalSelector} from "../../store/selectors";
 import type {LayerSwitcherConfigState} from "../../types";
 import LayerSwitcherContainer from "./LayerSwitcherContainer";
 
-const TRUE_SET_FEATURE_SOURCE_PATH = [FEATURE_LIST, "featureSource"] as const;
+const TRUE_SET_FEATURE_SOURCE_PATH = [FEATURE_LIST, "featureSource"];
 
 type Props = {
 	configSelector?: Selector<LayerSwitcherConfigState | undefined>;

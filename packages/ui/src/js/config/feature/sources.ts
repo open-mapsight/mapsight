@@ -1,4 +1,10 @@
-import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
+import type {
+	FeatureSourceConfig,
+	FeatureSourceState,
+} from "@mapsight/core/lib/feature-sources/types";
+
+type FeatureSourceDefinition = FeatureSourceConfig &
+	Pick<FeatureSourceState, "data" | "lastUpdate" | "lastActionType">;
 
 export {TIME_FILTER, TAG_FILTER} from "../constants/controllers";
 
@@ -8,7 +14,7 @@ export {TIME_FILTER, TAG_FILTER} from "../constants/controllers";
  *
  * @returns config for a plain feature source
  */
-export function plain(): FeatureSourceState {
+export function plain(): FeatureSourceDefinition {
 	return {
 		type: "noop" as const,
 		data: null,
@@ -23,7 +29,7 @@ export function plain(): FeatureSourceState {
  * @param url url to fetch data from
  * @returns config for a xhr json feature source
  */
-export function xhrJson(url: string): FeatureSourceState {
+export function xhrJson(url: string): FeatureSourceDefinition {
 	return {
 		type: "xhr-json" as const,
 		url: url,
@@ -45,7 +51,7 @@ export function xhrJson(url: string): FeatureSourceState {
 export function xhrJsonRefreshing(
 	url: string,
 	timer: number,
-): FeatureSourceState {
+): FeatureSourceDefinition {
 	return {
 		type: "xhr-json" as const,
 		url: url,
@@ -66,12 +72,25 @@ export function xhrJsonRefreshing(
  * @param filterName name of filter to add to the filter collection. The feature filter will be applied when using the appropriate feature source selectors.
  * @returns extended definition of feature source
  */
-export function withFilter(
-	featureSource: Partial<FeatureSourceState>,
+export function withFilter<T extends Partial<FeatureSourceDefinition>>(
+	featureSource: T,
 	filterName: string,
-): Partial<FeatureSourceState> {
+): T & Pick<FeatureSourceConfig, "filters"> {
 	return {
 		...featureSource,
 		filters: [...(featureSource.filters || []), filterName],
+	};
+}
+
+/** Creates a feature source config that aggregates member feature sources. */
+export function combinedFeatureSource(
+	featureSourceNames: string[] = [],
+): FeatureSourceDefinition {
+	return {
+		type: "combined",
+		featureSourceNames,
+		data: null,
+		lastUpdate: null,
+		lastActionType: null,
 	};
 }

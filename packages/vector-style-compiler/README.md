@@ -57,7 +57,7 @@ The package compiles a CSS subset into a JavaScript module providing an efficien
 │  For each feature:                                              │
 │                                                                 │
 │  1. Filter feature properties                                   │
-│  2. Compute hashes (env, props, geometry type)                  │
+│  2. Compute hashes (env, props, geometry type, volatile calcs)  │
 │  3. Check 3-level LRU cache                                     │
 │  4. Execute declarationFunction if cache miss                  │
 │  5. Build OL Style objects                                      │
@@ -117,17 +117,43 @@ icon-src: "path/to/icon.png";
 icon-sizex: 32;
 icon-sizey: 32;
 icon-offsetx: attr(offsetX);
+
+/* Runtime icons (async-loaded, cache-aware) */
+icon-src: calc(mapsightRuntimeIcon(attr(mapsightIconId), "default"));
 ```
 
 See full list of supported properties in [Custom CSS properties](#custom-css-properties).
+
+### Volatile `calc()` helpers
+
+Some `calc()` expressions call helpers whose return value can change without
+feature props or map env changing — for example runtime icons that return a
+placeholder synchronously and resolve to a real data URL asynchronously.
+
+The compiler detects registered volatile helpers (currently
+`mapsightRuntimeIcon`) and emits a
+`volatileHashFunction` alongside the usual `declarationHashFunction` and
+`declarationFunction`. When a stylesheet has no volatile calcs, the function
+body is empty and always returns `createHash([])`.
+
+At runtime, the volatile hash is folded into the **L1 cache key**. When an
+icon finishes loading, only features whose resolved icon URL changed get a
+cache miss and are restyled — not the entire map.
+
+Volatile helpers must stay synchronous from the style function's perspective
+(they may schedule async work internally, but must return a string immediately).
+Pair them with a map re-render callback when the async result is ready.
 
 ## Caching
 
 High-level 3-level LRU caching strategy:
 
-- **Level 1 (Coarse)**: env + geometry type + props (~95% hit, size 100)
+- **Level 1 (Coarse)**: env + volatile calc values + geometry type + props (~95% hit, size 100)
 - **Level 2 (Fine)**: declaration hashes (~92% hit, size 100)
 - **Level 3**: OL Style objects (clone, ~98% hit, size 100)
+
+L1 stores fully materialized styles. Volatile calcs (see above) are hashed
+separately so async value changes invalidate only the affected features.
 
 **Example** (10k features, 50 styles, 10 zooms):
 

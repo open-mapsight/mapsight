@@ -9,7 +9,8 @@ import matchesPath from "@mapsight/lib-redux/matchesPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
 import type {MapController} from "@/lib/map/controller";
-import {di, updateProxyObject} from "@/ol-proxy/index";
+import type {LayerState} from "@/lib/map/types";
+import {di, updateProxyObject} from "@/ol-proxy";
 
 import {ACTION_SET} from "../../base/reducer";
 import {
@@ -20,8 +21,7 @@ import WithAnimations from "./WithAnimations";
 import proxyPassOpenLayersEventsToMapController from "./proxyPassOpenLayersEventsToMapController";
 import {getGroupForLayer, tagLayer} from "./tagLayer";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LayerDefinition = any; // TODO: Implement types for definitions in redux and ol-proxy
+export type LayerDefinition = LayerState;
 
 export const LAYER_GROUP_DEFAULT = "default";
 
@@ -62,8 +62,8 @@ export default class WithLayers extends WithAnimations {
 
 		const updateLayer = (
 			id: string,
-			newDefinition: LayerDefinition,
-			oldDefinitions: LayerDefinition,
+			newDefinition: LayerDefinition | undefined,
+			oldDefinitions: Record<string, LayerDefinition>,
 		) => {
 			const oldDefinition = oldDefinitions[id];
 
@@ -72,7 +72,7 @@ export default class WithLayers extends WithAnimations {
 				di: di,
 				oldObject: this._layers[id],
 				oldDefinition: oldDefinition,
-				newDefinition: newDefinition,
+				newDefinition,
 				remover: (oldObject) => {
 					const group =
 						getGroupForLayer(oldObject) || LAYER_GROUP_DEFAULT;
@@ -83,12 +83,26 @@ export default class WithLayers extends WithAnimations {
 					delete this._groups[group]?.layers[id];
 				},
 				adder: (layer) => {
-					const group = newDefinition.group || LAYER_GROUP_DEFAULT;
+					if (!newDefinition) {
+						return;
+					}
+
+					const group =
+						(typeof newDefinition.group === "string"
+							? newDefinition.group
+							: newDefinition.metaData?.group) ||
+						LAYER_GROUP_DEFAULT;
 					const layerGroup = this.getOrCreateLayerGroup(group);
 					this._layers[id] = layer;
 					ensureNonNullable(this._groups[group]).layers[id] = layer;
 					tagLayer(layer, this, id, group);
 					layerGroup.getLayers().push(layer);
+					if (!newDefinition.type) {
+						console.error(
+							`Could not wire layer events for "${id}". Layer definition is missing type.`,
+						);
+						return;
+					}
 					proxyPassOpenLayersEventsToMapController(
 						this as unknown as MapController,
 						layer,
