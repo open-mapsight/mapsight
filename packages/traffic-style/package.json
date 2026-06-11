@@ -104,7 +104,7 @@
 		"build:pictograms:traffic-style": "node scripts/dev/import-pictograms.ts",
 		"build:scripts": "rimraf dist/scripts && tsc --project tsconfig.scripts.json",
 		"build:setup": "mkdirp dist/docs && mkdirp dist/img",
-		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.css dist",
+		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.js dist && cp tmp/mapsight-vector-styles/default.css dist",
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:src copy:misc",
