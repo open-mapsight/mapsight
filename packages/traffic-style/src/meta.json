@@ -634,6 +634,14 @@
 			},
 			"aliases": [],
 			"groups": ["default", "poi", "poi-generic"],
+			"render": "sprite"
+		},
+		"place": {
+			"label": {
+				"de": "Ort (farbig)",
+				"en": "Place (custom colors)"
+			},
+			"groups": ["default", "poi", "poi-generic"],
 			"render": "composable"
 		},
 		"p": {
