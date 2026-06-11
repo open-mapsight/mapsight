@@ -9,6 +9,13 @@ export const IconVariantSchema = z.stringFormat(
 export type IconId = z.infer<typeof IconIdSchema>;
 export const IconIdSchema = z.stringFormat("mapsight-icon-id", /[0-9a-z-]+/);
 
+/** Platform ids and legacy names may use camelCase (e.g. bicycleCount). */
+export type IconAlias = z.infer<typeof IconAliasSchema>;
+export const IconAliasSchema = z.stringFormat(
+	"mapsight-icon-alias",
+	/[0-9a-zA-Z-]+/,
+);
+
 export type LangCode = z.infer<typeof LangCodeSchema>;
 export const LangCodeSchema = z.stringFormat("mapsight-lang-code", /[a-z]{2}/);
 
@@ -33,7 +40,7 @@ export const IconMetaSchema = z.object({
 	// and string values for the text.
 	id: IconIdSchema,
 	label: z.record(LangCodeSchema, z.string()).optional(),
-	aliases: z.array(IconIdSchema).optional(),
+	aliases: z.array(IconAliasSchema).optional(),
 	groups: z.array(IconGroupNameSchema).optional(),
 	render: IconRenderModeSchema.optional(),
 	colors: IconColorsSchema.optional(),

@@ -404,6 +404,15 @@
 			"groups": ["poi", "poi-transport"],
 			"render": "composable"
 		},
+		"fa-biking": {
+			"label": {
+				"de": "Radverkehr",
+				"en": "Bicycle traffic"
+			},
+			"aliases": ["bicycleCount"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-bolt": {
 			"label": {
 				"de": "Energie",
@@ -440,6 +449,15 @@
 			"groups": ["poi", "poi-transport"],
 			"render": "composable"
 		},
+		"fa-car-bus": {
+			"label": {
+				"de": "KFZ-Verkehr",
+				"en": "Motor vehicle traffic"
+			},
+			"aliases": ["carCount"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-charging-station": {
 			"label": {
 				"de": "Ladestation (FA)",
@@ -449,6 +467,15 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-cloud-rain": {
+			"label": {
+				"de": "Niederschlag",
+				"en": "Precipitation"
+			},
+			"aliases": ["weatherRain"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-hospital": {
 			"label": {
 				"de": "Krankenhaus",
@@ -456,6 +483,24 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-info": {
+			"label": {
+				"de": "KFZ-Verkehr",
+				"en": "Motor vehicle traffic"
+			},
+			"aliases": ["carCount"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-leaf-heart": {
+			"label": {
+				"de": "Luftqualität (PM10), Windgeschwindigkeit",
+				"en": "Air quality (PM10), wind speed"
+			},
+			"aliases": ["airQualityPM10", "weatherWindSpeed"],
+			"groups": ["smart-city"],
 			"render": "composable"
 		},
 		"fa-marker": {
@@ -476,6 +521,29 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-temperature-high": {
+			"label": {
+				"de": "Wassertemperatur",
+				"en": "Water temperature"
+			},
+			"aliases": ["waterTemp"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-thunderstorm-sun": {
+			"label": {
+				"de": "Luftfeuchtigkeit, Niederschlag, Lufttemperatur, Windgeschwindigkeit",
+				"en": "Humidity, precipitation, air temperature, wind speed"
+			},
+			"aliases": [
+				"weatherHumidity",
+				"weatherRain",
+				"weatherTemp",
+				"weatherWindSpeed"
+			],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-tree": {
 			"label": {
 				"de": "Park",
@@ -485,6 +553,24 @@
 			"groups": ["poi", "poi-leisure"],
 			"render": "composable"
 		},
+		"fa-tree-alt": {
+			"label": {
+				"de": "Luftfeuchtigkeit, Lufttemperatur",
+				"en": "Humidity, air temperature"
+			},
+			"aliases": ["weatherHumidity", "weatherTemp"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-users": {
+			"label": {
+				"de": "Passanten",
+				"en": "Pedestrians"
+			},
+			"aliases": ["peopleCount"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-utensils": {
 			"label": {
 				"de": "Gastronomie",
@@ -492,6 +578,24 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-water": {
+			"label": {
+				"de": "Wasserstand, Wassertemperatur, Lufttemperatur",
+				"en": "Water level, water temperature, air temperature"
+			},
+			"aliases": ["waterLevelSurface", "waterTemp", "weatherTemp"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-water-lower": {
+			"label": {
+				"de": "Wasserstand, Wassertemperatur",
+				"en": "Water level, water temperature"
+			},
+			"aliases": ["waterLevelSurface", "waterTemp"],
+			"groups": ["smart-city"],
 			"render": "composable"
 		},
 		"info": {
