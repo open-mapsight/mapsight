@@ -12,8 +12,7 @@ import ValueMetricDisplay from "./value-metric-display.js";
 
 type Props = MetricPlaceholderData & SmartCityMetricsOptions;
 
-type MetricState =
-	| {status: "loading"}
+type MetricData =
 	| {
 			status: "ready";
 			kind: "timeSeries";
@@ -30,6 +29,11 @@ type MetricState =
 	  }
 	| {status: "error"};
 
+type MetricFetchState = {
+	key: string;
+	data: MetricData | null;
+};
+
 export default function SmartCityMetricWidget({
 	stationType,
 	stationId,
@@ -38,7 +42,12 @@ export default function SmartCityMetricWidget({
 	apiBaseUrl = "/msp/public/count-aggregator",
 	showMetricIcons = false,
 }: Props) {
-	const [state, setState] = useState<MetricState>({status: "loading"});
+	const fetchKey = `${apiBaseUrl}|${stationType}|${stationId}|${label}`;
+	const [state, setState] = useState<MetricFetchState>({
+		key: fetchKey,
+		data: null,
+	});
+	const isLoading = state.key !== fetchKey || state.data === null;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -56,11 +65,14 @@ export default function SmartCityMetricWidget({
 
 					if (!cancelled) {
 						setState({
-							status: "ready",
-							kind: "timeSeries",
-							points: result.points,
-							config: result.config,
-							lastUpdatedAt: result.lastUpdatedAt,
+							key: fetchKey,
+							data: {
+								status: "ready",
+								kind: "timeSeries",
+								points: result.points,
+								config: result.config,
+								lastUpdatedAt: result.lastUpdatedAt,
+							},
 						});
 					}
 
@@ -77,27 +89,29 @@ export default function SmartCityMetricWidget({
 
 				if (!cancelled) {
 					setState({
-						status: "ready",
-						kind: "sum",
-						value: result.value,
-						config: result.config,
-						lastUpdatedAt: result.lastUpdatedAt,
+						key: fetchKey,
+						data: {
+							status: "ready",
+							kind: "sum",
+							value: result.value,
+							config: result.config,
+							lastUpdatedAt: result.lastUpdatedAt,
+						},
 					});
 				}
 			} catch {
 				if (!cancelled) {
-					setState({status: "error"});
+					setState({key: fetchKey, data: {status: "error"}});
 				}
 			}
 		}
 
-		setState({status: "loading"});
 		void loadMetric();
 
 		return () => {
 			cancelled = true;
 		};
-	}, [apiBaseUrl, label, stationId, stationType]);
+	}, [apiBaseUrl, fetchKey, label, stationId, stationType]);
 
 	const shellProps = {
 		label,
@@ -105,7 +119,7 @@ export default function SmartCityMetricWidget({
 		showMetricIcons,
 	};
 
-	if (state.status === "loading") {
+	if (isLoading) {
 		return (
 			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
 				<div className="ms3-smart-city-metric__loading">
@@ -115,7 +129,9 @@ export default function SmartCityMetricWidget({
 		);
 	}
 
-	if (state.status === "error") {
+	const data = state.data;
+
+	if (data?.status === "error") {
 		return (
 			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
 				<div className="ms3-smart-city-metric__empty">
@@ -125,15 +141,19 @@ export default function SmartCityMetricWidget({
 		);
 	}
 
+	if (data?.status !== "ready") {
+		return null;
+	}
+
 	return (
-		<MetricWidgetShell {...shellProps} lastUpdatedAt={state.lastUpdatedAt}>
-			{state.kind === "timeSeries" ? (
+		<MetricWidgetShell {...shellProps} lastUpdatedAt={data.lastUpdatedAt}>
+			{data.kind === "timeSeries" ? (
 				<TimeSeriesMetricChart
-					points={state.points}
-					config={state.config}
+					points={data.points}
+					config={data.config}
 				/>
 			) : (
-				<ValueMetricDisplay value={state.value} config={state.config} />
+				<ValueMetricDisplay value={data.value} config={data.config} />
 			)}
 		</MetricWidgetShell>
 	);

@@ -68,7 +68,7 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						type="number"
 						scale="time"
 						domain={["dataMin", "dataMax"]}
-						tickFormatter={(value) =>
+						tickFormatter={(value: number) =>
 							formatMetricAxisTime(new Date(value))
 						}
 						tick={chartTickStyle}
@@ -82,7 +82,7 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						tickLine={false}
 						axisLine={false}
 						width={34}
-						tickFormatter={(value) =>
+						tickFormatter={(value: number) =>
 							new Intl.NumberFormat(
 								document.documentElement.lang || "de-DE",
 								{

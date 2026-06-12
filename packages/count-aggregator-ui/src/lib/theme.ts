@@ -1,5 +1,3 @@
-import type {CSSProperties} from "react";
-
 export interface CountAggregatorTheme {
 	colors?: {
 		primary?: string;
@@ -24,7 +22,9 @@ const THEME_VAR_MAP = {
 	radius: "--msca-radius",
 } as const;
 
-export function createTheme(theme: CountAggregatorTheme): CSSProperties {
+export function createTheme(
+	theme: CountAggregatorTheme,
+): Record<string, string> {
 	const style: Record<string, string> = {};
 
 	if (theme.colors?.primary !== undefined) {
@@ -61,5 +61,5 @@ export function createTheme(theme: CountAggregatorTheme): CSSProperties {
 		style[THEME_VAR_MAP.radius] = theme.radius;
 	}
 
-	return style as CSSProperties;
+	return style;
 }
