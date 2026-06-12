@@ -41,6 +41,8 @@
 	},
 	"scripts": {
 		"build": "turbo build",
+		"check:no-private-leak": "node scripts/check-no-private-leak.mts",
+		"check:typecheck-test-coverage": "node scripts/check-typecheck-test-coverage.mts",
 		"clean": "turbo clean",
 		"clean-build": "run-s clean build",
 		"format:check": "prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,tsx,json,md}\"",
@@ -57,6 +59,7 @@
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
 		"test": "turbo test",
 		"typecheck": "turbo typecheck",
+		"typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json",
 		"watch": "turbo watch watch"
 	}
 }

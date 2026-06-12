@@ -1,1 +1,4 @@
+#!/usr/bin/env sh
+
 pnpm run lint-staged
+node scripts/check-no-private-leak.mts --mode staged --visibility auto

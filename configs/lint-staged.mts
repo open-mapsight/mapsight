@@ -3,10 +3,21 @@ import path from "node:path";
 import type {Configuration} from "lint-staged";
 
 const getPackageName = (filePath: string): string | null => {
-	const parts = filePath.split(path.sep);
-	const roots = ["packages", "apps"];
+	const [root, group, name] = filePath.split(path.sep);
 
-	return roots.includes(parts[0]!) ? parts[1]! : null;
+	if (
+		root === "private" &&
+		(group === "apps" || group === "packages") &&
+		name
+	) {
+		return name;
+	}
+
+	if (root && name && (root === "packages" || root === "apps")) {
+		return name;
+	}
+
+	return null;
 };
 
 const runInPackage = (scriptName: string) => (filenames: readonly string[]) => {
