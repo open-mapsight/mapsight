@@ -7,17 +7,4 @@
 		margin: 5px 0 5px 3px;
 		font-size: variables.$ms3-fontSizeInput;
 	}
-
-	&__panel {
-		padding: 12px 20px 12px 10px;
-		margin-top: 10px;
-		box-shadow: -1px 3px 10px -6px black;
-		border: 1px solid variables.$ms3-borderColor;
-		background: variables.$ms3-pageBackgroundColor;
-		text-align: left;
-	}
-
-	.ms3-wrapper--mobile & {
-		margin-top: 7px;
-	}
 }

@@ -45,6 +45,7 @@ const de: Record<string, string> = {
 	"ui.feature-list.sorting.choose": "Standort wählen ...",
 	"ui.feature-list.sorting.own": "eigenen Standort verwenden",
 	"ui.feature-list.sorting.announcements": "Meldungen sortieren …",
+	"ui.feature-list.tag-switcher.announcements": "Nach Tags filtern …",
 
 	"ui.feature-list.content.noListSelected": "keine Liste gewählt",
 	"ui.feature-list.content.noEntries": "keine Einträge",

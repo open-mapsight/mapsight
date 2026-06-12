@@ -1,6 +1,14 @@
-import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
+import type {
+	ElementType,
+	ForwardedRef,
+	ReactNode,
+	RefObject,
+	TouchEvent,
+} from "react";
 import {forwardRef, useCallback, useMemo, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
+
+import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import getFeatureProperty from "../../helpers/get-feature-property";
@@ -9,19 +17,26 @@ import {
 	listUiOptionsSelector,
 	viewSelector,
 } from "../../store/selectors";
+import type {
+	FeatureListProps,
+	FullUiState,
+	MapsightUiFeature,
+	MapsightUiFeatureId,
+	SelectFeatureActionOptions,
+} from "../../types";
 import FeatureCycling from "../feature-list-cycling";
-
 import FeatureSorter from "../feature-list-sorting";
-
 import {
 	APP_EVENT_SCROLL_TO_FEATURE_LIST,
 	useAppChannelEventListener,
 } from "../helping/app-channel";
 import LayerSwitcher from "../layer-switcher/index";
 import TagSwitcher from "../tag-switcher/index";
-
+import type {
+	FeatureListContextValue,
+	FeatureListItemContextProps,
+} from "./context";
 import {FeatureListContextProvider} from "./context";
-
 import FeatureFilter from "./filter";
 import FeatureListFooter from "./footer";
 import FeatureListGroupedContent from "./grouped-content";
@@ -32,29 +47,34 @@ import {useMakeHeaderSticky} from "./hooks/useMakeHeaderSticky";
 import useRestoreDocumentScroll from "./hooks/useRestoreDocumentScroll";
 import useSelectFeature from "./hooks/useSelectFeature";
 import Pagination from "./pagination";
+import FeatureListTagSwitcherControl from "./tag-switcher-control";
 
 export const DEFAULT_LIST_RENDER_AS = "ul";
 
-function stopEventPropagation(e) {
+function stopEventPropagation(e: TouchEvent<HTMLElement>) {
 	e.stopPropagation();
 }
 
-function determineShowListInfo(features) {
-	if (features.length) {
-		const firstInfo = getFeatureProperty(features[0], "listInformation");
-		for (let i = 0; i < features.length; i++) {
-			const info = getFeatureProperty(features[i], "listInformation");
+function determineShowListInfo(features: MapsightUiFeature[]) {
+	if (!features.length) {
+		return false;
+	}
 
-			if (firstInfo !== info) {
-				return true;
-			}
+	const firstInfo = getFeatureProperty(features[0]!, "listInformation");
+	for (const feature of features) {
+		const info = getFeatureProperty(feature, "listInformation");
+
+		if (firstInfo !== info) {
+			return true;
 		}
 	}
 
 	return false;
 }
 
-function determineItemType(containerType = DEFAULT_LIST_RENDER_AS) {
+function determineItemType(
+	containerType: string = DEFAULT_LIST_RENDER_AS,
+): "li" | "p" {
 	if (containerType === "ul" || containerType === "ol") {
 		return "li";
 	}
@@ -62,14 +82,8 @@ function determineItemType(containerType = DEFAULT_LIST_RENDER_AS) {
 	return "p";
 }
 
-/**
- * @template T
- * @param {import("../../types").FeatureListProps<T>} props props
- * @param {React.RefObject<React.ElementRef<T>>} forwardedRef ref
- * @returns {React.ReactElement} element
- */
-function FeatureList(props, forwardedRef) {
-	const {
+function FeatureListInner(
+	{
 		additionalClasses,
 		as: T = "div",
 		attributes = {},
@@ -84,10 +98,12 @@ function FeatureList(props, forwardedRef) {
 		enableScrollPosition = true,
 		overrideListUiOptions,
 		listControllerName,
-	} = props;
-
+	}: FeatureListProps,
+	forwardedRef: ForwardedRef<HTMLElement>,
+) {
 	const listUiOptionsState = useSelector(listUiOptionsSelector);
-	const listUiOptions = overrideListUiOptions || listUiOptionsState;
+	const listUiOptions = (overrideListUiOptions ||
+		listUiOptionsState) as FullUiState["list"];
 	const {
 		stickyHeader,
 		detailsInList,
@@ -111,14 +127,9 @@ function FeatureList(props, forwardedRef) {
 		);
 	}
 
-	/** @type {React.RefObject<HTMLElement>} */
-	const headerRef = useRef();
-
-	/** @type {React.RefObject<HTMLElement>} */
-	const ownRef = useRef();
-
-	/** @type {React.RefObject<HTMLElement>} */
-	const ref = forwardedRef || ownRef;
+	const headerRef = useRef<HTMLElement>(null);
+	const ownRef = useRef<HTMLElement>(null);
+	const ref = (forwardedRef ?? ownRef) as RefObject<HTMLElement>;
 
 	useMakeHeaderSticky(stickyHeader, ref, headerRef, view);
 	useAutoloadFeatureSource(autoloadFeatureSource, state.featureSourceId);
@@ -127,15 +138,17 @@ function FeatureList(props, forwardedRef) {
 	useAppChannelEventListener(
 		APP_EVENT_SCROLL_TO_FEATURE_LIST,
 		useCallback(() => {
-			ref.current.scrollIntoView({block: "start", behavior: "smooth"});
+			ref.current?.scrollIntoView({block: "start", behavior: "smooth"});
 		}, [ref]),
 	);
 
 	const dispatch = useDispatch();
 	const selectFeatureAction = useSelectFeature();
 	const selectFeature = useCallback(
-		(featureId, options) =>
-			dispatch(selectFeatureAction(featureId, options)),
+		(
+			featureId: MapsightUiFeatureId,
+			_options?: SelectFeatureActionOptions,
+		) => dispatch(selectFeatureAction(featureId) as never),
 		[dispatch, selectFeatureAction],
 	);
 	const deselectFeature = useCallback(
@@ -151,15 +164,7 @@ function FeatureList(props, forwardedRef) {
 	// We do this before filtering so it does not change while changing the filter
 	const showFeatureListInfo =
 		state.filteredFeatures.length !== 0 &&
-		(showVaryingListInfoOnly === false ||
-			determineShowListInfo(state.features));
-
-	// TODO:
-	//<StatusIndicator {...{
-	//	lastUpdate: this.props.lastUpdate,
-	//	status: this.props.status,
-	//	key: 'si'
-	//}} />
+		(!showVaryingListInfoOnly || determineShowListInfo(state.features));
 
 	let className = "ms3-list-wrapper";
 	if (detailsInList) {
@@ -170,7 +175,7 @@ function FeatureList(props, forwardedRef) {
 	}
 
 	const itemProps = useMemo(
-		() => ({
+		(): FeatureListItemContextProps => ({
 			showFeatureListInfo: showFeatureListInfo,
 			enableKeyboardControl: enableKeyboardControl,
 			selectFeature: selectFeature,
@@ -186,16 +191,15 @@ function FeatureList(props, forwardedRef) {
 
 	const renderItemAs = itemAs || determineItemType(renderAs);
 	const contextValue = useMemo(
-		() =>
-			/** @type {import("./context").FeatureListContextValue} */ ({
-				state: state,
-				listUiOptions: listUiOptions,
-				enableKeyboardControl: enableKeyboardControl,
-				showFeatureListInfo: showFeatureListInfo,
-				selectFeature: selectFeature,
-				deselectFeature: deselectFeature,
-				itemProps: itemProps,
-			}),
+		(): FeatureListContextValue => ({
+			state: state,
+			listUiOptions: listUiOptions,
+			enableKeyboardControl: enableKeyboardControl,
+			showFeatureListInfo: showFeatureListInfo,
+			selectFeature: selectFeature,
+			deselectFeature: deselectFeature,
+			itemProps: itemProps,
+		}),
 		[
 			deselectFeature,
 			enableKeyboardControl,
@@ -210,6 +214,7 @@ function FeatureList(props, forwardedRef) {
 	const {
 		filterControl,
 		sortControl,
+		tagSwitcherControl,
 		cyclingControl,
 		integratedList,
 		paginationControl,
@@ -218,23 +223,24 @@ function FeatureList(props, forwardedRef) {
 	const {
 		page,
 		featureCount,
-		features,
 		featureSourceId,
 		filteredFeatures,
 		layerSwitcherShowExternal,
 		tagSwitcherShow,
 	} = state;
 
-	let filterBox = null;
-	if (filterControl !== false) {
-		filterBox = <FeatureFilter allFeatures={features} />;
-	} else if (sortControl !== false || !cyclingControl) {
+	let filterBox: ReactNode = null;
+	if (filterControl) {
+		filterBox = <FeatureFilter />;
+	} else if (sortControl || !cyclingControl) {
 		filterBox = <div className="ms3-list__filter-box">&nbsp;</div>;
 	}
 
+	const Wrapper = T as ElementType;
+
 	return (
 		<FeatureListContextProvider value={contextValue}>
-			<T
+			<Wrapper
 				className={className}
 				onTouchMove={stopEventPropagation}
 				ref={ref}
@@ -243,7 +249,7 @@ function FeatureList(props, forwardedRef) {
 				<HeaderT ref={headerRef}>
 					{filterBox}
 
-					{sortControl !== false && <FeatureSorter />}
+					{sortControl && <FeatureSorter />}
 
 					{cyclingControl && (
 						<FeatureCycling filteredFeatures={filteredFeatures} />
@@ -255,7 +261,13 @@ function FeatureList(props, forwardedRef) {
 						/>
 					)}
 
-					{integratedList && tagSwitcherShow && <TagSwitcher />}
+					{integratedList &&
+						tagSwitcherShow &&
+						(tagSwitcherControl ? (
+							<FeatureListTagSwitcherControl />
+						) : (
+							<TagSwitcher />
+						))}
 				</HeaderT>
 				<ContentT
 					groupAs={renderGroupAs}
@@ -270,9 +282,9 @@ function FeatureList(props, forwardedRef) {
 						/>
 					) : null}
 				</FooterT>
-			</T>
+			</Wrapper>
 		</FeatureListContextProvider>
 	);
 }
 
-export default forwardRef(FeatureList);
+export default forwardRef(FeatureListInner);
