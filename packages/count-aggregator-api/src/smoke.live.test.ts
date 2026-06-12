@@ -28,15 +28,8 @@ const liveSmokeEnv = readLiveSmokeEnv();
 describe.skipIf(liveSmokeEnv === null)(
 	"live count-aggregator API smoke",
 	() => {
-		if (liveSmokeEnv === null) {
-			throw new Error(
-				"Live smoke env missing despite describe.skipIf guard.",
-			);
-		}
-
-		const {baseUrl} = liveSmokeEnv;
-
 		it("loads stations", async () => {
+			const {baseUrl} = liveSmokeEnv!;
 			const client = createCountAggregatorClient(baseUrl);
 			const result = schemas.StationListResponse.parse(
 				await client["count-aggregator.public.type.stations"]({
@@ -48,6 +41,7 @@ describe.skipIf(liveSmokeEnv === null)(
 		});
 
 		it("runs stations → values → last-values → sums for bicycleCount", async () => {
+			const {baseUrl} = liveSmokeEnv!;
 			const client = createCountAggregatorClient(baseUrl);
 			const {data: stations} = schemas.StationListResponse.parse(
 				await client["count-aggregator.public.type.stations"]({
@@ -101,6 +95,7 @@ describe.skipIf(liveSmokeEnv === null)(
 		});
 
 		it("returns CSV from values endpoint", async () => {
+			const {baseUrl} = liveSmokeEnv!;
 			const client = createCountAggregatorClient(baseUrl);
 			const {data: stations} = schemas.StationListResponse.parse(
 				await client["count-aggregator.public.type.stations"]({

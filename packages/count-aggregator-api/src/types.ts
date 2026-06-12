@@ -1,6 +1,6 @@
 import type {z} from "zod";
 
-import {schemas} from "./generated/client.js";
+import type {schemas} from "./generated/client.js";
 
 export type StationType = z.infer<typeof schemas.StationSummary>["type"];
 export type Resolution = z.infer<

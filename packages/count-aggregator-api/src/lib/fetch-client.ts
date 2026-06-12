@@ -31,11 +31,13 @@ export class CountAggregatorApiError extends Error {
 	}
 }
 
+type UrlParamValue = string | number;
+
 function buildRequestUrl(
 	baseUrl: string,
 	pathTemplate: string,
-	params: Readonly<Record<string, unknown>> = {},
-	queries: Readonly<Record<string, unknown>> = {},
+	params: Readonly<Record<string, UrlParamValue>> = {},
+	queries: Readonly<Record<string, UrlParamValue | undefined>> = {},
 ): string {
 	let path = pathTemplate;
 
@@ -45,7 +47,7 @@ function buildRequestUrl(
 
 	const searchParams = new URLSearchParams();
 	for (const [key, value] of Object.entries(queries)) {
-		if (value !== undefined && value !== null) {
+		if (value !== undefined) {
 			searchParams.set(key, String(value));
 		}
 	}
@@ -60,8 +62,8 @@ function buildRequestUrl(
 }
 
 type EndpointCallArgs = {
-	params?: Record<string, unknown>;
-	queries?: Record<string, unknown>;
+	params?: Readonly<Record<string, UrlParamValue>>;
+	queries?: Readonly<Record<string, UrlParamValue | undefined>>;
 };
 
 export type FetchClient<E extends readonly EndpointDefinition[]> = {

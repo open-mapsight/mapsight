@@ -37,10 +37,8 @@
 		"prebuild": "pnpm generate",
 		"sync-openapi": "node --env-file=.env scripts/sync-openapi.ts",
 		"test": "vitest run",
-		"test:smoke": "SMOKE_COUNT_AGGREGATOR_API=1 vitest run --config vitest.smoke.config.ts",
-		"typecheck": "run-s typecheck:lib typecheck:test",
-		"typecheck:lib": "tsc --noEmit",
-		"typecheck:test": "tsc --noEmit -p tsconfig.test.json",
+		"test:smoke": "SMOKE_COUNT_AGGREGATOR_API=1 node --env-file-if-exists=.env node_modules/vitest/vitest.mjs run --config vitest.smoke.config.ts",
+		"typecheck": "tsc --noEmit",
 		"watch": "run-s build watch:build",
 		"watch:build": "tsc --project tsconfig.build.json --watch"
 	}
