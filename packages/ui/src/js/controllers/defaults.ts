@@ -7,6 +7,7 @@ import {MapController} from "@mapsight/core/lib/map/controller";
 import {ProjectionsController} from "@mapsight/core/lib/projections/controller";
 import {UserGeolocationController} from "@mapsight/core/lib/user-geolocation/controller";
 
+import {siteConfig} from "../config";
 import * as c from "../config/constants/controllers";
 import type {mapsightConfigSchemas} from "../config/schema";
 import {createTagFilterFunction} from "../filters/tag-filter";
@@ -18,6 +19,11 @@ export function createDefaultControllers(
 ): Record<string, BaseController> {
 	const mapController = new MapController(c.MAP);
 	mapController.setStyleFunction(context.styleFunction);
+
+	const imagesUrl = context.createOptions.imagesUrl || siteConfig.imagesUrl;
+	if (imagesUrl) {
+		mapController.setDefaultStyleEnv({imagesUrl});
+	}
 
 	return {
 		[c.PROJECTIONS]: new ProjectionsController(c.PROJECTIONS),

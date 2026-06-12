@@ -25,7 +25,9 @@
 				icon: {
 					anchorX: -14px;
 					anchorY: 12px;
-					src: variables.$MAPSIGHT_TRAFFIC_STYLE__IMAGE_PATH + "parking-dynamic/attr(occupancyTrendString).png";
+					src: unquote(
+						'calc(attr(--env-imagesUrl) + "parking-dynamic/" + attr(occupancyTrendString) + ".png")'
+					);
 				}
 
 				[state="highlight"],
