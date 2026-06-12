@@ -7,6 +7,7 @@ import pidtree from "pidtree";
 import pidusage from "pidusage";
 // eslint-disable-next-line import-x/default
 import playwright from "playwright";
+import type {Page} from "playwright";
 
 const execFile = promisify(execFileCallback);
 
@@ -399,7 +400,7 @@ function createBrowserWorkloadScript(strategy: HashStrategy): string {
 }
 
 async function runBrowserWorkloadWithOsMemory(
-	page: import("playwright").Page,
+	page: Page,
 	browserPid: number | null,
 	strategy: HashStrategy,
 ): Promise<BrowserWorkloadResult> {
