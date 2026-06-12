@@ -58,7 +58,7 @@
 		"syncpack:format:write": "syncpack format --config configs/syncpack.config.ts",
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
 		"test": "turbo test",
-		"typecheck": "turbo typecheck",
+		"typecheck": "turbo run typecheck //#typecheck:scripts",
 		"typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json",
 		"watch": "turbo watch watch"
 	}
