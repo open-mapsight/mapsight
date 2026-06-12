@@ -1,5 +1,6 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 
+import {CountAggregatorDemoPage} from "./count-aggregator/count-aggregator-demo-page.tsx";
 import {CatalogPage} from "./icons/catalog-page.tsx";
 import {EditorPage} from "./icons/editor-page.tsx";
 import {ShowcaseLayout} from "./layout/showcase-layout.tsx";
@@ -30,6 +31,10 @@ export function App() {
 					<Route path="ui/router/*" element={<RouterPage />} />
 					<Route path="icons" element={<EditorPage />} />
 					<Route path="icons/catalog" element={<CatalogPage />} />
+					<Route
+						path="count-aggregator"
+						element={<CountAggregatorDemoPage />}
+					/>
 				</Route>
 				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>

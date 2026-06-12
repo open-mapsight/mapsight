@@ -262,3 +262,41 @@ body {
 	font-weight: 600;
 	color: #2563eb;
 }
+
+.count-aggregator-demo {
+	width: 100%;
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.count-aggregator-demo__intro {
+	margin-bottom: 1.5rem;
+}
+
+.count-aggregator-demo__intro h1 {
+	margin: 0 0 0.5rem;
+	font-size: 1.75rem;
+}
+
+.count-aggregator-demo__intro p {
+	margin: 0;
+	color: #5b6773;
+	max-width: 42rem;
+}
+
+.count-aggregator-demo__intro code {
+	font-size: 0.9em;
+}
+
+.count-aggregator-demo__surface {
+	border: 1px solid #d8dee6;
+	border-radius: 12px;
+	padding: 1rem;
+	background: #fff;
+}
+
+.count-aggregator-demo__status {
+	margin: 0;
+	color: #5b6773;
+}

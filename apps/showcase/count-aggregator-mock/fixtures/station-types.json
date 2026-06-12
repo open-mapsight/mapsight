@@ -1,0 +1,9 @@
+{
+	"data": [
+		{
+			"type": "bicycleCount",
+			"label": "Bicycle counters",
+			"station_count": 9
+		}
+	]
+}

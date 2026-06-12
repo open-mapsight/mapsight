@@ -1,0 +1,107 @@
+/* Feature-details metric widgets (smart city). Imported by the partial-content plugin. */
+
+.ms3-smart-city-metrics {
+	--ms3-metric-border: #e5e7eb;
+	--ms3-metric-surface: #ffffff;
+	--ms3-metric-muted: #6b7280;
+	--ms3-metric-text: #111827;
+
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.ms3-smart-city-metric {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 0;
+	border: 1px solid var(--ms3-metric-border);
+	border-radius: 4px;
+	background: var(--ms3-metric-surface);
+	overflow: hidden;
+}
+
+.ms3-smart-city-metric__header {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--ms3-metric-text);
+}
+
+.ms3-smart-city-metric__icon {
+	flex: 0 0 auto;
+	color: var(--ms3-metric-muted);
+}
+
+.ms3-smart-city-metric__label {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ms3-smart-city-metric__body {
+	flex: 1 1 auto;
+	padding: 0 8px;
+	min-height: 140px;
+}
+
+.ms3-smart-city-metric__footer {
+	display: flex;
+	align-items: center;
+	padding: 6px 12px 10px;
+	border-top: 1px solid var(--ms3-metric-border);
+	font-size: 11px;
+	color: var(--ms3-metric-muted);
+}
+
+.ms3-smart-city-metric__chart {
+	height: 140px;
+	min-height: 140px;
+	width: 100%;
+}
+
+.ms3-smart-city-metric__chart .recharts-wrapper,
+.ms3-smart-city-metric__chart .recharts-surface {
+	overflow: visible;
+}
+
+.ms3-smart-city-metric__chart .recharts-text,
+.ms3-smart-city-metric__chart .recharts-cartesian-axis-tick-value {
+	font-size: 10px;
+	fill: var(--ms3-metric-muted);
+}
+
+.ms3-smart-city-metric__chart .recharts-cartesian-grid-horizontal line,
+.ms3-smart-city-metric__chart .recharts-cartesian-grid-vertical line {
+	stroke: var(--ms3-metric-border);
+}
+
+.ms3-smart-city-metric__value {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 140px;
+	padding: 12px;
+	color: var(--ms3-metric-text);
+	font-size: 28px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.ms3-smart-city-metric__loading,
+.ms3-smart-city-metric__empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 140px;
+	padding: 12px;
+	color: var(--ms3-metric-muted);
+	font-size: 12px;
+	text-align: center;
+}
