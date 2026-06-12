@@ -20,7 +20,11 @@ export default function useAutoloadFeatureSource(
 		}
 
 		const featureSource = state[FEATURE_SOURCES]?.[featureSourceId];
-		return !featureSource?.data && !featureSource?.isLoading;
+		return (
+			!featureSource?.data &&
+			!featureSource?.isLoading &&
+			!featureSource?.error
+		);
 	});
 
 	useEffect(() => {
