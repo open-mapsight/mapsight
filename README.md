@@ -36,6 +36,8 @@ pnpm install
 pnpm test
 pnpm lint
 pnpm typecheck
+pnpm check
+pnpm format:check
 
 # Watch mode
 pnpm watch
