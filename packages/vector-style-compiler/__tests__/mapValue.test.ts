@@ -63,4 +63,18 @@ it("mapValue", () => {
 		},
 		value: "'' + (mapsightRuntimeIcon(props['mapsightIconId'], \"default\")) + ''",
 	});
+	expect(
+		mapValue(
+			'calc(mapsightRuntimeIcon(attr(--env-mapsightIconId), "default"))',
+		),
+	).toStrictEqual({
+		__meta: {
+			stylePropExpressions: [],
+			styleProps: [],
+			volatileCalcExpressions: [
+				"mapsightRuntimeIcon(env['mapsightIconId'], \"default\")",
+			],
+		},
+		value: "'' + (mapsightRuntimeIcon(env['mapsightIconId'], \"default\")) + ''",
+	});
 });
