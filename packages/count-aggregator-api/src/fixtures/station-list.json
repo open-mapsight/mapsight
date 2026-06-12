@@ -1,0 +1,94 @@
+{
+	"data": [
+		{
+			"id": 150,
+			"type": "bicycleCount",
+			"origin_id": "138969",
+			"name": "Pockelstraße (Anzahl)",
+			"status": null,
+			"label": "Pockelstraße (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 151,
+			"type": "bicycleCount",
+			"origin_id": "138970",
+			"name": "Helmstedter Strasse (Anzahl)",
+			"status": null,
+			"label": "Helmstedter Strasse (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 101,
+			"type": "bicycleCount",
+			"origin_id": "29921",
+			"name": "29921",
+			"status": null,
+			"label": "29921",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 100,
+			"type": "bicycleCount",
+			"origin_id": "29922",
+			"name": "Bültenweg (Anzahl)",
+			"status": null,
+			"label": "Bültenweg (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 102,
+			"type": "bicycleCount",
+			"origin_id": "29923",
+			"name": "Ferdinandbrücke (Anzahl)",
+			"status": null,
+			"label": "Ferdinandbrücke (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 103,
+			"type": "bicycleCount",
+			"origin_id": "29924",
+			"name": "Jasperallee (Anzahl)",
+			"status": null,
+			"label": "Jasperallee (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 104,
+			"type": "bicycleCount",
+			"origin_id": "29925",
+			"name": "Kurt-Schumacher-Str. (Anzahl)",
+			"status": null,
+			"label": "Kurt-Schumacher-Str. (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 105,
+			"type": "bicycleCount",
+			"origin_id": "29926",
+			"name": "Ringgleis Kälberwiese (Anzahl)",
+			"status": null,
+			"label": "Ringgleis Kälberwiese (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 106,
+			"type": "bicycleCount",
+			"origin_id": "29927",
+			"name": "Wendenstraße (Anzahl)",
+			"status": null,
+			"label": "Wendenstraße (Anzahl)",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		}
+	]
+}
