@@ -1,75 +1,51 @@
+import type {Coordinate} from "ol/coordinate";
 import {getDistance} from "ol/sphere";
+
+import getGeoJsonFeatureSortAnchor from "@mapsight/lib-ol/feature/getGeoJsonFeatureSortAnchor";
 
 import type {
 	MapsightUiPlace,
 	MapsightUiPlaceGroup,
 	MapsightUiPlacesData,
 } from "../components/feature-list-sorting/feature-list-sorting";
-import type {MapsightUiFeature} from "../types";
+import type {MapsightUiFeature, MapsightUiFeatureId} from "../types";
 
-/**
- * @param feature feature object
- * @returns anchor
- */
-function defaultFeatureAnchorSelector(
+const defaultFeatureAnchorSelector = (
 	feature: MapsightUiFeature,
-): [undefined | null | number, undefined | null | number] {
-	if (!feature) {
-		return [null, null];
-	}
+): Coordinate | null => getGeoJsonFeatureSortAnchor(feature);
 
-	// TODO: document/collect magic property names
-	const bbox = feature.bbox;
-
-	const x = bbox && bbox[0] && bbox[2] && (bbox[0] + bbox[2]) / 2;
-	const y = bbox && bbox[1] && bbox[3] && (bbox[1] + bbox[3]) / 2;
-
-	return [x, y];
-}
-
-/**
- * @param sorting sorting state
- * @param places places
- * @returns place to sort by or null
- */
 function findPlaceForSorting(
 	sorting: string,
 	places: MapsightUiPlacesData,
 ): MapsightUiPlace | null {
 	const sortingKeys = sorting.split(",");
 
-	let placePointer:
-		| MapsightUiPlacesData
-		| MapsightUiPlace
-		| MapsightUiPlaceGroup = places;
+	let entries: MapsightUiPlacesData = places;
+	let node: MapsightUiPlace | MapsightUiPlaceGroup | undefined;
 
 	for (const key of sortingKeys) {
-		if (!placePointer[key]) {
+		node = entries[key];
+		if (!node) {
 			return null;
 		}
 
-		placePointer = placePointer[key];
-
-		if ("entries" in placePointer) {
-			placePointer = placePointer.entries;
+		if ("entries" in node) {
+			entries = node.entries;
 		}
 	}
 
-	if ("x" in placePointer && "y" in placePointer) {
-		return placePointer as MapsightUiPlace;
+	if (node && "x" in node && "y" in node) {
+		return node;
 	}
 
 	return null;
 }
 
+const getSortDistance = (placeCoords: Coordinate, anchor: Coordinate | null) =>
+	anchor ? getDistance(placeCoords, anchor) : Number.POSITIVE_INFINITY;
+
 /**
  * sorts features by distance
- *
- * @param features features
- * @param places places
- * @param sorting sorting state
- * @param settings settings
- * @returns sorted features
  */
 export default function sortFeaturesByDistance(
 	features: Array<MapsightUiFeature>,
@@ -78,8 +54,9 @@ export default function sortFeaturesByDistance(
 	{
 		featureAnchorSelector = defaultFeatureAnchorSelector,
 	}: {
-		// featureAnchorSelector?(feature: MapsightUiFeature): Array<number>;
-		featureAnchorSelector?: (feature: MapsightUiFeature) => Array<any>;
+		featureAnchorSelector?: (
+			feature: MapsightUiFeature,
+		) => Coordinate | null;
 	} = {},
 ): Array<MapsightUiFeature> {
 	if (!sorting) {
@@ -87,16 +64,31 @@ export default function sortFeaturesByDistance(
 	}
 
 	const placePointer = findPlaceForSorting(sorting, places);
-	if (placePointer) {
-		const placeCoords = [placePointer.x, placePointer.y];
-		return features
-			.slice()
-			.sort(
-				(a, b) =>
-					getDistance(placeCoords, featureAnchorSelector(a)) -
-					getDistance(placeCoords, featureAnchorSelector(b)),
-			);
+	if (!placePointer) {
+		return features;
 	}
 
-	return features;
+	const placeCoords: Coordinate = [placePointer.x, placePointer.y];
+	const anchorCache = new Map<
+		MapsightUiFeatureId,
+		Coordinate | null | undefined
+	>();
+
+	const getAnchor = (feature: MapsightUiFeature): Coordinate | null => {
+		let anchor = anchorCache.get(feature.id);
+		if (anchor === undefined) {
+			anchor = featureAnchorSelector(feature);
+			anchorCache.set(feature.id, anchor);
+		}
+
+		return anchor ?? null;
+	};
+
+	return features
+		.slice()
+		.sort(
+			(a, b) =>
+				getSortDistance(placeCoords, getAnchor(a)) -
+				getSortDistance(placeCoords, getAnchor(b)),
+		);
 }
