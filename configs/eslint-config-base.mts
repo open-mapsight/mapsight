@@ -80,6 +80,8 @@ export default defineConfig([
 					project: [
 						"./apps/*/tsconfig.json",
 						"./packages/*/tsconfig.json",
+						"./configs/tsconfig.json",
+						"./scripts/tsconfig.json",
 						"./tsconfig.json",
 					],
 				},
