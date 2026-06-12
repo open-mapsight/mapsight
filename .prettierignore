@@ -2,3 +2,5 @@
 **/.turbo/*
 **/tmp/*
 **/generated/*
+**/dist/*
+**/dist-*/*

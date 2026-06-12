@@ -13,6 +13,7 @@ export default defineConfig([
 			".git/",
 			"**/.turbo/",
 			"**/dist/",
+			"**/dist-*/",
 			"**/generated/",
 			"**/tmp/",
 		],
