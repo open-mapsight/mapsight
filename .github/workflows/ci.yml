@@ -58,6 +58,10 @@ jobs:
             apps/*/dist
             apps/*/src/generated
             apps/*/public/img/mapsight*
+            starters/*/dist
+            starters/*/src/generated
+            starters/*/public/img/mapsight*
+            starters/*/.next
             packages/*/dist
             packages/*/src/generated
             !node_modules
@@ -195,6 +199,50 @@ jobs:
       - name: Check for private content on public branch
         run: pnpm run check:no-private-leak -- --mode workspace --visibility auto
 
+  check:
+    name: Repository checks
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          submodules: false
+
+      - uses: ./.github/actions/setup/
+
+      - name: Run repository checks
+        run: pnpm run check
+
+  starters-e2e:
+    name: Starters smoke (Playwright)
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          submodules: false
+
+      - uses: ./.github/actions/setup/
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: build-output
+          path: .
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+        shell: bash
+
+      - name: Run starter smoke tests
+        run: pnpm run test:starters:e2e
+        shell: bash
+
   lint-dependencies:
     name: Lint deps/pkg
     timeout-minutes: 5
@@ -254,7 +302,7 @@ jobs:
     name: CI status
     timeout-minutes: 2
     runs-on: ubuntu-latest
-    needs: [ build, lint, check-format, typecheck, test, lint-dependencies, no-private-leak, zizmor, check-changeset ]
+    needs: [ build, lint, check-format, typecheck, check, test, starters-e2e, lint-dependencies, no-private-leak, zizmor, check-changeset ]
     if: always()
     steps:
       - name: Check CI status
@@ -307,6 +355,7 @@ jobs:
         id: changesets
         uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
         with:
+          version: pnpm run version-packages
           publish: npm run release
           commitMode: "github-api"
         env:

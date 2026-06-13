@@ -1,0 +1,10 @@
+// UI chrome icons resolve via Vite (~ alias in vite.config.mts) into assets/.
+@use "@mapsight/ui/src/scss/variables" as msVars with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/"
+);
+@use "@mapsight/ui/src/scss/default";
+@use "@mapsight/ui/src/scss/themes/2022-03" as theme;
+
+.mapsight-embed {
+	min-height: 420px;
+}

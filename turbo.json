@@ -30,6 +30,9 @@
 		},
 		"//#typecheck:scripts": {
 			"outputs": []
+		},
+		"//#lint:starters": {
+			"outputs": []
 		}
 	}
 }
