@@ -2,15 +2,19 @@
 
 Typed HTTP client, Zod schemas, and OpenAPI contract for the Mapsight **count-aggregator** public API — station metadata and aggregated count time series (bicycle counters, traffic sensors, and other station types).
 
-## Install
+Pair with [`@mapsight/count-aggregator-ui`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/README.md) for an embeddable React wizard and charts, or use this package alone in your own UI.
 
-**npm** (when published):
+See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for ecosystem and integration context.
+
+## Install
 
 ```bash
 npm install @mapsight/count-aggregator-api
+# or
+pnpm add @mapsight/count-aggregator-api
 ```
 
-**pnpm workspace** (monorepo):
+**Monorepo development** (from repo root):
 
 ```bash
 pnpm --filter @mapsight/count-aggregator-api build
@@ -101,7 +105,7 @@ From this package directory (or via `pnpm --filter @mapsight/count-aggregator-ap
 | `pnpm sync-openapi` | Download live OpenAPI JSON into `openapi/` (maintainers)           |
 | `pnpm typecheck`    | Library + test TypeScript check                                    |
 
-Copy [`.env.example`](./.env.example) to `.env` for `sync-openapi` and smoke tests — **not** required for build or unit tests.
+Copy [`.env.example`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/.env.example) to `.env` for `sync-openapi` and smoke tests — **not** required for build or unit tests.
 
 ```bash
 # Live smoke (optional)
@@ -123,7 +127,7 @@ Subpath: `@mapsight/count-aggregator-api/openapi.json` — committed contract us
 
 ## OpenAPI contract
 
-- Bundled spec: [`openapi/count-aggregator.openapi.json`](./openapi/count-aggregator.openapi.json)
+- Bundled spec: [`openapi/count-aggregator.openapi.json`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/openapi/count-aggregator.openapi.json)
 - Sync from a live tenant: `pnpm sync-openapi` with `COUNT_AGGREGATOR_OPENAPI_URL` in `.env`
 - Legacy `/wheel-counter/*` alias routes are **excluded** from the monorepo client contract
 - `/park-and-ride/*` routes are kept in the contract as public API routes; `/park-and-ride/export` uses the explicit alias `count-aggregator.public.park-and-ride.export`
@@ -163,7 +167,7 @@ Deployments expose the public count-aggregator API under this pattern:
 | OpenAPI JSON     | `…/openapi.json`                                           |
 | Interactive docs | `…/docs`                                                   |
 
-Replace `<tenant>.example.tld` with your deployment host.
+Replace `<tenant>.example.tld` with your deployment host. For a runnable local demo with mocked responses, see the [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase).
 
 ## Architecture
 
@@ -173,3 +177,8 @@ scripts/generate.ts                     ← openapi-zod-client
 src/generated/client.ts                 ← generated (do not edit)
 src/client.ts, src/lib/*                ← hand-written client + helpers
 ```
+
+## Related packages
+
+- [`@mapsight/count-aggregator-ui`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/README.md) — React wizard, charts, and embed wrapper
+- [Improvement plan](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/PLAN.md) — phased roadmap for both packages

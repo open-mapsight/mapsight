@@ -1,7 +1,10 @@
 # Mapsight Redux Architecture
 
-> **What this is:** A reference for how Mapsight’s GIS state layer works today — not a migration plan.
-> For stabilization and gradual modernization, see [MAPSIGHT_REDUX_IMPROVEMENT_PLAN.md](./MAPSIGHT_REDUX_IMPROVEMENT_PLAN.md).
+> **Package:** `@mapsight/core` · **Hub:** [Documentation index](../../../docs/README.md)
+>
+> **What this is:** A reference for how Mapsight’s GIS state layer works today — not a migration plan. Phased RTK and Zod modernization is in progress.
+
+**See also:** [Action API decision guide](./ACTION_GUIDE.md)
 
 ---
 

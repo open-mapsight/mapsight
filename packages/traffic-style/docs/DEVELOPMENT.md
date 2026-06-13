@@ -73,11 +73,9 @@ multi-part symbols, etc.). For simple POI pictograms, use the composable path ab
 
 ## Publishing
 
-```bash
-git status
-git commit
-pnpm version x.x.x|major|minor|patch
-pnpm run publish
-git push
-git push --tags
-```
+Releases are managed from the monorepo root with [Changesets](https://github.com/changesets/changesets) — not by bumping this package directly.
+
+1. Include a changeset in your PR when maintainers request it (`pnpm changeset` from repo root).
+2. After merge to `main`, CI opens a “Version Packages” PR or publishes via the [release workflow](https://github.com/open-mapsight/mapsight/blob/main/.github/workflows/ci.yml) (`pnpm run release` → build + `changeset publish` to npm).
+
+See [Contributing — Releases](https://github.com/open-mapsight/mapsight/blob/main/docs/development/CONTRIBUTING.md#releases).

@@ -1,18 +1,14 @@
-# Mapsight JS Library
+# @mapsight/lib-js
 
-Library of simple javascript code to have it available from
-different projects and accessible by other internal libraries.
+**Deprecated** — legacy JavaScript utilities kept for internal monorepo compatibility. **Do not add new dependencies on this package**; it will be removed in a future release.
 
-## Build and setup for development
+Prefer standard library APIs or small local helpers in consuming packages. See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for current Mapsight packages.
 
-- Install development dependencies
+## Build (monorepo)
 
-    ```
-    pnpm install
-    ```
+From the repo root:
 
-- Run build
-
-    ```
-    pnpm run clean-build
-    ```
+```bash
+pnpm install
+pnpm --filter @mapsight/lib-js clean-build
+```

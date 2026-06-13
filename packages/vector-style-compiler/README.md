@@ -1,7 +1,11 @@
 # Mapsight vector styles
 
-Creates JavaScript-Code that can be used as a styleFunction in mapsight by
+> **Package:** `@mapsight/vector-style-compiler` · **Hub:** [Documentation index](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)
+
+Creates JavaScript code that can be used as a `styleFunction` in Mapsight by
 transforming a subset of CSS.
+
+**Deep dive:** [ARCHITECTURE_DEEP_DIVE.md](https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md) · **Consumer:** [`@mapsight/traffic-style`](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md), [`@mapsight/core`](https://github.com/open-mapsight/mapsight/blob/main/packages/core/README.md)
 
 ## How it Works
 
