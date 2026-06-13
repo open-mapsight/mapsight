@@ -64,7 +64,8 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"src/scss"
 	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
