@@ -90,3 +90,18 @@ pnpm build
 # Build single package
 pnpm --filter @mapsight/vector-style-compiler build
 ```
+
+## License
+
+Mapsight is published as source-available software while OSI license approval is
+pending. npm packages are marked `UNLICENSED` until an approved open-source
+license is in place.
+
+To discuss use, redistribution, or licensing, contact
+[contact@open-mapsight.org](mailto:contact@open-mapsight.org).
+
+## Security
+
+To report a security vulnerability, see the
+[Open Mapsight security policy](https://github.com/open-mapsight/.github/blob/main/SECURITY.md)
+or email [security@open-mapsight.org](mailto:security@open-mapsight.org).
