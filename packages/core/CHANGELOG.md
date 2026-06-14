@@ -17,13 +17,7 @@
     ***
 
 - 49da00b: Fix feature highlight race conditions, export `FeatureInteractionNames`, add optional `compare` to `BaseController.getAndObserveUncontrolled`, and mark noisy OpenLayers feedback dispatches with `quiet()`.
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [8d3ccfc]
-- Updated dependencies [49da00b]
-    - @mapsight/lib-ol@4.1.0
-    - @mapsight/lib-redux@2.2.0
-    - @mapsight/lib-js@3.0.4
+- Updated internal dependencies.
 
 ## 14.1.0
 

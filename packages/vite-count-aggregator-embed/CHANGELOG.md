@@ -10,5 +10,4 @@
 
 ### Patch Changes
 
-- Updated dependencies [1e0651c]
-    - @mapsight/vite-host-embed@1.1.0
+- Updated internal dependencies.

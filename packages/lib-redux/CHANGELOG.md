@@ -8,8 +8,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [49da00b]
-    - @mapsight/lib-js@3.0.4
+- Updated internal dependencies.
 
 ## 2.1.0
 

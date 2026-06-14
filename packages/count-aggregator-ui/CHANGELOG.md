@@ -10,15 +10,4 @@
 
 ### Patch Changes
 
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [2478d7b]
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [8d3ccfc]
-- Updated dependencies [e5c52ea]
-- Updated dependencies [74568cf]
-- Updated dependencies [1e0651c]
-    - @mapsight/ui@7.2.0
-    - @mapsight/count-aggregator-api@1.0.0
+- Updated internal dependencies.

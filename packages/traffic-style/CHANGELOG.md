@@ -12,9 +12,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [49da00b]
-- Updated dependencies [8d3ccfc]
-    - @mapsight/lib-ol@4.1.0
+- Updated internal dependencies.
 
 ## 5.0.6
 

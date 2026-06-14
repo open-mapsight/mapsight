@@ -8,22 +8,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [1e0651c]
-- Updated dependencies [8d3ccfc]
-- Updated dependencies [49da00b]
-- Updated dependencies [49da00b]
-- Updated dependencies [8d3ccfc]
-- Updated dependencies [e5c52ea]
-- Updated dependencies [49da00b]
-- Updated dependencies [74568cf]
-    - @mapsight/core@14.2.0
-    - @mapsight/traffic-style@5.1.0
-    - @mapsight/lib-ol@4.1.0
-    - @mapsight/lib-redux@2.2.0
-    - @mapsight/lib-js@3.0.4
+- Updated internal dependencies.
 
 ## 1.1.0
 
