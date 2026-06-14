@@ -177,6 +177,8 @@ jobs:
             pnpm run test --only
           fi
         shell: bash
+        env:
+          GITHUB_STEP_SUMMARY: /dev/null
 
   no-private-leak:
     name: No private leak
