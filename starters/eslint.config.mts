@@ -51,5 +51,34 @@ export default defineConfig([
 			"**/postcss.config.mjs",
 		],
 	},
+	{
+		files: [
+			"**/src/**/*.{ts,tsx,mts,cts}",
+			"**/entries/**/*.{ts,tsx,mts,cts}",
+			"**/scripts/**/*.{ts,tsx,mts,cts}",
+		],
+		rules: {
+			"import-x/no-unresolved": [
+				"error",
+				{
+					ignore: [
+						"^@/generated/mapsight-vector-styles/",
+						"^\\.\\./generated/mapsight-vector-styles/",
+					],
+				},
+			],
+		},
+	},
+	{
+		files: [
+			"**/src/presets/simpleMap.ts",
+			"**/src/app/ui/MapsightAppUi.tsx",
+			"**/src/app/ui/map-page.tsx",
+			"**/src/pages/map-page.tsx",
+		],
+		rules: {
+			"@typescript-eslint/no-unsafe-assignment": "off",
+		},
+	},
 	...starterImportResolverConfigs(),
 ]);
