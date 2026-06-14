@@ -24,7 +24,6 @@
 		"dist",
 		"openapi"
 	],
-	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
