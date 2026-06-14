@@ -67,6 +67,7 @@ jobs:
             !node_modules
           retention-days: 1
           compression-level: 9
+          include-hidden-files: true
 
   lint:
     name: Lint code
@@ -393,6 +394,18 @@ jobs:
         run: pnpm install --frozen-lockfile
         shell: bash
 
+      - name: Create starter release artifacts
+        run: |
+          mkdir -p dist/starter-downloads
+          for starter in mapsight-host-starter mapsight-next-starter mapsight-vite-spa-starter; do
+            git archive \
+              --format=zip \
+              --prefix="$starter/" \
+              --output="dist/starter-downloads/$starter.zip" \
+              HEAD:"starters/$starter"
+          done
+        shell: bash
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
@@ -402,3 +415,25 @@ jobs:
           commitMode: "github-api"
         env:
           NPM_TOKEN: '' # We use OIDC, not a token
+
+      - name: Upload starter release artifacts
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          node <<'NODE' > "$RUNNER_TEMP/published-tags"
+          const packages = JSON.parse(process.env.PUBLISHED_PACKAGES || "[]");
+          for (const {name, version} of packages) {
+            console.log(`${name}@${version}`);
+          }
+          NODE
+
+          while IFS= read -r tag; do
+            if [[ -z "$tag" ]]; then
+              continue
+            fi
+
+            gh release upload "$tag" dist/starter-downloads/*.zip --clobber
+          done < "$RUNNER_TEMP/published-tags"
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
