@@ -1,0 +1,94 @@
+{
+	"data": [
+		{
+			"id": 150,
+			"type": "bicycleCount",
+			"origin_id": "138969",
+			"name": "Example Counter A",
+			"status": null,
+			"label": "Example Counter A",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 151,
+			"type": "bicycleCount",
+			"origin_id": "138970",
+			"name": "Example Counter B",
+			"status": null,
+			"label": "Example Counter B",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 101,
+			"type": "bicycleCount",
+			"origin_id": "29921",
+			"name": "Example Counter C",
+			"status": null,
+			"label": "Example Counter C",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 100,
+			"type": "bicycleCount",
+			"origin_id": "29922",
+			"name": "Example Counter D",
+			"status": null,
+			"label": "Example Counter D",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 102,
+			"type": "bicycleCount",
+			"origin_id": "29923",
+			"name": "Example Counter E",
+			"status": null,
+			"label": "Example Counter E",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 103,
+			"type": "bicycleCount",
+			"origin_id": "29924",
+			"name": "Example Counter F",
+			"status": null,
+			"label": "Example Counter F",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 104,
+			"type": "bicycleCount",
+			"origin_id": "29925",
+			"name": "Example Counter G",
+			"status": null,
+			"label": "Example Counter G",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 105,
+			"type": "bicycleCount",
+			"origin_id": "29926",
+			"name": "Example Counter H",
+			"status": null,
+			"label": "Example Counter H",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		},
+		{
+			"id": 106,
+			"type": "bicycleCount",
+			"origin_id": "29927",
+			"name": "Example Counter I",
+			"status": null,
+			"label": "Example Counter I",
+			"hasData": true,
+			"lastDataAt": "2026-06-10 22:00:00"
+		}
+	]
+}

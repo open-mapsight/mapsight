@@ -1,0 +1,11 @@
+{
+	"150": {
+		"id": 150,
+		"fromDateTime": "2025-06-01 00:00:00",
+		"toDateTime": "2025-06-07 00:00:00",
+		"lastDateTime": "2025-06-07 23:59:59",
+		"resolution": "daily",
+		"stationId": "138969",
+		"values": []
+	}
+}
