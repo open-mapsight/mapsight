@@ -22,6 +22,11 @@ const mapsightResolveAliases = Object.fromEntries(
 	]),
 );
 
+const sharedResolveAliases = {
+	zod: require.resolve("zod", {paths: [appRoot]}),
+	...mapsightResolveAliases,
+};
+
 type WebpackConfig = {
 	resolve?: {
 		alias?: Record<string, string | string[] | false>;
@@ -49,7 +54,7 @@ const nextConfig: NextConfig = {
 		"@mapsight/lib-js",
 	],
 	turbopack: {
-		resolveAlias: mapsightResolveAliases,
+		resolveAlias: sharedResolveAliases,
 	},
 	sassOptions: {
 		verbose: false,
@@ -67,7 +72,7 @@ const nextConfig: NextConfig = {
 		config.resolve ??= {};
 		config.resolve.alias = {
 			...config.resolve.alias,
-			...mapsightResolveAliases,
+			...sharedResolveAliases,
 			...uiIconWebpackAlias,
 		};
 		return config;

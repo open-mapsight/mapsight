@@ -19,7 +19,8 @@
 		"react": "^19.2.6",
 		"react-dom": "^19.2.6",
 		"react-redux": "^9.3.0",
-		"reselect": "^5.1.1"
+		"reselect": "^5.1.1",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "^9.0.0",

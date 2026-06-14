@@ -13,7 +13,7 @@ const mapsightPackages = [
 const mapsightDevPackages = ["vector-style-compiler"] as const;
 
 function copyRecursive(src: string, dest: string): void {
-	fs.cpSync(src, dest, {recursive: true});
+	fs.cpSync(src, dest, {force: true, recursive: true});
 }
 
 function findMapsightRepoRoot(startDir: string): string | null {

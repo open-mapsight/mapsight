@@ -58,6 +58,10 @@
 			"types": "./dist/config/*.d.ts",
 			"default": "./dist/config/*.js"
 		},
+		"./config/schema/*": {
+			"types": "./dist/config/schema/*.d.ts",
+			"default": "./dist/config/schema/*.js"
+		},
 		"./embed/*": {
 			"types": "./dist/embed/*.d.ts",
 			"default": "./dist/embed/*.js"

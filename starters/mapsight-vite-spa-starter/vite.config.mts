@@ -20,11 +20,17 @@ const mapsightResolveAliases = trafficStyleSubpaths.map((subpath) => ({
 	}),
 }));
 
+const zodAlias = {
+	find: "zod",
+	replacement: require.resolve("zod", {paths: [appRoot]}),
+};
+
 export default defineConfig({
 	root: path.join(appRoot, "src"),
 	publicDir: path.join(appRoot, "public"),
 	resolve: {
 		alias: [
+			zodAlias,
 			...mapsightResolveAliases,
 			{
 				find: /^~(.+)$/,

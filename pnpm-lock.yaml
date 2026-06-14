@@ -872,6 +872,9 @@ importers:
       reselect:
         specifier: ^5.1.1
         version: 5.2.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
         specifier: ^9.0.0
@@ -957,6 +960,9 @@ importers:
       reselect:
         specifier: ^5.1.1
         version: 5.2.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
         specifier: ^9.0.0
@@ -1054,6 +1060,9 @@ importers:
       reselect:
         specifier: ^5.1.1
         version: 5.2.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
         specifier: ^9.0.0

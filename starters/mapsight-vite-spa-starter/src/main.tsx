@@ -1,5 +1,3 @@
-import "@mapsight/traffic-style/pictograms-fontawesome";
-
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
 
