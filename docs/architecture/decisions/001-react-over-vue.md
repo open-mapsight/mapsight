@@ -1,4 +1,4 @@
-# ADR 001: React over Vue
+# Decision 001: React over Vue
 
 **Status:** Accepted
 

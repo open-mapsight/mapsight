@@ -1,6 +1,6 @@
-# ADR NNN: Title
+# Decision NNN: Title
 
-**Status:** Proposed | Accepted | Deprecated | Superseded by [ADR-xxx](xxx-short-title.md)
+**Status:** Documented | Open | Deprecated | short plain-language status
 
 **Date:** YYYY-MM-DD
 
@@ -30,4 +30,4 @@ What we chose, in one or two short paragraphs.
 
 ## References
 
-- Links to code, external docs, or related ADRs
+- Links to code, external docs, or related decision notes

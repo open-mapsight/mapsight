@@ -1,4 +1,4 @@
-# ADR 010: Communicative embed-first audience scope
+# Decision 010: Communicative embed-first audience scope
 
 **Status:** Accepted
 

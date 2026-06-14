@@ -1,4 +1,4 @@
-# ADR 006: SSR and hydration for embed hosts
+# Decision 006: SSR and hydration for embed hosts
 
 **Status:** Proposed (proven CMS pattern exists; **modern stack and runtime TBD**)
 

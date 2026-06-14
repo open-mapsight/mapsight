@@ -1,4 +1,4 @@
-# ADR 009: Native CSS over Sass/SCSS
+# Decision 009: Native CSS over Sass/SCSS
 
 **Status:** Proposed (**feasibility not validated**)
 
@@ -19,7 +19,7 @@ Modern browsers and build tools support **native CSS** with nesting, custom prop
 
 - Remove `sass`, `breakpoint-sass`, and SCSS compilation from the toolchain
 - Simplify contributor mental model (one styling language)
-- Align with [ADR 007](007-ui-styling-strategy.md) Option B/C — custom properties transfer to hosts more naturally than Sass variables
+- Align with [Decision 007](007-ui-styling-strategy.md) Option B/C — custom properties transfer to hosts more naturally than Sass variables
 
 **Main risk:** `@mapsight/traffic-style` mixins and functions (`str-replace`, icon dimension helpers, env-image paths) may need **build-time generation or JS** rather than a straight CSS port. **`@mapsight/ui`** is largely mechanical (variables → custom properties, nested `@media`). **vector-style-compiler** itself should be low-risk once sources are `.css` — drop the CLI Sass pre-step and optional `sass` dependency.
 
@@ -67,7 +67,7 @@ Migrate from Sass/SCSS to **native CSS** (with nesting and custom properties) ac
 
 ## References
 
-- [ADR 007 — UI styling strategy](007-ui-styling-strategy.md)
+- [Decision 007 — UI styling strategy](007-ui-styling-strategy.md)
 - [`packages/traffic-style/src/scss/`](../../../packages/traffic-style/src/scss/)
 - [`packages/ui/src/scss/`](../../../packages/ui/src/scss/)
 - [`packages/vector-style-compiler/README.md`](../../../packages/vector-style-compiler/README.md) — CSS-in, JavaScript styleFunction out

@@ -1,6 +1,6 @@
-# ADR 007: UI styling strategy — composable host-native presentation
+# Decision 007: UI styling strategy — composable host-native presentation
 
-**Status:** Proposed (goal accepted; **implementation path open**)
+**Status:** Documented goal; implementation path open
 
 **Date:** 2026-06-13
 
@@ -25,13 +25,13 @@ Two styling layers matter:
 
 **Means (evolving — not mutually exclusive long term):**
 
-| Approach                               | Description                                                                                                                                                                                                        | Status                                                                                                    |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **A — Declarative options + BEM/SCSS** | Theme variables, BEM blocks, host CSS alongside embed                                                                                                                                                              | **Current** production pattern; long-term may move to native CSS ([ADR 009](009-native-css-over-scss.md)) |
-| **B — Composition + design tokens**    | Headless primitives, token-based theming; Radix/shadcn as **reference** for new work (e.g. count-aggregator-ui Tailwind)                                                                                           | **Target direction** for new components; full `@mapsight/ui` migration **TBD**                            |
-| **C — Hybrid “support everything”**    | Hosts may combine **A + B**: SCSS theme partials and embed config **and** token overrides / composable primitives where needed; map symbology stays on styleFunction/compiler path independent of UI chrome choice | **Likely long-term reality** — document boundaries so teams do not fork unnecessarily                     |
+| Approach                               | Description                                                                                                                                                                                                        | Status                                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| **A — Declarative options + BEM/SCSS** | Theme variables, BEM blocks, host CSS alongside embed                                                                                                                                                              | **Current** production pattern; long-term may move to native CSS ([Decision 009](009-native-css-over-scss.md)) |
+| **B — Composition + design tokens**    | Headless primitives, token-based theming; Radix/shadcn as **reference** for new work (e.g. count-aggregator-ui Tailwind)                                                                                           | **Target direction** for new components; full `@mapsight/ui` migration **TBD**                                 |
+| **C — Hybrid “support everything”**    | Hosts may combine **A + B**: SCSS theme partials and embed config **and** token overrides / composable primitives where needed; map symbology stays on styleFunction/compiler path independent of UI chrome choice | **Likely long-term reality** — document boundaries so teams do not fork unnecessarily                          |
 
-Option **C** explicitly allows a municipal site on SCSS overrides while a domain package uses Tailwind tokens — same `@mapsight/ui` components, different integration depth. A future **native CSS** migration ([ADR 009](009-native-css-over-scss.md)) would shift Option A toward custom properties without changing the composable goal.
+Option **C** explicitly allows a municipal site on SCSS overrides while a domain package uses Tailwind tokens — same `@mapsight/ui` components, different integration depth. A future **native CSS** migration ([Decision 009](009-native-css-over-scss.md)) would shift Option A toward custom properties without changing the composable goal.
 
 Do **not** document “Mapsight uses shadcn globally” until a migration is real. Track progress in [Current vs target](../CURRENT_VS_TARGET.md).
 
@@ -48,7 +48,7 @@ Do **not** document “Mapsight uses shadcn globally” until a migration is rea
 
 - Multiple styling systems in play (SCSS ui + Tailwind domain packages + host CSS)
 - Documentation must explain **when to use which layer** — higher contributor cognitive load
-- Token strategy needs ADR update when `@mapsight/ui` migration scope is decided
+- Token strategy should be updated here when `@mapsight/ui` migration scope is clearer
 
 ## Alternatives considered
 
@@ -64,4 +64,4 @@ Do **not** document “Mapsight uses shadcn globally” until a migration is rea
 - [Principles → Composable UI](../PRINCIPLES.md#composable-ui-vs-fixed-portal-shell)
 - [`packages/ui/src/scss/themes/`](../../../packages/ui/src/scss/themes/)
 - [`packages/vector-style-compiler/docs/`](../../../packages/vector-style-compiler/docs/)
-- [ADR 009 — Native CSS over SCSS](009-native-css-over-scss.md)
+- [Decision 009 — Native CSS over SCSS](009-native-css-over-scss.md)

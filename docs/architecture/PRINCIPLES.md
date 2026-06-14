@@ -31,7 +31,7 @@ North-star goals for Mapsight as a **communicative, embed-first** GIS frontend. 
 
 1. **Clarity over GIS jargon** — labels, filters, and legends for public audiences.
 2. **Performance on real CMS pages** — lazy embeds, bounded bundle size, no unnecessary portal chrome.
-3. **Accessibility and i18n** — English-first development; multi-locale deployments via host config (see [ADR 008](decisions/008-i18n-approach.md)).
+3. **Accessibility and i18n** — English-first development; multi-locale deployments via host config (see [Decision 008](decisions/008-i18n-approach.md)).
 4. **Trust and privacy** — prefer self-hosted or proxied basemaps and data paths that do not send visitor traffic to unrelated third-party map APIs by default. Mapsight does not treat Google Maps or Mapbox-as-platform as the default stack for trust-sensitive public hosts; see [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md).
 
 ---
@@ -56,7 +56,7 @@ Geoportals ship a **fixed portal shell** — one layout, one layer catalog, one 
 - **Layout freedom** — map only, list only, or any combination; multiple maps or lists on one page when the story needs it.
 - **Controls where they belong** — tag filters, layer selectors, and legends in the map, in the list, or in surrounding page chrome.
 - **Declarative configuration** — CMS or app bootstrap passes JSON that drives the full UI; multi-page sites can transition between Mapsight states without full reloads.
-- **Theming** — embed presets and SCSS/BEM styling today (see package READMEs); native CSS migration under evaluation ([ADR 009](decisions/009-native-css-over-scss.md)); headless or token-based theming ([ADR 007](decisions/007-ui-styling-strategy.md)).
+- **Theming** — embed presets and SCSS/BEM styling today (see package READMEs); native CSS migration under evaluation ([Decision 009](decisions/009-native-css-over-scss.md)); headless or token-based theming ([Decision 007](decisions/007-ui-styling-strategy.md)).
 
 The goal: a city marketing campaign page and a municipal department page should both feel like _their_ site — with the map product shape that fits the content — not a shared GIS portal skin.
 
@@ -65,7 +65,7 @@ The goal: a city marketing campaign page and a municipal department page should 
 ## Non-goals (explicit)
 
 - Replacing Masterportal or building a full geoportal clone.
-- Operating hosted multi-tenant Mapsight SaaS (unless a future ADR says otherwise).
+- Operating hosted multi-tenant Mapsight SaaS (unless we explicitly revisit that scope later).
 - Mandating one CMS or one PHP stack — patterns should generalize across Infosite, TYPO3, headless CMS, and pure React hosts.
 
 ---

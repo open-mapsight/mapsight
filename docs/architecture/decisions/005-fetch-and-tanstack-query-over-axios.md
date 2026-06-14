@@ -1,4 +1,4 @@
-# ADR 005: Async data — fetch, loaders, and query libraries
+# Decision 005: Async data — fetch, loaders, and query libraries
 
 **Status:** Proposed (direction: no axios; **loader/query strategy TBD**)
 
@@ -11,12 +11,12 @@ Mapsight loads GeoJSON, feature detail HTML, count-aggregator APIs, and remote c
 | Layer                                | Today                                                                                       | Problem                                                                                              |
 | ------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | **`@mapsight/core` feature loaders** | Hand-rolled loader modules (`xhr-json-loader`, `combined-loader`, …) dispatching into Redux | No shared cache, deduplication, or stale-while-revalidate; loading/error logic duplicated per loader |
-| **`@mapsight/ui`**                   | Hand-rolled `fetch` + Redux request/success/failure actions (e.g. feature detail HTML)      | Same issues; blurs UI async with GIS Redux ([ADR 004](004-redux-in-core-react-state-in-ui.md))       |
+| **`@mapsight/ui`**                   | Hand-rolled `fetch` + Redux request/success/failure actions (e.g. feature detail HTML)      | Same issues; blurs UI async with GIS Redux ([Decision 004](004-redux-in-core-react-state-in-ui.md))  |
 | **Domain React apps**                | TanStack Query in count-aggregator-ui, showcase                                             | Good pattern, not yet adopted in core/ui embed path                                                  |
 
 Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsight does not need to match that for communicative embeds.
 
-**Best long-term option is not fully decided.** This ADR records agreed constraints and open choices.
+**Best long-term option is not fully decided.** This note records agreed constraints and open choices.
 
 ## Decision
 
@@ -29,7 +29,7 @@ Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsig
     - **Non-HTTP:** geolocation, permissions, and other async browser APIs that need loading/error/cache semantics
 4. **TanStack Query is not the Redux GIS store** — it complements React state in UI; it does not replace path actions or feature-source state in core.
 
-### Open — needs spike / ADR update
+### Open — needs spike / note update
 
 | Question                        | Options                                                                                                                                          |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -59,7 +59,7 @@ Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsig
 | **axios everywhere**                       | Extra dependency; duplicates fetch                     |
 | **Status quo hand-rolled loaders**         | Known pain; no cache/dedup; hard to maintain           |
 | **TanStack Query inside `@mapsight/core`** | Core is React-optional; Query is React-centric         |
-| **RTK Query in `@mapsight/ui`**            | Wrong layer — see ADR 004                              |
+| **RTK Query in `@mapsight/ui`**            | Wrong layer — see Decision 004                         |
 | **SWR instead of TanStack Query**          | Less alignment with existing count-aggregator-ui usage |
 
 ## References
@@ -67,5 +67,5 @@ Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsig
 - [`packages/core/src/js/lib/feature-sources/loaders/`](../../../packages/core/src/js/lib/feature-sources/loaders/)
 - [`packages/ui/src/js/store/actions.ts`](../../../packages/ui/src/js/store/actions.ts)
 - [`packages/count-aggregator-ui`](../../../packages/count-aggregator-ui/)
-- [ADR 004](004-redux-in-core-react-state-in-ui.md)
+- [Decision 004](004-redux-in-core-react-state-in-ui.md)
 - [Principles → Technical principles](../PRINCIPLES.md#technical-principles)

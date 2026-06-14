@@ -1,4 +1,4 @@
-# ADR 003: GeoJSON-first data model
+# Decision 003: GeoJSON-first data model
 
 **Status:** Accepted
 

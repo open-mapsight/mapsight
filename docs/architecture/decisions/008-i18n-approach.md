@@ -1,6 +1,6 @@
-# ADR 008: Internationalization approach
+# Decision 008: Internationalization approach
 
-**Status:** Proposed (target defined; **library not selected**)
+**Status:** Target documented; library not selected
 
 **Date:** 2026-06-13
 
@@ -22,7 +22,7 @@ Masterportal uses **i18next** with JSON locale files — a useful **ecosystem re
 
 **No specific library selected yet** (i18next, FormatJS, next-intl, etc. remain candidates depending on host app).
 
-Until this ADR is superseded with a library choice:
+Until this note is updated with a library choice:
 
 - Hosts may pass `lang` and translated config strings from CMS
 - Integration docs treat i18n as **host responsibility**

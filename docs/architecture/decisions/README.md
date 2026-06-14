@@ -1,29 +1,31 @@
-# Architecture decision records (ADRs)
+# Architecture decision notes
 
-Records of significant technical and product decisions — framework choices, public API shapes, explicit non-goals, and ecosystem alignment.
+Lightweight notes for technical and product decisions — framework choices, public API shapes, explicit non-goals, and ecosystem alignment.
 
-Routine bug fixes, dependency bumps, and internal refactors without an external contract do not need an ADR.
+This is not a formal governance process yet. The goal is to write down the reasoning we have today so future PRs have context.
+
+Routine bug fixes, dependency bumps, and internal refactors without an external contract do not need a decision note.
 
 ---
 
 ## Index
 
-| ID                                                | Title                                            | Status                              |
-| ------------------------------------------------- | ------------------------------------------------ | ----------------------------------- |
-| [001](001-react-over-vue.md)                      | React over Vue                                   | Accepted                            |
-| [002](002-openlayers-over-maplibre.md)            | OpenLayers over MapLibre GL                      | Accepted                            |
-| [003](003-geojson-first-data-model.md)            | GeoJSON-first data model                         | Accepted                            |
-| [004](004-redux-in-core-react-state-in-ui.md)     | Redux in core; React state in UI                 | Accepted (UI migration in progress) |
-| [005](005-fetch-and-tanstack-query-over-axios.md) | Async data — fetch, loaders, query libraries     | Proposed (RTK Query for core TBD)   |
-| [006](006-ssr-state-hydration-goal.md)            | SSR and hydration for embed hosts                | Proposed (runtime / framework TBD)  |
-| [007](007-ui-styling-strategy.md)                 | UI styling — composable host-native presentation | Proposed (means TBD)                |
-| [008](008-i18n-approach.md)                       | Internationalization approach                    | Proposed (library TBD)              |
-| [009](009-native-css-over-scss.md)                | Native CSS over Sass/SCSS                        | Proposed (feasibility TBD)          |
-| [010](010-audience-scope.md)                      | Communicative embed-first audience scope         | Accepted                            |
+| ID                                                | Title                                            | State                                    |
+| ------------------------------------------------- | ------------------------------------------------ | ---------------------------------------- |
+| [001](001-react-over-vue.md)                      | React over Vue                                   | Documented                               |
+| [002](002-openlayers-over-maplibre.md)            | OpenLayers over MapLibre GL                      | Documented                               |
+| [003](003-geojson-first-data-model.md)            | GeoJSON-first data model                         | Documented                               |
+| [004](004-redux-in-core-react-state-in-ui.md)     | Redux in core; React state in UI                 | Documented; UI migration in progress     |
+| [005](005-fetch-and-tanstack-query-over-axios.md) | Async data — fetch, loaders, query libraries     | Open notes; RTK Query for core TBD       |
+| [006](006-ssr-state-hydration-goal.md)            | SSR and hydration for embed hosts                | Open notes; runtime / framework TBD      |
+| [007](007-ui-styling-strategy.md)                 | UI styling — composable host-native presentation | Open notes; implementation path evolving |
+| [008](008-i18n-approach.md)                       | Internationalization approach                    | Open notes; library TBD                  |
+| [009](009-native-css-over-scss.md)                | Native CSS over Sass/SCSS                        | Open notes; feasibility TBD              |
+| [010](010-audience-scope.md)                      | Communicative embed-first audience scope         | Documented                               |
 
 ---
 
-## When to write an ADR
+## When to write a decision note
 
 - Choosing a framework, protocol, or deployment pattern that is hard to reverse
 - Explicit **non-goals** (e.g. not building a geoportal)
@@ -34,11 +36,11 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 
 ## Format
 
-Use [template.md](template.md). One file per decision: `NNN-short-title.md`.
+Use [template.md](template.md) as a starting point when it helps. One file per topic is usually enough: `NNN-short-title.md`.
 
-**Status values:** Proposed · Accepted · Deprecated · Superseded by ADR-xxx
+Keep the status plain: `Documented`, `Open`, `Deprecated`, or whatever short phrase best describes reality.
 
-When a decision changes, add a new ADR or mark the old one **Superseded** — do not rewrite history in place.
+When a decision changes, update the existing note in a normal PR. Add a new follow-up note only when the history itself is useful to preserve.
 
 ---
 

@@ -1,4 +1,4 @@
-# ADR 002: OpenLayers over MapLibre GL (and Leaflet)
+# Decision 002: OpenLayers over MapLibre GL (and Leaflet)
 
 **Status:** Accepted
 
