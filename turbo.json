@@ -27,6 +27,9 @@
 		"typecheck": {
 			"dependsOn": ["^build"],
 			"outputs": []
+		},
+		"//#typecheck:scripts": {
+			"outputs": []
 		}
 	}
 }

@@ -28,7 +28,11 @@ runs:
 
     - name: Provide ref to compare against
       if: github.event_name == 'pull_request'
-      run: git branch main "$BASE_SHA"
+      run: |
+        if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+          git fetch --depth=1 origin "$BASE_SHA"
+        fi
+        git branch -f main "$BASE_SHA"
       shell: bash
       env:
         BASE_SHA: ${{ github.event.pull_request.base.sha }}

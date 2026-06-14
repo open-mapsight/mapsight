@@ -26,6 +26,18 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 | <nobr>💡 [**`showcase`**](apps/showcase)</nobr>           | Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons.     |
 | <nobr>💡 [**`demo-next`**](apps/demo-next)</nobr>         | Simple demo app of Mapsight UI built with Next.js.                          |
 
+## Private workspace paths
+
+Mapsight is open source, but some development still happens outside this tree. The monorepo reserves workspace paths for that (`private/apps/*`, `private/packages/*` in [`pnpm-workspace.yaml`](pnpm-workspace.yaml)) without publishing anything under `private/` here.
+
+To prevent accidental leaks, this repository enforces checks locally and in CI:
+
+- Git hooks: [`.husky/pre-commit`](.husky/pre-commit), [`.husky/pre-push`](.husky/pre-push)
+- Script: [`scripts/check-no-private-leak.mts`](scripts/check-no-private-leak.mts) — `pnpm run check:no-private-leak`, `pnpm run typecheck:scripts`
+- CI: `no-private-leak` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+
+**Please do not open pull requests that remove or weaken these guards.**
+
 ## Development
 
 ```bash
