@@ -1,22 +1,25 @@
+const DOCTYPE_HTML = "<!doctype html>";
+const META_CHARSET_START = "<meta charset";
+
+function startsWithIgnoreCase(value: string, prefix: string): boolean {
+	return value.slice(0, prefix.length).toLowerCase() === prefix;
+}
+
 /** Strip Vite HTML shell noise after a production app-shell build. */
 export function stripBuiltHtmlShell(html: string): string {
 	return stripLeadingMetaCharset(stripLeadingDoctype(html)).trim();
 }
 
 function stripLeadingDoctype(html: string): string {
-	const doctype = "<!doctype html>";
-
-	if (!html.slice(0, doctype.length).toLowerCase().startsWith(doctype)) {
+	if (!startsWithIgnoreCase(html, DOCTYPE_HTML)) {
 		return html;
 	}
 
-	return html.slice(doctype.length).trimStart();
+	return html.slice(DOCTYPE_HTML.length).trimStart();
 }
 
 function stripLeadingMetaCharset(html: string): string {
-	const prefix = "<meta charset";
-
-	if (!html.slice(0, prefix.length).toLowerCase().startsWith(prefix)) {
+	if (!startsWithIgnoreCase(html, META_CHARSET_START)) {
 		return html;
 	}
 
