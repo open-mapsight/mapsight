@@ -3,6 +3,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {defineConfig} from "eslint/config";
+import tseslint from "typescript-eslint";
 
 import baseConfig from "../configs/eslint-config-base-app.mts";
 
@@ -56,12 +57,15 @@ export default defineConfig([
 			"**/src/**/*.{ts,tsx,mts,cts}",
 			"**/entries/**/*.{ts,tsx,mts,cts}",
 			"**/scripts/**/*.{ts,tsx,mts,cts}",
+			"**/vite.config.mts",
 		],
+		extends: [tseslint.configs.disableTypeChecked],
 		rules: {
 			"import-x/no-unresolved": [
 				"error",
 				{
 					ignore: [
+						"^@mapsight/",
 						"^@/generated/mapsight-vector-styles/",
 						"^\\.\\./generated/mapsight-vector-styles/",
 					],
