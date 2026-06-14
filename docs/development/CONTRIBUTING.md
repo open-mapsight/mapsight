@@ -101,6 +101,10 @@ CI verifies pending changesets with `pnpm changeset status --since=main`.
 
 Do not use per-package `npm version` / `npm publish`.
 
+Before merging a release PR that introduces a new package name, configure the
+npm package record and trusted publisher first; see
+[npm Trusted Publishing](NPM_TRUSTED_PUBLISHING.md).
+
 ---
 
 ## Questions

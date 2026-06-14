@@ -87,10 +87,9 @@ Documented and exercised in maintainer deployments (expect WIP APIs and missing 
 
 ## Development
 
-| Document                                       | About                      |
-| ---------------------------------------------- | -------------------------- |
-| [STANDARDS.md](development/STANDARDS.md)       | Toolchain, testing, checks |
-| [CONTRIBUTING.md](development/CONTRIBUTING.md) | PR workflow, ADRs          |
+| Document                             | About                                                       |
+| ------------------------------------ | ----------------------------------------------------------- |
+| [Development](development/README.md) | Contributor workflow, standards, releases, maintainer tasks |
 
 ## Implementation deep dives
 
