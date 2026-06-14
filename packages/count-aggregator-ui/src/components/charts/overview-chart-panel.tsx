@@ -3,7 +3,10 @@ import {type ReactElement, useMemo} from "react";
 import {buildLastValuesCsvExportUrl} from "@mapsight/count-aggregator-api";
 
 import {useLastValues} from "../../api/hooks.js";
-import {useAppConfig} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import type {ChartType, DataResolution, Station} from "../../types";
 import {CsvDownloadLink} from "../export/csv-download-link.js";
 import {Section} from "../wizard/section.js";
@@ -28,6 +31,7 @@ function OverviewChart({
 	stationsById: Map<number, Station> | undefined;
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
+	const {t} = useCountAggregatorI18n();
 	const data = useLastValues(appId, {
 		stationIds,
 		resolution: config.resolution,
@@ -93,7 +97,7 @@ function OverviewChart({
 					/>
 				</Section>
 
-				<Section title="Download">
+				<Section title={t("result.downloadSection")}>
 					<CsvDownloadLink href={csvHref} />
 				</Section>
 			</div>

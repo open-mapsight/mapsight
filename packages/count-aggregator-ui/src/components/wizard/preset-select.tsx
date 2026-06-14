@@ -5,7 +5,10 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 import {usePresets} from "../../api/hooks.js";
 import {parsePresetsResponse} from "../../config/platform.js";
-import {useAppConfig} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
 import type {PresetData} from "../../types";
 import {getSelectStyles} from "./station-select.js";
@@ -19,6 +22,7 @@ function PresetSelectItem({
 	onDelete: (id: number) => void;
 	showDeleteButton: boolean;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
 	const handleDeleteClick = useCallback(
 		(event: MouseEvent<HTMLButtonElement>) => {
 			event.stopPropagation();
@@ -37,7 +41,7 @@ function PresetSelectItem({
 				style={{
 					visibility: showDeleteButton ? "visible" : "hidden",
 				}}
-				title="Voreinstellung löschen…"
+				title={t("presets.delete")}
 			>
 				X
 			</button>
@@ -57,6 +61,7 @@ export const PresetSelect = memo(function PresetSelect({
 	const presets = usePresets(appId);
 	const queryClient = useQueryClient();
 	const appConfig = useAppConfig(appId);
+	const {t} = useCountAggregatorI18n();
 	const presetsEndpoint = appConfig.endpoints?.presets;
 	const portalTarget = useCountAggregatorPortal();
 	const presetsQueryKey = [
@@ -103,7 +108,7 @@ export const PresetSelect = memo(function PresetSelect({
 	return (
 		<Select
 			isClearable
-			placeholder="Voreinstellung…"
+			placeholder={t("presets.placeholder")}
 			options={presets}
 			getOptionLabel={(preset) => preset.name}
 			getOptionValue={(preset) => String(preset.id)}
@@ -120,7 +125,7 @@ export const PresetSelect = memo(function PresetSelect({
 			styles={getSelectStyles() as unknown as StylesConfig<PresetData>}
 			menuPortalTarget={portalTarget}
 			menuPosition="fixed"
-			noOptionsMessage={() => "Keine Voreinstellungen"}
+			noOptionsMessage={() => t("presets.empty")}
 			className="msca:min-w-[220px]"
 		/>
 	);

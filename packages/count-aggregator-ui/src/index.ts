@@ -2,6 +2,7 @@ export {
 	CountAggregatorProvider,
 	useAppConfig,
 	useCountAggregatorConfig,
+	useCountAggregatorI18n,
 } from "./context/count-aggregator-provider.js";
 
 export {
@@ -16,6 +17,13 @@ export {
 } from "./context/count-aggregator-shell.js";
 
 export {createTheme, type CountAggregatorTheme} from "./lib/theme.js";
+export {
+	getCountAggregatorDictionary,
+	resolveCountAggregatorLocale,
+	type CountAggregatorLocale,
+	type CountAggregatorTranslationKey,
+	type CountAggregatorTranslations,
+} from "./lib/i18n.js";
 export {smartCityCountAggregatorTheme} from "./themes/smart-city.js";
 
 export {applyPresetDateRanges} from "./config/platform.js";

@@ -3,6 +3,7 @@ import Flatpickr from "react-flatpickr";
 
 import {German as flatpickrGermanLocale} from "flatpickr/dist/l10n/de";
 
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
 import {
 	dateToYmd,
@@ -14,13 +15,6 @@ import {
 	getLastDayOfYear,
 } from "../../lib/dates.js";
 import {WizardButton} from "./wizard-button.js";
-
-const DATEPICKER_OPTIONS = {
-	locale: flatpickrGermanLocale,
-	dateFormat: "Y-m-d",
-	altInput: true,
-	altFormat: "d.m.Y",
-};
 
 function DateInput({
 	value,
@@ -34,6 +28,7 @@ function DateInput({
 	maxDate?: Date;
 }): ReactElement {
 	const portalTarget = useCountAggregatorPortal();
+	const {locale} = useCountAggregatorI18n();
 
 	const flatpickrProps = useMemo(
 		() => ({
@@ -45,7 +40,10 @@ function DateInput({
 				appendTo: portalTarget,
 				minDate,
 				maxDate,
-				...DATEPICKER_OPTIONS,
+				...(locale === "de" ? {locale: flatpickrGermanLocale} : {}),
+				dateFormat: "Y-m-d",
+				altInput: true,
+				altFormat: locale === "de" ? "d.m.Y" : "Y-m-d",
 			},
 			onChange: (dates: Date[]) => {
 				const nextDate = dates[0];
@@ -54,7 +52,7 @@ function DateInput({
 				}
 			},
 		}),
-		[value, onChange, minDate, maxDate, portalTarget],
+		[value, onChange, minDate, maxDate, portalTarget, locale],
 	);
 
 	return <Flatpickr {...flatpickrProps} />;
@@ -71,17 +69,18 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 	endDate: Date;
 	setEndDate: (date: Date) => void;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
 	const presetButtons = useMemo(() => {
 		const definitions = [
 			{
-				label: "Letztes Jahr",
+				label: t("dateRange.lastYear"),
 				onClick: () => {
 					setStartDate(getFirstDayOfLastYear());
 					setEndDate(getLastDayOfLastYear());
 				},
 			},
 			{
-				label: "Letzter Monat",
+				label: t("dateRange.lastMonth"),
 				onClick: () => {
 					let month = new Date().getMonth() - 1;
 					let year = new Date().getFullYear();
@@ -95,14 +94,14 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 				},
 			},
 			{
-				label: "Laufendes Jahr",
+				label: t("dateRange.currentYear"),
 				onClick: () => {
 					setStartDate(getFirstDayOfYear());
 					setEndDate(getLastDayOfYear());
 				},
 			},
 			{
-				label: "Laufender Monat",
+				label: t("dateRange.currentMonth"),
 				onClick: () => {
 					setStartDate(getFirstDayOfMonth());
 					setEndDate(getLastDayOfMonth());
@@ -115,13 +114,13 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 				{label}
 			</WizardButton>
 		));
-	}, [setStartDate, setEndDate]);
+	}, [setStartDate, setEndDate, t]);
 
 	return (
 		<>
 			<div className="msca:flex msca:flex-wrap msca:items-center msca:gap-x-4 msca:gap-y-2">
 				<div className="msca:flex msca:items-center msca:gap-2">
-					<span>Vom</span>
+					<span>{t("dateRange.from")}</span>
 					<DateInput
 						value={startDate}
 						onChange={setStartDate}
@@ -129,7 +128,7 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 					/>
 				</div>
 				<div className="msca:flex msca:items-center msca:gap-2">
-					<span>bis einschließlich</span>
+					<span>{t("dateRange.toInclusive")}</span>
 					<DateInput
 						value={endDate}
 						onChange={setEndDate}
@@ -139,7 +138,7 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 			</div>
 
 			<div className="msca:mt-3 msca:text-sm msca:text-gray-700">
-				<span>Vorschläge:</span>
+				<span>{t("dateRange.suggestions")}</span>
 				<div className="msca:mt-2 msca:flex msca:flex-wrap msca:gap-2">
 					{presetButtons}
 				</div>
@@ -157,6 +156,7 @@ export const CalendarLinks = memo(function CalendarLinks({
 	endDate: Date | null;
 	calendarBaseUrl: string;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
 	const linkClassName =
 		"msca:rounded msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:px-3 msca:py-1";
 
@@ -167,7 +167,7 @@ export const CalendarLinks = memo(function CalendarLinks({
 					href={`${calendarBaseUrl}/${dateToYmd(startDate)}`}
 					className={linkClassName}
 				>
-					Zum Kalender (Startdatum)
+					{t("calendar.start")}
 				</a>
 			) : null}
 			{endDate !== null ? (
@@ -175,12 +175,12 @@ export const CalendarLinks = memo(function CalendarLinks({
 					href={`${calendarBaseUrl}/${dateToYmd(endDate)}`}
 					className={linkClassName}
 				>
-					Zum Kalender (Enddatum)
+					{t("calendar.end")}
 				</a>
 			) : null}
 			{startDate === null && endDate === null ? (
 				<a href={calendarBaseUrl} className={linkClassName}>
-					Zum Kalender
+					{t("calendar.open")}
 				</a>
 			) : null}
 		</div>

@@ -3,7 +3,7 @@
 Embeddable React components for Mapsight **count-aggregator** data: station selection wizards, time-series charts, CSV
 export links, and optional map feature-detail metrics.
 
-Uses [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) for HTTP access. UI strings are German today; i18n is future work.
+Uses [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) for HTTP access. Built-in labels support `de` and `en` with optional per-key overrides.
 
 ## Install
 
@@ -59,6 +59,7 @@ const stationTypes = [{type: "bicycleCount", label: "Radzählstellen"}] as const
 
 const config = createStationTypeAppsConfig(stationTypes, {
 	apiBaseUrl: "https://<tenant>.example.tld/msp/public/count-aggregator",
+	locale: "en",
 });
 
 // Optional: override per-app UI (stepped wizard, chart defaults, features)
@@ -178,7 +179,7 @@ pnpm --filter @mapsight/count-aggregator-ui test
 pnpm --filter @mapsight/showcase test:e2e
 ```
 
-Current unit coverage focuses on feature-details metrics helpers, date utilities, API mappers, chart data preparation, and metric widget config. The showcase e2e opens the mock count-aggregator demo, selects a station in the stepped wizard, clicks “Weiter”, and asserts the chart/CSV result path.
+Current unit coverage focuses on feature-details metrics helpers, date utilities, API mappers, chart data preparation, and metric widget config. The showcase e2e opens the mock count-aggregator demo, selects a station in the stepped wizard, advances to the result step, and asserts the chart/CSV path.
 
 ## Configuration
 
@@ -217,6 +218,10 @@ features: {
 `features` is the only source of truth for enabling optional UI. Platform-only URLs in `endpoints` are used only when
 the matching feature is enabled, for example `features.events` with `endpoints.events` or `features.presets` with
 `endpoints.presets`.
+
+Set `locale: "de"` or `locale: "en"` on `CountAggregatorConfig` to choose built-in UI labels. Omit `locale` to derive it
+from `document.documentElement.lang` with German fallback. Use `translations` for individual label overrides while the
+project keeps the long-term i18n library decision open.
 
 ## Related packages
 

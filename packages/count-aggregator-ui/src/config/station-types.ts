@@ -11,6 +11,8 @@ export const DEFAULT_PUBLIC_API_BASE_URL = "/msp/public/count-aggregator";
 export interface StationTypeAppsConfigOptions {
 	apiBaseUrl?: string;
 	links?: CountAggregatorConfig["links"];
+	locale?: CountAggregatorConfig["locale"];
+	translations?: CountAggregatorConfig["translations"];
 }
 
 function createAppConfigForStationType(
@@ -59,5 +61,7 @@ export function createStationTypeAppsConfig(
 			eventUrl: (endDateYmd, eventId) =>
 				`/msp/traffic-calendar/calendar/${endDateYmd}/event/${eventId}`,
 		},
+		locale: options.locale,
+		translations: options.translations,
 	};
 }

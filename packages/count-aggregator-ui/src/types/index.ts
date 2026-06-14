@@ -1,5 +1,10 @@
 import type {Resolution, StationType} from "@mapsight/count-aggregator-api";
 
+import type {
+	CountAggregatorLocale,
+	CountAggregatorTranslationKey,
+} from "../lib/i18n.js";
+
 export type DataResolution = Resolution;
 
 export type ChartType = "line" | "column" | "area";
@@ -98,15 +103,6 @@ export interface CountAggregatorFeatures {
 	events?: boolean;
 }
 
-export const DEFAULT_RESOLUTION_LABELS: Record<Resolution, string> = {
-	"15min": "15 Minuten",
-	hourly: "Stunde",
-	daily: "Tag",
-	weekly: "Woche",
-	monthly: "Monat",
-	yearly: "Jahr",
-};
-
 export interface CountAggregatorAppConfig {
 	id: string;
 	apiBaseUrl: string;
@@ -123,6 +119,8 @@ export interface CountAggregatorAppConfig {
 export interface CountAggregatorConfig {
 	apps: Record<string, CountAggregatorAppConfig>;
 	links: CountAggregatorLinkBuilders;
+	locale?: CountAggregatorLocale;
+	translations?: Partial<Record<CountAggregatorTranslationKey, string>>;
 }
 
 export interface TimeSeriesChartProps {

@@ -11,6 +11,11 @@ import {
 	YAxis,
 } from "recharts";
 
+import {
+	getCountAggregatorDictionary,
+	resolveCountAggregatorLocale,
+} from "../../lib/i18n.js";
+import {getDocumentLocale} from "../../lib/utils.js";
 import {formatMetricAxisTime} from "../lib/format-metric-values.js";
 import type {MetricSeriesPoint, MetricWidgetConfig} from "../types.js";
 
@@ -42,9 +47,13 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 	);
 
 	if (chartData.length === 0) {
+		const dictionary = getCountAggregatorDictionary(
+			resolveCountAggregatorLocale(getDocumentLocale()),
+		);
+
 		return (
 			<div className="ms3-smart-city-metric__empty">
-				Keine Messwerte verfügbar
+				{dictionary["metrics.emptySeries"]}
 			</div>
 		);
 	}
@@ -83,12 +92,9 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						axisLine={false}
 						width={34}
 						tickFormatter={(value: number) =>
-							new Intl.NumberFormat(
-								document.documentElement.lang || "de-DE",
-								{
-									maximumFractionDigits: config.decimals ?? 1,
-								},
-							).format(value)
+							new Intl.NumberFormat(getDocumentLocale("de-DE"), {
+								maximumFractionDigits: config.decimals ?? 1,
+							}).format(value)
 						}
 					/>
 					{config.chartType === "line" ? (

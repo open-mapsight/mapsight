@@ -1,5 +1,7 @@
 import {type ReactElement} from "react";
 
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
+
 export function CsvDownloadLink({
 	href,
 	disabled,
@@ -7,10 +9,12 @@ export function CsvDownloadLink({
 	href: string;
 	disabled?: boolean;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
+
 	if (disabled) {
 		return (
 			<p className="msca:text-sm msca:text-gray-500">
-				CSV-Export ist erst verfügbar, wenn die Auswahl gültig ist.
+				{t("csv.disabled")}
 			</p>
 		);
 	}
@@ -23,7 +27,7 @@ export function CsvDownloadLink({
 				target="_blank"
 				rel="download noreferrer"
 			>
-				Als CSV-Datei herunterladen
+				{t("csv.download")}
 			</a>
 		</p>
 	);

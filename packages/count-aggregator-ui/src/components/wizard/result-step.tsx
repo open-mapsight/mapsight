@@ -2,14 +2,17 @@ import {Fragment, type ReactElement, useMemo} from "react";
 
 import {buildCsvExportUrl} from "@mapsight/count-aggregator-api";
 
-import {useAppConfig} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
+import {getResolutionLabels} from "../../lib/i18n.js";
 import {isDefined} from "../../lib/utils.js";
 import {
 	type AggregatedValuesData,
 	type ChartType,
-	DEFAULT_RESOLUTION_LABELS,
 	type DataResolution,
 	type Station,
 } from "../../types";
@@ -51,16 +54,15 @@ export function ResultStep({
 	onEditSelection?: () => void;
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
+	const {t} = useCountAggregatorI18n();
 	const errorMessages: string[] = [];
 
 	if (selectedStationIds.length === 0) {
-		errorMessages.push(
-			"Keine Messstellen ausgewählt. Bitte wählen Sie mindestens eine Messstelle.",
-		);
+		errorMessages.push(t("result.noStations"));
 	}
 
 	if (startDate > endDate) {
-		errorMessages.push("Das Enddatum liegt vor dem Startdatum!");
+		errorMessages.push(t("result.invalidDateRange"));
 	}
 
 	const isValid = errorMessages.length === 0;
@@ -93,7 +95,7 @@ export function ResultStep({
 
 	const resolutionLabel =
 		appConfig.resolutionLabels?.[resolution] ??
-		DEFAULT_RESOLUTION_LABELS[resolution];
+		getResolutionLabels(t)[resolution];
 
 	const csvDownloadHref = useMemo(() => {
 		if (!isValid) {
@@ -120,19 +122,19 @@ export function ResultStep({
 	return (
 		<div>
 			{onEditSelection !== undefined ? (
-				<Section title="Auswahl">
+				<Section title={t("result.selectionSection")}>
 					{isValid ? (
 						<>
 							<p>
-								<strong>Gewählte Messstellen: </strong>
+								<strong>{t("result.selectedStations")} </strong>
 							</p>
 							<ul className="msca:mb-2">{stationTags}</ul>
 							<p>
-								<strong>Gewählter Intervall: </strong>
+								<strong>{t("result.interval")} </strong>
 								{resolutionLabel}
 								<br />
-								<strong>Gewählter Zeitraum: </strong>
-								{`${dateToYmd(startDate)} bis ${dateToYmd(endDate)}`}
+								<strong>{t("result.dateRange")} </strong>
+								{`${dateToYmd(startDate)} - ${dateToYmd(endDate)}`}
 							</p>
 						</>
 					) : null}
@@ -141,12 +143,12 @@ export function ResultStep({
 						className="msca:mt-2"
 						onClick={onEditSelection}
 					>
-						Auswahl ändern
+						{t("result.changeSelection")}
 					</WizardButton>
 				</Section>
 			) : null}
 
-			<Section title="Diagramm">
+			<Section title={t("result.chartSection")}>
 				{!isValid ? (
 					<p className="msca:bg-[var(--msca-color-danger-surface)] msca:p-2">
 						{errorMessages.map((errorMessage) => (
@@ -161,7 +163,7 @@ export function ResultStep({
 								className="msca:mt-2"
 								onClick={onEditSelection}
 							>
-								Zurück zur Auswahl
+								{t("result.toSelection")}
 							</WizardButton>
 						) : null}
 					</p>
@@ -169,11 +171,9 @@ export function ResultStep({
 					<>
 						{tooMuchData ? (
 							<p className="msca:bg-[var(--msca-color-danger-surface)] msca:p-2">
-								Hinweis: Die Diagrammdarstellung wurde auf 5.000
-								Datenpunkte (über die Stationen verteilt)
-								begrenzt.
+								{t("result.tooMuchData")}
 								{showExport
-									? " Bitte nutzen Sie den Download-Link für den vollständigen Datensatz."
+									? ` ${t("result.tooMuchDataWithExport")}`
 									: null}
 							</p>
 						) : null}
@@ -200,10 +200,10 @@ export function ResultStep({
 			</Section>
 
 			{!onEditSelection ? (
-				<Section title="Legende">
+				<Section title={t("result.legendSection")}>
 					{stationTags.length === 0 ? (
 						<p className="msca:text-sm">
-							Keine Messstellen gewählt
+							{t("result.emptyLegend")}
 						</p>
 					) : (
 						<ul>{stationTags}</ul>
@@ -212,7 +212,7 @@ export function ResultStep({
 			) : null}
 
 			{showExport ? (
-				<Section title="Download">
+				<Section title={t("result.downloadSection")}>
 					<CsvDownloadLink
 						href={csvDownloadHref}
 						disabled={!isValid}

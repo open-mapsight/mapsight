@@ -1,6 +1,7 @@
 import {type ChangeEvent, type ReactElement, useCallback} from "react";
 
-import {DEFAULT_RESOLUTION_LABELS} from "../../types";
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
+import {getResolutionLabels} from "../../lib/i18n.js";
 import type {DataResolution, Resolution} from "../../types";
 import {Section} from "./section.js";
 
@@ -15,6 +16,7 @@ export function ResolutionSelect({
 	resolutionLabels?: Partial<Record<Resolution, string>>;
 	onChange: (resolution: DataResolution) => void;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
 			onChange(event.target.value as DataResolution);
@@ -22,10 +24,10 @@ export function ResolutionSelect({
 		[onChange],
 	);
 
-	const labels = {...DEFAULT_RESOLUTION_LABELS, ...resolutionLabels};
+	const labels = {...getResolutionLabels(t), ...resolutionLabels};
 
 	return (
-		<Section title="Auflösung">
+		<Section title={t("resolution.section")}>
 			<span className="msca:flex msca:flex-wrap msca:gap-4">
 				{resolutions.map((value) => (
 					<label

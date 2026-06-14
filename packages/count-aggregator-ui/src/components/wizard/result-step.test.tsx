@@ -65,6 +65,7 @@ function createData(values: StationValue[]): AggregatedValuesData {
 
 function renderResultStep(
 	props: Partial<Parameters<typeof ResultStep>[0]> = {},
+	configOverride: Partial<CountAggregatorConfig> = {},
 ) {
 	const defaultProps: Parameters<typeof ResultStep>[0] = {
 		appId,
@@ -78,7 +79,7 @@ function renderResultStep(
 	};
 
 	return render(
-		<CountAggregatorProvider config={config}>
+		<CountAggregatorProvider config={{...config, ...configOverride}}>
 			<ResultStep {...defaultProps} {...props} />
 		</CountAggregatorProvider>,
 	);
@@ -115,6 +116,15 @@ describe("ResultStep", () => {
 			"/mock/msp/public/count-aggregator/bicycleCount/values/2026-06-01/2026-06-02/daily?stationIds=150&format=csv",
 		);
 		expect(screen.getByTestId("time-series-chart")).toBeTruthy();
+	});
+
+	it("renders built-in English labels when locale is en", () => {
+		renderResultStep({}, {locale: "en"});
+
+		expect(
+			screen.getByRole("link", {name: "Download as CSV file"}),
+		).toBeTruthy();
+		expect(screen.getAllByText("Chart").length).toBeGreaterThan(0);
 	});
 
 	it("shows truncation copy with export guidance when chart data is capped", () => {

@@ -5,6 +5,7 @@ import {
 	useCallback,
 } from "react";
 
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {cn} from "../../lib/utils.js";
 
 const stepChevronClass =
@@ -53,7 +54,8 @@ export function SteppedWizardShell({
 	onSubmit: (event: FormEvent) => void;
 	children: ReactNode;
 }): ReactElement {
-	const handleAuswahlClick = useCallback(() => {
+	const {t} = useCountAggregatorI18n();
+	const handleSelectionClick = useCallback(() => {
 		if (step > 0) {
 			onStepChange(0);
 		}
@@ -64,15 +66,15 @@ export function SteppedWizardShell({
 			<ol className="msca:flex msca:w-full msca:list-none msca:border-b msca:border-[var(--msca-color-border)]">
 				<li className="msca:flex msca:min-w-0 msca:flex-1">
 					<WizardStep
-						label="1. Auswahl"
+						label={t("step.selection")}
 						isActive={step === 0}
 						isClickable={step > 0}
-						onClick={handleAuswahlClick}
+						onClick={handleSelectionClick}
 					/>
 				</li>
 				<li className="msca:flex msca:min-w-0 msca:flex-1">
 					<WizardStep
-						label="2. Diagramm & Download"
+						label={t("step.chart")}
 						isActive={step === 1}
 						isClickable={false}
 					/>

@@ -1,8 +1,5 @@
+import {getDocumentLocale} from "../../lib/utils.js";
 import type {MetricWidgetConfig} from "../types.js";
-
-function getDocumentLocale(): string {
-	return document.documentElement.lang || "de-DE";
-}
 
 export function formatMetricValue(
 	value: number,

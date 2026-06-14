@@ -7,6 +7,7 @@ import Select, {
 	type StylesConfig,
 } from "react-select";
 
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
 import {isDefined} from "../../lib/utils.js";
 import type {Station} from "../../types";
@@ -82,7 +83,7 @@ export const StationSelect = memo(function StationSelect({
 	styleOverrides = {},
 	showDescriptionInSelection = true,
 	closeMenuOnSelect,
-	placeholder = "Messstelle wählen…",
+	placeholder,
 }: {
 	stationsById: Map<number, Station> | undefined;
 	stationIds: readonly number[];
@@ -95,6 +96,7 @@ export const StationSelect = memo(function StationSelect({
 	placeholder?: string;
 }): ReactElement {
 	const portalTarget = useCountAggregatorPortal();
+	const {t} = useCountAggregatorI18n();
 
 	const options = useMemo(
 		() =>
@@ -152,8 +154,8 @@ export const StationSelect = memo(function StationSelect({
 			menuPosition="fixed"
 			closeMenuOnSelect={closeMenuOnSelect}
 			isClearable={!isMulti}
-			placeholder={placeholder}
-			noOptionsMessage={() => "Keine Messstellen gefunden"}
+			placeholder={placeholder ?? t("station.placeholder")}
+			noOptionsMessage={() => t("station.noOptions")}
 		/>
 	);
 });

@@ -18,6 +18,14 @@ export {
 } from "./components/charts/time-series-chart.js";
 
 export {dateToYmd, ymdToDate} from "./lib/dates.js";
+export {
+	getCountAggregatorDictionary,
+	getResolutionLabels,
+	resolveCountAggregatorLocale,
+	type CountAggregatorLocale,
+	type CountAggregatorTranslationKey,
+	type CountAggregatorTranslations,
+} from "./lib/i18n.js";
 export {getColorForStationIndex, STATION_COLORS} from "./lib/colors.js";
 export {
 	mapDataValuePointsToChartPoints,

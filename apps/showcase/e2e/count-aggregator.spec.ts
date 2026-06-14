@@ -17,14 +17,14 @@ test.describe("count-aggregator showcase demo", () => {
 		await stationSelect.fill("Example");
 		await stationSelect.press("Enter");
 
-		await page.getByRole("button", {name: "Weiter"}).click();
+		await page.getByRole("button", {name: "Next"}).click();
 
 		await expect(
-			page.getByRole("button", {name: "Auswahl ändern"}),
+			page.getByRole("button", {name: "Change selection"}),
 		).toBeVisible();
-		await expect(page.getByText("Gewählte Messstellen:")).toBeVisible();
+		await expect(page.getByText("Selected stations:")).toBeVisible();
 		await expect(page.getByText("Example Counter A").first()).toBeVisible();
-		await expect(page.getByText("Gewählter Intervall:")).toBeVisible();
+		await expect(page.getByText("Selected interval:")).toBeVisible();
 
 		await expect(
 			page.locator(".msp-count-aggregator svg.recharts-surface"),

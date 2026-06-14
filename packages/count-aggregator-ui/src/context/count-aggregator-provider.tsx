@@ -5,6 +5,12 @@ import {
 	useContext,
 } from "react";
 
+import {
+	type CountAggregatorLocale,
+	type CountAggregatorTranslationKey,
+	getCountAggregatorDictionary,
+	resolveCountAggregatorLocale,
+} from "../lib/i18n.js";
 import type {
 	CountAggregatorAppConfig,
 	CountAggregatorConfig,
@@ -50,4 +56,20 @@ export function useAppConfig(appId: string): CountAggregatorAppConfig {
 	}
 
 	return app;
+}
+
+export function useCountAggregatorI18n(): {
+	locale: CountAggregatorLocale;
+	t: (key: CountAggregatorTranslationKey) => string;
+} {
+	const config = useCountAggregatorConfig();
+	const locale = resolveCountAggregatorLocale(config.locale);
+	const dictionary = getCountAggregatorDictionary(locale);
+
+	return {
+		locale,
+		t(key) {
+			return config.translations?.[key] ?? dictionary[key] ?? key;
+		},
+	};
 }

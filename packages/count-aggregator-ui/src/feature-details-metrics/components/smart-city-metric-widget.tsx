@@ -1,5 +1,10 @@
 import {useEffect, useState} from "react";
 
+import {
+	getCountAggregatorDictionary,
+	resolveCountAggregatorLocale,
+} from "../../lib/i18n.js";
+import {getDocumentLocale} from "../../lib/utils.js";
 import {resolveMetricWidgetConfig} from "../config/metric-widgets.js";
 import {
 	fetchMetricSumValue,
@@ -47,6 +52,9 @@ export default function SmartCityMetricWidget({
 		key: fetchKey,
 		data: null,
 	});
+	const dictionary = getCountAggregatorDictionary(
+		resolveCountAggregatorLocale(getDocumentLocale()),
+	);
 	const isLoading = state.key !== fetchKey || state.data === null;
 
 	useEffect(() => {
@@ -123,7 +131,7 @@ export default function SmartCityMetricWidget({
 		return (
 			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
 				<div className="ms3-smart-city-metric__loading">
-					Lade Messwerte …
+					{dictionary["metrics.loading"]}
 				</div>
 			</MetricWidgetShell>
 		);
@@ -135,7 +143,7 @@ export default function SmartCityMetricWidget({
 		return (
 			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
 				<div className="ms3-smart-city-metric__empty">
-					Messwerte konnten nicht geladen werden
+					{dictionary["metrics.error"]}
 				</div>
 			</MetricWidgetShell>
 		);

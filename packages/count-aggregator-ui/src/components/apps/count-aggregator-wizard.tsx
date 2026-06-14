@@ -2,7 +2,10 @@ import {type FormEvent, type ReactElement, useCallback, useState} from "react";
 
 import {useAggregatedValues, useStations} from "../../api/hooks.js";
 import {applyPresetDateRanges} from "../../config/platform.js";
-import {useAppConfig} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import {getFirstDayOfMonth, getLastDayOfMonth} from "../../lib/dates.js";
 import {isFeatureEnabled} from "../../lib/features.js";
 import type {ChartType, DataResolution, PresetData, Station} from "../../types";
@@ -18,16 +21,6 @@ import {
 	TimeRangeSelection,
 } from "../wizard/time-range-selection.js";
 import {WizardButton, WizardPrimaryButton} from "../wizard/wizard-button.js";
-
-function getStationSectionTitle(stationType: string): string {
-	return stationType === "bicycleCount" ? "Radzählstationen" : "Messstellen";
-}
-
-function getStationPlaceholder(stationType: string): string {
-	return stationType === "bicycleCount"
-		? "Radzählstationen auswählen …"
-		: "Messstellen auswählen …";
-}
 
 function SelectionPanel({
 	appId,
@@ -66,6 +59,7 @@ function SelectionPanel({
 	resolutions: readonly DataResolution[];
 	resolutionLabels?: Partial<Record<DataResolution, string>>;
 }): ReactElement {
+	const {t} = useCountAggregatorI18n();
 	const handleSelectAll = useCallback(() => {
 		if (stationsById === undefined) {
 			return;
@@ -80,7 +74,13 @@ function SelectionPanel({
 
 	return (
 		<>
-			<Section title={getStationSectionTitle(stationType)}>
+			<Section
+				title={t(
+					stationType === "bicycleCount"
+						? "station.sectionBicycle"
+						: "station.section",
+				)}
+			>
 				<div className="msca:flex msca:flex-row msca:gap-4">
 					<StationSelect
 						className="msca:grow"
@@ -89,7 +89,11 @@ function SelectionPanel({
 						onChange={onSelectedStationIdsChange}
 						isMulti={true}
 						showDescriptionInSelection={false}
-						placeholder={getStationPlaceholder(stationType)}
+						placeholder={t(
+							stationType === "bicycleCount"
+								? "station.placeholderBicycle"
+								: "station.placeholder",
+						)}
 						styleOverrides={{
 							control: {
 								width: "100%",
@@ -109,13 +113,13 @@ function SelectionPanel({
 				{showBulkActions ? (
 					<div className="msca:mt-2 msca:flex msca:flex-wrap msca:gap-2">
 						<WizardButton type="button" onClick={handleSelectAll}>
-							Alle hinzufügen
+							{t("station.addAll")}
 						</WizardButton>
 						<WizardButton
 							type="button"
 							onClick={handleResetStations}
 						>
-							Zurücksetzen
+							{t("station.reset")}
 						</WizardButton>
 					</div>
 				) : null}
@@ -130,7 +134,7 @@ function SelectionPanel({
 				/>
 			) : null}
 
-			<Section title="Zeitraum">
+			<Section title={t("dateRange.section")}>
 				<TimeRangeSelection
 					startDate={startDate}
 					setStartDate={onStartDateChange}
@@ -144,6 +148,7 @@ function SelectionPanel({
 
 export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 	const appConfig = useAppConfig(appId);
+	const {t} = useCountAggregatorI18n();
 	const isStepped = appConfig.uiVariant === "stepped";
 	const showPresets = isFeatureEnabled(appConfig, "presets");
 	const showEvents = isFeatureEnabled(appConfig, "events");
@@ -231,7 +236,7 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 	);
 
 	const eventsSection = showEvents ? (
-		<Section title="Verkehrsereignisse im gewählten Zeitraum">
+		<Section title={t("events.section")}>
 			<Events appId={appId} startDate={startDate} endDate={endDate} />
 
 			<CalendarLinks
@@ -271,7 +276,9 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 							resolutionLabels={appConfig.resolutionLabels}
 						/>
 						<div className="msca:flex msca:justify-end">
-							<WizardPrimaryButton>Weiter</WizardPrimaryButton>
+							<WizardPrimaryButton>
+								{t("wizard.next")}
+							</WizardPrimaryButton>
 						</div>
 					</>
 				) : (
