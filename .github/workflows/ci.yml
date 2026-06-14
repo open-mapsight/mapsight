@@ -226,6 +226,7 @@ jobs:
         with:
           persist-credentials: false
           submodules: false
+          fetch-depth: 0 # copy-out smoke path gate compares PR base/head SHAs
 
       - uses: ./.github/actions/setup/
 
@@ -243,7 +244,44 @@ jobs:
         run: pnpm run test:starters:e2e
         shell: bash
 
+      - name: Check copy-out smoke paths
+        id: copy-out-smoke
+        run: |
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          should_run=false
+          while IFS= read -r file; do
+            case "$file" in
+              .github/workflows/ci.yml|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json)
+                should_run=true
+                break
+                ;;
+              scripts/smoke-starter-copy-out.mts|scripts/sync-workspace-mapsight.mts)
+                should_run=true
+                break
+                ;;
+              starters/*|packages/core/*|packages/lib-js/*|packages/lib-ol/*|packages/lib-redux/*)
+                should_run=true
+                break
+                ;;
+              packages/traffic-style/*|packages/ui/*|packages/vector-style-compiler/*|packages/vite-host-embed/*)
+                should_run=true
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA")
+
+          echo "run=$should_run" >> "$GITHUB_OUTPUT"
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
       - name: Run copy-out starter smoke tests
+        if: steps.copy-out-smoke.outputs.run == 'true'
         run: pnpm run test:starters:copy-out
         shell: bash
 
