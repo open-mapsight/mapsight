@@ -1,8 +1,9 @@
 {
 	"extends": "./tsconfig.json",
-	"include": ["src/**/*.test.ts", "src/**/*.ts"],
-	"exclude": ["src/fixtures/**"],
+	"include": ["src/**/*.test.ts"],
+	"exclude": [],
 	"compilerOptions": {
+		"noEmit": true,
 		"types": ["node"]
 	}
 }

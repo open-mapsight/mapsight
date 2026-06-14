@@ -31,7 +31,7 @@ export class CountAggregatorApiError extends Error {
 	}
 }
 
-type UrlParamValue = string | number;
+type UrlParamValue = string | number | boolean;
 
 function buildRequestUrl(
 	baseUrl: string,
@@ -67,7 +67,15 @@ type EndpointCallArgs = {
 };
 
 export type FetchClient<E extends readonly EndpointDefinition[]> = {
-	[K in E[number]["alias"]]: (args?: EndpointCallArgs) => Promise<unknown>;
+	[K in E[number]["alias"]]: (
+		args?: EndpointCallArgs,
+	) => Promise<
+		Extract<E[number], {alias: K}>["response"] extends z.ZodType<
+			infer Output
+		>
+			? Output
+			: unknown
+	>;
 };
 
 export function createFetchClient<E extends readonly EndpointDefinition[]>(

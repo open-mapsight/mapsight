@@ -33,6 +33,10 @@ generated = generated.replace(
 	/z\.record\((?!z\.string\(\), )/g,
 	"z.record(z.string(), ",
 );
+generated = generated.replaceAll(
+	'alias: "count-aggregator.public.",',
+	'alias: "count-aggregator.public.park-and-ride.export",',
+);
 generated = generated.replace(
 	/^import \{ makeApi, Zodios(?:, type ZodiosOptions)? \} from "@zodios\/core";\n/m,
 	"",

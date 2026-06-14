@@ -1202,7 +1202,7 @@ export const endpoints = [
   {
     method: "get",
     path: "/park-and-ride/export",
-    alias: "count-aggregator.public.",
+    alias: "count-aggregator.public.park-and-ride.export",
     requestFormat: "json",
     response: GeoJsonFeatureCollection,
   },

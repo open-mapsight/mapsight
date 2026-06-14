@@ -3,7 +3,7 @@ import {z} from "zod";
 import {schemas} from "../generated/client.js";
 import type {TimeSeriesMapResponse, TimeSeriesResponse} from "../types.js";
 
-const LOCAL_DATE_TIME_PATTERN = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+export {assertLocalDateTimeFields} from "./datetime.js";
 
 const timeSeriesMapSchema = z.record(z.string(), schemas.TimeSeriesResponse);
 
@@ -32,26 +32,4 @@ export function indexTimeSeriesByStationId(
 	}
 
 	return indexed;
-}
-
-export function assertLocalDateTimeFields(series: TimeSeriesResponse): void {
-	for (const field of [
-		"fromDateTime",
-		"toDateTime",
-		"lastDateTime",
-	] as const) {
-		if (!LOCAL_DATE_TIME_PATTERN.test(series[field])) {
-			throw new Error(
-				`Expected ${field} in Y-m-d H:i:s format, got "${series[field]}"`,
-			);
-		}
-	}
-
-	for (const point of series.values) {
-		if (!LOCAL_DATE_TIME_PATTERN.test(point.datetime)) {
-			throw new Error(
-				`Expected values[].datetime in Y-m-d H:i:s format, got "${point.datetime}"`,
-			);
-		}
-	}
 }

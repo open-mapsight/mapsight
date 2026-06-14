@@ -20,25 +20,62 @@ pnpm --filter @mapsight/count-aggregator-api build
 
 ## Quick start
 
-Create a client pointed at your tenant’s public count-aggregator base URL, then call generated endpoint aliases. Typed helper wrappers are planned; until then, use bracket notation:
+Create a client pointed at your tenant’s public count-aggregator base URL, then call the typed helpers:
 
 ```ts
 import {
 	createCountAggregatorClient,
-	schemas,
+	getValues,
+	listStations,
 } from "@mapsight/count-aggregator-api";
 
 const baseUrl = "https://<tenant>.example.tld/msp/public/count-aggregator";
 const client = createCountAggregatorClient(baseUrl);
 
 // List stations for a type
-const stationList = schemas.StationListResponse.parse(
-	await client["count-aggregator.public.type.stations"]({
-		params: {type: "bicycleCount"},
-	}),
-);
+const stationList = await listStations(client, "bicycleCount");
 
 // Aggregated values for one or more stations
+const valuesMap = await getValues(client, {
+	type: "bicycleCount",
+	from: "2025-06-01",
+	to: "2025-06-07",
+	resolution: "daily",
+	stationIds: [150],
+});
+```
+
+Generated endpoint aliases remain exported for advanced use when you need a route without a helper:
+
+```ts
+const stationTypes = await client["count-aggregator.public.station-types"]();
+```
+
+Inject a custom `fetch` (tests, SSR, proxies):
+
+```ts
+const client = createCountAggregatorClient(baseUrl, {
+	fetch: myFetch,
+});
+```
+
+## Typed helpers
+
+Use these helpers for JSON API calls:
+
+| Helper             | Endpoint family                           |
+| ------------------ | ----------------------------------------- |
+| `listStationTypes` | `GET /station-types`                      |
+| `listStations`     | `GET /:type/stations`                     |
+| `getValues`        | `GET /:type/values/:from/:to/:resolution` |
+| `getLastValues`    | `GET /:type/last-values/:resolution`      |
+| `getStationSums`   | `GET /:type/:stationId/sums`              |
+
+For CSV downloads, use URL builders such as `buildCsvExportUrl` instead of the JSON client.
+
+Advanced endpoint alias example:
+
+```ts
 const valuesMap = await client["count-aggregator.public.type.values"]({
 	params: {
 		type: "bicycleCount",
@@ -49,14 +86,6 @@ const valuesMap = await client["count-aggregator.public.type.values"]({
 	queries: {
 		stationIds: "150",
 	},
-});
-```
-
-Inject a custom `fetch` (tests, SSR, proxies):
-
-```ts
-const client = createCountAggregatorClient(baseUrl, {
-	fetch: myFetch,
 });
 ```
 
@@ -82,13 +111,14 @@ SMOKE_COUNT_AGGREGATOR_API=1 COUNT_AGGREGATOR_API_BASE=https://<tenant>.example.
 
 ## Exports
 
-| Export                                        | Description                                          |
-| --------------------------------------------- | ---------------------------------------------------- |
-| `createCountAggregatorClient`                 | JSON fetch client bound to OpenAPI operations        |
-| `endpoints`, `schemas`                        | Generated operation map and Zod parsers              |
-| `buildCsvExportUrl`, `buildStationsUrl`, …    | URL builders for CSV and direct links                |
-| `parseLocalDateTime`, `parseTimeSeriesMap`, … | Response and datetime helpers                        |
-| Types                                         | `StationType`, `Resolution`, `TimeSeriesResponse`, … |
+| Export                                             | Description                                          |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| `createCountAggregatorClient`                      | JSON fetch client bound to OpenAPI operations        |
+| `listStationTypes`, `listStations`, `getValues`, … | Typed helper wrappers for common JSON API calls      |
+| `endpoints`, `schemas`                             | Generated operation map and Zod parsers              |
+| `buildCsvExportUrl`, `buildStationsUrl`, …         | URL builders for CSV and direct links                |
+| `parseLocalDateTime`, `parseTimeSeriesMap`, …      | Response and datetime helpers                        |
+| Types                                              | `StationType`, `Resolution`, `TimeSeriesResponse`, … |
 
 Subpath: `@mapsight/count-aggregator-api/openapi.json` — committed contract used by codegen.
 
@@ -97,6 +127,7 @@ Subpath: `@mapsight/count-aggregator-api/openapi.json` — committed contract us
 - Bundled spec: [`openapi/count-aggregator.openapi.json`](./openapi/count-aggregator.openapi.json)
 - Sync from a live tenant: `pnpm sync-openapi` with `COUNT_AGGREGATOR_OPENAPI_URL` in `.env`
 - Legacy `/wheel-counter/*` alias routes are **excluded** from the monorepo client contract
+- `/park-and-ride/*` routes are kept in the contract as public API routes; `/park-and-ride/export` uses the explicit alias `count-aggregator.public.park-and-ride.export`
 
 Regenerate the client after spec changes:
 

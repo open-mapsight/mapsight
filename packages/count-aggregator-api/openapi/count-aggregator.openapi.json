@@ -1312,7 +1312,7 @@
 		},
 		"/park-and-ride/export": {
 			"get": {
-				"operationId": "count-aggregator.public.",
+				"operationId": "count-aggregator.public.park-and-ride.export",
 				"tags": ["Park and ride"],
 				"responses": {
 					"200": {

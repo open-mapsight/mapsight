@@ -8,9 +8,22 @@ export {
 	CountAggregatorApiError,
 	type FetchClientOptions,
 } from "./lib/fetch-client.js";
-export {parseLocalDateTime} from "./lib/datetime.js";
+export {
+	getLastValues,
+	getStationSums,
+	getValues,
+	listStations,
+	listStationTypes,
+	type LastValuesRequest,
+	type ListStationsOptions,
+	type ValuesRequest,
+} from "./helpers.js";
 export {
 	assertLocalDateTimeFields,
+	LOCAL_DATE_TIME_PATTERN,
+	parseLocalDateTime,
+} from "./lib/datetime.js";
+export {
 	indexTimeSeriesByStationId,
 	parseTimeSeriesMap,
 } from "./lib/responses.js";
