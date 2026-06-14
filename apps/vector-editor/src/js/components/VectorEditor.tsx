@@ -1,6 +1,6 @@
 import {useCallback, useLayoutEffect, useRef, useState} from "react";
 import {Provider} from "react-redux";
-import ReactTooltip from "react-tooltip";
+import {Tooltip} from "react-tooltip";
 
 import type {AnyAction} from "@reduxjs/toolkit";
 
@@ -193,10 +193,7 @@ function VectorEditor({editor}: {editor: EditorMixin}) {
 						</p>
 					</Panels>
 
-					<ReactTooltip
-						id="ms3-vector-editor-tooltip"
-						delayShow={700}
-					/>
+					<Tooltip id="ms3-vector-editor-tooltip" delayShow={700} />
 				</Container>
 			</Provider>
 		</VectorEditorContext.Provider>
