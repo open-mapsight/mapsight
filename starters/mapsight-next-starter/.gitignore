@@ -1,0 +1,18 @@
+# next.js
+/.next/
+/out/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+/src/generated/
+/public/img/mapsight-icons/
+/public/img/mapsight-icons-2x/
+/public/img/mapsight-icons-svg/
+/public/img/mapsight-ui/
+/public/img/mapsight-traffic-style-icon-sprite-1x.png
+/public/img/mapsight-traffic-style-icon-sprite-2x.png

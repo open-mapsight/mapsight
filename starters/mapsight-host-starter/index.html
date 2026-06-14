@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapsight host starter (dev)</title>
+	</head>
+	<body>
+		<!-- mapsight:snippet:start -->
+		<link rel="stylesheet" href="/mapsight-assets/assets/mapsight.css">
+
+		<div id="mapsight-embed-demo" class="mapsight-embed"></div>
+
+		<script type="module">
+		import browserEmbed from "/mapsight-assets/assets/embed.js";
+		import {simpleMap} from "/mapsight-assets/assets/simpleMap.js";
+
+		document.addEventListener("DOMContentLoaded", () => {
+			const element = document.getElementById("mapsight-embed-demo");
+			if (!(element instanceof HTMLElement)) {
+				throw new Error("Mapsight embed container #mapsight-embed-demo not found");
+			}
+
+			browserEmbed(
+				element,
+				simpleMap({
+					imagesUrl: "/mapsight-assets/img/", <!-- mapsight:cms:replace imagesUrl - must match deployed icon base -->
+					featureSourceUrl: "/mapsight-assets/data/demo.geojson", <!-- mapsight:cms:replace featureSourceUrl per data publish path -->
+				}),
+			);
+		});
+		</script>
+		<!-- mapsight:snippet:end -->
+	</body>
+</html>

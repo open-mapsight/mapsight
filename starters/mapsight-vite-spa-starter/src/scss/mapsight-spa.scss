@@ -1,0 +1,79 @@
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-borderRadius: 0,
+	$ms3-option-mapOverlayButtonsShowLabel: false,
+	$ms3-rem-px-ratio: 13,
+);
+@use "@mapsight/ui/src/scss/reset";
+@use "@mapsight/ui/src/scss/default";
+@use "@mapsight/ui/src/scss/themes/2022-03" as theme;
+
+:root {
+	--background: #ffffff;
+	--foreground: #171717;
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+	font-family: system-ui, sans-serif;
+	margin: 0;
+}
+
+.app-layout {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.app-layout__header {
+	border-bottom: 1px solid #e5e5e5;
+	padding: 0.75rem 1rem;
+}
+
+.app-layout__nav {
+	display: flex;
+	gap: 1rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.app-layout__nav a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.app-layout__nav a[aria-current="page"] {
+	font-weight: 600;
+	text-decoration: underline;
+}
+
+.app-layout__main {
+	flex: 1;
+	padding: 1rem;
+}
+
+.map-page__frame {
+	min-height: 420px;
+}
+
+.about-page {
+	max-width: 40rem;
+}
+
+.ms3-map-wrapper {
+	.ms3-wrapper--desktop & {
+		min-height: theme.$ms3-theme-desktop-map-min-height;
+	}
+}
+
+.ms3-map-row {
+	border: 1px solid variables.$ms3-borderColor;
+}
+
+.ms3-list__item {
+	&:not(:first-of-type) {
+		border-top: 1px solid variables.$ms3-borderColor;
+	}
+}

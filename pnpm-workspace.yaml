@@ -4,6 +4,7 @@ packages:
   - "apps/*"
   - "private/apps/*"
   - "private/packages/*"
+  - "starters/*"
 allowBuilds:
   '@parcel/watcher': true
   canvas: true
@@ -42,3 +43,11 @@ minimumReleaseAgeExclude:
   - postcss@8.5.10
 overrides:
   postcss@<8.5.10: ^8.5.10
+  "@mapsight/core": "workspace:*"
+  "@mapsight/lib-js": "workspace:*"
+  "@mapsight/lib-ol": "workspace:*"
+  "@mapsight/lib-redux": "workspace:*"
+  "@mapsight/traffic-style": "workspace:*"
+  "@mapsight/ui": "workspace:*"
+  "@mapsight/vite-host-embed": "workspace:*"
+  "@mapsight/vector-style-compiler": "workspace:*"

@@ -1,3 +1,3 @@
-# Publish surface is package.json "files" (dist only).
+# Publish surface is package.json "files" (dist + src/scss).
 **/__tests__/**
 **/*.test.*
