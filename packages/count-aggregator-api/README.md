@@ -164,7 +164,7 @@ Public SaaS documentation is not available yet. When you have a Mapsight tenant,
 | OpenAPI JSON     | `…/openapi.json`                                           |
 | Interactive docs | `…/docs`                                                   |
 
-Replace `<tenant>.example.tld` with your deployment host.
+Replace `<tenant>.example.tld` with your deployment host. For local development, use the showcase demo documented in the UI package README.
 
 ## Architecture
 

@@ -6,6 +6,7 @@ import type {
 	StationType,
 	StationTypeListResponse,
 	TimeSeriesMapResponse,
+	TimeSeriesResponse,
 } from "./types.js";
 
 export interface ListStationsOptions {
@@ -26,6 +27,15 @@ export interface LastValuesRequest {
 	stationIds: readonly number[];
 	limit?: number;
 	startDate?: string;
+}
+
+export interface StationLastValuesRequest {
+	type: StationType;
+	stationId: string | number;
+	resolution: Resolution;
+	limit?: number;
+	startDate?: string;
+	anchor?: "lastDataAt";
 }
 
 function joinStationIds(stationIds: readonly number[]): string {
@@ -85,10 +95,28 @@ export function getLastValues(
 	});
 }
 
+export function getStationLastValues(
+	client: CountAggregatorClient,
+	request: StationLastValuesRequest,
+): Promise<TimeSeriesResponse> {
+	return client["count-aggregator.public.type.station.last-values"]({
+		params: {
+			type: request.type,
+			stationId: request.stationId,
+			resolution: request.resolution,
+		},
+		queries: {
+			limit: request.limit,
+			startDate: request.startDate,
+			anchor: request.anchor,
+		},
+	});
+}
+
 export function getStationSums(
 	client: CountAggregatorClient,
 	type: StationType,
-	stationId: number,
+	stationId: string | number,
 ): Promise<StationOverviewResponse> {
 	return client["count-aggregator.public.type.sums"]({
 		params: {type, stationId},

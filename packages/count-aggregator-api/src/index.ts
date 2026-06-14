@@ -10,12 +10,14 @@ export {
 } from "./lib/fetch-client.js";
 export {
 	getLastValues,
+	getStationLastValues,
 	getStationSums,
 	getValues,
 	listStations,
 	listStationTypes,
 	type LastValuesRequest,
 	type ListStationsOptions,
+	type StationLastValuesRequest,
 	type ValuesRequest,
 } from "./helpers.js";
 export {

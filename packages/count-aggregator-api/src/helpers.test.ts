@@ -7,6 +7,7 @@ import stationSumsFixture from "./fixtures/station-sums.json";
 import valuesMapFixture from "./fixtures/values-map.json";
 import {
 	getLastValues,
+	getStationLastValues,
 	getStationSums,
 	getValues,
 	listStationTypes,
@@ -112,6 +113,26 @@ describe("typed endpoint helpers", () => {
 		});
 
 		expect(result["150"]?.values.length).toBe(3);
+	});
+
+	it("gets single-station last values", async () => {
+		const fetchFn = createMockFetch((url) => {
+			expect(url).toBe(
+				`${baseUrl}/bicycleCount/150/last-values/daily?limit=3&anchor=lastDataAt`,
+			);
+			return lastValuesMapFixture["150"];
+		});
+
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		const result = await getStationLastValues(client, {
+			type: "bicycleCount",
+			stationId: 150,
+			resolution: "daily",
+			limit: 3,
+			anchor: "lastDataAt",
+		});
+
+		expect(result.id).toBe(150);
 	});
 
 	it("gets station sums", async () => {
