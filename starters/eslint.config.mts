@@ -3,6 +3,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {defineConfig} from "eslint/config";
+import tseslint from "typescript-eslint";
 
 import baseConfig from "../configs/eslint-config-base-app.mts";
 
@@ -50,6 +51,38 @@ export default defineConfig([
 			"**/.next/**/*",
 			"**/postcss.config.mjs",
 		],
+	},
+	{
+		files: [
+			"**/src/**/*.{ts,tsx,mts,cts}",
+			"**/entries/**/*.{ts,tsx,mts,cts}",
+			"**/scripts/**/*.{ts,tsx,mts,cts}",
+			"**/vite.config.mts",
+		],
+		extends: [tseslint.configs.disableTypeChecked],
+		rules: {
+			"import-x/no-unresolved": [
+				"error",
+				{
+					ignore: [
+						"^@mapsight/",
+						"^@/generated/mapsight-vector-styles/",
+						"^\\.\\./generated/mapsight-vector-styles/",
+					],
+				},
+			],
+		},
+	},
+	{
+		files: [
+			"**/src/presets/simpleMap.ts",
+			"**/src/app/ui/MapsightAppUi.tsx",
+			"**/src/app/ui/map-page.tsx",
+			"**/src/pages/map-page.tsx",
+		],
+		rules: {
+			"@typescript-eslint/no-unsafe-assignment": "off",
+		},
 	},
 	...starterImportResolverConfigs(),
 ]);

@@ -1,13 +1,13 @@
 name: CI
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    types: [ opened, synchronize ]
-    branches: [ "main" ]
+    types: [opened, synchronize]
+    branches: ["main"]
 
 env:
-  TURBO_TELEMETRY_DISABLED: '1'
+  TURBO_TELEMETRY_DISABLED: "1"
   TURBO_SCM_BASE: main
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   EVENT_NAME: ${{ github.event_name }}
@@ -20,6 +20,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  classify-ci:
+    name: Classify CI paths
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    outputs:
+      starters_smoke: ${{ steps.paths.outputs.starters_smoke }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+          submodules: false
+          fetch-depth: 0
+
+      - name: Classify changed paths
+        id: paths
+        run: |
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+            echo "starters_smoke=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          starters_smoke=false
+          while IFS= read -r file; do
+            case "$file" in
+              .github/workflows/ci.yml|.github/actions/*|.nvmrc|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|configs/*)
+                starters_smoke=true
+                break
+                ;;
+              e2e/starters/*|scripts/smoke-starter-copy-out.mts|scripts/sync-workspace-mapsight.mts)
+                starters_smoke=true
+                break
+                ;;
+              starters/*|packages/core/*|packages/lib-js/*|packages/lib-ol/*|packages/lib-redux/*)
+                starters_smoke=true
+                break
+                ;;
+              packages/traffic-style/*|packages/ui/*|packages/vector-style-compiler/*|packages/vite-host-embed/*)
+                starters_smoke=true
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA")
+
+          echo "starters_smoke=$starters_smoke" >> "$GITHUB_OUTPUT"
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
   build:
     name: Build
     timeout-minutes: 10
@@ -66,14 +116,14 @@ jobs:
             packages/*/src/generated
             !node_modules
           retention-days: 1
-          compression-level: 9
+          compression-level: 1
           include-hidden-files: true
 
   lint:
     name: Lint code
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [ build ]
+    needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -93,17 +143,16 @@ jobs:
       - name: Lint
         run: |
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            pnpm run lint --only --affected
+            pnpm turbo run lint --only --affected
           else
-            pnpm run lint --only
+            pnpm turbo run lint --only
           fi
         shell: bash
 
-  check-format:
-    name: Format
+  lint-starters:
+    name: Starter lint
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [ build ]
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -114,11 +163,28 @@ jobs:
 
       - uses: ./.github/actions/setup/
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - name: Lint starters
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pnpm turbo run //#lint:starters --only --affected
+          else
+            pnpm turbo run //#lint:starters --only
+          fi
+        shell: bash
+
+  check-format:
+    name: Format
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          name: build-output
-          path: .
+          persist-credentials: false
+          submodules: false
+          fetch-depth: 0 # we need the full history to get the correct list of changed files
+
+      - uses: ./.github/actions/setup/
 
       - name: Check formatting
         run: pnpm format:check
@@ -127,7 +193,7 @@ jobs:
     name: Typecheck
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [ build ]
+    needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -157,7 +223,7 @@ jobs:
     name: Tests
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [ build ]
+    needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -222,7 +288,8 @@ jobs:
     name: Starters smoke
     timeout-minutes: 25
     runs-on: ubuntu-latest
-    needs: [ build ]
+    needs: [build, classify-ci]
+    if: needs.classify-ci.outputs.starters_smoke == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -239,6 +306,13 @@ jobs:
           name: build-output
           path: .
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-playwright-
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
         shell: bash
@@ -251,44 +325,7 @@ jobs:
         run: pnpm run test:starters:e2e
         shell: bash
 
-      - name: Check copy-out smoke paths
-        id: copy-out-smoke
-        run: |
-          if [[ "$EVENT_NAME" != "pull_request" ]]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          should_run=false
-          while IFS= read -r file; do
-            case "$file" in
-              .github/workflows/ci.yml|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json)
-                should_run=true
-                break
-                ;;
-              scripts/smoke-starter-copy-out.mts|scripts/sync-workspace-mapsight.mts)
-                should_run=true
-                break
-                ;;
-              starters/*|packages/core/*|packages/lib-js/*|packages/lib-ol/*|packages/lib-redux/*)
-                should_run=true
-                break
-                ;;
-              packages/traffic-style/*|packages/ui/*|packages/vector-style-compiler/*|packages/vite-host-embed/*)
-                should_run=true
-                break
-                ;;
-            esac
-          done < <(git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA")
-
-          echo "run=$should_run" >> "$GITHUB_OUTPUT"
-        shell: bash
-        env:
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-
       - name: Run copy-out starter smoke tests
-        if: steps.copy-out-smoke.outputs.run == 'true'
         run: pnpm run test:starters:copy-out
         shell: bash
 
@@ -333,7 +370,6 @@ jobs:
     name: Check changeset
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [ build ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -351,7 +387,22 @@ jobs:
     name: CI status
     timeout-minutes: 2
     runs-on: ubuntu-latest
-    needs: [ build, lint, check-format, typecheck, check, test, starters-e2e, lint-dependencies, no-private-leak, zizmor, check-changeset ]
+    needs:
+      [
+        classify-ci,
+        build,
+        lint,
+        lint-starters,
+        check-format,
+        typecheck,
+        check,
+        test,
+        starters-e2e,
+        lint-dependencies,
+        no-private-leak,
+        zizmor,
+        check-changeset,
+      ]
     if: always()
     steps:
       - name: Check CI status
@@ -365,7 +416,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [ ci-pass ]
+    needs: [ci-pass]
 
     # Skip on pull requests
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -375,7 +426,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write  # Required for OIDC
+      id-token: write # Required for OIDC
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -391,25 +442,13 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version-file: .nvmrc
-          registry-url: 'https://registry.npmjs.org'
-          cache: ''
+          registry-url: "https://registry.npmjs.org"
+          cache: ""
           package-manager-cache: false
           check-latest: true
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        shell: bash
-
-      - name: Create starter release artifacts
-        run: |
-          mkdir -p dist/starter-downloads
-          for starter in mapsight-host-starter mapsight-next-starter mapsight-vite-spa-starter; do
-            git archive \
-              --format=zip \
-              --prefix="$starter/" \
-              --output="dist/starter-downloads/$starter.zip" \
-              HEAD:"starters/$starter"
-          done
         shell: bash
 
       - name: Create Release Pull Request or Publish to npm
@@ -420,11 +459,20 @@ jobs:
           publish: npm run release
           commitMode: "github-api"
         env:
-          NPM_TOKEN: '' # We use OIDC, not a token
+          NPM_TOKEN: "" # We use OIDC, not a token
 
       - name: Upload starter release artifacts
         if: steps.changesets.outputs.published == 'true'
         run: |
+          mkdir -p dist/starter-downloads
+          for starter in mapsight-host-starter mapsight-next-starter mapsight-vite-spa-starter; do
+            git archive \
+              --format=zip \
+              --prefix="$starter/" \
+              --output="dist/starter-downloads/$starter.zip" \
+              HEAD:"starters/$starter"
+          done
+
           node <<'NODE' > "$RUNNER_TEMP/published-tags"
           const packages = JSON.parse(process.env.PUBLISHED_PACKAGES || "[]");
           for (const {name, version} of packages) {
