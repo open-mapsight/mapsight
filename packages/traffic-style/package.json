@@ -91,7 +91,7 @@
 		"build:composable-icons:svg": "node scripts/dev/build-composable-icons.ts svg",
 		"build:docs": "run-p build:docs:overview",
 		"build:docs:overview": "node scripts/dev/create-overview-md.ts ./src/icons/ ../img/mapsight-icons-svg/ > dist/docs/overview.md",
-		"build:icon-sprites": "run-p build:icon-sprites:*",
+		"build:icon-sprites": "run-p build:icon-sprites:* && cp dist/mapsight-traffic-style-icon-sprite-*.scss .",
 		"build:icon-sprites:1x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-1x",
 		"build:icon-sprites:2x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons-2x/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-2x",
 		"build:icons": "node scripts/optimize-icons.ts --src ./src/icons/ --dest ./dist/img/mapsight-icons/",
