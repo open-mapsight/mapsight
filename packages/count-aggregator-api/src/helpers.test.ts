@@ -98,7 +98,7 @@ describe("typed endpoint helpers", () => {
 	it("gets last values", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/last-values/hourly?stationIds=150&limit=3&startDate=2025-06-01`,
+				`${baseUrl}/bicycleCount/last-values/hourly?stationIds=150&limit=3&startDate=2025-06-01&anchor=lastDataAt`,
 			);
 			return lastValuesMapFixture;
 		});
@@ -110,6 +110,7 @@ describe("typed endpoint helpers", () => {
 			stationIds: [150],
 			limit: 3,
 			startDate: "2025-06-01",
+			anchor: "lastDataAt",
 		});
 
 		expect(result["150"]?.values.length).toBe(3);

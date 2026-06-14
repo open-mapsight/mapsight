@@ -60,6 +60,11 @@ describe("OpenAPI contract shape", () => {
 		expect(openApiDocument.servers).toBeUndefined();
 	});
 
+	it("does not include upstream vendor-specific descriptions", () => {
+		const serialized = JSON.stringify(openApiDocument);
+		expect(serialized).not.toMatch(/niotix/i);
+	});
+
 	it("does not define legacy wheel-counter alias routes", () => {
 		const paths = Object.keys(openApiDocument.paths);
 		expect(paths.some((route) => route.startsWith("/wheel-counter"))).toBe(

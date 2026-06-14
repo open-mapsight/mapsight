@@ -49,10 +49,11 @@ describe("count aggregator URL builders", () => {
 			stationIds: [150],
 			limit: 12,
 			startDate: "2024-01-01",
+			anchor: "lastDataAt",
 		});
 
 		expect(url).toBe(
-			"https://example.test/msp/public/count-aggregator/bicycleCount/last-values/monthly?stationIds=150&limit=12&startDate=2024-01-01",
+			"https://example.test/msp/public/count-aggregator/bicycleCount/last-values/monthly?stationIds=150&limit=12&startDate=2024-01-01&anchor=lastDataAt",
 		);
 	});
 
@@ -62,11 +63,13 @@ describe("count aggregator URL builders", () => {
 			resolution: "daily",
 			stationIds: [150],
 			limit: 7,
+			anchor: "lastDataAt",
 		});
 
 		expect(url).toContain("format=csv");
 		expect(url).toContain("stationIds=150");
 		expect(url).toContain("limit=7");
+		expect(url).toContain("anchor=lastDataAt");
 	});
 
 	it("builds single-station URLs", () => {
@@ -88,9 +91,10 @@ describe("count aggregator URL builders", () => {
 				stationId: 150,
 				resolution: "daily",
 				limit: 7,
+				anchor: "lastDataAt",
 			}),
 		).toBe(
-			"https://example.test/msp/public/count-aggregator/bicycleCount/150/last-values/daily?limit=7",
+			"https://example.test/msp/public/count-aggregator/bicycleCount/150/last-values/daily?limit=7&anchor=lastDataAt",
 		);
 
 		expect(buildStationSumsUrl(baseUrl, "bicycleCount", 150)).toBe(

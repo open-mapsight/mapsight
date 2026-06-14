@@ -2,8 +2,6 @@
 
 Typed HTTP client, Zod schemas, and OpenAPI contract for the Mapsight **count-aggregator** public API — station metadata and aggregated count time series (bicycle counters, traffic sensors, and other station types).
 
-Pair with [`@mapsight/count-aggregator-ui`](../count-aggregator-ui/README.md) for an embeddable React wizard and charts, or use this package alone in your own UI.
-
 ## Install
 
 **npm** (when published):
@@ -63,13 +61,14 @@ const client = createCountAggregatorClient(baseUrl, {
 
 Use these helpers for JSON API calls:
 
-| Helper             | Endpoint family                           |
-| ------------------ | ----------------------------------------- |
-| `listStationTypes` | `GET /station-types`                      |
-| `listStations`     | `GET /:type/stations`                     |
-| `getValues`        | `GET /:type/values/:from/:to/:resolution` |
-| `getLastValues`    | `GET /:type/last-values/:resolution`      |
-| `getStationSums`   | `GET /:type/:stationId/sums`              |
+| Helper                 | Endpoint family                                 |
+| ---------------------- | ----------------------------------------------- |
+| `listStationTypes`     | `GET /station-types`                            |
+| `listStations`         | `GET /:type/stations`                           |
+| `getValues`            | `GET /:type/values/:from/:to/:resolution`       |
+| `getLastValues`        | `GET /:type/last-values/:resolution`            |
+| `getStationLastValues` | `GET /:type/:stationId/last-values/:resolution` |
+| `getStationSums`       | `GET /:type/:stationId/sums`                    |
 
 For CSV downloads, use URL builders such as `buildCsvExportUrl` instead of the JSON client.
 
@@ -154,9 +153,9 @@ const href = buildCsvExportUrl(baseUrl, {
 // <a href={href} download>…</a>
 ```
 
-## Live API (placeholder)
+## Endpoint Patterns
 
-Public SaaS documentation is not available yet. When you have a Mapsight tenant, endpoints follow this pattern:
+Deployments expose the public count-aggregator API under this pattern:
 
 | Resource         | URL pattern                                                |
 | ---------------- | ---------------------------------------------------------- |
@@ -164,7 +163,7 @@ Public SaaS documentation is not available yet. When you have a Mapsight tenant,
 | OpenAPI JSON     | `…/openapi.json`                                           |
 | Interactive docs | `…/docs`                                                   |
 
-Replace `<tenant>.example.tld` with your deployment host. For local development, use the showcase demo documented in the UI package README.
+Replace `<tenant>.example.tld` with your deployment host.
 
 ## Architecture
 
@@ -174,7 +173,3 @@ scripts/generate.ts                     ← openapi-zod-client
 src/generated/client.ts                 ← generated (do not edit)
 src/client.ts, src/lib/*                ← hand-written client + helpers
 ```
-
-## Related packages
-
-- [`@mapsight/count-aggregator-ui`](../count-aggregator-ui/README.md) — React wizard, charts, and embed wrapper

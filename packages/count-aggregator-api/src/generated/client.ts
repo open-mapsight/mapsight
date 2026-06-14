@@ -18,7 +18,7 @@ type StationGeoJsonFeatureProperties = {
    */
   id: string;
   /**
-   * External origin id from the data source (e.g. Niotix twin id).
+   * External origin id from the upstream data source.
    */
   originId: string;
   name: string | null;
@@ -79,12 +79,12 @@ type StationGeoJsonFeatureProperties = {
    */
   lastDataAt: string;
   /**
-   * Font Awesome icon identifier from Niotix (e.g. fa-water). Omitted when no icon is configured.
+   * Font Awesome icon identifier from the upstream data source (e.g. fa-water). Omitted when no icon is configured.
    */
   mapsightIconId: string;
   legacyDashboardId: string;
   /**
-   * Niotix station description. Omitted when not configured.
+   * Station description from the upstream data source. Omitted when not configured.
    */
   description: string;
   /**

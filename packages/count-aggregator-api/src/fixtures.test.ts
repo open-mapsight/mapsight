@@ -20,6 +20,14 @@ describe("fixture response parsing", () => {
 		expect(parsed.data[0]?.origin_id).toBe("138969");
 	});
 
+	it("uses synthetic station display names in fixtures", () => {
+		const parsed = schemas.StationListResponse.parse(stationListFixture);
+		for (const station of parsed.data) {
+			expect(station.name).toMatch(/^Example Counter [A-Z]$/);
+			expect(station.label).toMatch(/^Example Counter [A-Z]$/);
+		}
+	});
+
 	it("parses multi-station values map keyed by MSP id strings", () => {
 		const map = parseTimeSeriesMap(valuesMapFixture);
 		const indexed = indexTimeSeriesByStationId(map);

@@ -15,6 +15,7 @@ export interface MultipleLastValuesRequest {
 	stationIds: readonly number[];
 	limit?: number;
 	startDate?: string;
+	anchor?: "lastDataAt";
 	format?: ResponseFormat;
 }
 
@@ -32,6 +33,7 @@ export interface SingleStationLastValuesRequest {
 	resolution: Resolution;
 	limit?: number;
 	startDate?: string;
+	anchor?: "lastDataAt";
 }
 
 function trimTrailingSlash(baseUrl: string): string {
@@ -76,6 +78,7 @@ export function buildMultipleLastValuesUrl(
 		stationIds: request.stationIds.join(","),
 		limit: request.limit,
 		startDate: request.startDate,
+		anchor: request.anchor,
 		format: request.format,
 	});
 }
@@ -96,6 +99,7 @@ export function buildSingleStationLastValuesUrl(
 	return appendQueryString(path, {
 		limit: request.limit,
 		startDate: request.startDate,
+		anchor: request.anchor,
 	});
 }
 

@@ -1518,7 +1518,7 @@
 					},
 					"originId": {
 						"type": "string",
-						"description": "External origin id from the data source (e.g. Niotix twin id)."
+						"description": "External origin id from the upstream data source."
 					},
 					"name": {
 						"type": ["string", "null"]
@@ -1594,14 +1594,14 @@
 					},
 					"mapsightIconId": {
 						"type": "string",
-						"description": "Font Awesome icon identifier from Niotix (e.g. fa-water). Omitted when no icon is configured."
+						"description": "Font Awesome icon identifier from the upstream data source (e.g. fa-water). Omitted when no icon is configured."
 					},
 					"legacyDashboardId": {
 						"type": "string"
 					},
 					"description": {
 						"type": "string",
-						"description": "Niotix station description. Omitted when not configured."
+						"description": "Station description from the upstream data source. Omitted when not configured."
 					},
 					"childStations": {
 						"type": "array",

@@ -27,6 +27,7 @@ export interface LastValuesRequest {
 	stationIds: readonly number[];
 	limit?: number;
 	startDate?: string;
+	anchor?: "lastDataAt";
 }
 
 export interface StationLastValuesRequest {
@@ -91,6 +92,7 @@ export function getLastValues(
 			stationIds: joinStationIds(request.stationIds),
 			limit: request.limit,
 			startDate: request.startDate,
+			anchor: request.anchor,
 		},
 	});
 }
