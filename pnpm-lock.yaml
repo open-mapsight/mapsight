@@ -84,6 +84,7 @@ catalogs:
 
 overrides:
   postcss@<8.5.10: ^8.5.10
+  shell-quote@<1.8.4: ^1.8.4
   '@mapsight/core': workspace:*
   '@mapsight/lib-js': workspace:*
   '@mapsight/lib-ol': workspace:*
@@ -4944,10 +4945,6 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shell-quote@1.8.3:
-    resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
-    engines: {node: '>= 0.4'}
-
   shell-quote@1.8.4:
     resolution: {integrity: sha512-VsC6n6vz1ihYYyZZwX7YZSF5l5x36ca17OC+a69h94YqB7X6XLwf+5MOgynYir2SLFUbl8gIYvBo8K8RoNQ6bQ==}
     engines: {node: '>= 0.4'}
@@ -7473,7 +7470,7 @@ snapshots:
       minimatch: 10.2.5
       p-map: 7.0.4
       resolve: 1.22.12
-      shell-quote: 1.8.3
+      shell-quote: 1.8.4
       subarg: 1.0.0
 
   cross-spawn@6.0.6:
@@ -9586,8 +9583,6 @@ snapshots:
   shebang-regex@1.0.0: {}
 
   shebang-regex@3.0.0: {}
-
-  shell-quote@1.8.3: {}
 
   shell-quote@1.8.4: {}
 
