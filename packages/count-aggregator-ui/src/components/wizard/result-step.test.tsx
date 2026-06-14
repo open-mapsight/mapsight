@@ -51,7 +51,7 @@ const stationsById = new Map<number, Station>([
 			id: 150,
 			typeName: "bicycleCount",
 			status: null,
-			label: "Pockelstraße (Anzahl)",
+			label: "Example Counter A",
 			originId: "138969",
 		},
 	],

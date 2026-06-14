@@ -14,9 +14,9 @@ describe("mapStationList", () => {
 					id: 150,
 					type: "bicycleCount",
 					origin_id: "138969",
-					name: "Pockelstraße (Anzahl)",
+					name: "Example Counter A",
 					status: null,
-					label: "Pockelstraße (Anzahl)",
+					label: "Example Counter A",
 					hasData: true,
 					lastDataAt: "2026-06-10 22:00:00",
 				},
@@ -29,7 +29,7 @@ describe("mapStationList", () => {
 			id: 150,
 			typeName: "bicycleCount",
 			status: null,
-			label: "Pockelstraße (Anzahl)",
+			label: "Example Counter A",
 			originId: "138969",
 		});
 	});

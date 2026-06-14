@@ -14,7 +14,7 @@ test.describe("count-aggregator showcase demo", () => {
 		).toBeVisible();
 
 		const stationSelect = page.getByRole("combobox");
-		await stationSelect.fill("Pockel");
+		await stationSelect.fill("Example");
 		await stationSelect.press("Enter");
 
 		await page.getByRole("button", {name: "Weiter"}).click();
@@ -23,9 +23,7 @@ test.describe("count-aggregator showcase demo", () => {
 			page.getByRole("button", {name: "Auswahl ändern"}),
 		).toBeVisible();
 		await expect(page.getByText("Gewählte Messstellen:")).toBeVisible();
-		await expect(
-			page.getByText("Pockelstraße (Anzahl)").first(),
-		).toBeVisible();
+		await expect(page.getByText("Example Counter A").first()).toBeVisible();
 		await expect(page.getByText("Gewählter Intervall:")).toBeVisible();
 
 		await expect(
