@@ -1,5 +1,13 @@
 # @mapsight/vector-editor
 
+## 1.2.1
+
+### Patch Changes
+
+- c0a1f4d: Fix dependency security alerts by resolving `shell-quote` to the patched release and upgrading the vector editor tooltip dependency to remove the vulnerable `uuid` transitive dependency.
+- Updated dependencies [c0a1f4d]
+    - @mapsight/lib-redux@2.2.1
+
 ## 1.2.0
 
 ### Minor Changes
