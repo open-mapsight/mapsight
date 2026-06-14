@@ -42,7 +42,6 @@
 	"files": [
 		"dist"
 	],
-	"license": "MIT",
 	"peerDependencies": {
 		"@mapsight/ui": "workspace:^",
 		"@tanstack/react-query": "^5.90.5",
