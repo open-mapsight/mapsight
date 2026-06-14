@@ -8,6 +8,12 @@ const sections = [
 			"Mapsight UI examples — combined list, simple map, full layout, custom overlays, and router integration.",
 	},
 	{
+		to: "/count-aggregator",
+		title: "Count aggregator",
+		description:
+			"Embeddable stepped wizard and charts against a mock count-aggregator API — no live tenant required.",
+	},
+	{
 		to: "/icons",
 		title: "Icons",
 		description:
@@ -23,8 +29,8 @@ export function LandingPage() {
 					<h1>Mapsight ecosystem showcase</h1>
 					<p>
 						Interactive demos for the modular Mapsight packages — UI
-						components, traffic-style icons, and runtime
-						composition.
+						components, count-aggregator, traffic-style icons, and
+						runtime composition.
 					</p>
 				</div>
 

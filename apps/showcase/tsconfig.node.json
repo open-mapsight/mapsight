@@ -1,5 +1,12 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../configs/tsconfig-vite-node.json",
-	"include": ["vite.config.ts", "../../configs/vite-workspace-dev.mts"]
+	"include": [
+		"e2e/**/*.ts",
+		"playwright.config.ts",
+		"vite.config.ts",
+		"vite.count-aggregator-mock.ts",
+		"count-aggregator-mock/**/*.ts",
+		"../../configs/vite-workspace-dev.mts"
+	]
 }

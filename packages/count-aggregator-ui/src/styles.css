@@ -1,0 +1,280 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) prefix(msca);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(msca);
+
+@source "./**/*.{ts,tsx}";
+
+/* Embed-safe scale: px tokens avoid host rem overrides (e.g. html { font-size: 10px }). */
+@theme static {
+	/* Spacing multiplier (msca:p-1 = 4px, msca:p-2 = 8px, …) */
+	--spacing: 4px;
+
+	/* Typography */
+	--text-xs: 12px;
+	--text-xs--line-height: calc(1 / 0.75);
+	--text-sm: 14px;
+	--text-sm--line-height: calc(1.25 / 0.875);
+	--text-base: 16px;
+	--text-base--line-height: calc(1.5 / 1);
+	--text-lg: 18px;
+	--text-lg--line-height: calc(1.75 / 1.125);
+	--text-xl: 20px;
+	--text-xl--line-height: calc(1.75 / 1.25);
+	--text-2xl: 24px;
+	--text-2xl--line-height: calc(2 / 1.5);
+	--text-3xl: 30px;
+	--text-3xl--line-height: calc(2.25 / 1.875);
+	--text-4xl: 36px;
+	--text-4xl--line-height: calc(2.5 / 2.25);
+	--text-5xl: 48px;
+	--text-5xl--line-height: 1;
+	--text-6xl: 60px;
+	--text-6xl--line-height: 1;
+	--text-7xl: 72px;
+	--text-7xl--line-height: 1;
+	--text-8xl: 96px;
+	--text-8xl--line-height: 1;
+	--text-9xl: 128px;
+	--text-9xl--line-height: 1;
+
+	/* Border radius */
+	--radius-xs: 2px;
+	--radius-sm: 4px;
+	--radius: 4px;
+	--radius-md: 6px;
+	--radius-lg: 8px;
+	--radius-xl: 12px;
+	--radius-2xl: 16px;
+	--radius-3xl: 24px;
+	--radius-4xl: 32px;
+
+	/* Breakpoints */
+	--breakpoint-sm: 640px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 1024px;
+	--breakpoint-xl: 1280px;
+	--breakpoint-2xl: 1536px;
+
+	/* Container widths */
+	--container-3xs: 256px;
+	--container-2xs: 288px;
+	--container-xs: 320px;
+	--container-sm: 384px;
+	--container-md: 448px;
+	--container-lg: 512px;
+	--container-xl: 576px;
+	--container-2xl: 672px;
+	--container-3xl: 768px;
+	--container-4xl: 896px;
+	--container-5xl: 1024px;
+	--container-6xl: 1152px;
+	--container-7xl: 1280px;
+}
+
+@import "flatpickr/dist/flatpickr.min.css" layer(components);
+@import "./feature-details-metrics/feature-details-metrics.css" layer(components);
+
+/* ── Root shell: isolation + design tokens ─────────────────────────────── */
+
+.msp-count-aggregator {
+	--msca-color-primary: #2563eb;
+	--msca-color-primary-hover: #1d4ed8;
+	--msca-color-border: #e5e7eb;
+	--msca-color-muted-foreground: #6b7280;
+	--msca-color-danger-surface: #fecaca;
+	--msca-color-surface: #ffffff;
+	--msca-color-surface-muted: #f9fafb;
+	--msca-radius: 4px;
+
+	/* Establish 1em = 16px inside the embed, independent of host rem. */
+	font-size: 16px;
+	line-height: 1.5;
+	color: #111827;
+
+	isolation: isolate;
+}
+
+/* ── Scoped preflight (in base layer so utilities can override) ──────── */
+
+@layer base {
+	:where(.msp-count-aggregator) {
+		*,
+		::before,
+		::after {
+			box-sizing: border-box;
+			border-width: 0;
+			border-style: solid;
+			border-color: var(--msca-color-border);
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			font-size: inherit;
+			font-weight: inherit;
+			margin: 0;
+		}
+
+		h4 {
+			font-weight: 600;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: inherit;
+		}
+
+		b,
+		strong {
+			font-weight: bolder;
+		}
+
+		blockquote,
+		dl,
+		dd,
+		hr,
+		figure,
+		p,
+		pre {
+			margin: 0;
+		}
+
+		fieldset {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			min-width: 0;
+		}
+
+		legend {
+			padding: 0;
+		}
+
+		ol,
+		ul,
+		menu {
+			list-style: none;
+			list-style-image: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		li {
+			list-style: none;
+			list-style-image: none;
+		}
+
+		::marker {
+			content: normal;
+		}
+
+		button,
+		input,
+		optgroup,
+		select,
+		textarea {
+			font-family: inherit;
+			font-size: 100%;
+			line-height: inherit;
+			color: inherit;
+			margin: 0;
+			padding: 0;
+		}
+
+		button,
+		select {
+			text-transform: none;
+		}
+
+		button,
+		[type="button"],
+		[type="reset"],
+		[type="submit"] {
+			-webkit-appearance: button;
+			background-color: transparent;
+			background-image: none;
+			cursor: pointer;
+		}
+
+		button:disabled {
+			cursor: default;
+		}
+
+		img,
+		svg,
+		video,
+		canvas {
+			display: block;
+			vertical-align: middle;
+		}
+
+		img,
+		video {
+			max-width: 100%;
+			height: auto;
+		}
+
+		[hidden] {
+			display: none;
+		}
+	}
+}
+
+#msp-count-aggregator-portal {
+	position: relative;
+	z-index: 50;
+}
+
+/* ── Charts (Recharts) ─────────────────────────────────────────────────── */
+
+.msp-count-aggregator-chart {
+	--color-border: var(--msca-color-border);
+	--color-muted-foreground: var(--msca-color-muted-foreground);
+}
+
+.msp-count-aggregator-chart .recharts-cartesian-grid-horizontal line,
+.msp-count-aggregator-chart .recharts-cartesian-grid-vertical line {
+	stroke: var(--color-border);
+}
+
+.msp-count-aggregator-chart .recharts-text {
+	fill: var(--color-muted-foreground);
+	font-size: var(--msca-text-xs);
+}
+
+/* ── Flatpickr: raise specificity inside embed root ────────────────────── */
+
+.msp-count-aggregator .flatpickr-calendar {
+	background: var(--msca-color-surface);
+	border-color: var(--msca-color-border);
+	font: inherit;
+}
+
+.msp-count-aggregator .flatpickr-day.selected,
+.msp-count-aggregator .flatpickr-day.startRange,
+.msp-count-aggregator .flatpickr-day.endRange {
+	background: var(--msca-color-primary);
+	border-color: var(--msca-color-primary);
+}
+
+/* ── Traffic events (minimal embed-safe chips) ───────────────────────────── */
+
+.msp-count-aggregator-event {
+	display: block;
+	margin-bottom: calc(var(--msca-spacing) * 1);
+	padding: calc(var(--msca-spacing) * 1.5) calc(var(--msca-spacing) * 2);
+	border: 1px solid var(--msca-color-border);
+	border-radius: var(--msca-radius);
+	background: var(--msca-color-surface-muted);
+	font-size: var(--msca-text-sm);
+	line-height: var(--msca-text-sm--line-height);
+}
+
+.msp-count-aggregator-event:hover {
+	background: var(--msca-color-surface);
+	border-color: var(--msca-color-primary);
+}

@@ -13,6 +13,7 @@ export const repoRoot = path.resolve(configDir, "..");
 export const workspacePackages = [
 	"@mapsight/core",
 	"@mapsight/count-aggregator-api",
+	"@mapsight/count-aggregator-ui",
 	"@mapsight/ui",
 	"@mapsight/lib-js",
 	"@mapsight/lib-ol",
@@ -24,6 +25,10 @@ const packageSourceRoots = {
 	"@mapsight/count-aggregator-api": path.join(
 		repoRoot,
 		"packages/count-aggregator-api/src",
+	),
+	"@mapsight/count-aggregator-ui": path.join(
+		repoRoot,
+		"packages/count-aggregator-ui/src",
 	),
 	"@mapsight/ui": path.join(repoRoot, "packages/ui/src/js"),
 	"@mapsight/lib-js": path.join(repoRoot, "packages/lib-js/src/js"),

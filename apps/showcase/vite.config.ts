@@ -7,6 +7,7 @@ import {
 	createWorkspaceDevAliases,
 	workspacePackages,
 } from "../../configs/vite-workspace-dev.mts";
+import {countAggregatorMockPlugin} from "./vite.count-aggregator-mock.ts";
 
 export default defineConfig(({command}) => ({
 	root: "src",
@@ -60,7 +61,7 @@ export default defineConfig(({command}) => ({
 			ignored: ["**/node_modules/**", "!**/node_modules/@mapsight/**"],
 		},
 	},
-	plugins: [tailwindcss()],
+	plugins: [countAggregatorMockPlugin(), tailwindcss()],
 	css: {
 		preprocessorOptions: {
 			scss: {
