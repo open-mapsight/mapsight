@@ -238,7 +238,7 @@ Dev helpers: `defaultIconCache.getStats()`, `prewarmCatalog()` via `runtime-dev`
 
 ### Declaring runtime icons in SCSS
 
-`src/scss/features/_base.scss` (when `$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED`):
+`src/scss/features/_base.scss`:
 
 ```scss
 [mapsightIconId] {
@@ -363,16 +363,6 @@ Uses `icon-load` (`loadIcon` / `getCachedIcon`), not `mapsightRuntimeIcon`.
 | `plain`   | Lists, UI chrome         | 34×34 square, plain background |
 
 Variant is selected in SCSS (zoom selectors), not in `mapsightIconId`.
-
----
-
-## Disabling runtime icons
-
-```scss
-$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED: false;
-```
-
-Composable catalog icons will not render on the map (sprite `auto-icon` rules still apply).
 
 ---
 

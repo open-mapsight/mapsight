@@ -116,18 +116,6 @@ needed in production map bundles.
 
 ---
 
-## Disable runtime icons
-
-Set `$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED: false` in the **first**
-`@use` of `variables` (together with sprite settings). The `icons-2x` shim only
-forwards sprite path variables — use the manual pattern from
-[CUSTOMIZING_SCSS.md](CUSTOMIZING_SCSS.md) when toggling runtime icons.
-
-Composable catalog icons will not render on the map; sprite `auto-icon` rules still
-apply.
-
----
-
 ## Direct API reference
 
 | Import path                           | Use                                                               |

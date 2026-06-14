@@ -2,6 +2,7 @@
 @use "../mixins/icon-base";
 @use "../mixins/icon";
 @use "../mixins/auto-icon";
+@use "../mixins/runtime-icon";
 
 #features {
 	stroke-width: 4;
@@ -9,65 +10,23 @@
 	// Icon
 	@include icon-base.iconBase;
 
-	@if variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED {
-		[mapsightIconId],
-		[env|mapsightIconId] {
-			image-type: icon;
-
-			icon: {
-				scale: variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SCALE;
-				src: calc(
-					mapsightRuntimeIcon(
-						attr(mapsightIconId),
-						"default"
-					)
-				);
-				snapToPixel: true;
-			}
-		}
-	}
-
+	@include auto-icon.autoIconDefault();
+	@include runtime-icon.runtimeIcon("default");
 	@include auto-icon.autoIcon("default");
 
-	@if variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICONS_ENABLED {
-		[|js="env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL}"]
-			:not([state="highlight"])
-			:not([state="select"]) {
-			[mapsightIconId],
-			[env|mapsightIconId] {
-				icon-src: calc(
-					mapsightRuntimeIcon(
-						attr(mapsightIconId),
-						"xsmall"
-					)
-				);
-			}
-		}
-
-		[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL} && env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT}"]
-			:not([state="highlight"])
-			:not([state="select"]) {
-			[mapsightIconId],
-			[env|mapsightIconId] {
-				icon-src: calc(
-					mapsightRuntimeIcon(
-						attr(mapsightIconId),
-						"small"
-					)
-				);
-			}
-		}
-	}
-
 	[|js="env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL}"]
-		:not([state="highlight"])
-		:not([state="select"]) {
+	:not([state="highlight"])
+	:not([state="select"]) {
+		@include auto-icon.autoIconDefault("xsmall");
+		@include runtime-icon.runtimeIconSrc("xsmall");
 		@include auto-icon.autoIcon("xsmall");
 	}
 
 	[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_SMALL} && env.zoom < #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURES_BASE_ZOOM_DEFAULT}"]
-		:not([state="highlight"])
-		:not([state="select"]) {
+	:not([state="highlight"])
+	:not([state="select"]) {
+		@include auto-icon.autoIconDefault("small");
+		@include runtime-icon.runtimeIconSrc("small");
 		@include auto-icon.autoIcon("small");
 	}
 
@@ -178,8 +137,9 @@
 					icon: {
 						anchorX: -14px;
 						anchorY: 12px;
-						src: variables.$MAPSIGHT_TRAFFIC_STYLE__IMAGE_PATH +
-							"parking-dynamic/attr(occupancyTrendString).png";
+						src: unquote(
+							'calc(attr(--env-imagesUrl) + "parking-dynamic/" + attr(occupancyTrendString) + ".png")'
+						);
 					}
 
 					[state="highlight"],

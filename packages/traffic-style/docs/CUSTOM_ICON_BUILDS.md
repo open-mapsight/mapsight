@@ -15,6 +15,34 @@ Font Awesome pack).
 For how sprite vs composable icons are classified, see [ICON_CATALOG.md](ICON_CATALOG.md).
 For runtime pictogram packs, see the same doc.
 
+## Monorepo / pnpm workspace
+
+This package uses `publishConfig.linkDirectory: true` so workspace consumers
+symlink to `dist/` instead of the package root. That mirrors the published tarball
+layout and keeps workspace DX “hot”: apps import built assets from `dist` without
+`pnpm pack` or republishing on every traffic-style change.
+
+**Trade-off:** in this setup, pnpm does not reliably expose the `bin` shims
+(`traffic-icon-sprite`, `traffic-composable-icons`, …) on `PATH` when you run app
+scripts — even though the CLI files exist under
+`node_modules/@mapsight/traffic-style/scripts/`. After `pnpm install` from the
+registry, the bare command names work as documented below.
+
+**Workaround in workspace apps:** invoke the script explicitly:
+
+```json
+{
+	"scripts": {
+		"build:iconSprite": "node node_modules/@mapsight/traffic-style/scripts/traffic-icon-sprite.js --output-scss tmp/ --output-img public/img/ --groups default,education"
+	}
+}
+```
+
+Same pattern for `traffic-composable-icons.js`. Use
+`node_modules/@mapsight/traffic-style/meta.json` for `--meta-path` unless you are
+editing `src/meta.json` locally and have not rebuilt traffic-style yet (then point
+at `packages/traffic-style/src/meta.json` temporarily).
+
 ---
 
 ## Custom sprite sheets
@@ -33,7 +61,7 @@ pre-optimized icon PNGs in the package. Icons with `"render": "composable"` in
 
 ### Example
 
-From a consuming app (similar to `apps/braunschweig`):
+In a consuming app's `package.json` (registry install — bare CLI names on `PATH`):
 
 ```json
 {
@@ -42,6 +70,9 @@ From a consuming app (similar to `apps/braunschweig`):
 	}
 }
 ```
+
+In a pnpm workspace linked to this repo, use the `node node_modules/…/scripts/…`
+form from [Monorepo / pnpm workspace](#monorepo--pnpm-workspace) above instead.
 
 ### Defaults
 

@@ -1,0 +1,19 @@
+@use "sass:map";
+@use "../variables";
+
+/// Reset sprite-sheet offset/size so full-image runtime icons render correctly.
+@mixin runtimeIconDimensions(
+	$variant: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
+) {
+	$logical-size: map.get(
+		variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SIZES,
+		$variant
+	);
+	$pixel-size: $logical-size *
+		variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_PIXEL_RATIO;
+
+	icon-offsetX: 0;
+	icon-offsetY: 0;
+	icon-sizeX: $pixel-size;
+	icon-sizeY: $pixel-size;
+}

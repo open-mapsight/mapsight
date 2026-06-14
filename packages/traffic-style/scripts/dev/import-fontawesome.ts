@@ -5,16 +5,26 @@ import {fileURLToPath} from "node:url";
 
 import {
 	faBicycle,
+	faBiking,
 	faBolt,
 	faBus,
 	faCar,
 	faChargingStation,
+	faCloudRain,
+	faCloudSunRain,
+	faDroplet,
 	faHospital,
+	faInfo,
+	faLeaf,
 	faLocationDot,
 	faMugHot,
 	faSchool,
+	faTemperatureHigh,
 	faTree,
+	faUsers,
 	faUtensils,
+	faVanShuttle,
+	faWater,
 } from "@fortawesome/free-solid-svg-icons";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
@@ -97,6 +107,73 @@ const icons: FaIconEntry[] = [
 		id: "fa-marker",
 		label: {de: "Marker", en: "Marker"},
 		icon: faLocationDot,
+	},
+	// Smart City
+	{
+		exportName: "faWater",
+		id: "fa-water",
+		label: {de: "Wasser", en: "Water"},
+		icon: faWater,
+	},
+	{
+		exportName: "faDroplet",
+		id: "fa-water-lower",
+		label: {de: "Niedriger Wasserstand", en: "Low water level"},
+		icon: faDroplet,
+	},
+	{
+		exportName: "faBiking",
+		id: "fa-biking",
+		label: {de: "Radverkehr", en: "Cycling"},
+		icon: faBiking,
+	},
+	{
+		exportName: "faUsers",
+		id: "fa-users",
+		label: {de: "Personen", en: "People"},
+		icon: faUsers,
+	},
+	{
+		exportName: "faVanShuttle",
+		id: "fa-car-bus",
+		label: {de: "Verkehr", en: "Traffic"},
+		icon: faVanShuttle,
+	},
+	{
+		exportName: "faCloudRain",
+		id: "fa-cloud-rain",
+		label: {de: "Regen", en: "Rain"},
+		icon: faCloudRain,
+	},
+	{
+		exportName: "faCloudSunRain",
+		id: "fa-thunderstorm-sun",
+		label: {de: "Gewitter", en: "Thunderstorm"},
+		icon: faCloudSunRain,
+	},
+	{
+		exportName: "faTree",
+		id: "fa-tree-alt",
+		label: {de: "Bäume", en: "Trees"},
+		icon: faTree,
+	},
+	{
+		exportName: "faLeaf",
+		id: "fa-leaf-heart",
+		label: {de: "Umwelt", en: "Environment"},
+		icon: faLeaf,
+	},
+	{
+		exportName: "faInfo",
+		id: "fa-info",
+		label: {de: "Info", en: "Info"},
+		icon: faInfo,
+	},
+	{
+		exportName: "faTemperatureHigh",
+		id: "fa-temperature-high",
+		label: {de: "Temperatur", en: "Temperature"},
+		icon: faTemperatureHigh,
 	},
 ];
 
