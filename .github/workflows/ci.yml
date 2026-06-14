@@ -188,6 +188,7 @@ jobs:
         with:
           persist-credentials: false
           submodules: false
+          fetch-depth: 0 # setup action needs PR base SHA for turbo affected comparisons
 
       - uses: ./.github/actions/setup/
 
