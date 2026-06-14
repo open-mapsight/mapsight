@@ -4,6 +4,12 @@ type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
+const PROTOTYPE_POLLUTION_KEYS = new Set([
+	"__proto__",
+	"constructor",
+	"prototype",
+]);
+
 export default function deepExtend<T extends Record<string, unknown>>(
 	target: T,
 	...sources: Array<DeepPartial<T> | null | undefined>
@@ -14,7 +20,10 @@ export default function deepExtend<T extends Record<string, unknown>>(
 		}
 
 		for (const key in source) {
-			if (Object.prototype.hasOwnProperty.call(source, key)) {
+			if (
+				Object.prototype.hasOwnProperty.call(source, key) &&
+				!PROTOTYPE_POLLUTION_KEYS.has(key)
+			) {
 				const sourceValue = source[key as keyof typeof source];
 				const targetValue = target[key as keyof T];
 
