@@ -20,7 +20,7 @@ pnpm --filter @mapsight/count-aggregator-api build
 
 ## Quick start
 
-Create a client pointed at your tenant’s public count-aggregator base URL, then call generated endpoint aliases. Typed helper wrappers are planned ([Phase 3](./PLAN.md#phase-3--client-ergonomics--dry)); until then, use bracket notation:
+Create a client pointed at your tenant’s public count-aggregator base URL, then call generated endpoint aliases. Typed helper wrappers are planned; until then, use bracket notation:
 
 ```ts
 import {
@@ -133,7 +133,7 @@ Public SaaS documentation is not available yet. When you have a Mapsight tenant,
 | OpenAPI JSON     | `…/openapi.json`                                           |
 | Interactive docs | `…/docs`                                                   |
 
-Replace `<tenant>.example.tld` with your deployment host. A runnable local demo with mocked responses is planned in [Phase 1b](./PLAN.md#phase-1b--reference-demo-mock-api).
+Replace `<tenant>.example.tld` with your deployment host.
 
 ## Architecture
 
@@ -147,4 +147,3 @@ src/client.ts, src/lib/*                ← hand-written client + helpers
 ## Related packages
 
 - [`@mapsight/count-aggregator-ui`](../count-aggregator-ui/README.md) — React wizard, charts, and embed wrapper
-- [Improvement plan](./PLAN.md) — phased roadmap for both packages
