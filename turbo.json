@@ -112,17 +112,7 @@
 			"outputs": []
 		},
 		"//#lint:starters": {
-			"outputs": [],
-			"dependsOn": [
-				"@mapsight/ui#build",
-				"@mapsight/vite-host-embed#build",
-				"@mapsight/traffic-style#build",
-				"@mapsight/core#build",
-				"@mapsight/lib-js#build",
-				"@mapsight/lib-ol#build",
-				"@mapsight/lib-redux#build",
-				"@mapsight/vector-style-compiler#build"
-			]
+			"outputs": []
 		}
 	}
 }
