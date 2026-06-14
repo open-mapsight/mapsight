@@ -243,6 +243,10 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
         shell: bash
 
+      - name: Build starter dependencies
+        run: pnpm turbo run build --filter=mapsight-host-starter --filter=mapsight-next-starter --filter=mapsight-vite-spa-starter
+        shell: bash
+
       - name: Run starter smoke tests
         run: pnpm run test:starters:e2e
         shell: bash
