@@ -1,6 +1,8 @@
 # Mapsight Action API — Decision Guide
 
-> **Context:** [MAPSIGHT_REDUX_ARCHITECTURE.md](./MAPSIGHT_REDUX_ARCHITECTURE.md) explains how the store, controllers, and path routing work. This guide answers a narrower question: _which action API do I dispatch for a given task?_
+> **Package:** `@mapsight/core` · **Hub:** [Documentation index](../../../docs/README.md)
+>
+> **Context:** [Redux architecture](./REDUX_ARCHITECTURE.md) explains how the store, controllers, and path routing work. This guide answers a narrower question: _which action API do I dispatch for a given task?_
 
 Mapsight has three coexisting action systems. Pick the one that matches your intent — not whichever import is closest.
 

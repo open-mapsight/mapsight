@@ -1,5 +1,7 @@
 # @mapsight/traffic-style
 
+> **Package:** `@mapsight/traffic-style` · **Hub:** [Documentation index](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)
+
 Default **icons** and **vector map styles** for [Mapsight](https://github.com/open-mapsight/mapsight) —
 an OpenLayers + React framework.
 
@@ -84,7 +86,7 @@ import "@mapsight/traffic-style/pictograms-fontawesome";
 Need different colors, zoom thresholds, or style partials? See
 [Customize the style](#customize-the-style) below.
 
-Not using `@mapsight/ui`? See [docs/ICON_INTEGRATION.md](docs/ICON_INTEGRATION.md).
+Not using `@mapsight/ui`? See [ICON_INTEGRATION.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/ICON_INTEGRATION.md).
 
 ## Customize the style
 
@@ -123,31 +125,31 @@ partial — the first `@use` of `variables` applies to the whole compilation.
 ```
 
 Full variable reference, manual sprite wiring, and partial composition:
-[docs/CUSTOMIZING_SCSS.md](docs/CUSTOMIZING_SCSS.md).
+[docs/CUSTOMIZING_SCSS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/CUSTOMIZING_SCSS.md).
 
 ## Icon assets
 
 The package ships ready-to-use sprites and individual PNG/SVG files under `img/`.
 You can also **subset**, **extend**, or **replace** icons for your app:
 
-| Goal                         | Approach                                                                                                                         |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Use defaults as-is           | Sprite SCSS + PNG, or individual files under `img/`                                                                              |
-| Smaller deploy               | Subset sprites/composable icons at build time (`traffic-icon-sprite`, `traffic-composable-icons`)                                |
-| Custom sprite tiles          | `traffic-icon-sprite --overrides ./my-icons/` — swap or add PNGs, regenerate sprite SCSS                                         |
-| Custom composable pictograms | `registerPictograms` from `@mapsight/traffic-style/pictograms`, or pre-bake with `traffic-composable-icons` + custom `meta.json` |
-| Contribute to the catalog    | Add pictograms/sprites to this package — [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)                                              |
+| Goal                         | Approach                                                                                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Use defaults as-is           | Sprite SCSS + PNG, or individual files under `img/`                                                                                                            |
+| Smaller deploy               | Subset sprites/composable icons at build time (`traffic-icon-sprite`, `traffic-composable-icons`)                                                              |
+| Custom sprite tiles          | `traffic-icon-sprite --overrides ./my-icons/` — swap or add PNGs, regenerate sprite SCSS                                                                       |
+| Custom composable pictograms | `registerPictograms` from `@mapsight/traffic-style/pictograms`, or pre-bake with `traffic-composable-icons` + custom `meta.json`                               |
+| Contribute to the catalog    | Add pictograms/sprites to this package — [docs/DEVELOPMENT.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/DEVELOPMENT.md) |
 
-Details and CLI examples: [docs/CUSTOM_ICON_BUILDS.md](docs/CUSTOM_ICON_BUILDS.md).
-Catalog concepts (sprite vs composable, pictogram packs): [docs/ICON_CATALOG.md](docs/ICON_CATALOG.md).
+Details and CLI examples: [docs/CUSTOM_ICON_BUILDS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/CUSTOM_ICON_BUILDS.md).
+Catalog concepts (sprite vs composable, pictogram packs): [docs/ICON_CATALOG.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/ICON_CATALOG.md).
 
 ## Documentation
 
-| Doc                                                      | What you'll find                                                      |
-| -------------------------------------------------------- | --------------------------------------------------------------------- |
-| [docs/CUSTOMIZING_SCSS.md](docs/CUSTOMIZING_SCSS.md)     | Customize the style — variables, module patterns, partial composition |
-| [docs/ICON_INTEGRATION.md](docs/ICON_INTEGRATION.md)     | Icons without `@mapsight/ui` (direct runtime API)                     |
-| [docs/RUNTIME_ICONS.md](docs/RUNTIME_ICONS.md)           | Runtime icon architecture, caching, compiler integration              |
-| [docs/ICON_CATALOG.md](docs/ICON_CATALOG.md)             | Sprite vs composable, `meta.json`, pictogram packs                    |
-| [docs/CUSTOM_ICON_BUILDS.md](docs/CUSTOM_ICON_BUILDS.md) | `traffic-icon-sprite` and `traffic-composable-icons` CLIs             |
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)               | Contributing: tests, new icons, publishing                            |
+| Doc                                                                                                                                 | What you'll find                                                      |
+| ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [docs/CUSTOMIZING_SCSS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/CUSTOMIZING_SCSS.md)     | Customize the style — variables, module patterns, partial composition |
+| [docs/ICON_INTEGRATION.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/ICON_INTEGRATION.md)     | Icons without `@mapsight/ui` (direct runtime API)                     |
+| [docs/RUNTIME_ICONS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/RUNTIME_ICONS.md)           | Runtime icon architecture, caching, compiler integration              |
+| [docs/ICON_CATALOG.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/ICON_CATALOG.md)             | Sprite vs composable, `meta.json`, pictogram packs                    |
+| [docs/CUSTOM_ICON_BUILDS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/CUSTOM_ICON_BUILDS.md) | `traffic-icon-sprite` and `traffic-composable-icons` CLIs             |
+| [docs/DEVELOPMENT.md](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/DEVELOPMENT.md)               | Contributing: tests, new icons, publishing                            |

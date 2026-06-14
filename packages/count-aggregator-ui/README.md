@@ -3,17 +3,19 @@
 Embeddable React components for Mapsight **count-aggregator** data: station selection wizards, time-series charts, CSV
 export links, and optional map feature-detail metrics.
 
-Uses [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) for HTTP access. Built-in labels support `de` and `en` with optional per-key overrides.
+Uses [`@mapsight/count-aggregator-api`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/README.md) for HTTP access. Built-in labels support `de` and `en` with optional per-key overrides.
+
+See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for ecosystem and integration context.
 
 ## Install
 
-**npm** (when published):
-
 ```bash
 npm install @mapsight/count-aggregator-ui @mapsight/count-aggregator-api
+# or
+pnpm add @mapsight/count-aggregator-ui @mapsight/count-aggregator-api
 ```
 
-**pnpm workspace**:
+**Monorepo development** (from repo root):
 
 ```bash
 pnpm --filter @mapsight/count-aggregator-ui build
@@ -134,6 +136,15 @@ Main exports include `CountAggregatorShell`, `CountAggregatorWizard`, `TimeSerie
 The `/headless` entry also exports chart data helpers such as `prepareChartValues` and `mapTimeSeriesToChartPoints` for
 custom UIs that do not use the styled wizard.
 
+## CMS app-shell embed
+
+For host CMS pages that paste HTML rather than bundle your app, use the public Vite plugins:
+
+- [`@mapsight/vite-host-embed`](https://github.com/open-mapsight/mapsight/tree/main/packages/vite-host-embed) — `mapsightSnippetHtmlEntryPlugin` (build only the marked snippet region)
+- [`@mapsight/vite-count-aggregator-embed`](https://github.com/open-mapsight/mapsight/tree/main/packages/vite-count-aggregator-embed) — assets-only deploy tree + `dist/snippets/count-aggregator.html`
+
+Mark the paste-ready region in your HTML entry with `<!-- mapsight:snippet:start/end -->`, run `vite build`, deploy `assets/` + `.htaccess`, and paste the generated snippet into the CMS page.
+
 ## Embedding notes
 
 - `CountAggregatorShell` composes `CountAggregatorRoot`, TanStack Query, and `CountAggregatorProvider` for the common
@@ -145,8 +156,7 @@ custom UIs that do not use the styled wizard.
 
 ## Run the demo locally
 
-The [Mapsight showcase](../../apps/showcase) app includes a stepped `bicycleCount` wizard backed by a **mock API** — no
-live tenant or `.env` secrets.
+The [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) app includes a stepped `bicycleCount` wizard backed by a **mock API** — no live tenant or `.env` secrets.
 
 ```bash
 # from repo root
@@ -225,4 +235,6 @@ project keeps the long-term i18n library decision open.
 
 ## Related packages
 
-- [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) — HTTP client and OpenAPI types
+- [`@mapsight/count-aggregator-api`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/README.md) — HTTP client and OpenAPI types
+- [API improvement plan](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/PLAN.md) — master roadmap
+- [UI execution checklist](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/PLAN.md) — UI-focused task list
