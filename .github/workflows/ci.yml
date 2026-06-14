@@ -427,18 +427,6 @@ jobs:
         run: pnpm install --frozen-lockfile
         shell: bash
 
-      - name: Create starter release artifacts
-        run: |
-          mkdir -p dist/starter-downloads
-          for starter in mapsight-host-starter mapsight-next-starter mapsight-vite-spa-starter; do
-            git archive \
-              --format=zip \
-              --prefix="$starter/" \
-              --output="dist/starter-downloads/$starter.zip" \
-              HEAD:"starters/$starter"
-          done
-        shell: bash
-
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
@@ -452,6 +440,15 @@ jobs:
       - name: Upload starter release artifacts
         if: steps.changesets.outputs.published == 'true'
         run: |
+          mkdir -p dist/starter-downloads
+          for starter in mapsight-host-starter mapsight-next-starter mapsight-vite-spa-starter; do
+            git archive \
+              --format=zip \
+              --prefix="$starter/" \
+              --output="dist/starter-downloads/$starter.zip" \
+              HEAD:"starters/$starter"
+          done
+
           node <<'NODE' > "$RUNNER_TEMP/published-tags"
           const packages = JSON.parse(process.env.PUBLISHED_PACKAGES || "[]");
           for (const {name, version} of packages) {

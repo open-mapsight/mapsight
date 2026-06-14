@@ -14,6 +14,7 @@ node_modules/
 tsconfig.node.tsbuildinfo
 
 # built files that get distributed
+/dist/
 /apps/*/dist/
 /apps/*/dist-ssr/
 /apps/*/generated/
