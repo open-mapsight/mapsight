@@ -1,0 +1,44 @@
+{
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "demo-point-a",
+			"properties": {
+				"name": "Example point A",
+				"listInformation": "Demo location for Next starter",
+				"mapsightIconId": "info"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.498, 52.198]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "demo-point-b",
+			"properties": {
+				"name": "Example point B",
+				"listInformation": "Second demo location",
+				"mapsightIconId": "info"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.512, 52.205]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "demo-point-c",
+			"properties": {
+				"name": "Example point C",
+				"listInformation": "Third demo location",
+				"mapsightIconId": "info"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.505, 52.192]
+			}
+		}
+	]
+}

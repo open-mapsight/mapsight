@@ -16,6 +16,55 @@
 				"src/generated/**"
 			]
 		},
+		"mapsight-host-starter#build": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build",
+				"@mapsight/vite-host-embed#build"
+			],
+			"outputs": [
+				"dist/**",
+				".next/**",
+				"!.next/cache/**",
+				"public/img/mapsight**",
+				"src/generated/**"
+			]
+		},
+		"mapsight-next-starter#build": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build"
+			],
+			"outputs": [
+				"dist/**",
+				".next/**",
+				"!.next/cache/**",
+				"public/img/mapsight**",
+				"src/generated/**"
+			]
+		},
+		"mapsight-vite-spa-starter#build": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build"
+			],
+			"outputs": [
+				"dist/**",
+				".next/**",
+				"!.next/cache/**",
+				"public/img/mapsight**",
+				"src/generated/**"
+			]
+		},
 		"watch": {
 			"cache": false,
 			"persistent": true
@@ -28,7 +77,41 @@
 			"dependsOn": ["^build"],
 			"outputs": []
 		},
+		"mapsight-host-starter#typecheck": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build",
+				"@mapsight/vite-host-embed#build"
+			],
+			"outputs": []
+		},
+		"mapsight-next-starter#typecheck": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build"
+			],
+			"outputs": []
+		},
+		"mapsight-vite-spa-starter#typecheck": {
+			"dependsOn": [
+				"@mapsight/lib-js#build",
+				"@mapsight/lib-ol#build",
+				"@mapsight/traffic-style#build",
+				"@mapsight/ui#build",
+				"@mapsight/vector-style-compiler#build"
+			],
+			"outputs": []
+		},
 		"//#typecheck:scripts": {
+			"outputs": []
+		},
+		"//#lint:starters": {
 			"outputs": []
 		}
 	}

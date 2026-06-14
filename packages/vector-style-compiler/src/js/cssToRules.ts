@@ -1,5 +1,4 @@
-import type css from "css";
-import {parse} from "css";
+import postcss, {type Root, type Rule} from "postcss";
 
 import unique from "@mapsight/lib-js/array/unique";
 
@@ -19,21 +18,21 @@ const collectMeta = <
 	return unique(values);
 };
 
-function isRule(val: css.Rule | css.Comment | css.AtRule): val is css.Rule {
+function isRule(val: Root["nodes"][number]): val is Rule {
 	return val.type === "rule";
 }
 
 // types: rule,
 // ignored types: media, stylesheet, comment, charset, custom-media, document, font-face,
 //                import, keyframes, keyframe, media, namespace, page, supports
-function cssOmToRules(om: css.Stylesheet) {
-	return om.stylesheet?.rules.filter(isRule).flatMap(mapRule) ?? [];
+function cssOmToRules(om: Root) {
+	return om.nodes.filter(isRule).flatMap(mapRule);
 }
 
 export type Rules = ReturnType<typeof cssToRules>;
 
 export default function cssToRules(content: string) {
-	const om = parse(content);
+	const om = postcss.parse(content);
 	const rules = cssOmToRules(om);
 	return {
 		rules,

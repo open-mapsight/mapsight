@@ -1,0 +1,43 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"allowJs": true,
+		"checkJs": true,
+		"erasableSyntaxOnly": true,
+		"esModuleInterop": true,
+		"incremental": true,
+		"isolatedModules": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"lib": ["ES2024", "DOM", "DOM.Iterable"],
+		"module": "esnext",
+		"moduleDetection": "force",
+		"moduleResolution": "bundler",
+		"noEmit": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"resolveJsonModule": true,
+		"rewriteRelativeImportExtensions": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ES2024"
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		"scripts/**/*.mts"
+	],
+	"exclude": ["node_modules", "src/generated/mapsight-vector-styles/demo.js"]
+}

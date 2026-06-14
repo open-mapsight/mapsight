@@ -1,3 +1,6 @@
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import {importX} from "eslint-plugin-import-x";
@@ -5,6 +8,8 @@ import node from "eslint-plugin-n";
 import {defineConfig} from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+
+const REPO_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 export default defineConfig([
 	{
@@ -29,8 +34,8 @@ export default defineConfig([
 			globals: {...globals.browser, ...globals.node},
 			parserOptions: {
 				projectService: {
+					defaultProject: "./configs/tsconfig-node.json",
 					allowDefaultProject: [
-						"eslint.config.mts",
 						"gulpfile.mts",
 						"vite.config.ts",
 						"vite.config.mts",
@@ -39,6 +44,7 @@ export default defineConfig([
 						"postcss.config.mts",
 					],
 				},
+				tsconfigRootDir: REPO_ROOT,
 			},
 		},
 		rules: {
@@ -80,6 +86,9 @@ export default defineConfig([
 				typescript: {
 					project: [
 						"./apps/*/tsconfig.json",
+						"./starters/tsconfig.json",
+						"./starters/*/tsconfig.json",
+						"./starters/*/tsconfig.node.json",
 						"./packages/*/tsconfig.json",
 						"./configs/tsconfig.json",
 						"./scripts/tsconfig.json",

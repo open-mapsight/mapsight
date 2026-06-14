@@ -1,0 +1,47 @@
+{
+	"name": "mapsight-vite-spa-starter",
+	"description": "Minimal Vite + React Router SPA host template — copy into your app repo",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@mapsight/lib-js": "^3.0.3",
+		"@mapsight/lib-ol": "^4.0.3",
+		"@mapsight/traffic-style": "^5.0.6",
+		"@mapsight/ui": "^7.1.0",
+		"breakpoint-sass": "^3.0.0",
+		"hint.css": "^3.0.0",
+		"ol": "^10.9.0",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6",
+		"react-modal": "^3.16.3",
+		"react-router-dom": "^7.15.0",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@mapsight/vector-style-compiler": "^9.0.0",
+		"@types/node": "^24.13.2",
+		"@types/react": "^19.2.15",
+		"@types/react-dom": "^19.2.3",
+		"@types/react-modal": "^3.16.3",
+		"mkdirp": "^3.0.1",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^6.1.3",
+		"sass": "^1.100.0",
+		"typescript": "^6.0.3",
+		"vite": "^8.0.14"
+	},
+	"license": "UNLICENSED",
+	"scripts": {
+		"build": "npm-run-all prebuild copy build:mapsightStyle --sequential build:app",
+		"build:app": "vite build",
+		"build:mapsightStyle": "vector-style-compiler src/vector-styles/demo.scss --output src/generated/mapsight-vector-styles --name demo",
+		"clean": "rimraf dist src/generated public/img/mapsight*",
+		"copy": "mkdirp public/img && cp -R node_modules/@mapsight/traffic-style/img/* public/img/",
+		"dev": "npm-run-all prebuild copy build:mapsightStyle --sequential dev:app",
+		"dev:app": "vite",
+		"prebuild": "node scripts/sync-workspace-mapsight.mts",
+		"preview": "vite preview",
+		"typecheck": "npm-run-all build:mapsightStyle --sequential && tsc --noEmit"
+	}
+}

@@ -1,0 +1,16 @@
+// Minimal starter vector style — wire traffic-style icons, then add overrides below.
+@use "@mapsight/traffic-style/mapsight-traffic-style-icon-sprite-2x" as sprite;
+
+@use "@mapsight/traffic-style/src/scss/variables" with (
+	$MAPSIGHT_TRAFFIC_STYLE__IMAGE_PATH: "/img/",
+	$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH: "/img/mapsight-traffic-style-icon-sprite-2x.png",
+	$MAPSIGHT_TRAFFIC_STYLE__ICONS: sprite.$mapsight-traffic-style-icon-sprite-2x
+);
+
+@use "@mapsight/traffic-style/src/scss/base";
+
+#features {
+	[state="highlight"] {
+		stroke-color: #467aff;
+	}
+}
