@@ -85,6 +85,7 @@ catalogs:
 overrides:
   postcss@<8.5.10: ^8.5.10
   '@mapsight/vite-host-embed': workspace:*
+  '@mapsight/vector-style-compiler': workspace:*
 
 importers:
 
@@ -236,7 +237,7 @@ importers:
         version: 4.3.0
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/vector-style-compiler
       '@playwright/test':
         specifier: 'catalog:'
@@ -327,7 +328,7 @@ importers:
         version: 4.3.0
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/vector-style-compiler
       '@tailwindcss/postcss':
         specifier: ^4.3.0
@@ -624,7 +625,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../vector-style-compiler
       '@types/fs-extra':
         specifier: ^11.0.4
@@ -748,24 +749,21 @@ importers:
       '@mapsight/lib-js':
         specifier: workspace:^
         version: link:../lib-js
-      '@types/css':
-        specifier: ^0.0.38
-        version: 0.0.38
       '@types/lodash':
         specifier: 'catalog:'
         version: 4.17.24
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.1
-      css:
-        specifier: ^3.0.0
-        version: 3.0.0
       lodash:
         specifier: 'catalog:'
         version: 4.18.1
       ol:
         specifier: 'catalog:'
         version: 10.9.0
+      postcss:
+        specifier: ^8.5.15
+        version: 8.5.15
     devDependencies:
       '@mapsight/core':
         specifier: workspace:^
@@ -827,18 +825,12 @@ importers:
 
   starters/mapsight-host-starter:
     dependencies:
-      '@mapsight/core':
-        specifier: ^14.1.0
-        version: 14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)
       '@mapsight/lib-js':
         specifier: ^3.0.3
         version: 3.0.3
       '@mapsight/lib-ol':
         specifier: ^4.0.3
         version: 4.0.3(ol@10.9.0)
-      '@mapsight/lib-redux':
-        specifier: ^2.1.0
-        version: 2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       '@mapsight/traffic-style':
         specifier: ^5.0.6
         version: 5.0.6
@@ -854,9 +846,6 @@ importers:
       hint.css:
         specifier: ^3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
       ol:
         specifier: ^10.9.0
         version: 10.9.0
@@ -866,22 +855,13 @@ importers:
       react-dom:
         specifier: ^19.2.6
         version: 19.2.6(react@19.2.6)
-      react-redux:
-        specifier: ^9.3.0
-        version: 9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1)
-      reselect:
-        specifier: ^5.1.1
-        version: 5.2.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: ^9.0.0
-        version: 9.0.0(@mapsight/core@14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1))(@mapsight/lib-ol@4.0.3(ol@10.9.0))(ol@10.9.0)
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
+        specifier: workspace:*
+        version: link:../../packages/vector-style-compiler
       '@types/node':
         specifier: ^24.13.2
         version: 24.13.2
@@ -912,18 +892,12 @@ importers:
 
   starters/mapsight-next-starter:
     dependencies:
-      '@mapsight/core':
-        specifier: ^14.1.0
-        version: 14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)
       '@mapsight/lib-js':
         specifier: ^3.0.3
         version: 3.0.3
       '@mapsight/lib-ol':
         specifier: ^4.0.3
         version: 4.0.3(ol@10.9.0)
-      '@mapsight/lib-redux':
-        specifier: ^2.1.0
-        version: 2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       '@mapsight/traffic-style':
         specifier: ^5.0.6
         version: 5.0.6
@@ -936,9 +910,6 @@ importers:
       hint.css:
         specifier: ^3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
       next:
         specifier: ^16.2.6
         version: 16.2.6(@babel/core@7.29.7)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.100.0)
@@ -954,25 +925,16 @@ importers:
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-redux:
-        specifier: ^9.3.0
-        version: 9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1)
-      reselect:
-        specifier: ^5.1.1
-        version: 5.2.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: ^9.0.0
-        version: 9.0.0(@mapsight/core@14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1))(@mapsight/lib-ol@4.0.3(ol@10.9.0))(ol@10.9.0)
+        specifier: workspace:*
+        version: link:../../packages/vector-style-compiler
       '@tailwindcss/postcss':
         specifier: ^4.3.0
         version: 4.3.0
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
       '@types/node':
         specifier: ^24.13.2
         version: 24.13.2
@@ -1012,18 +974,12 @@ importers:
 
   starters/mapsight-vite-spa-starter:
     dependencies:
-      '@mapsight/core':
-        specifier: ^14.1.0
-        version: 14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)
       '@mapsight/lib-js':
         specifier: ^3.0.3
         version: 3.0.3
       '@mapsight/lib-ol':
         specifier: ^4.0.3
         version: 4.0.3(ol@10.9.0)
-      '@mapsight/lib-redux':
-        specifier: ^2.1.0
-        version: 2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       '@mapsight/traffic-style':
         specifier: ^5.0.6
         version: 5.0.6
@@ -1036,9 +992,6 @@ importers:
       hint.css:
         specifier: ^3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
       ol:
         specifier: ^10.9.0
         version: 10.9.0
@@ -1051,25 +1004,16 @@ importers:
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-redux:
-        specifier: ^9.3.0
-        version: 9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1)
       react-router-dom:
         specifier: ^7.15.0
         version: 7.17.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      reselect:
-        specifier: ^5.1.1
-        version: 5.2.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
       '@mapsight/vector-style-compiler':
-        specifier: ^9.0.0
-        version: 9.0.0(@mapsight/core@14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1))(@mapsight/lib-ol@4.0.3(ol@10.9.0))(ol@10.9.0)
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
+        specifier: workspace:*
+        version: link:../../packages/vector-style-compiler
       '@types/node':
         specifier: ^24.13.2
         version: 24.13.2
@@ -1681,14 +1625,6 @@ packages:
     peerDependencies:
       react: ^19.2.6
       react-dom: ^19.2.6
-
-  '@mapsight/vector-style-compiler@9.0.0':
-    resolution: {integrity: sha512-AynKV2ghIkryeHKXr4OMAybPiivPMJwzKNajhuNOIlS5iD1tHcrYL172v4yiZaUCYK+78SodfLDze/+WS1ag8A==}
-    hasBin: true
-    peerDependencies:
-      '@mapsight/core': ^14.1.0
-      '@mapsight/lib-ol': ^4.0.3
-      ol: ^10.9.0
 
   '@napi-rs/wasm-runtime@1.1.4':
     resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
@@ -2365,9 +2301,6 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/css@0.0.38':
-    resolution: {integrity: sha512-FsAy4pBnrJb8qdKmIyDy582o4Xt8pHwpCwYRmIvXw4dslA7C4436oOM+8XNnMEsV/LSculbFNaZsBZmycDjARw==}
-
   '@types/d3-array@3.2.2':
     resolution: {integrity: sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==}
 
@@ -2832,11 +2765,6 @@ packages:
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  atob@2.1.2:
-    resolution: {integrity: sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==}
-    engines: {node: '>= 4.5.0'}
-    hasBin: true
-
   autoprefixer@10.5.0:
     resolution: {integrity: sha512-FMhOoZV4+qR6aTUALKX2rEqGG+oyATvwBt9IIzVR5rMa2HRWPkxf+P+PAJLD1I/H5/II+HuZcBJYEFBpq39ong==}
     engines: {node: ^10 || ^12 || >=14}
@@ -3104,9 +3032,6 @@ packages:
     resolution: {integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==}
     engines: {node: '>= 6'}
 
-  css@3.0.0:
-    resolution: {integrity: sha512-DG9pFfwOrzc+hawpmqX/dHYHJG+Bsdb0klhyi1sDneOgGOXy9wQIC8hzyVp1e4NRYDBdxcylvywPkkXCHAzTyQ==}
-
   cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
@@ -3203,10 +3128,6 @@ packages:
 
   decimal.js@10.6.0:
     resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
-
-  decode-uri-component@0.2.2:
-    resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
-    engines: {node: '>=0.10'}
 
   decompress-response@6.0.0:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
@@ -4637,10 +4558,6 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.14:
-    resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
@@ -5098,10 +5015,6 @@ packages:
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
-
-  source-map-resolve@0.6.0:
-    resolution: {integrity: sha512-KXBr9d/fO/bWo97NXsPIAW1bFSBOuCnjbNTBMO7N59hsv5i9yzRDfcYwwt0l04+VqnKC+EwzvJZIP/qkuMgR/w==}
-    deprecated: See https://github.com/lydell/source-map-resolve#deprecated
 
   source-map-support@0.5.21:
     resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
@@ -6513,18 +6426,6 @@ snapshots:
       - redux
       - sass
 
-  '@mapsight/vector-style-compiler@9.0.0(@mapsight/core@14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1))(@mapsight/lib-ol@4.0.3(ol@10.9.0))(ol@10.9.0)':
-    dependencies:
-      '@mapsight/core': 14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)
-      '@mapsight/lib-js': 3.0.3
-      '@mapsight/lib-ol': 4.0.3(ol@10.9.0)
-      '@types/css': 0.0.38
-      '@types/lodash': 4.17.24
-      '@types/node': 24.13.1
-      css: 3.0.0
-      lodash: 4.18.1
-      ol: 10.9.0
-
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
@@ -6930,7 +6831,7 @@ snapshots:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.3.0
       '@tailwindcss/oxide': 4.3.0
-      postcss: 8.5.14
+      postcss: 8.5.15
       tailwindcss: 4.3.0
 
   '@tailwindcss/vite@4.3.0(vite@8.0.16(@types/node@24.13.1)(jiti@2.7.0)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0))':
@@ -7011,8 +6912,6 @@ snapshots:
     dependencies:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
-
-  '@types/css@0.0.38': {}
 
   '@types/d3-array@3.2.2': {}
 
@@ -7500,8 +7399,6 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  atob@2.1.2: {}
-
   autoprefixer@10.5.0(postcss@8.5.15):
     dependencies:
       browserslist: 4.28.2
@@ -7777,12 +7674,6 @@ snapshots:
 
   css-what@6.2.2: {}
 
-  css@3.0.0:
-    dependencies:
-      inherits: 2.0.4
-      source-map: 0.6.1
-      source-map-resolve: 0.6.0
-
   cssesc@3.0.0: {}
 
   csso@5.0.5:
@@ -7867,8 +7758,6 @@ snapshots:
   decimal.js-light@2.5.1: {}
 
   decimal.js@10.6.0: {}
-
-  decode-uri-component@0.2.2: {}
 
   decompress-response@6.0.0:
     dependencies:
@@ -9379,12 +9268,6 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.14:
-    dependencies:
-      nanoid: 3.3.12
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
-
   postcss@8.5.15:
     dependencies:
       nanoid: 3.3.12
@@ -9925,11 +9808,6 @@ snapshots:
       is-fullwidth-code-point: 5.1.0
 
   source-map-js@1.2.1: {}
-
-  source-map-resolve@0.6.0:
-    dependencies:
-      atob: 2.1.2
-      decode-uri-component: 0.2.2
 
   source-map-support@0.5.21:
     dependencies:

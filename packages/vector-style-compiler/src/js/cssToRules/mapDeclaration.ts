@@ -1,4 +1,4 @@
-import type {Declaration as CssDeclaration} from "css";
+import type {Declaration as CssDeclaration} from "postcss";
 
 import mapValue from "./mapValue.ts";
 
@@ -20,11 +20,11 @@ export default function mapDeclaration(
 ): Declaration {
 	const {value, __meta: valueMeta} = mapValue(declaration.value);
 
-	if (!declaration.property) {
+	if (!declaration.prop) {
 		throw new Error("Declaration is lacking property");
 	}
 
-	const keyParts = declaration.property.split("-");
+	const keyParts = declaration.prop.split("-");
 
 	// build deep object
 	const result: DeclarationNode = {};

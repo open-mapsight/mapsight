@@ -34,51 +34,63 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
 		},
 		"./types": {
 			"types": "./dist/types.d.ts",
-			"import": "./dist/types.js"
+			"import": "./dist/types.js",
+			"default": "./dist/types.js"
 		},
 		"./lib/*": {
 			"types": "./dist/lib/*.d.ts",
-			"import": "./dist/lib/*.js"
+			"import": "./dist/lib/*.js",
+			"default": "./dist/lib/*.js"
 		},
 		"./lib/*/*": {
 			"types": "./dist/lib/*/*.d.ts",
-			"import": "./dist/lib/*/*.js"
+			"import": "./dist/lib/*/*.js",
+			"default": "./dist/lib/*/*.js"
 		},
 		"./lib/*/lib/*": {
 			"types": "./dist/lib/*/lib/*.d.ts",
-			"import": "./dist/lib/*/lib/*.js"
+			"import": "./dist/lib/*/lib/*.js",
+			"default": "./dist/lib/*/lib/*.js"
 		},
 		"./lib/*/schema": {
 			"types": "./dist/lib/*/schema.d.ts",
-			"import": "./dist/lib/*/schema.js"
+			"import": "./dist/lib/*/schema.js",
+			"default": "./dist/lib/*/schema.js"
 		},
 		"./lib/helpers": {
 			"types": "./dist/lib/helpers/index.d.ts",
-			"import": "./dist/lib/helpers/index.js"
+			"import": "./dist/lib/helpers/index.js",
+			"default": "./dist/lib/helpers/index.js"
 		},
 		"./ol-proxy": {
 			"types": "./dist/ol-proxy/index.d.ts",
-			"import": "./dist/ol-proxy/index.js"
+			"import": "./dist/ol-proxy/index.js",
+			"default": "./dist/ol-proxy/index.js"
 		},
 		"./ol-proxy/*": {
 			"types": "./dist/ol-proxy/*.d.ts",
-			"import": "./dist/ol-proxy/*.js"
+			"import": "./dist/ol-proxy/*.js",
+			"default": "./dist/ol-proxy/*.js"
 		},
 		"./mixins/*": {
 			"types": "./dist/mixins/*.d.ts",
-			"import": "./dist/mixins/*.js"
+			"import": "./dist/mixins/*.js",
+			"default": "./dist/mixins/*.js"
 		},
 		"./env/ssr-simulated-browser": {
 			"types": "./dist/env/ssr-simulated-browser.d.ts",
-			"import": "./dist/env/ssr-simulated-browser.js"
+			"import": "./dist/env/ssr-simulated-browser.js",
+			"default": "./dist/env/ssr-simulated-browser.js"
 		},
 		"./schema": {
 			"types": "./dist/schema/index.d.ts",
-			"import": "./dist/schema/index.js"
+			"import": "./dist/schema/index.js",
+			"default": "./dist/schema/index.js"
 		}
 	},
 	"files": [

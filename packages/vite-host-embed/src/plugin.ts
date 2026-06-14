@@ -27,7 +27,7 @@ export function mapsightHostEmbedPlugin(
 	return {
 		name: "mapsight-host-embed",
 		apply: "build",
-		async closeBundle() {
+		async writeBundle() {
 			await fs.cp(imgSource, path.join(outDir, "img"), {recursive: true});
 
 			try {

@@ -1,4 +1,4 @@
-import type css from "css";
+import type {Declaration, Rule} from "postcss";
 
 import unique from "@mapsight/lib-js/array/unique";
 import {isTruthy} from "@mapsight/lib-js/boolean";
@@ -9,13 +9,12 @@ import type {DeclarationNode} from "./mapDeclaration.ts";
 import mapDeclaration from "./mapDeclaration.ts";
 import mapSelector, {type Selector} from "./mapSelector.ts";
 
-const isDeclaration = (
-	val: css.Declaration | css.Comment,
-): val is css.Declaration => val.type === "declaration";
+const isDeclaration = (val: Rule["nodes"][number]): val is Declaration =>
+	val.type === "decl";
 
-export default function mapRule(rule: css.Rule) {
+export default function mapRule(rule: Rule) {
 	const declarations =
-		rule.declarations
+		rule.nodes
 			?.filter(isDeclaration)
 			.map(mapDeclaration)
 			.filter((a) => !!a) ?? [];
@@ -43,7 +42,7 @@ export default function mapRule(rule: css.Rule) {
 		),
 	);
 
-	const selectors = uniqueSerialized(rule.selectors?.map(mapSelector) ?? []);
+	const selectors = uniqueSerialized(rule.selectors.map(mapSelector));
 	const groupedSelectors: Record<string, Array<Selector>> = {};
 	selectors.forEach((selector) => {
 		const existing = groupedSelectors[selector.group];

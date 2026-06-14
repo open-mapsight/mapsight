@@ -8,11 +8,10 @@
 	},
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
-		"@types/css": "^0.0.38",
 		"@types/lodash": "catalog:",
 		"@types/node": "catalog:",
-		"css": "^3.0.0",
-		"lodash": "catalog:"
+		"lodash": "catalog:",
+		"postcss": "^8.5.15"
 	},
 	"devDependencies": {
 		"@mapsight/core": "workspace:^",

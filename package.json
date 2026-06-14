@@ -69,6 +69,7 @@
 		"syncpack:format:write": "syncpack format --config configs/syncpack.config.ts",
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
 		"test": "turbo test",
+		"test:starters:copy-out": "node scripts/smoke-starter-copy-out.mts",
 		"test:starters:e2e": "playwright test -c e2e/starters/playwright.config.ts",
 		"typecheck": "turbo run typecheck //#typecheck:scripts",
 		"typecheck:scripts": "run-p typecheck:scripts:root typecheck:scripts:starters",
