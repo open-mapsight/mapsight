@@ -52,6 +52,7 @@ export default defineConfig([
 			"**/postcss.config.mjs",
 		],
 	},
+	tseslint.configs.disableTypeChecked,
 	{
 		files: [
 			"**/src/**/*.{ts,tsx,mts,cts}",
@@ -59,7 +60,6 @@ export default defineConfig([
 			"**/scripts/**/*.{ts,tsx,mts,cts}",
 			"**/vite.config.mts",
 		],
-		extends: [tseslint.configs.disableTypeChecked],
 		rules: {
 			"import-x/no-unresolved": [
 				"error",

@@ -46,8 +46,6 @@
 
 <script>
 	window.mapsightVisGeoJsonElement_createHandlers = window.mapsightVisGeoJsonElement_createHandlers || function(inputElementName, popupUrl, popupWindowName, popupWindowParameters) {
-		var popupWindow;
-
 		window[inputElementName + '-edit'] = function() {
 			document.querySelector('#frame').src = popupUrl;
 		};

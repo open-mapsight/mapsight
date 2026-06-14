@@ -90,7 +90,7 @@ function calcAndRenderGroupedFeatureItems(
 ): ItemGroups {
 	if (enableGrouping && features.length) {
 		const groups = determineFeatureGroups(features);
-		if (groups && groups.length) {
+		if (groups.length) {
 			return {
 				groups: groups,
 				items: groups.map((group) =>

@@ -41,8 +41,9 @@ import ViewInfo from "./vector-editor/ViewInfo.tsx";
 import VisuallyHidden from "./vector-editor/VisuallyHidden.tsx";
 import {EDITOR_PANEL_CONFIGURATION} from "./vector-editor/config.ts";
 
-let currentUid = 0;
-const getNextUid = () => currentUid++;
+const getUniqueId = () =>
+	globalThis.crypto?.randomUUID?.() ??
+	`${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 function makeMapVectorLayerFeatureSourceStatusSelector(
 	controllerName: string,
@@ -74,7 +75,7 @@ function dispatchOnLayerVFSReady(
 }
 
 function VectorEditor({editor}: {editor: EditorMixin}) {
-	const [mapId] = useState(() => `ms3-vector-editor-map--${getNextUid()}`);
+	const [mapId] = useState(() => `ms3-vector-editor-map--${getUniqueId()}`);
 	const [panelConfiguration, setPanelConfiguration] = useLocalStorage(
 		"ms3-vector-editor-panel-configuration",
 		EDITOR_PANEL_CONFIGURATION.MAP,
@@ -102,28 +103,31 @@ function VectorEditor({editor}: {editor: EditorMixin}) {
 	);
 
 	const refIsFitted = useRef(false);
-	useLayoutEffect(function () {
-		editor.store.dispatch(updateMapSize(editor.controllers.map!));
+	useLayoutEffect(
+		function () {
+			editor.store.dispatch(updateMapSize(editor.controllers.map!));
 
-		if (!refIsFitted.current) {
-			refIsFitted.current = true;
-			const {
-				store,
-				controllers: {map},
-				ids: {layer: layerId},
-			} = editor;
-			if (!map || !layerId) {
-				return;
+			if (!refIsFitted.current) {
+				refIsFitted.current = true;
+				const {
+					store,
+					controllers: {map},
+					ids: {layer: layerId},
+				} = editor;
+				if (!map || !layerId) {
+					return;
+				}
+
+				dispatchOnLayerVFSReady(
+					store,
+					map,
+					layerId,
+					fitMapViewToLayerSourceExtent(map, layerId, {maxZoom: 17}),
+				);
 			}
-
-			dispatchOnLayerVFSReady(
-				store,
-				map,
-				layerId,
-				fitMapViewToLayerSourceExtent(map, layerId, {maxZoom: 17}),
-			);
-		}
-	});
+		},
+		[editor, panelConfiguration],
+	);
 
 	return (
 		<VectorEditorContext.Provider value={editor}>
