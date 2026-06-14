@@ -1,5 +1,29 @@
 # @mapsight/vector-style-compiler
 
+## 10.0.0
+
+### Minor Changes
+
+- 49da00b: Add composable runtime icons: pictogram-based templates and `mapsightIconId` parsing in traffic-style (with configurable default xsmall/small icon zoom levels), async rasterization with volatile style-cache invalidation in lib-ol and vector-style-compiler, plus `useMapsightIcon` and a runtime icon style plugin in ui.
+
+### Patch Changes
+
+- 1e0651c: Replace the deprecated `css` parser dependency with PostCSS to avoid deprecated transitive install warnings.
+- 49da00b: Fix nested function codegen and style-tree state assignment in compiled output.
+- Updated dependencies [49da00b]
+- Updated dependencies [49da00b]
+- Updated dependencies [49da00b]
+- Updated dependencies [1e0651c]
+- Updated dependencies [8d3ccfc]
+- Updated dependencies [49da00b]
+- Updated dependencies [49da00b]
+- Updated dependencies [8d3ccfc]
+- Updated dependencies [e5c52ea]
+- Updated dependencies [49da00b]
+    - @mapsight/core@14.2.0
+    - @mapsight/lib-ol@4.1.0
+    - @mapsight/lib-js@3.0.4
+
 ## 9.0.0
 
 ### Patch Changes
