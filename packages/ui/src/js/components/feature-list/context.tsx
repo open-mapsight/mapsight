@@ -1,4 +1,4 @@
-import type {PropsWithChildren} from "react";
+import type {ElementType, PropsWithChildren} from "react";
 import {createContext, useContext} from "react";
 
 import type {
@@ -8,6 +8,17 @@ import type {
 } from "../../types";
 import type {FeatureListStateProps} from "./hooks/useFeatureListState";
 
+export type FeatureListItemContextProps = {
+	showFeatureListInfo: boolean;
+	enableKeyboardControl: boolean;
+	selectFeature: (
+		featureId: MapsightUiFeatureId,
+		options?: SelectFeatureActionOptions,
+	) => void;
+	deselectFeature: () => void;
+	as?: ElementType;
+};
+
 export type FeatureListContextValue = {
 	state: Omit<FeatureListStateProps, "listUiOptions">;
 	listUiOptions: Partial<FullUiState["list"]>;
@@ -15,12 +26,10 @@ export type FeatureListContextValue = {
 	showFeatureListInfo: boolean;
 	selectFeature: (
 		featureId: MapsightUiFeatureId,
-		options: SelectFeatureActionOptions,
+		options?: SelectFeatureActionOptions,
 	) => void;
-	deselectFeature: (
-		featureId: MapsightUiFeatureId,
-		options: SelectFeatureActionOptions,
-	) => void;
+	deselectFeature: () => void;
+	itemProps: FeatureListItemContextProps;
 };
 
 const FeatureListContext = createContext<FeatureListContextValue | null>(null);

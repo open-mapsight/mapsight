@@ -6,9 +6,10 @@ import {
 	window,
 } from "@/env/ssr-simulated-browser";
 
-globalThis.window = window as Window & typeof globalThis;
+globalThis.window = window as unknown as Window & typeof globalThis;
 globalThis.document = document;
-globalThis.requestAnimationFrame = requestAnimationFrame;
+globalThis.requestAnimationFrame =
+	requestAnimationFrame as unknown as typeof globalThis.requestAnimationFrame;
 globalThis.HTMLElement = window.HTMLElement;
 globalThis.MouseEvent = window.MouseEvent;
 globalThis.getComputedStyle = window.getComputedStyle;
@@ -35,6 +36,7 @@ globalThis.Image = CanvasImage as unknown as typeof Image;
 
 const canvasProto = window.HTMLCanvasElement.prototype;
 canvasProto.getContext = function getContext(
+	this: HTMLCanvasElement,
 	type: string,
 	attributes?: CanvasRenderingContext2DSettings,
 ) {

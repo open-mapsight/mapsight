@@ -246,6 +246,7 @@ export type FullUiState = {
 		stickyHeader: boolean;
 		highlightOnMouse: boolean;
 		sortControl: boolean;
+		tagSwitcherControl: boolean;
 		detailsInList: boolean;
 		integratedList: boolean;
 		renderAs: string;
@@ -400,13 +401,18 @@ export type MainPanelContextValue = MainPanelContextOptions &
 export type FeatureListProps<T extends ElementType = "div"> = {
 	additionalClasses?: string | null;
 	as?: T;
-	attributes?: HTMLAttributes<T>;
-	headerAs?: null | ElementType;
-	contentAs?: null | ElementType;
-	footerAs?: null | ElementType;
+	attributes?: HTMLAttributes<HTMLElement> & Record<string, unknown>;
+	headerAs?: ElementType;
+	contentAs?: ElementType;
+	footerAs?: ElementType;
 	itemAs?: ElementType;
 	enableKeyboardControl?: boolean;
 	autoloadFeatureSource?: boolean;
+	sort?: boolean;
+	filter?: boolean;
+	enableScrollPosition?: boolean;
+	overrideListUiOptions?: Partial<FullUiState["list"]>;
+	listControllerName?: string;
 };
 
 export type SelectFeatureActionOptions = {

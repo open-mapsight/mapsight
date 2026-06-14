@@ -2,12 +2,14 @@ import Feature from "ol/Feature";
 import type OlMap from "ol/Map";
 import MapBrowserEvent from "ol/MapBrowserEvent";
 import Point from "ol/geom/Point";
+import type SimpleGeometry from "ol/geom/SimpleGeometry";
 import type BaseLayer from "ol/layer/Base";
 import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
 import Style from "ol/style/Style";
 
 import {createMapsightStore} from "@/index";
+import type {BaseController} from "@/lib/base/controller";
 import {FeatureSelectionsController} from "@/lib/feature-selections/controller";
 import {setData} from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
@@ -150,9 +152,14 @@ export function createHighlightTestMap(
 		},
 	};
 
-	const store = createMapsightStore(controllers, {}, initialState);
+	const store = createMapsightStore(
+		controllers as unknown as Record<string, BaseController>,
+		{},
+		initialState,
+	);
 
-	const target = mountTarget ?? document.createElement("div");
+	const target = (mountTarget ??
+		document.createElement("div")) as HTMLDivElement;
 	if (!mountTarget) {
 		target.style.width = `${HIGHLIGHT_TEST_MAP_SIZE[0]}px`;
 		target.style.height = `${HIGHLIGHT_TEST_MAP_SIZE[1]}px`;
@@ -216,7 +223,8 @@ export function centerPixel(map: OlMap): [number, number] {
 	if (!size) {
 		throw new Error("Map size is not set");
 	}
-	return [size[0] / 2, size[1] / 2];
+	const [width = 0, height = 0] = size;
+	return [width / 2, height / 2];
 }
 
 export function dispatchPointerMoveAtPixel(
@@ -228,7 +236,7 @@ export function dispatchPointerMoveAtPixel(
 		clientX: x,
 		clientY: y,
 		bubbles: true,
-	});
+	}) as PointerEvent;
 	const event = new MapBrowserEvent("pointermove", map, originalEvent, false);
 	event.pixel = pixel;
 	map.dispatchEvent(event);
@@ -242,14 +250,27 @@ export function stubFeatureHitDetection(
 ) {
 	map.forEachFeatureAtPixel = (pixel, callback, options) => {
 		if (getHitMode() === "feature") {
-			return callback(feature, layer, pixel);
+			return callback(
+				feature,
+				layer as never,
+				feature.getGeometry() as SimpleGeometry,
+			);
 		}
 		return undefined;
 	};
 }
 
+type HighlightTestStoreState = {
+	featureSelections?: {
+		highlight?: {
+			features: string[];
+		};
+	};
+};
+
 export function getHighlightFeatures(store: EnhancedStore): string[] {
-	return store.getState().featureSelections?.highlight?.features ?? [];
+	const state = store.getState() as HighlightTestStoreState;
+	return state.featureSelections?.highlight?.features ?? [];
 }
 
 function findLayerById(map: OlMap, layerId: string) {

@@ -105,6 +105,7 @@ const defaultCreateOptions: CreateOptions = {
 			deselectOnClick: false, // deselect on click to selected list item
 			cyclingControl: false, // show a control to select next or previous list entry
 			sortControl: true, // show sort control icon
+			tagSwitcherControl: false, // show tag switcher as collapsible control in integrated list header
 			filterControl: true, // show filter box
 			paginationControl: false, // show pagination
 			itemsPerPage: 10, // number of items per page

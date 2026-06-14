@@ -128,12 +128,16 @@ html {
 .ms3-list-header {
 	padding: 10px 0;
 
-	.ms3-features-sorting {
+	.ms3-filter-toggle-control {
 		position: absolute;
 		top: 0;
 		right: 0;
 		text-align: right;
 	}
+}
+
+.ms3-filter-toggle-control__panel {
+	box-shadow: -1px 3px 10px -6px black;
 }
 
 .ms3-switcher-header {

@@ -1,0 +1,15 @@
+@use "../variables";
+
+.ms3-filter-toggle-control {
+	&__panel {
+		padding: 12px 20px 12px 10px;
+		margin-top: 10px;
+		border: 1px solid variables.$ms3-borderColor;
+		background: variables.$ms3-pageBackgroundColor;
+		text-align: left;
+	}
+
+	.ms3-wrapper--mobile & {
+		margin-top: 7px;
+	}
+}

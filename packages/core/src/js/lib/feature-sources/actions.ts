@@ -326,9 +326,15 @@ export const load = (
 	const handleLoad: ThunkAction = (dispatch, getState) => {
 		const state = getState()[controllerName] as FeatureSourcesState;
 		const currentState = state[id] || ({} as FeatureSourceState);
-		const {requestId = 0, isLoading} = currentState || {};
+		const {requestId = 0, isLoading, error} = currentState || {};
 		if (isLoading && !options?.forceRefresh) {
 			return Promise.resolve(); // already loading
+		}
+
+		// Failed loads must not be retried immediately. Refreshing sources retry
+		// via refreshByTimer with forceRefresh; other callers may pass forceRefresh.
+		if (error && !options?.forceRefresh) {
+			return Promise.resolve();
 		}
 
 		const nextRequestId = requestId + 1;

@@ -59,6 +59,29 @@
 		background-image: url(variables.$ms3-uiIconPath + "sort-active.svg");
 	}
 
+	&--icon-tags,
+	&--icon-tags-active {
+		height: 33px;
+		width: 40px;
+		background: transparent url(variables.$ms3-uiIconPath + "layers.svg") no-repeat
+			center;
+
+		i {
+			@include visually-hidden.visually-hidden;
+		}
+
+		&:hover,
+		&:focus {
+			background: transparent url(variables.$ms3-uiIconPath + "layers.svg")
+				no-repeat center;
+			filter: brightness(0.85);
+		}
+	}
+
+	&--icon-tags-active {
+		filter: brightness(0.85);
+	}
+
 	&--icon-reset {
 		height: 33px;
 		width: 40px;

@@ -1,11 +1,10 @@
 import type {ChangeEvent, ReactElement} from "react";
-import {memo, useCallback, useState} from "react";
-
-import {FocusTrap} from "focus-trap-react";
+import {memo, useCallback} from "react";
 
 import {hasGeolocationSupport} from "@mapsight/core/lib/helpers";
 
 import {translate} from "../../helpers/i18n";
+import FilterToggleControl from "../filter-toggle-control/FilterToggleControl";
 import StatusIndicator from "./status-indicator";
 
 export type MapsightUiPlace = {title: string; x: number; y: number; z?: number};
@@ -62,11 +61,6 @@ function FeatureSorter({
 	onChange: (value: string) => void;
 	requestGeolocation: () => void;
 }) {
-	const [isOpen, setIsOpen] = useState(false);
-
-	const handleClose = useCallback(() => setIsOpen(false), []);
-	const toggleOpen = useCallback(() => setIsOpen((prev) => !prev), []);
-
 	const onSelectChange = useCallback(
 		(e: ChangeEvent<HTMLSelectElement>) => {
 			const newValue = e.target.value;
@@ -81,63 +75,30 @@ function FeatureSorter({
 	);
 
 	return (
-		<div
-			className={`ms3-features-sorting ms3-features-sorting--${
-				isOpen ? "active" : "inactive"
-			}`}
+		<FilterToggleControl
+			className="ms3-features-sorting"
+			buttonClassName="ms3-filter-button--icon-sort"
+			buttonActiveClassName="ms3-filter-button--icon-sort-active"
+			title={translate("ui.feature-list.sorting.announcements")}
 		>
-			<button
-				type="button"
-				className={
-					"ms3-filter-button " +
-					(isOpen
-						? " ms3-filter-button--icon-sort-active"
-						: " ms3-filter-button--icon-sort")
-				}
-				onClick={toggleOpen}
-				title={translate("ui.feature-list.sorting.announcements")}
-			>
-				<i>{isOpen ? translate("close") : translate("open")}</i>
-			</button>
+			{translate("ui.feature-list.sorting.byDistance")}
 
-			<div>
-				{isOpen && (
-					<FocusTrap
-						focusTrapOptions={{
-							clickOutsideDeactivates: true,
-							onDeactivate: handleClose,
-						}}
-					>
-						<div className="ms3-features-sorting__panel">
-							{translate("ui.feature-list.sorting.byDistance")}
+			<select value={sorting || ""} onChange={onSelectChange}>
+				<option value="">
+					{translate("ui.feature-list.sorting.choose")}
+				</option>
 
-							<select
-								value={sorting || ""}
-								onChange={onSelectChange}
-							>
-								<option value="">
-									{translate(
-										"ui.feature-list.sorting.choose",
-									)}
-								</option>
-
-								{hasGeolocationSupport && (
-									<option value="geolocation">
-										{translate(
-											"ui.feature-list.sorting.own",
-										)}
-									</option>
-								)}
-
-								{renderOptions(places)}
-							</select>
-
-							<StatusIndicator status={geolocationStatus} />
-						</div>
-					</FocusTrap>
+				{hasGeolocationSupport && (
+					<option value="geolocation">
+						{translate("ui.feature-list.sorting.own")}
+					</option>
 				)}
-			</div>
-		</div>
+
+				{renderOptions(places)}
+			</select>
+
+			<StatusIndicator status={geolocationStatus} />
+		</FilterToggleControl>
 	);
 }
 
