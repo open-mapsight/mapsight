@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/traffic-style",
 	"description": "Mapsight Traffic Style",
-	"version": "5.0.6",
+	"version": "5.1.0",
 	"type": "module",
 	"bin": {
 		"traffic-composable-icons": "scripts/traffic-composable-icons.js",

@@ -1,5 +1,11 @@
 # @mapsight/lib-js
 
+## 3.0.4
+
+### Patch Changes
+
+- 49da00b: Add `shallowEqualRecords` utility for shallow comparison of string-keyed records.
+
 ## 3.0.3
 
 ### Patch Changes
