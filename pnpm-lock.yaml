@@ -84,6 +84,12 @@ catalogs:
 
 overrides:
   postcss@<8.5.10: ^8.5.10
+  '@mapsight/core': workspace:*
+  '@mapsight/lib-js': workspace:*
+  '@mapsight/lib-ol': workspace:*
+  '@mapsight/lib-redux': workspace:*
+  '@mapsight/traffic-style': workspace:*
+  '@mapsight/ui': workspace:*
   '@mapsight/vite-host-embed': workspace:*
   '@mapsight/vector-style-compiler': workspace:*
 
@@ -179,7 +185,7 @@ importers:
   apps/showcase:
     dependencies:
       '@mapsight/core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/core
       '@mapsight/count-aggregator-api':
         specifier: workspace:^
@@ -188,19 +194,19 @@ importers:
         specifier: workspace:^
         version: link:../../packages/count-aggregator-ui
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-js
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-ol
       '@mapsight/lib-redux':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-redux
       '@mapsight/traffic-style':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/traffic-style/dist
       '@mapsight/ui':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: ^5.90.5
@@ -276,19 +282,19 @@ importers:
   apps/vector-editor:
     dependencies:
       '@mapsight/core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/core
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-js
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-ol
       '@mapsight/lib-redux':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/lib-redux
       '@mapsight/traffic-style':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/traffic-style/dist
       '@reduxjs/toolkit':
         specifier: 'catalog:'
@@ -367,13 +373,13 @@ importers:
   packages/core:
     dependencies:
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-js
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-ol
       '@mapsight/lib-redux':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-redux
       '@reduxjs/toolkit':
         specifier: 'catalog:'
@@ -490,7 +496,7 @@ importers:
         version: 4.4.3
     devDependencies:
       '@mapsight/ui':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../ui
       '@tailwindcss/cli':
         specifier: ^4.3.0
@@ -550,7 +556,7 @@ importers:
   packages/lib-ol:
     dependencies:
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-js
       '@types/lodash':
         specifier: 'catalog:'
@@ -569,7 +575,7 @@ importers:
   packages/lib-redux:
     dependencies:
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-js
       '@reduxjs/toolkit':
         specifier: 'catalog:'
@@ -591,7 +597,7 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-ol
       chokidar:
         specifier: ^5.0.0
@@ -647,19 +653,19 @@ importers:
   packages/ui:
     dependencies:
       '@mapsight/core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../core
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-js
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-ol
       '@mapsight/lib-redux':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-redux
       '@mapsight/traffic-style':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../traffic-style/dist
       '@reduxjs/toolkit':
         specifier: 'catalog:'
@@ -747,7 +753,7 @@ importers:
   packages/vector-style-compiler:
     dependencies:
       '@mapsight/lib-js':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-js
       '@types/lodash':
         specifier: 'catalog:'
@@ -766,10 +772,10 @@ importers:
         version: 8.5.15
     devDependencies:
       '@mapsight/core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../core
       '@mapsight/lib-ol':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../lib-ol
       '@types/pidusage':
         specifier: ^2.0.5
@@ -826,17 +832,17 @@ importers:
   starters/mapsight-host-starter:
     dependencies:
       '@mapsight/lib-js':
-        specifier: ^3.0.3
-        version: 3.0.3
+        specifier: workspace:*
+        version: link:../../packages/lib-js
       '@mapsight/lib-ol':
-        specifier: ^4.0.3
-        version: 4.0.3(ol@10.9.0)
+        specifier: workspace:*
+        version: link:../../packages/lib-ol
       '@mapsight/traffic-style':
-        specifier: ^5.0.6
-        version: 5.0.6
+        specifier: workspace:*
+        version: link:../../packages/traffic-style/dist
       '@mapsight/ui':
-        specifier: ^7.1.0
-        version: 7.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(canvas@3.2.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(redux@5.0.1)(sass@1.100.0)
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@mapsight/vite-host-embed':
         specifier: workspace:*
         version: link:../../packages/vite-host-embed
@@ -893,17 +899,17 @@ importers:
   starters/mapsight-next-starter:
     dependencies:
       '@mapsight/lib-js':
-        specifier: ^3.0.3
-        version: 3.0.3
+        specifier: workspace:*
+        version: link:../../packages/lib-js
       '@mapsight/lib-ol':
-        specifier: ^4.0.3
-        version: 4.0.3(ol@10.9.0)
+        specifier: workspace:*
+        version: link:../../packages/lib-ol
       '@mapsight/traffic-style':
-        specifier: ^5.0.6
-        version: 5.0.6
+        specifier: workspace:*
+        version: link:../../packages/traffic-style/dist
       '@mapsight/ui':
-        specifier: ^7.1.0
-        version: 7.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(canvas@3.2.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(redux@5.0.1)(sass@1.100.0)
+        specifier: workspace:*
+        version: link:../../packages/ui
       breakpoint-sass:
         specifier: ^3.0.0
         version: 3.0.0(sass@1.100.0)
@@ -975,17 +981,17 @@ importers:
   starters/mapsight-vite-spa-starter:
     dependencies:
       '@mapsight/lib-js':
-        specifier: ^3.0.3
-        version: 3.0.3
+        specifier: workspace:*
+        version: link:../../packages/lib-js
       '@mapsight/lib-ol':
-        specifier: ^4.0.3
-        version: 4.0.3(ol@10.9.0)
+        specifier: workspace:*
+        version: link:../../packages/lib-ol
       '@mapsight/traffic-style':
-        specifier: ^5.0.6
-        version: 5.0.6
+        specifier: workspace:*
+        version: link:../../packages/traffic-style/dist
       '@mapsight/ui':
-        specifier: ^7.1.0
-        version: 7.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(canvas@3.2.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(redux@5.0.1)(sass@1.100.0)
+        specifier: workspace:*
+        version: link:../../packages/ui
       breakpoint-sass:
         specifier: ^3.0.0
         version: 3.0.0(sass@1.100.0)
@@ -1587,44 +1593,6 @@ packages:
 
   '@manypkg/get-packages@1.1.3':
     resolution: {integrity: sha512-fo+QhuU3qE/2TQMQmbVMqaQ6EWbMhi4ABWP+O4AM1NqPBuy0OrApV5LO6BrrgnhtAHS2NH6RrVk9OL181tTi8A==}
-
-  '@mapsight/core@14.1.0':
-    resolution: {integrity: sha512-HicqPCt6rJw9a5AwgKYpNKStOLCG01FHsKIcPH2dBzv8h4XbegircmDPglQ4vdvZcINIjGjyozwXmjIs6uLYKA==}
-    peerDependencies:
-      '@redux-devtools/extension': ^3.3.0
-      jsdom: ^29.1.1
-      ol: ^10.9.0
-      proj4: ^2.20.8
-    peerDependenciesMeta:
-      '@redux-devtools/extension':
-        optional: true
-      jsdom:
-        optional: true
-      ol:
-        optional: true
-      proj4:
-        optional: true
-
-  '@mapsight/lib-js@3.0.3':
-    resolution: {integrity: sha512-iyF2nWyh2gcv9eWyiex6xzpJ4tcdmt4D3gFkJfvWHIGYiSrmaFX7v5Z0HcHumchfP7y6K9qnrv2uR4owgZNs3g==}
-
-  '@mapsight/lib-ol@4.0.3':
-    resolution: {integrity: sha512-9KqKMQiH43/5Ya5fBRGiDcWSfUv+ZPWUI3WuHVJmfIyfB2S4JQVse9e3cIUPJ+ytcEqQI83Pc9yq70ltF1M7LA==}
-    peerDependencies:
-      ol: ^10.9.0
-
-  '@mapsight/lib-redux@2.1.0':
-    resolution: {integrity: sha512-6mzEI1TTh03ktYqp/1dNh9uDnI/iLaygfRxBS2w4h4FINg7QR1loc6tbPZWG7Rnz0iwuO/40TSVcWFLKnTVq0w==}
-
-  '@mapsight/traffic-style@5.0.6':
-    resolution: {integrity: sha512-H9Xm+StV4Ajkjo8LqhKyCH1EEoOW6rb0m4fsaHmM7Ey9ai6dbxISyORhgZETMiqqe1NSxmmCxGAmxEGM0vGwEw==}
-    hasBin: true
-
-  '@mapsight/ui@7.1.0':
-    resolution: {integrity: sha512-ICdvFKjphl5WpGuIP5slgPKzp2Rr/xVYY0vmeMTDlySSSVgUWp4fcpoaMihtgvgcJfSpA+iyP0tCYnodkRZa2Q==}
-    peerDependencies:
-      react: ^19.2.6
-      react-dom: ^19.2.6
 
   '@napi-rs/wasm-runtime@1.1.4':
     resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
@@ -6337,94 +6305,6 @@ snapshots:
       fs-extra: 8.1.0
       globby: 11.1.0
       read-yaml-file: 1.1.0
-
-  '@mapsight/core@14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)':
-    dependencies:
-      '@mapsight/lib-js': 3.0.3
-      '@mapsight/lib-ol': 4.0.3(ol@10.9.0)
-      '@mapsight/lib-redux': 2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
-      '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
-      eventemitter3: 5.0.4
-      lodash: 4.18.1
-      minimatch: 10.2.5
-      redux-batched-actions: 0.5.0(redux@5.0.1)
-    optionalDependencies:
-      '@redux-devtools/extension': 3.3.0(redux@5.0.1)
-      jsdom: 29.1.1(canvas@3.2.3)
-      ol: 10.9.0
-      proj4: 2.20.8
-    transitivePeerDependencies:
-      - react
-      - react-redux
-      - redux
-
-  '@mapsight/lib-js@3.0.3': {}
-
-  '@mapsight/lib-ol@4.0.3(ol@10.9.0)':
-    dependencies:
-      '@mapsight/lib-js': 3.0.3
-      '@types/lodash': 4.17.24
-      lodash: 4.18.1
-      ol: 10.9.0
-
-  '@mapsight/lib-redux@2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)':
-    dependencies:
-      '@mapsight/lib-js': 3.0.3
-      '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
-      '@types/lodash': 4.17.24
-      lodash: 4.18.1
-    transitivePeerDependencies:
-      - react
-      - react-redux
-
-  '@mapsight/traffic-style@5.0.6':
-    dependencies:
-      '@mapsight/lib-ol': 4.0.3(ol@10.9.0)
-      chokidar: 5.0.0
-      fs-extra: 11.3.5
-      merge-stream: 2.0.0
-      ol: 10.9.0
-      sharp: 0.34.5
-      svgo: 4.0.1
-      vinyl: 3.0.1
-      zod: 4.4.3
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - react-native-b4a
-
-  '@mapsight/ui@7.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(canvas@3.2.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(redux@5.0.1)(sass@1.100.0)':
-    dependencies:
-      '@mapsight/core': 14.1.0(@redux-devtools/extension@3.3.0(redux@5.0.1))(jsdom@29.1.1(canvas@3.2.3))(ol@10.9.0)(proj4@2.20.8)(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)(redux@5.0.1)
-      '@mapsight/lib-js': 3.0.3
-      '@mapsight/lib-ol': 4.0.3(ol@10.9.0)
-      '@mapsight/lib-redux': 2.1.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
-      '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
-      '@types/react-redux': 7.1.34
-      breakpoint-sass: 3.0.0(sass@1.100.0)
-      flatpickr: 4.6.13
-      focus-trap-react: 12.0.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      hint.css: 3.0.0
-      jsdom: 29.1.1(canvas@3.2.3)
-      lodash: 4.18.1
-      ol: 10.9.0
-      proj4: 2.20.8
-      react: 19.2.6
-      react-aria: 3.48.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-dom: 19.2.6(react@19.2.6)
-      react-intersection-observer: 10.0.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-modal: 3.16.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-paginate: 8.3.0(react@19.2.6)
-      react-redux: 9.3.0(@types/react@19.2.17)(react@19.2.6)(redux@5.0.1)
-      redux-batched-actions: 0.5.0(redux@5.0.1)
-      redux-thunk: 3.1.0(redux@5.0.1)
-    transitivePeerDependencies:
-      - '@noble/hashes'
-      - '@redux-devtools/extension'
-      - '@types/react'
-      - '@types/react-dom'
-      - canvas
-      - redux
-      - sass
 
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
