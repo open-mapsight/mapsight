@@ -1,3 +1,4 @@
+@use "sass:string";
 @use "../variables";
 @use "../mixins/icon-base";
 @use "../mixins/icon";
@@ -137,7 +138,7 @@
 					icon: {
 						anchorX: -14px;
 						anchorY: 12px;
-						src: unquote(
+						src: string.unquote(
 							'calc(attr(--env-imagesUrl) + "parking-dynamic/" + attr(occupancyTrendString) + ".png")'
 						);
 					}

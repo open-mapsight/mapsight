@@ -1,3 +1,4 @@
+@use "sass:string";
 @use "../variables";
 
 #features [type="parking"] {
@@ -25,7 +26,9 @@
 				icon: {
 					anchorX: -14px;
 					anchorY: 12px;
-					src: variables.$MAPSIGHT_TRAFFIC_STYLE__IMAGE_PATH + "parking-dynamic/attr(occupancyTrendString).png";
+					src: string.unquote(
+						'calc(attr(--env-imagesUrl) + "parking-dynamic/" + attr(occupancyTrendString) + ".png")'
+					);
 				}
 
 				[state="highlight"],

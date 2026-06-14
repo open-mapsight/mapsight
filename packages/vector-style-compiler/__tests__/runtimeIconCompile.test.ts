@@ -27,6 +27,40 @@ it("compiles runtime icon selectors to JS", () => {
 	);
 });
 
+it("compiles env runtime icon selectors to JS", () => {
+	const css = `
+#features {
+  icon-src: /sprite.png;
+}
+#features [env|mapsightIconId] {
+  icon-src: calc(mapsightRuntimeIcon(attr(--env-mapsightIconId), "default"));
+}
+`;
+	const js = compile(css);
+	expect(js).toContain("mapsightRuntimeIcon");
+	expect(js).toContain("env['mapsightIconId']");
+	expect(js).toContain(
+		"parts.push(String(mapsightRuntimeIcon(env['mapsightIconId'], \"default\")))",
+	);
+});
+
+it("compiles force env runtime icon selectors to JS", () => {
+	const css = `
+#features {
+  icon-src: /sprite.png;
+}
+#features [env|mapsightIconUse=force] [env|mapsightIconId] {
+  icon-src: calc(mapsightRuntimeIcon(attr(--env-mapsightIconId), "default"));
+}
+`;
+	const js = compile(css);
+	expect(js).toContain("env['mapsightIconUse']");
+	expect(js).toContain("env['mapsightIconId']");
+	expect(js).toContain(
+		"parts.push(String(mapsightRuntimeIcon(env['mapsightIconId'], \"default\")))",
+	);
+});
+
 it("compiles sprite icon rules after runtime icon rules", () => {
 	const css = `
 #features {

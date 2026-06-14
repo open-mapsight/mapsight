@@ -9,7 +9,9 @@
 @use "./get-icon-dimensions";
 
 @mixin spriteIconSrc {
-	icon-src: variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_PATH;
+	icon-src: #{"calc(attr(--env-imagesUrl) + \"" +
+		variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_FILE +
+		"\")"};
 }
 
 @mixin autoIconDefault(

@@ -9,9 +9,15 @@ import WithMap from "./WithMap";
 
 export default class WithStyleFunction extends WithMap {
 	private _styleFunctionRef: MapsightStyleFunction | undefined;
+	private _defaultStyleEnv: MapsightStyleFunctionEnv = {};
 
 	setStyleFunction(styleFunction: MapsightStyleFunction) {
 		this._styleFunctionRef = styleFunction;
+	}
+
+	/** Merged into every style call before layer env and view state (zoom, etc.). */
+	setDefaultStyleEnv(env: MapsightStyleFunctionEnv) {
+		this._defaultStyleEnv = env;
 	}
 
 	createStyleFunction(env: MapsightStyleFunctionEnv = {}): StyleFunction {
@@ -35,6 +41,7 @@ export default class WithStyleFunction extends WithMap {
 
 			return this._styleFunctionRef(
 				{
+					...this._defaultStyleEnv,
 					...env,
 
 					// TODO: Use store state instead of view object?
