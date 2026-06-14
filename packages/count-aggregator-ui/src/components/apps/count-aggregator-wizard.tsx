@@ -30,6 +30,7 @@ function getStationPlaceholder(stationType: string): string {
 }
 
 function SelectionPanel({
+	appId,
 	stationType,
 	stationsById,
 	selectedStationIds,
@@ -47,6 +48,7 @@ function SelectionPanel({
 	resolutions,
 	resolutionLabels,
 }: {
+	appId: string;
 	stationType: string;
 	stationsById: Map<number, Station> | undefined;
 	selectedStationIds: readonly number[];
@@ -97,7 +99,11 @@ function SelectionPanel({
 						closeMenuOnSelect={false}
 					/>
 					{showPresets ? (
-						<PresetSelect allowAdd={false} onSet={onPresetChange} />
+						<PresetSelect
+							appId={appId}
+							allowAdd={false}
+							onSet={onPresetChange}
+						/>
 					) : null}
 				</div>
 				{showBulkActions ? (
@@ -246,6 +252,7 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 				{step === 0 ? (
 					<>
 						<SelectionPanel
+							appId={appId}
 							stationType={appConfig.stationType}
 							stationsById={stationsById}
 							selectedStationIds={selectedStationIds}
@@ -284,6 +291,7 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 			}}
 		>
 			<SelectionPanel
+				appId={appId}
 				stationType={appConfig.stationType}
 				stationsById={stationsById}
 				selectedStationIds={selectedStationIds}
@@ -307,16 +315,4 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 			{eventsSection}
 		</form>
 	);
-}
-
-export function TrafficDataWizard(): ReactElement {
-	return <CountAggregatorWizard appId="traffic-data" />;
-}
-
-export function SmartCityWizard(): ReactElement {
-	return <CountAggregatorWizard appId="smart-city" />;
-}
-
-export function WheelCounterWizard(): ReactElement {
-	return <CountAggregatorWizard appId="wheel-counter" />;
 }

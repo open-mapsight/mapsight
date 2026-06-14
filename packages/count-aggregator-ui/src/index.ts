@@ -10,13 +10,15 @@ export {
 	useCountAggregatorRootElement,
 } from "./context/count-aggregator-root.js";
 
+export {
+	CountAggregatorShell,
+	type CountAggregatorShellProps,
+} from "./context/count-aggregator-shell.js";
+
 export {createTheme, type CountAggregatorTheme} from "./lib/theme.js";
 export {smartCityCountAggregatorTheme} from "./themes/smart-city.js";
 
-export {
-	createPlatformConfig,
-	applyPresetDateRanges,
-} from "./config/platform.js";
+export {applyPresetDateRanges} from "./config/platform.js";
 
 export {
 	createStationTypeAppsConfig,
@@ -33,12 +35,7 @@ export {
 	usePresets,
 } from "./api/hooks.js";
 
-export {
-	TrafficDataWizard,
-	SmartCityWizard,
-	WheelCounterWizard,
-	CountAggregatorWizard,
-} from "./components/apps/count-aggregator-wizard.js";
+export {CountAggregatorWizard} from "./components/apps/count-aggregator-wizard.js";
 
 export {
 	TimeSeriesChart,
@@ -58,7 +55,6 @@ export {
 	mountSmartCityMetrics,
 	DEFAULT_METRIC_WIDGETS,
 	resolveMetricWidgetConfig,
-	DEFAULT_SMART_CITY_API_BASE_URL,
 	type MetricPlaceholderData,
 	type MetricWidgetConfig,
 	type MetricWidgetKind,

@@ -1,124 +1,68 @@
+import {z} from "zod";
+
 import {ymdToDate} from "../lib/dates.js";
-import {
-	assertArray,
-	assertNumber,
-	assertRecord,
-	assertString,
-} from "../lib/utils.js";
-import type {
-	CountAggregatorAppConfig,
-	CountAggregatorConfig,
-	DateRange,
-	PresetData,
-	StationRef,
-} from "../types";
+import type {DateRange, PresetData} from "../types";
 
-export function createPlatformConfig(): CountAggregatorConfig {
-	return {
-		apps: {
-			"traffic-data": {
-				id: "traffic-data",
-				apiBaseUrl: "/msp/public/count-aggregator",
-				stationType: "bicycleCount",
-				uiVariant: "single-page",
-				defaultResolution: "daily",
-				defaultChartType: "line",
-				features: {
-					presets: true,
-					events: true,
-				},
-				showEvents: true,
-				endpoints: {
-					events: "/msp/count-aggregator/traffic-data/events",
-					presets: "/msp/count-aggregator/presets",
-				},
-			},
-			"smart-city": {
-				id: "smart-city",
-				apiBaseUrl: "/msp/public/count-aggregator",
-				stationType: "peopleCount",
-				uiVariant: "single-page",
-				defaultResolution: "daily",
-				defaultChartType: "line",
-				features: {
-					presets: true,
-				},
-				endpoints: {
-					presets: "/msp/count-aggregator/presets",
-				},
-			},
-			"wheel-counter": {
-				id: "wheel-counter",
-				apiBaseUrl: "/msp/public/count-aggregator",
-				stationType: "bicycleCount",
-				uiVariant: "stepped",
-				defaultResolution: "daily",
-				defaultChartType: "area",
-				resolutions: ["hourly", "daily", "weekly", "monthly", "yearly"],
-				features: {
-					resolutionSelect: true,
-					chartTypeSelect: true,
-					export: true,
-					presets: false,
-					events: false,
-				},
-			},
-		},
-		links: {
-			calendarUrl: (dateYmd) =>
-				`/msp/traffic-calendar/calendar/${dateYmd}`,
-			eventUrl: (endDateYmd, eventId) =>
-				`/msp/traffic-calendar/calendar/${endDateYmd}/event/${eventId}`,
-		},
-	};
-}
+const dateSchema = z.union([z.date(), z.string().transform(ymdToDate)]);
 
-export function getAppConfig(
-	config: CountAggregatorConfig,
-	appId: string,
-): CountAggregatorAppConfig {
-	return config.apps[appId]!;
-}
+const stationRefSchema = z.object({
+	id: z.number(),
+	isEnabled: z.boolean(),
+});
 
-function deserializeDate(value: unknown): Date {
-	if (value instanceof Date) {
-		return value;
-	}
+const dayDateRangeSchema = z.object({
+	type: z.literal("day"),
+	date: dateSchema,
+});
 
-	assertString(value);
-	return ymdToDate(value);
-}
+const spanDateRangeSchema = z.object({
+	type: z.literal("range"),
+	startDate: dateSchema,
+	endDate: dateSchema,
+});
 
-function parseStationRef(value: unknown): StationRef {
-	assertRecord(value);
-	assertNumber(value.id);
+const dateRangeSchema = z.discriminatedUnion("type", [
+	dayDateRangeSchema,
+	spanDateRangeSchema,
+]);
 
-	if (typeof value.isEnabled !== "boolean") {
-		throw new Error("Expected boolean for isEnabled");
-	}
+const presetPayloadSchema = z.object({
+	mainStationId: z.number(),
+	additionalStationRefs: z.array(stationRefSchema),
+	additionalDateRanges: z.array(dateRangeSchema),
+});
 
-	return {id: value.id, isEnabled: value.isEnabled};
-}
+const presetResponseSchema = z.object({
+	data: z.array(
+		z.object({
+			id: z.number(),
+			name: z.string(),
+			payload: z
+				.string()
+				.transform((payload, context) => {
+					try {
+						return JSON.parse(payload) as unknown;
+					} catch {
+						context.addIssue({
+							code: "custom",
+							message: "Expected preset payload to be valid JSON",
+						});
+						return z.NEVER;
+					}
+				})
+				.pipe(presetPayloadSchema),
+		}),
+	),
+});
 
 export function deserializeRange(range: unknown): DateRange {
-	assertRecord(range);
+	const parsed = dateRangeSchema.parse(range);
 
-	if (range.type === "day") {
-		return {
-			type: "day",
-			date: deserializeDate(range.date),
-		};
+	if (parsed.type === "day") {
+		return parsed;
 	}
 
-	if (range.type === "range") {
-		return {
-			type: "range",
-			startDate: deserializeDate(range.startDate),
-			endDate: deserializeDate(range.endDate),
-		};
-	}
-
-	throw new Error(`Unsupported date range type "${String(range.type)}"`);
+	return parsed;
 }
 
 export function applyPresetDateRanges(
@@ -149,29 +93,16 @@ export function applyPresetDateRanges(
 }
 
 export function parsePresetsResponse(data: unknown): PresetData[] {
-	assertRecord(data);
-	assertArray(data.data);
+	const response = presetResponseSchema.parse(data);
 
-	return data.data.map((raw: unknown) => {
-		assertRecord(raw);
-		assertNumber(raw.id);
-		assertString(raw.name);
-		assertString(raw.payload);
-
-		const payload = JSON.parse(raw.payload) as Record<string, unknown>;
-		assertNumber(payload.mainStationId);
-		assertArray(payload.additionalStationRefs);
-		assertArray(payload.additionalDateRanges);
-
+	return response.data.map((raw) => {
 		return {
 			id: raw.id,
 			value: raw.id,
 			name: raw.name,
-			mainStationId: payload.mainStationId,
-			additionalStationRefs:
-				payload.additionalStationRefs.map(parseStationRef),
-			additionalDateRanges:
-				payload.additionalDateRanges.map(deserializeRange),
+			mainStationId: raw.payload.mainStationId,
+			additionalStationRefs: raw.payload.additionalStationRefs,
+			additionalDateRanges: raw.payload.additionalDateRanges,
 		};
 	});
 }

@@ -3,8 +3,7 @@ import "@mapsight/count-aggregator-ui/styles.css";
 import {type ReactElement, useMemo} from "react";
 
 import {
-	CountAggregatorProvider,
-	CountAggregatorRoot,
+	CountAggregatorShell,
 	CountAggregatorWizard,
 	createStationTypeAppsConfig,
 	useStationTypes,
@@ -67,9 +66,13 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 	}
 
 	return (
-		<CountAggregatorProvider config={config}>
+		<CountAggregatorShell
+			config={config}
+			queryClient={queryClient}
+			className="count-aggregator-demo__surface"
+		>
 			<CountAggregatorWizard appId="bicycleCount" />
-		</CountAggregatorProvider>
+		</CountAggregatorShell>
 	);
 }
 
@@ -86,11 +89,9 @@ export function CountAggregatorDemoPage(): ReactElement {
 				</p>
 			</div>
 
-			<CountAggregatorRoot className="count-aggregator-demo__surface">
-				<QueryClientProvider client={queryClient}>
-					<CountAggregatorDemoBootstrap />
-				</QueryClientProvider>
-			</CountAggregatorRoot>
+			<QueryClientProvider client={queryClient}>
+				<CountAggregatorDemoBootstrap />
+			</QueryClientProvider>
 		</div>
 	);
 }

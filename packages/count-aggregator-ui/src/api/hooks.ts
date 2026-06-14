@@ -2,7 +2,10 @@ import {useMemo} from "react";
 
 import {
 	createCountAggregatorClient,
-	schemas,
+	getLastValues,
+	getValues,
+	listStationTypes,
+	listStations,
 } from "@mapsight/count-aggregator-api";
 import type {Resolution} from "@mapsight/count-aggregator-api";
 import {useQuery} from "@tanstack/react-query";
@@ -27,9 +30,8 @@ export function useStationTypes(apiBaseUrl: string) {
 		queryKey: ["count-aggregator", "station-types", apiBaseUrl],
 		queryFn: async () => {
 			const client = createCountAggregatorClient(apiBaseUrl);
-			const response =
-				await client["count-aggregator.public.station-types"]();
-			return schemas.StationTypeListResponse.parse(response).data;
+			const response = await listStationTypes(client);
+			return response.data;
 		},
 		staleTime: STALE_TIME_MS,
 	});
@@ -54,11 +56,7 @@ export function useStations(appId: string): Map<number, Station> | undefined {
 		],
 		queryFn: async () => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await client[
-				"count-aggregator.public.type.stations"
-			]({
-				params: {type: appConfig.stationType},
-			});
+			const response = await listStations(client, appConfig.stationType);
 			return mapStationList(response);
 		},
 		staleTime: STALE_TIME_MS,
@@ -108,18 +106,12 @@ export function useLastValues(
 		],
 		queryFn: async () => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await client[
-				"count-aggregator.public.type.last-values"
-			]({
-				params: {
-					type: appConfig.stationType,
-					resolution: req!.resolution,
-				},
-				queries: {
-					stationIds: req!.stationIds.join(","),
-					limit: req!.limit,
-					startDate: req!.startDate,
-				},
+			const response = await getLastValues(client, {
+				type: appConfig.stationType,
+				resolution: req!.resolution,
+				stationIds: req!.stationIds,
+				limit: req!.limit,
+				startDate: req!.startDate,
 			});
 			return mapTimeSeriesMap(response);
 		},
@@ -168,18 +160,12 @@ export function useAggregatedValues(
 		],
 		queryFn: async () => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await client[
-				"count-aggregator.public.type.values"
-			]({
-				params: {
-					type: appConfig.stationType,
-					from: req!.from,
-					to: req!.to,
-					resolution: req!.resolution,
-				},
-				queries: {
-					stationIds: req!.stationIds.join(","),
-				},
+			const response = await getValues(client, {
+				type: appConfig.stationType,
+				from: req!.from,
+				to: req!.to,
+				resolution: req!.resolution,
+				stationIds: req!.stationIds,
 			});
 			return mapTimeSeriesMap(response);
 		},
@@ -240,12 +226,12 @@ export function useTrafficEvents(
 	};
 }
 
-export function usePresets(): PresetData[] | undefined {
-	const appConfig = useAppConfig("traffic-data");
+export function usePresets(appId: string): PresetData[] | undefined {
+	const appConfig = useAppConfig(appId);
 	const presetsEndpoint = appConfig.endpoints?.presets;
 
 	const {data} = useQuery({
-		queryKey: ["count-aggregator", "presets"],
+		queryKey: ["count-aggregator", appId, "presets", presetsEndpoint],
 		queryFn: async () => {
 			if (presetsEndpoint === undefined) {
 				return [];

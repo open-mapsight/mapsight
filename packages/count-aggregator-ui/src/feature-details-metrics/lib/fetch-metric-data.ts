@@ -1,10 +1,11 @@
 import {
-	type StationOverviewResponse,
-	type TimeSeriesResponse,
 	createCountAggregatorClient,
+	getStationLastValues,
+	getStationSums,
 	parseLocalDateTime,
 } from "@mapsight/count-aggregator-api";
 
+import {mapTimeSeriesToChartPoints} from "../../lib/time-series.js";
 import {resolveMetricWidgetConfig} from "../config/metric-widgets.js";
 import type {
 	MetricPlaceholderData,
@@ -13,23 +14,11 @@ import type {
 } from "../types.js";
 import {toCountAggregatorStationId} from "./count-aggregator-station-id.js";
 
-export const DEFAULT_SMART_CITY_API_BASE_URL = "/msp/public/count-aggregator";
-
 /** Anchor last-values windows at each station's last_data_at instead of now. */
 export const FEATURE_DETAILS_LAST_VALUES_ANCHOR = "lastDataAt" as const;
 
 function scaleValue(value: number, config: MetricWidgetConfig): number {
 	return config.valueScale ? value * config.valueScale : value;
-}
-
-function mapTimeSeriesValues(
-	response: TimeSeriesResponse,
-	config: MetricWidgetConfig,
-): MetricSeriesPoint[] {
-	return response.values.map(({datetime, value}) => ({
-		date: parseLocalDateTime(datetime),
-		value: scaleValue(value, config),
-	}));
 }
 
 export async function fetchMetricTimeSeries(
@@ -45,23 +34,19 @@ export async function fetchMetricTimeSeries(
 	const config = resolveMetricWidgetConfig(stationType, stationLabel);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
-	const response = (await client[
-		"count-aggregator.public.type.station.last-values"
-	]({
-		params: {
-			type: stationType,
-			stationId: apiStationId,
-			resolution: config.resolution ?? "daily",
-		},
-		queries: {
-			limit: config.limit,
-			anchor: FEATURE_DETAILS_LAST_VALUES_ANCHOR,
-		},
-	})) as TimeSeriesResponse;
+	const response = await getStationLastValues(client, {
+		type: stationType,
+		stationId: apiStationId,
+		resolution: config.resolution ?? "daily",
+		limit: config.limit,
+		anchor: FEATURE_DETAILS_LAST_VALUES_ANCHOR,
+	});
 
 	return {
 		config,
-		points: mapTimeSeriesValues(response, config),
+		points: mapTimeSeriesToChartPoints(response, (value) =>
+			scaleValue(value, config),
+		) satisfies MetricSeriesPoint[],
 		lastUpdatedAt: response.lastDateTime
 			? parseLocalDateTime(response.lastDateTime)
 			: null,
@@ -82,12 +67,7 @@ export async function fetchMetricSumValue(
 	const config = resolveMetricWidgetConfig(stationType, stationLabel);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
-	const response = (await client["count-aggregator.public.type.sums"]({
-		params: {
-			type: stationType,
-			stationId: apiStationId,
-		},
-	})) as StationOverviewResponse;
+	const response = await getStationSums(client, stationType, apiStationId);
 
 	let rawValue: number | null = null;
 	let lastUpdatedAt: Date | null = null;

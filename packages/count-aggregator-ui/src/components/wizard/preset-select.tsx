@@ -10,8 +10,6 @@ import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
 import type {PresetData} from "../../types";
 import {getSelectStyles} from "./station-select.js";
 
-const PRESETS_QUERY_KEY = ["count-aggregator", "presets"];
-
 function PresetSelectItem({
 	preset,
 	onDelete,
@@ -48,17 +46,25 @@ function PresetSelectItem({
 }
 
 export const PresetSelect = memo(function PresetSelect({
+	appId,
 	onSet,
 	allowAdd = true,
 }: {
+	appId: string;
 	onSet: (preset: PresetData | null) => void;
 	allowAdd?: boolean;
 }): ReactElement | null {
-	const presets = usePresets();
+	const presets = usePresets(appId);
 	const queryClient = useQueryClient();
-	const appConfig = useAppConfig("traffic-data");
+	const appConfig = useAppConfig(appId);
 	const presetsEndpoint = appConfig.endpoints?.presets;
 	const portalTarget = useCountAggregatorPortal();
+	const presetsQueryKey = [
+		"count-aggregator",
+		appId,
+		"presets",
+		presetsEndpoint,
+	] as const;
 
 	const deletePreset = useMutation({
 		mutationFn: async (presetId: number) => {
@@ -78,7 +84,7 @@ export const PresetSelect = memo(function PresetSelect({
 			}
 
 			const presetData = parsePresetsResponse(await response.json());
-			queryClient.setQueryData(PRESETS_QUERY_KEY, presetData);
+			queryClient.setQueryData(presetsQueryKey, presetData);
 			return presetData;
 		},
 	});

@@ -1,6 +1,6 @@
 import type {ReactNode} from "react";
 
-import MapsightIcon from "@mapsight/ui/components/mapsight-icon/mapsight-icon";
+import {useMapsightIcon} from "@mapsight/ui/hooks/useMapsightIcon";
 
 import {formatMetricDate} from "../lib/format-metric-values.js";
 
@@ -11,6 +11,16 @@ type Props = {
 	children: ReactNode;
 	lastUpdatedAt: Date | null;
 };
+
+function MetricIcon({id}: {id: string}) {
+	const {src, error} = useMapsightIcon(id, "plain");
+
+	if (src === null || error !== null) {
+		return null;
+	}
+
+	return <img src={src} alt="" aria-hidden={true} />;
+}
 
 export default function MetricWidgetShell({
 	label,
@@ -24,7 +34,7 @@ export default function MetricWidgetShell({
 			<header className="ms3-smart-city-metric__header">
 				{showMetricIcons && mapsightIconId ? (
 					<span className="ms3-smart-city-metric__icon">
-						<MapsightIcon id={mapsightIconId} />
+						<MetricIcon id={mapsightIconId} />
 					</span>
 				) : null}
 				<span className="ms3-smart-city-metric__label">{label}</span>

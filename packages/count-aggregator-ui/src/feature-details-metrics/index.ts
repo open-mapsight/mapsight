@@ -1,8 +1,8 @@
 import {createElement} from "react";
 import {type Root, createRoot} from "react-dom/client";
 
+import {DEFAULT_PUBLIC_API_BASE_URL} from "../config/station-types.js";
 import SmartCityMetricWidget from "./components/smart-city-metric-widget.js";
-import {DEFAULT_SMART_CITY_API_BASE_URL} from "./lib/fetch-metric-data.js";
 import {
 	findMetricPlaceholders,
 	parseMetricPlaceholder,
@@ -67,8 +67,7 @@ export function mountSmartCityMetrics(
 		root.render(
 			createElement(SmartCityMetricWidget, {
 				...placeholder,
-				apiBaseUrl:
-					options.apiBaseUrl ?? DEFAULT_SMART_CITY_API_BASE_URL,
+				apiBaseUrl: options.apiBaseUrl ?? DEFAULT_PUBLIC_API_BASE_URL,
 				showMetricIcons: options.showMetricIcons ?? false,
 			}),
 		);
@@ -94,7 +93,6 @@ export {
 	DEFAULT_METRIC_WIDGETS,
 	resolveMetricWidgetConfig,
 } from "./config/metric-widgets.js";
-export {DEFAULT_SMART_CITY_API_BASE_URL} from "./lib/fetch-metric-data.js";
 export type {
 	MetricPlaceholderData,
 	MetricWidgetConfig,

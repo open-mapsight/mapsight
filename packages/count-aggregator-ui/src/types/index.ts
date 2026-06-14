@@ -77,8 +77,8 @@ export interface PresetData {
 	additionalDateRanges: DateRange[];
 }
 
-/** Platform-only legacy endpoints not yet in the count-aggregator OpenAPI contract. */
-export interface CountAggregatorLegacyEndpoints {
+/** Platform-only endpoints not yet in the count-aggregator OpenAPI contract. */
+export interface CountAggregatorPlatformEndpoints {
 	events?: string;
 	presets?: string;
 }
@@ -107,8 +107,6 @@ export const DEFAULT_RESOLUTION_LABELS: Record<Resolution, string> = {
 	yearly: "Jahr",
 };
 
-export type PlatformAppId = "traffic-data" | "smart-city" | "wheel-counter";
-
 export interface CountAggregatorAppConfig {
 	id: string;
 	apiBaseUrl: string;
@@ -119,9 +117,7 @@ export interface CountAggregatorAppConfig {
 	resolutions?: readonly Resolution[];
 	resolutionLabels?: Partial<Record<Resolution, string>>;
 	features?: CountAggregatorFeatures;
-	endpoints?: CountAggregatorLegacyEndpoints;
-	/** @deprecated Use `features.events` */
-	showEvents?: boolean;
+	endpoints?: CountAggregatorPlatformEndpoints;
 }
 
 export interface CountAggregatorConfig {

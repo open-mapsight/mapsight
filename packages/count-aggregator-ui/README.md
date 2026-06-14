@@ -1,8 +1,9 @@
 # @mapsight/count-aggregator-ui
 
-Embeddable React components for Mapsight **count-aggregator** data: station selection wizards, time-series charts, CSV export links, and optional map feature-detail metrics.
+Embeddable React components for Mapsight **count-aggregator** data: station selection wizards, time-series charts, CSV
+export links, and optional map feature-detail metrics.
 
-Uses [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) for HTTP access. UI strings are German today; i18n is future work ([Phase 5](../count-aggregator-api/PLAN.md#phase-5--polish--long-term-notes)).
+Uses [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) for HTTP access. UI strings are German today; i18n is future work.
 
 ## Install
 
@@ -31,7 +32,8 @@ Install these in your app (they are not bundled):
 
 ## Required CSS
 
-Import the package stylesheet **once** in your app entry. Host-page Tailwind alone does not include the `msca:` prefixed utilities this package ships:
+Import the package stylesheet **once** in your app entry. Host-page Tailwind alone does not include the `msca:` prefixed
+utilities this package ships:
 
 ```ts
 import "@mapsight/count-aggregator-ui/styles.css";
@@ -39,20 +41,17 @@ import "@mapsight/count-aggregator-ui/styles.css";
 
 ## Minimal embed
 
-`CountAggregatorRoot` is **required** for correct portals, theme CSS variables, and isolation inside host pages (class `msp-count-aggregator`).
+`CountAggregatorShell` is the default embed wrapper. It sets up React Query, package config, and the root element needed
+for portals, theme CSS variables, and isolation inside host pages (class `msp-count-aggregator`).
 
 ```tsx
 import "@mapsight/count-aggregator-ui/styles.css";
 
 import {
-	CountAggregatorProvider,
-	CountAggregatorRoot,
+	CountAggregatorShell,
 	CountAggregatorWizard,
 	createStationTypeAppsConfig,
 } from "@mapsight/count-aggregator-ui";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
 
 // Station types normally come from GET /station-types on your API.
 // Below: static sample for bootstrap before the network call returns.
@@ -77,13 +76,9 @@ config.apps.bicycleCount = {
 
 export function CountAggregatorEmbed() {
 	return (
-		<CountAggregatorRoot>
-			<QueryClientProvider client={queryClient}>
-				<CountAggregatorProvider config={config}>
-					<CountAggregatorWizard appId="bicycleCount" />
-				</CountAggregatorProvider>
-			</QueryClientProvider>
-		</CountAggregatorRoot>
+		<CountAggregatorShell config={config}>
+			<CountAggregatorWizard appId="bicycleCount" />
+		</CountAggregatorShell>
 	);
 }
 ```
@@ -111,9 +106,9 @@ if (isPending || config === null) {
 }
 
 return (
-	<CountAggregatorProvider config={config}>
+	<CountAggregatorShell config={config}>
 		{/* routes or wizard */}
-	</CountAggregatorProvider>
+	</CountAggregatorShell>
 );
 ```
 
@@ -132,17 +127,25 @@ Key config fields on each app (`CountAggregatorAppConfig`):
 | `@mapsight/count-aggregator-ui/headless`   | Hooks, date helpers, chart data prep — no CSS, no styled components |
 | `@mapsight/count-aggregator-ui/styles.css` | Required stylesheet (see above)                                     |
 
-Main exports include `CountAggregatorWizard`, `TimeSeriesChart`, `OverviewChartPanel`, `useAggregatedValues`, `createTheme`, and smart-city metric mounts (see below).
+Main exports include `CountAggregatorShell`, `CountAggregatorWizard`, `TimeSeriesChart`, `OverviewChartPanel`,
+`useAggregatedValues`, `createTheme`, and smart-city metric mounts (see below).
+
+The `/headless` entry also exports chart data helpers such as `prepareChartValues` and `mapTimeSeriesToChartPoints` for
+custom UIs that do not use the styled wizard.
 
 ## Embedding notes
 
-- Wrap content in `CountAggregatorRoot` so dropdowns portal correctly and theme variables (`--msca-*`) apply.
+- `CountAggregatorShell` composes `CountAggregatorRoot`, TanStack Query, and `CountAggregatorProvider` for the common
+  embed case.
+- Use the lower-level `CountAggregatorRoot` / `CountAggregatorProvider` exports when your host app already owns a shared
+  `QueryClientProvider`.
 - Optional theming: `createTheme({ colors: { primary: "#0066cc" } })` passed to `CountAggregatorRoot`.
 - Wizard controls use the `msca:` Tailwind prefix to reduce clashes with host CMS styles.
 
 ## Run the demo locally
 
-The [Mapsight showcase](../../apps/showcase) app includes a stepped `bicycleCount` wizard backed by a **mock API** — no live tenant or `.env` secrets.
+The [Mapsight showcase](../../apps/showcase) app includes a stepped `bicycleCount` wizard backed by a **mock API** — no
+live tenant or `.env` secrets.
 
 ```bash
 # from repo root
@@ -152,7 +155,9 @@ pnpm --filter @mapsight/showcase dev
 
 Open [http://localhost:5173/count-aggregator](http://localhost:5173/count-aggregator) (default Vite port).
 
-The dev server serves JSON and CSV from `/mock/msp/public/count-aggregator`, reusing fixtures from `@mapsight/count-aggregator-api`. Implementation: `apps/showcase/count-aggregator-mock/` and `apps/showcase/src/count-aggregator/`.
+The dev server serves JSON and CSV from `/mock/msp/public/count-aggregator`, reusing fixtures from
+`@mapsight/count-aggregator-api`. Implementation: `apps/showcase/count-aggregator-mock/` and
+`apps/showcase/src/count-aggregator/`.
 
 For package development with live rebuilds:
 
@@ -162,22 +167,57 @@ pnpm --filter @mapsight/showcase dev:linked
 
 ## Smart-city metrics
 
-`mountSmartCityMetrics` and `createSmartCityMetricsPartialContentHandler` integrate count-aggregator charts into map feature-detail panels via placeholder markup. These use the same API base URL pattern as the wizard. Details live in `src/feature-details-metrics/`; broader platform presets/events are not yet in the public OpenAPI contract.
+`mountSmartCityMetrics` and `createSmartCityMetricsPartialContentHandler` integrate count-aggregator charts into map
+feature-detail panels via placeholder markup. These use the same API base URL pattern as the wizard. Details live in
+`src/feature-details-metrics/`; broader platform presets/events are not yet in the public OpenAPI contract.
 
 ## Testing
 
 ```bash
 pnpm --filter @mapsight/count-aggregator-ui test
+pnpm --filter @mapsight/showcase test:e2e
 ```
 
-Current coverage focuses on feature-details metrics helpers, date utilities, and metric widget config. Hook, mapper, and wizard tests are planned in [Phase 4](../count-aggregator-api/PLAN.md#phase-4--testing--ci-confidence).
+Current unit coverage focuses on feature-details metrics helpers, date utilities, API mappers, chart data preparation, and metric widget config. The showcase e2e opens the mock count-aggregator demo, selects a station in the stepped wizard, clicks “Weiter”, and asserts the chart/CSV result path.
 
-## Deprecated APIs
+## Configuration
 
-Legacy `createPlatformConfig`, `TrafficDataWizard`, `SmartCityWizard`, and `WheelCounterWizard` remain for older integrations. New work should use `createStationTypeAppsConfig` + `CountAggregatorWizard`. Migration notes will be added in [Phase 2](../count-aggregator-api/PLAN.md#phase-2--config--api-surface-cleanup).
+Load station types from the public API, build config with `createStationTypeAppsConfig`, and render
+`CountAggregatorWizard` inside `CountAggregatorShell`:
+
+```tsx
+const apiBaseUrl = "https://<tenant>.example.tld/msp/public/count-aggregator";
+const {stationTypes, isPending} = useStationTypes(apiBaseUrl);
+
+if (isPending || stationTypes === undefined) {
+	return <p>Loading…</p>;
+}
+
+const config = createStationTypeAppsConfig(stationTypes, {apiBaseUrl});
+
+return (
+	<CountAggregatorShell config={config}>
+		<CountAggregatorWizard appId="bicycleCount" />
+	</CountAggregatorShell>
+);
+```
+
+Feature flags should be configured via `features` on each app:
+
+```ts
+features: {
+	resolutionSelect: true,
+	chartTypeSelect: true,
+	export: true,
+	presets: false,
+	events: false,
+}
+```
+
+`features` is the only source of truth for enabling optional UI. Platform-only URLs in `endpoints` are used only when
+the matching feature is enabled, for example `features.events` with `endpoints.events` or `features.presets` with
+`endpoints.presets`.
 
 ## Related packages
 
 - [`@mapsight/count-aggregator-api`](../count-aggregator-api/README.md) — HTTP client and OpenAPI types
-- [API improvement plan](../count-aggregator-api/PLAN.md) — master roadmap
-- [UI execution checklist](./PLAN.md) — UI-focused task list

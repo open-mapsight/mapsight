@@ -1,6 +1,5 @@
 import {describe, expect, it} from "vitest";
 
-import {prepareChartValues} from "../components/charts/time-series-chart.js";
 import {applyPresetDateRanges} from "../config/platform.js";
 import {dateToYmd, ymdToDate} from "./dates.js";
 
@@ -24,23 +23,5 @@ describe("applyPresetDateRanges", () => {
 
 		expect(result.startDate).toEqual(start);
 		expect(result.endDate).toEqual(end);
-	});
-});
-
-describe("prepareChartValues", () => {
-	it("limits values when exceeding data cap", () => {
-		const values = Array.from({length: 6000}, (_, index) => ({
-			date: new Date(2024, 0, 1 + index),
-			value: index,
-		}));
-
-		const data = {
-			stationsById: new Map([[1, {stationId: 1, values}]]),
-		};
-
-		const {tooMuchData, valuesByStationId} = prepareChartValues([1], data);
-
-		expect(tooMuchData).toBe(true);
-		expect(valuesByStationId?.get(1)).toHaveLength(5000);
 	});
 });

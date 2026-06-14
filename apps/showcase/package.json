@@ -27,6 +27,7 @@
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
+		"@playwright/test": "catalog:",
 		"@tailwindcss/vite": "^4.3.0",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
@@ -59,6 +60,7 @@
 		"dev:packages": "turbo watch watch --filter=@mapsight/core --filter=@mapsight/ui --filter=@mapsight/lib-js --filter=@mapsight/lib-ol --filter=@mapsight/lib-redux --filter=@mapsight/count-aggregator-api --filter=@mapsight/count-aggregator-ui",
 		"lint": "eslint",
 		"start": "vite preview",
+		"test:e2e": "playwright test",
 		"typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
 	}
 }

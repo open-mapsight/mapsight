@@ -1,5 +1,6 @@
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
+import {z} from "zod";
 
 import type {TrafficEvent, TrafficEventsData} from "../types/index.js";
 
@@ -30,70 +31,41 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 	return value !== null && value !== undefined;
 }
 
-export function assertRecord(
-	value: unknown,
-): asserts value is Record<string, unknown> {
-	if (typeof value !== "object" || value === null || Array.isArray(value)) {
-		throw new Error("Expected object");
-	}
-}
+const trafficEventSchema = z.object({
+	id: z.number(),
+	title: z.string(),
+	start_date: z.string(),
+	end_date: z.string(),
+	full_day: z.boolean(),
+	start_time: z.string().nullable(),
+	end_time: z.string().nullable(),
+});
 
-export function assertArray(value: unknown): asserts value is unknown[] {
-	if (!Array.isArray(value)) {
-		throw new Error("Expected array");
-	}
-}
+const trafficEventsResponseSchema = z.preprocess(
+	(value) => {
+		if (
+			typeof value !== "object" ||
+			value === null ||
+			Array.isArray(value)
+		) {
+			return value;
+		}
 
-export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") {
-		throw new Error("Expected string");
-	}
-}
-
-export function assertNumber(value: unknown): asserts value is number {
-	if (typeof value !== "number" || Number.isNaN(value)) {
-		throw new Error("Expected number");
-	}
-}
+		const record = value as Record<string, unknown>;
+		return {
+			...record,
+			manualEvents: Array.isArray(record.manualEvents)
+				? record.manualEvents
+				: [],
+		};
+	},
+	z.object({manualEvents: z.array(trafficEventSchema)}),
+);
 
 export function parseTrafficEvent(value: unknown): TrafficEvent {
-	assertRecord(value);
-	assertNumber(value.id);
-	assertString(value.title);
-	assertString(value.start_date);
-	assertString(value.end_date);
-
-	if (typeof value.full_day !== "boolean") {
-		throw new Error("Expected boolean for full_day");
-	}
-
-	const startTime = value.start_time;
-	if (startTime !== null && typeof startTime !== "string") {
-		throw new Error("Expected string or null for start_time");
-	}
-
-	const endTime = value.end_time;
-	if (endTime !== null && typeof endTime !== "string") {
-		throw new Error("Expected string or null for end_time");
-	}
-
-	return {
-		id: value.id,
-		title: value.title,
-		start_date: value.start_date,
-		end_date: value.end_date,
-		full_day: value.full_day,
-		start_time: startTime,
-		end_time: endTime,
-	};
+	return trafficEventSchema.parse(value);
 }
 
 export function parseTrafficEventsResponse(data: unknown): TrafficEventsData {
-	assertRecord(data);
-
-	const manualEvents = Array.isArray(data.manualEvents)
-		? data.manualEvents.map(parseTrafficEvent)
-		: [];
-
-	return {manualEvents};
+	return trafficEventsResponseSchema.parse(data);
 }

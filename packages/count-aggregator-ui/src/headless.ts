@@ -8,7 +8,6 @@ export {
 } from "./api/hooks.js";
 
 export {
-	createPlatformConfig,
 	applyPresetDateRanges,
 	parsePresetsResponse,
 } from "./config/platform.js";
@@ -20,6 +19,10 @@ export {
 
 export {dateToYmd, ymdToDate} from "./lib/dates.js";
 export {getColorForStationIndex, STATION_COLORS} from "./lib/colors.js";
+export {
+	mapDataValuePointsToChartPoints,
+	mapTimeSeriesToChartPoints,
+} from "./lib/time-series.js";
 export {parseTrafficEventsResponse} from "./lib/utils.js";
 
 export type * from "./types/index.js";
