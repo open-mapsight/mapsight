@@ -13,6 +13,7 @@ export default defineConfig([
 			".git/",
 			"**/.turbo/",
 			"**/dist/",
+			"**/dist-*/",
 			"**/generated/",
 			"**/tmp/",
 		],
@@ -80,6 +81,8 @@ export default defineConfig([
 					project: [
 						"./apps/*/tsconfig.json",
 						"./packages/*/tsconfig.json",
+						"./configs/tsconfig.json",
+						"./scripts/tsconfig.json",
 						"./tsconfig.json",
 					],
 				},
