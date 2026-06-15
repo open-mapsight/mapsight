@@ -14,10 +14,16 @@ export const ICON_BACKGROUND_PALETTE = [
 ] as const;
 
 export const ICON_FOREGROUND_PALETTE = [
-	"#000000",
-	"#333333",
-	"#666666",
-	"#999999",
-	"#cccccc",
 	"#ffffff",
+	"#000000",
+	"#be123c",
+	"#7e22ce",
+	"#1d4ed8",
+	"#0369a1",
+	"#0f766e",
+	"#047857",
+	"#15803d",
+	"#a16207",
+	"#c2410c",
+	"#035799",
 ] as const;

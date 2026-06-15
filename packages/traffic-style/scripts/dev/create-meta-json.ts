@@ -111,7 +111,6 @@ async function main() {
 	const icons = files
 		.filter((fileName) => /(\.webp|\.png|\.svg)$/.test(fileName))
 		.map((iconFile) => parseIconName(iconFile));
-	const variants = [...new Set(icons.map(({variant}) => variant))];
 	const iconGroups = icons.reduce(
 		(groups, icon) => ({
 			...groups,
@@ -137,7 +136,7 @@ async function main() {
 		result.icons.push({
 			...((metaData.icons && metaData.icons[name]) || {}),
 			id: name,
-			variants: variants,
+			variants: Object.keys(iconGroups[name] ?? {}).sort(),
 		});
 	});
 

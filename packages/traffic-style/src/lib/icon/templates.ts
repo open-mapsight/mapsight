@@ -30,8 +30,8 @@ function renderSquareBackground(
 	}
 
 	return (
-		`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${rx}" fill="${colors.background}" stroke="#000000" stroke-width="2"/>` +
-		`<rect x="${x + 0.5}" y="${y + 0.5}" width="${size - 1}" height="${size - 1}" rx="${Math.max(0, rx - 0.5)}" fill="${colors.background}" stroke="#ffffff" stroke-width="1"/>`
+		`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${rx}" fill="#000000"/>` +
+		`<rect x="${x + 1}" y="${y + 1}" width="${size - 2}" height="${size - 2}" rx="${Math.max(0, rx - 1)}" fill="${colors.background}"/>`
 	);
 }
 
@@ -49,16 +49,11 @@ const poiTemplates: Record<IconVariant, TemplateDefinition> = {
 		width: 40,
 		height: 40,
 		viewBox: "0 0 40 40",
-		contentSlot: {x: 9, y: 9, size: 22},
+		contentSlot: {x: 8, y: 8, size: 24},
 		textAnchor: {x: 20, y: 26},
 		fontSize: 18,
 		renderBackground: (colors) =>
-			renderSquareBackground(
-				colors,
-				4,
-				{x: 7.5, y: 7.5, size: 25},
-				false,
-			),
+			renderSquareBackground(colors, 4, {x: 7, y: 7, size: 26}, false),
 	},
 	small: {
 		width: 28,

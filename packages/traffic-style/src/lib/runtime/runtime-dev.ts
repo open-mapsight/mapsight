@@ -16,6 +16,7 @@ export {
 	RUNTIME_ICON_PLACEHOLDER_SRC,
 } from "./icon-style.ts";
 export {
+	getPictograms,
 	listPictogramIds,
 	listPictogramIdsBySource,
 } from "../pictograms/index.ts";

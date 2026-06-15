@@ -4,7 +4,7 @@ import type {IconSpec} from "./icon-id.ts";
 import {resolveSpec} from "./resolve.ts";
 import {getTemplate} from "./templates.ts";
 
-const DEFAULT_PICTOGRAM_PADDING = 0.05;
+const DEFAULT_PICTOGRAM_PADDING = 0;
 const FONT_AWESOME_PICTOGRAM_PADDING = 0.1;
 
 function parseViewBox(viewBox: string): {
@@ -47,6 +47,7 @@ function renderPictogram(
 	pictogram: PictogramDefinition,
 	slot: {x: number; y: number; size: number},
 	color: string,
+	background: string,
 ): string {
 	const paddedSlot = insetSlot(slot, pictogramPadding(pictogram));
 	const {x, y, width, height} = parseViewBox(pictogram.viewBox);
@@ -59,8 +60,12 @@ function renderPictogram(
 	const scaledHeight = height * scale;
 	const translateX = paddedSlot.x + (paddedSlot.size - scaledWidth) / 2;
 	const translateY = paddedSlot.y + (paddedSlot.size - scaledHeight) / 2;
+	const markup = pictogram.markup.replace(
+		/(fill|stroke)="#(?:fff|ffffff)"/gi,
+		`$1="${background}"`,
+	);
 
-	return `<g transform="translate(${translateX} ${translateY}) scale(${scale}) translate(${-x} ${-y})" color="${color}">${pictogram.markup}</g>`;
+	return `<g transform="translate(${translateX} ${translateY}) scale(${scale}) translate(${-x} ${-y})" color="${color}">${markup}</g>`;
 }
 
 function renderLabel(
@@ -89,6 +94,7 @@ export function composeSvg(spec: IconSpec): string {
 			pictogram,
 			template.contentSlot,
 			resolved.colors.foreground,
+			resolved.colors.background,
 		);
 	} else if (hasLabel && resolved.label) {
 		inner += renderLabel(

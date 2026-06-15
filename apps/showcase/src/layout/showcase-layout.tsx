@@ -1,4 +1,4 @@
-import {NavLink, Outlet, useLocation} from "react-router-dom";
+import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 
 import {DemoNav} from "./demo-nav.tsx";
 import {IconsNav} from "./icons-nav.tsx";
@@ -15,6 +15,14 @@ export function ShowcaseLayout() {
 	const showDemoNav = location.pathname.startsWith("/ui");
 	const showIconsNav = location.pathname.startsWith("/icons");
 	const isIconEditor = location.pathname === "/icons";
+	const useFixedHeightLayout = showDemoNav || isIconEditor;
+
+	const shellClassName = [
+		"showcase",
+		useFixedHeightLayout ? "showcase--fixed-height" : "",
+	]
+		.filter(Boolean)
+		.join(" ");
 
 	const mainClassName = [
 		"showcase__main",
@@ -25,13 +33,13 @@ export function ShowcaseLayout() {
 		.join(" ");
 
 	return (
-		<div className="showcase">
+		<div className={shellClassName}>
 			<header className="showcase__header">
 				<div className="showcase__header-inner">
-					<div className="showcase__brand">
+					<Link to="/" className="showcase__brand">
 						<strong>Mapsight</strong>
 						<span className="showcase__tagline">Showcase</span>
-					</div>
+					</Link>
 					<nav className="showcase__nav" aria-label="Main">
 						<ul>
 							{navItems.map(({to, label, ...rest}) => (
@@ -58,6 +66,15 @@ export function ShowcaseLayout() {
 			<main className={mainClassName}>
 				<Outlet />
 			</main>
+			<footer className="showcase__footer">
+				<div className="showcase__footer-inner">
+					<span>Mapsight showcase</span>
+					<nav aria-label="Legal">
+						<Link to="/imprint">Imprint</Link>
+						<Link to="/privacy">Privacy</Link>
+					</nav>
+				</div>
+			</footer>
 		</div>
 	);
 }

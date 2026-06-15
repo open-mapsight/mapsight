@@ -23,8 +23,13 @@ body {
 .showcase {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
+	min-height: 100%;
 	background: #fff;
+}
+
+.showcase--fixed-height {
+	height: 100%;
+	min-height: 0;
 }
 
 .showcase__header {
@@ -88,8 +93,11 @@ body {
 
 .showcase__main {
 	flex: 1;
-	min-height: 0;
 	background: #fff;
+}
+
+.showcase--fixed-height .showcase__main {
+	min-height: 0;
 }
 
 .showcase__main--embed {
@@ -98,6 +106,36 @@ body {
 
 .showcase__main--icon-editor {
 	overflow: hidden;
+}
+
+.showcase__footer {
+	border-top: 1px solid #d8dee6;
+	background: #fff;
+	color: #64748b;
+	font-size: 0.85rem;
+}
+
+.showcase__footer-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.65rem 1.25rem;
+}
+
+.showcase__footer nav {
+	display: flex;
+	gap: 0.85rem;
+}
+
+.showcase__footer a {
+	color: #475569;
+	text-decoration: none;
+}
+
+.showcase__footer a:hover {
+	color: #1d4ed8;
+	text-decoration: underline;
 }
 
 .showcase__subnav {
@@ -193,28 +231,26 @@ body {
 	font-size: 0.95rem;
 }
 
-.landing {
-	height: 100%;
-	overflow: auto;
-}
-
-.landing__inner {
+.showcase-page {
 	width: 100%;
 	max-width: 72rem;
 	margin: 0 auto;
 	padding: 2rem 1.25rem 3rem;
+	box-sizing: border-box;
 }
 
-.landing__hero {
+.showcase-page__hero {
 	margin-bottom: 2rem;
 }
 
-.landing__hero h1 {
+.showcase-page__hero h1 {
 	margin: 0 0 0.5rem;
 	font-size: 2rem;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
 }
 
-.landing__hero p {
+.showcase-page__hero p {
 	margin: 0;
 	color: #5b6773;
 	font-size: 1.05rem;
@@ -263,30 +299,30 @@ body {
 	color: #2563eb;
 }
 
-.count-aggregator-demo {
-	width: 100%;
-	max-width: 64rem;
-	margin: 0 auto;
-	padding: 1.5rem 1.25rem 2.5rem;
+.legal-page {
+	max-width: 48rem;
 }
 
-.count-aggregator-demo__intro {
-	margin-bottom: 1.5rem;
+.legal-page section {
+	margin-top: 1.5rem;
 }
 
-.count-aggregator-demo__intro h1 {
+.legal-page h2 {
 	margin: 0 0 0.5rem;
-	font-size: 1.75rem;
+	font-size: 1.15rem;
 }
 
-.count-aggregator-demo__intro p {
-	margin: 0;
-	color: #5b6773;
-	max-width: 42rem;
+.legal-page p {
+	margin: 0.5rem 0 0;
+	color: #334155;
 }
 
-.count-aggregator-demo__intro code {
-	font-size: 0.9em;
+.legal-page a {
+	color: #2563eb;
+}
+
+.count-aggregator-demo {
+	max-width: 64rem;
 }
 
 .count-aggregator-demo__surface {
