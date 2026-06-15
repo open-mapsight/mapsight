@@ -60,14 +60,17 @@ export function redoChange(
 export function nextDataHistory(
 	featureSourceState: FeatureSourceState,
 ): FeatureSourceDataHistory {
-	// TODO: Implement history limit
 	const oldDataHistory = getSourceDataHistory(featureSourceState);
+	const past = [
+		...oldDataHistory.past,
+		createSourceDataSnapshot(featureSourceState),
+	];
 
 	return {
 		...oldDataHistory,
-		past: [
-			...oldDataHistory.past,
-			createSourceDataSnapshot(featureSourceState),
-		],
+		past:
+			featureSourceState.historyLimit === undefined
+				? past
+				: past.slice(-featureSourceState.historyLimit),
 	};
 }

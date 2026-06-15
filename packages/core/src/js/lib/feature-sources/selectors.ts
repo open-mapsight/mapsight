@@ -34,6 +34,18 @@ export const getSourceData = (source: FeatureSourceState): FeatureSourceData =>
 export const getSourceDataHistory = (source: FeatureSourceState) =>
 	source.dataHistory || {past: [], future: []};
 
+function getFeatureIds(features: Feature[]) {
+	return features.map((feature) => feature.id);
+}
+
+function getFeaturesById(features: Feature[]) {
+	const featuresById: Record<FeatureId, Feature> = {};
+	for (const feature of features) {
+		featuresById[feature.id] ??= feature;
+	}
+	return Object.keys(featuresById).length ? featuresById : undefined;
+}
+
 export const canUndo = (source: FeatureSourceState) =>
 	!!(source.dataHistory?.past && source.dataHistory.past.length > 0);
 export const canRedo = (source: FeatureSourceState) =>
@@ -55,10 +67,7 @@ export const findFeatureSourceForFeatureId = (
 	sources: FeatureSourcesState,
 	featureId: FeatureId,
 ): undefined | FeatureSourceState =>
-	Object.values(sources).find((source) =>
-		// TODO: replace the full scan with something smarter (eg bisecting a sorted list)
-		source.ids?.includes(featureId),
-	);
+	Object.values(sources).find((source) => source.ids?.includes(featureId));
 
 export const findFeatureInFeatureSourcesById = (
 	sources: FeatureSourcesState,
@@ -78,10 +87,7 @@ export const findFeatureInFeatureSourcesById = (
 		return null;
 	}
 
-	// TODO: remove full-scans, store entries in an entry-by-id-map
-	// * https://web.archive.org/web/20230607012422/https://redux.js.org/faq/performance#performance
-	// * https://web.archive.org/web/20230713130911/https://redux.js.org/tutorials/fundamentals/part-5-ui-react#selecting-data-in-list-items-by-id
-	return sourceFeatures.find((feature) => feature.id === featureId) ?? null;
+	return source.featuresById?.[featureId] ?? null;
 };
 
 export const getRefreshPaused = (source: FeatureSourceState) =>
@@ -186,23 +192,30 @@ export function createFilteredFeatureSourceSelector(
 		}
 
 		if (hasChanged) {
+			const filteredFeatures =
+				filters && source?.data?.features
+					? applyFilters(
+							filters,
+							source.data.features,
+							featureSourceId,
+						)
+					: undefined;
+
 			cache.state = source && {
 				...source,
-				data:
-					filters && source.data?.features
-						? {
-								...source.data,
-								// FIXME: Instead of adding type=FeatureCollection here,
-								//    we should add it when reducing the feature sources or something like that.
-								//    This only adds it for filtered sources, but not for unfiltered ones.
-								type: "FeatureCollection",
-								features: applyFilters(
-									filters,
-									source.data.features,
-									featureSourceId,
-								),
-							}
-						: source.data,
+				data: filteredFeatures
+					? {
+							...source.data,
+							type: "FeatureCollection",
+							features: filteredFeatures,
+						}
+					: source.data,
+				ids: filteredFeatures
+					? getFeatureIds(filteredFeatures)
+					: source.ids,
+				featuresById: filteredFeatures
+					? getFeaturesById(filteredFeatures)
+					: source.featuresById,
 			};
 		}
 

@@ -44,22 +44,172 @@ import type {
 	FeatureSourceState,
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
-import type {Action, Feature, State} from "@/types";
+import type {Action, Feature, FeatureId, Geometry, State} from "@/types";
 
-function getIdsFromData(data: FeatureSourceData) {
+type FeatureSourceActionWithId<TType extends string> = Action & {
+	type: TType;
+	id: string;
+};
+
+type FeatureSourcesControllerAction =
+	| (FeatureSourceActionWithId<typeof LOAD_FEATURE_SOURCE> & {
+			requestId: number;
+	  })
+	| (FeatureSourceActionWithId<
+			typeof FEATURE_SOURCE_ERROR | typeof LOAD_FEATURE_SOURCE_ERROR
+	  > & {
+			error: FeatureSourceState["error"];
+	  })
+	| (FeatureSourceActionWithId<
+			typeof FEATURE_SOURCE_DATA | typeof LOAD_FEATURE_SOURCE_SUCCESS
+	  > & {
+			data: FeatureSourceData;
+	  })
+	| FeatureSourceActionWithId<
+			| typeof PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD
+			| typeof FEATURE_SOURCE_DATA_UNDO
+			| typeof FEATURE_SOURCE_DATA_REDO
+			| typeof FEATURE_SOURCE_DATA_REMOVE_ALL_FEATURES
+	  >
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_ADD_FEATURE> & {
+			feature: Feature;
+	  })
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_ADD_FEATURES> & {
+			features: Feature[];
+	  })
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_UPDATE_FEATURE> & {
+			featureId: FeatureId;
+			feature: Feature;
+	  })
+	| (FeatureSourceActionWithId<
+			typeof FEATURE_SOURCE_DATA_UPDATE_FEATURE_PROPERTY
+	  > & {
+			featureId: FeatureId;
+			propertyId: string;
+			value: unknown;
+	  })
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_UPDATE_FEATURES> & {
+			features: Feature[];
+	  })
+	| (FeatureSourceActionWithId<
+			typeof FEATURE_SOURCE_DATA_UPDATE_FEATURE_GEOMETRY
+	  > & {
+			featureId: FeatureId;
+			geometry: Geometry;
+	  })
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_REMOVE_FEATURE> & {
+			featureId: FeatureId;
+	  })
+	| (FeatureSourceActionWithId<typeof FEATURE_SOURCE_DATA_REMOVE_FEATURES> & {
+			featureIds: FeatureId[];
+	  });
+
+function getIdsFromData(data: FeatureSourceState["data"]) {
 	return data?.features?.map((feature) => feature.id);
+}
+
+function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
+	const featuresById: Record<FeatureId, Feature> = {};
+	for (const feature of data?.features ?? []) {
+		featuresById[feature.id] ??= feature;
+	}
+	return Object.keys(featuresById).length ? featuresById : undefined;
+}
+
+function normalizeFeatureSourceData(
+	data: FeatureSourceState["data"],
+): FeatureSourceState["data"] {
+	if (!data?.features || data.type === "FeatureCollection") {
+		return data;
+	}
+
+	return {
+		...data,
+		type: "FeatureCollection",
+	};
 }
 
 function mergeSource(
 	state: FeatureSourcesState,
 	id: string,
 	change: Partial<FeatureSourceState>,
-) {
+): FeatureSourcesState {
 	if (isEqual(state[id], change)) {
 		return state;
 	}
 
-	return {...state, [id]: {...state[id], ...change}};
+	return {
+		...state,
+		[id]: {...state[id], ...change} as FeatureSourceState,
+	};
+}
+
+function normalizeFeatureSourceState(
+	source: FeatureSourceState,
+): FeatureSourceState {
+	const data =
+		source.data === undefined
+			? null
+			: normalizeFeatureSourceData(source.data);
+
+	return {
+		...source,
+		data,
+		ids: getIdsFromData(data),
+		featuresById: getFeaturesByIdFromData(data),
+		lastUpdate: source.lastUpdate === undefined ? null : source.lastUpdate,
+		lastActionType:
+			source.lastActionType === undefined ? null : source.lastActionType,
+	};
+}
+
+function shouldNormalizeFeatureSourceState(source: FeatureSourceState) {
+	const data =
+		source.data === undefined
+			? null
+			: normalizeFeatureSourceData(source.data);
+
+	return (
+		source.data === undefined ||
+		source.data !== data ||
+		!isEqual(source.ids, getIdsFromData(data)) ||
+		!isEqual(source.featuresById, getFeaturesByIdFromData(data)) ||
+		source.lastUpdate === undefined ||
+		source.lastActionType === undefined
+	);
+}
+
+function normalizeFeatureSourcesState(
+	state: FeatureSourcesState,
+): FeatureSourcesState {
+	let hasMissingRuntimeFields = false;
+	for (const source of Object.values(state)) {
+		if (shouldNormalizeFeatureSourceState(source)) {
+			hasMissingRuntimeFields = true;
+			break;
+		}
+	}
+
+	if (!hasMissingRuntimeFields) {
+		return state;
+	}
+
+	return Object.fromEntries(
+		Object.entries(state).map(([id, source]) => [
+			id,
+			normalizeFeatureSourceState(source),
+		]),
+	);
+}
+
+function shouldClearXhrDataAfterConfigChange(
+	oldSource: FeatureSourceState,
+	nextSource: FeatureSourceState,
+) {
+	return (
+		oldSource.type !== nextSource.type ||
+		(nextSource.type === "xhr-json" && oldSource.url !== nextSource.url)
+	);
 }
 
 function updateSourceData(
@@ -70,11 +220,12 @@ function updateSourceData(
 ) {
 	const source = ensureNonNullable(state[id]);
 	const oldData = getSourceData(source);
-	const newData = reduceData(oldData);
+	const newData = normalizeFeatureSourceData(reduceData(oldData));
 
 	return mergeSource(state, id, {
 		data: newData,
 		ids: getIdsFromData(newData),
+		featuresById: getFeaturesByIdFromData(newData),
 		error: undefined,
 		isLoading: false,
 		lastUpdate: +new Date(),
@@ -87,15 +238,14 @@ function reduceUncontrolledFeatureSourceChanges(
 	state: FeatureSourcesState,
 	oldState: FeatureSourcesState = {},
 ) {
-	if (state) {
-		for (const id of Object.keys(state)) {
-			if (
-				oldState[id] &&
-				oldState[id] !== state[id] &&
-				state[id]?.type === "xhr-json"
-			) {
-				return mergeSource(state, id, {data: null});
-			}
+	for (const [id, source] of Object.entries(state)) {
+		const oldSource = oldState[id];
+		if (
+			oldSource &&
+			oldSource !== source &&
+			shouldClearXhrDataAfterConfigChange(oldSource, source)
+		) {
+			return mergeSource(state, id, {data: null});
 		}
 	}
 
@@ -229,20 +379,25 @@ export class FeatureSourcesController extends BaseController {
 		});
 	}
 
-	override reduce(state: FeatureSourcesState = {}, action: Action) {
-		switch (action.type) {
+	override reduce(
+		state: FeatureSourcesState = {},
+		action: Action,
+	): FeatureSourcesState {
+		const featureSourceAction = action as FeatureSourcesControllerAction;
+
+		switch (featureSourceAction.type) {
 			case LOAD_FEATURE_SOURCE:
-				return mergeSource(state, action.id, {
+				return mergeSource(state, featureSourceAction.id, {
 					isLoading: true,
 					refreshPaused: false,
-					requestId: action.requestId,
+					requestId: featureSourceAction.requestId,
 					dataHistory: undefined,
 				});
 
 			case FEATURE_SOURCE_ERROR:
 			case LOAD_FEATURE_SOURCE_ERROR:
-				return mergeSource(state, action.id, {
-					error: action.error,
+				return mergeSource(state, featureSourceAction.id, {
+					error: featureSourceAction.error,
 					isLoading: false,
 					dataHistory: undefined,
 				});
@@ -251,69 +406,74 @@ export class FeatureSourcesController extends BaseController {
 			case LOAD_FEATURE_SOURCE_SUCCESS:
 				return updateSourceData(
 					state,
-					action.id,
-					() => action.data,
+					featureSourceAction.id,
+					() => featureSourceAction.data,
 					"DATA_LOADED",
 				);
 
 			case PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD:
-				return mergeSource(state, action.id, {
+				return mergeSource(state, featureSourceAction.id, {
 					refreshPaused: true,
 				});
 
 			case FEATURE_SOURCE_DATA_UNDO:
 				return mergeSource(
 					state,
-					action.id,
-					undoChange(ensureNonNullable(state[action.id])),
+					featureSourceAction.id,
+					undoChange(
+						ensureNonNullable(state[featureSourceAction.id]),
+					),
 				);
 
 			case FEATURE_SOURCE_DATA_REDO:
 				return mergeSource(
 					state,
-					action.id,
-					redoChange(ensureNonNullable(state[action.id])),
+					featureSourceAction.id,
+					redoChange(
+						ensureNonNullable(state[featureSourceAction.id]),
+					),
 				);
 
 			case FEATURE_SOURCE_DATA_ADD_FEATURE:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: [
 							...((oldData && oldData.features) || []),
-							action.feature,
+							featureSourceAction.feature,
 						],
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_ADD_FEATURES:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: [
 							...((oldData && oldData.features) || []),
-							...action.features,
+							...featureSourceAction.features,
 						],
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_UPDATE_FEATURE:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: !oldData.features
 							? emptyFeaturesArray
 							: oldData.features.map((oldFeature) =>
-									oldFeature.id === action.featureId
-										? action.feature
+									oldFeature.id ===
+									featureSourceAction.featureId
+										? featureSourceAction.feature
 										: oldFeature,
 								),
 					}),
@@ -323,19 +483,20 @@ export class FeatureSourcesController extends BaseController {
 			case FEATURE_SOURCE_DATA_UPDATE_FEATURE_PROPERTY:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: !oldData.features
 							? emptyFeaturesArray
 							: oldData.features.map((oldFeature) =>
-									oldFeature.id === action.featureId
+									oldFeature.id ===
+									featureSourceAction.featureId
 										? {
 												...oldFeature,
 												properties: {
 													...oldFeature.properties,
-													[action.propertyId]:
-														action.value,
+													[featureSourceAction.propertyId]:
+														featureSourceAction.value,
 												},
 											}
 										: oldFeature,
@@ -347,97 +508,103 @@ export class FeatureSourcesController extends BaseController {
 			case FEATURE_SOURCE_DATA_UPDATE_FEATURES:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => {
 						const features = oldData.features
 							? [...oldData.features]
 							: [];
 
-						action.features.forEach(function handleUpdatedFeature(
-							feature: Feature,
-						) {
-							const index = features.findIndex(
-								(f) => f.id === feature.id,
-							);
-							if (index > -1) {
-								features[index] = feature;
-							} else {
-								features.push(feature);
-							}
-						});
+						featureSourceAction.features.forEach(
+							function handleUpdatedFeature(feature: Feature) {
+								const index = features.findIndex(
+									(f) => f.id === feature.id,
+								);
+								if (index > -1) {
+									features[index] = feature;
+								} else {
+									features.push(feature);
+								}
+							},
+						);
 
 						return {
 							...oldData,
 							features: features,
 						};
 					},
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_UPDATE_FEATURE_GEOMETRY:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: !oldData.features
 							? emptyFeaturesArray
 							: oldData.features.map((oldFeature) =>
-									oldFeature.id === action.featureId
+									oldFeature.id ===
+									featureSourceAction.featureId
 										? {
 												...oldFeature,
-												geometry: action.geometry,
+												geometry:
+													featureSourceAction.geometry,
 											}
 										: oldFeature,
 								),
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_REMOVE_FEATURE:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: oldData.features
 							? oldData.features.filter(
-									(f) => f.id !== action.featureId,
+									(f) =>
+										f.id !== featureSourceAction.featureId,
 								)
 							: emptyFeaturesArray,
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_REMOVE_FEATURES:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: oldData.features
 							? oldData.features.filter(
-									(f) => !action.featureIds.includes(f.id),
+									(f) =>
+										!featureSourceAction.featureIds.includes(
+											f.id,
+										),
 								)
 							: emptyFeaturesArray,
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			case FEATURE_SOURCE_DATA_REMOVE_ALL_FEATURES:
 				return updateSourceData(
 					state,
-					action.id,
+					featureSourceAction.id,
 					(oldData) => ({
 						...oldData,
 						features: emptyFeaturesArray,
 					}),
-					action.type,
+					featureSourceAction.type,
 				);
 
 			default:
 				return reduceUncontrolledFeatureSourceChanges(
-					baseReducer(state, action),
+					normalizeFeatureSourcesState(baseReducer(state, action)),
 					state,
 				);
 		}
