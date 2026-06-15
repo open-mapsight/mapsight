@@ -1,7 +1,4 @@
-import type {
-	CountAggregatorAppConfig,
-	CountAggregatorFeatures,
-} from "../types/index.js";
+import type {CountAggregatorAppConfig, CountAggregatorFeatures} from "../types";
 
 type FeatureKey = keyof CountAggregatorFeatures;
 

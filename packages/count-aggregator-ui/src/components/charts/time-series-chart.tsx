@@ -16,6 +16,7 @@ import {
 
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
+import {formatStationLabel} from "../../lib/stations.js";
 import {getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
@@ -32,6 +33,49 @@ const DATA_LIMIT = 5_000;
 
 function stationDataKey(stationId: number): string {
 	return `station_${stationId}`;
+}
+
+function getFallbackResolutionMs(resolution: string): number {
+	switch (resolution) {
+		case "5min":
+			return 5 * 60 * 1000;
+		case "15min":
+			return 15 * 60 * 1000;
+		case "hourly":
+			return 60 * 60 * 1000;
+		case "daily":
+			return 24 * 60 * 60 * 1000;
+		case "weekly":
+			return 7 * 24 * 60 * 60 * 1000;
+		case "monthly":
+			return 30 * 24 * 60 * 60 * 1000;
+		case "yearly":
+			return 365 * 24 * 60 * 60 * 1000;
+		default:
+			return 24 * 60 * 60 * 1000;
+	}
+}
+
+function getColumnDomainPadding(
+	chartData: Array<Record<string, number>>,
+	resolution: string,
+): number {
+	const timestamps = chartData
+		.map((entry) => entry.date)
+		.filter((value): value is number => typeof value === "number")
+		.sort((a, b) => a - b);
+
+	const deltas = timestamps
+		.slice(1)
+		.map((timestamp, index) => timestamp - timestamps[index]!)
+		.filter((delta) => delta > 0);
+
+	const bucketMs =
+		deltas.length === 0
+			? getFallbackResolutionMs(resolution)
+			: Math.min(...deltas);
+
+	return bucketMs / 2;
 }
 
 function mergeSeriesData(
@@ -93,6 +137,8 @@ export function TimeSeriesChart({
 	startDate,
 	endDate,
 	stationsById,
+	className = "msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px]",
+	emptyMessage = "No measurements are available for the current selection.",
 }: TimeSeriesChartProps): ReactElement {
 	const tooltipFormatter = useMemo(
 		() =>
@@ -101,6 +147,13 @@ export function TimeSeriesChart({
 				getTooltipDateFormat(resolution),
 			),
 		[resolution],
+	);
+	const numberFormatter = useMemo(
+		() =>
+			new Intl.NumberFormat(getDocumentLocale(), {
+				maximumFractionDigits: 2,
+			}),
+		[],
 	);
 
 	const {chartConfig, chartData} = useMemo(() => {
@@ -112,7 +165,10 @@ export function TimeSeriesChart({
 		for (const [index, stationId] of selectedStationIds.entries()) {
 			const station = stationsById?.get(stationId);
 			config[stationDataKey(stationId)] = {
-				label: station?.label ?? stationId.toString(),
+				label:
+					station === undefined
+						? stationId.toString()
+						: formatStationLabel(station),
 				color: getColorForStationIndex(index),
 			};
 		}
@@ -122,8 +178,19 @@ export function TimeSeriesChart({
 		return {chartConfig: config, chartData: data};
 	}, [selectedStationIds, stationsById, valuesByStationId]);
 
+	const xDomain = useMemo(() => {
+		const start = startDate.getTime();
+		const end = endDate.getTime();
+		if (type !== "column" || chartData.length === 0) {
+			return [start, end] as [number, number];
+		}
+
+		const padding = getColumnDomainPadding(chartData, resolution);
+		return [start - padding, end + padding] as [number, number];
+	}, [chartData, endDate, resolution, startDate, type]);
+
 	const commonAxisProps = {
-		domain: [startDate.getTime(), endDate.getTime()] as [number, number],
+		domain: xDomain,
 		tickFormatter: (value: number) =>
 			formatChartAxisDate(value, resolution),
 		type: "number" as const,
@@ -142,7 +209,7 @@ export function TimeSeriesChart({
 					dataKey={key}
 					fill={color}
 					isAnimationActive={false}
-					maxBarSize={32}
+					maxBarSize={18}
 				/>
 			);
 		}
@@ -179,8 +246,21 @@ export function TimeSeriesChart({
 	const ChartComponent =
 		type === "column" ? BarChart : type === "area" ? AreaChart : LineChart;
 
+	if (valuesByStationId !== undefined && chartData.length === 0) {
+		return (
+			<div className={`msca:relative msca:w-full ${className}`}>
+				<div
+					className="msca:absolute msca:inset-0 msca:flex msca:items-center msca:justify-center msca:rounded-md msca:border msca:border-dashed msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:p-6 msca:text-center msca:text-sm msca:text-[var(--msca-color-muted-foreground)]"
+					role="status"
+				>
+					{emptyMessage}
+				</div>
+			</div>
+		);
+	}
+
 	return (
-		<div className="msca:relative msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px] msca:w-full">
+		<div className={`msca:relative msca:w-full ${className}`}>
 			<ChartContainer
 				config={chartConfig}
 				className="msca:absolute msca:inset-0 msca:h-full msca:w-full"
@@ -188,7 +268,9 @@ export function TimeSeriesChart({
 				<ResponsiveContainer width="100%" height="100%">
 					<ChartComponent
 						data={chartData}
-						margin={{top: 8, right: 8, left: 0, bottom: 0}}
+						margin={{top: 8, right: 12, left: 8, bottom: 0}}
+						barCategoryGap="24%"
+						barGap={1}
 					>
 						<CartesianGrid vertical={false} strokeDasharray="3 3" />
 						<XAxis
@@ -201,13 +283,19 @@ export function TimeSeriesChart({
 							tickLine={false}
 							axisLine={false}
 							allowDecimals={false}
-							width={48}
+							width={56}
+							tickFormatter={(value: number) =>
+								numberFormatter.format(value)
+							}
 						/>
 						<Tooltip
 							content={
 								<ChartTooltipContent
 									labelFormatter={(label) =>
 										tooltipFormatter.format(new Date(label))
+									}
+									valueFormatter={(value) =>
+										numberFormatter.format(value)
 									}
 								/>
 							}

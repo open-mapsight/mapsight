@@ -62,7 +62,7 @@ export function SteppedWizardShell({
 	}, [onStepChange, step]);
 
 	return (
-		<div className="msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)]">
+		<div className="msca:bg-[var(--msca-color-surface)]">
 			<ol className="msca:flex msca:w-full msca:list-none msca:border-b msca:border-[var(--msca-color-border)]">
 				<li className="msca:flex msca:min-w-0 msca:flex-1">
 					<WizardStep

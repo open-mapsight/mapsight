@@ -86,11 +86,13 @@ const defaultCreateOptions: CreateOptions = {
 			internal: {
 				layerIdsSelector: undefined, // implied default: layer ids of layers viewed in internal Selector
 				grouped: false,
+				splitBaseLayers: false,
 			},
 			external: {
 				// FIXME: function in redux state?
 				layerIdsSelector: layerIdsExternalSwitcherSelector,
 				grouped: true,
+				splitBaseLayers: false,
 			},
 		},
 		list: {
@@ -105,6 +107,7 @@ const defaultCreateOptions: CreateOptions = {
 			deselectOnClick: false, // deselect on click to selected list item
 			cyclingControl: false, // show a control to select next or previous list entry
 			sortControl: true, // show sort control icon
+			layerSwitcherControl: false, // show layer switcher as collapsible control in integrated list header
 			tagSwitcherControl: false, // show tag switcher as collapsible control in integrated list header
 			filterControl: true, // show filter box
 			paginationControl: false, // show pagination

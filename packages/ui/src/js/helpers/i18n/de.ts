@@ -87,6 +87,8 @@ const de: Record<string, string> = {
 	"ui.map-overlay.layer-switcher.layers": "Ebenen",
 	"ui.map-overlay.layer-switcher.closeLayers": "Ebenenauswahl schließen",
 	"ui.map-overlay.layer-switcher.openLayers": "Ebenenauswahl öffnen",
+	"ui.layer-switcher.baseLayers": "Basiskarte",
+	"ui.layer-switcher.overlayLayers": "Datenebenen",
 
 	// HOWTO: wrap the metadata one base layer of the project with something like
 	// 		withLegend(_metadata, `<article><h1>${translate('ui.map.usage.heading')}</h1>${translate('ui.map.usage.html')}</article>`)

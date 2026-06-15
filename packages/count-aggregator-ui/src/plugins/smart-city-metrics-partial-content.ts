@@ -4,7 +4,7 @@ import type {PluginInstance} from "@mapsight/ui/types";
 import {
 	type SmartCityMetricsOptions,
 	createSmartCityMetricsPartialContentHandler,
-} from "../feature-details-metrics/index.js";
+} from "../feature-details-metrics";
 
 export type SmartCityMetricsPartialContentPluginOptions =
 	SmartCityMetricsOptions & {

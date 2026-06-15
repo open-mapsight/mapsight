@@ -121,33 +121,6 @@ export function ResultStep({
 
 	return (
 		<div>
-			{onEditSelection !== undefined ? (
-				<Section title={t("result.selectionSection")}>
-					{isValid ? (
-						<>
-							<p>
-								<strong>{t("result.selectedStations")} </strong>
-							</p>
-							<ul className="msca:mb-2">{stationTags}</ul>
-							<p>
-								<strong>{t("result.interval")} </strong>
-								{resolutionLabel}
-								<br />
-								<strong>{t("result.dateRange")} </strong>
-								{`${dateToYmd(startDate)} - ${dateToYmd(endDate)}`}
-							</p>
-						</>
-					) : null}
-					<WizardButton
-						type="button"
-						className="msca:mt-2"
-						onClick={onEditSelection}
-					>
-						{t("result.changeSelection")}
-					</WizardButton>
-				</Section>
-			) : null}
-
 			<Section title={t("result.chartSection")}>
 				{!isValid ? (
 					<p className="msca:bg-[var(--msca-color-danger-surface)] msca:p-2">
@@ -186,6 +159,7 @@ export function ResultStep({
 							startDate={startDate}
 							endDate={endDate}
 							stationsById={stationsById}
+							emptyMessage={t("chart.empty")}
 						/>
 
 						{showChartTypeSelect &&
@@ -199,6 +173,42 @@ export function ResultStep({
 				)}
 			</Section>
 
+			{showExport ? (
+				<Section title={t("result.downloadSection")}>
+					<CsvDownloadLink
+						href={csvDownloadHref}
+						disabled={!isValid}
+					/>
+				</Section>
+			) : null}
+
+			{onEditSelection !== undefined ? (
+				<Section title={t("result.selectionSection")}>
+					{isValid ? (
+						<>
+							<p>
+								<strong>{t("result.selectedStations")} </strong>
+							</p>
+							<ul className="msca:mb-2">{stationTags}</ul>
+							<p>
+								<strong>{t("result.interval")} </strong>
+								{resolutionLabel}
+								<br />
+								<strong>{t("result.dateRange")} </strong>
+								{`${dateToYmd(startDate)} - ${dateToYmd(endDate)}`}
+							</p>
+						</>
+					) : null}
+					<WizardButton
+						type="button"
+						className="msca:mt-2"
+						onClick={onEditSelection}
+					>
+						{t("result.changeSelection")}
+					</WizardButton>
+				</Section>
+			) : null}
+
 			{!onEditSelection ? (
 				<Section title={t("result.legendSection")}>
 					{stationTags.length === 0 ? (
@@ -208,15 +218,6 @@ export function ResultStep({
 					) : (
 						<ul>{stationTags}</ul>
 					)}
-				</Section>
-			) : null}
-
-			{showExport ? (
-				<Section title={t("result.downloadSection")}>
-					<CsvDownloadLink
-						href={csvDownloadHref}
-						disabled={!isValid}
-					/>
 				</Section>
 			) : null}
 		</div>

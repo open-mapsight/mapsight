@@ -2,7 +2,7 @@ import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
 import {z} from "zod";
 
-import type {TrafficEvent, TrafficEventsData} from "../types/index.js";
+import type {TrafficEvent, TrafficEventsData} from "../types";
 
 export function cn(...inputs: ClassValue[]): string {
 	return twMerge(clsx(inputs));

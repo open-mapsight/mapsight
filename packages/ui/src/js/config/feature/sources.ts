@@ -1,10 +1,6 @@
-import type {
-	FeatureSourceConfig,
-	FeatureSourceState,
-} from "@mapsight/core/lib/feature-sources/types";
+import type {FeatureSourceConfig} from "@mapsight/core/lib/feature-sources/types";
 
-type FeatureSourceDefinition = FeatureSourceConfig &
-	Pick<FeatureSourceState, "data" | "lastUpdate" | "lastActionType">;
+type FeatureSourceDefinition = FeatureSourceConfig;
 
 export {TIME_FILTER, TAG_FILTER} from "../constants/controllers";
 
@@ -17,9 +13,6 @@ export {TIME_FILTER, TAG_FILTER} from "../constants/controllers";
 export function plain(): FeatureSourceDefinition {
 	return {
 		type: "noop" as const,
-		data: null,
-		lastUpdate: null,
-		lastActionType: null,
 	};
 }
 
@@ -33,9 +26,6 @@ export function xhrJson(url: string): FeatureSourceDefinition {
 	return {
 		type: "xhr-json" as const,
 		url: url,
-		data: null,
-		lastUpdate: null,
-		lastActionType: null,
 	};
 }
 
@@ -57,9 +47,6 @@ export function xhrJsonRefreshing(
 		url: url,
 		doRefresh: true,
 		timer: timer,
-		data: null,
-		lastUpdate: null,
-		lastActionType: null,
 	};
 }
 
@@ -89,8 +76,5 @@ export function combinedFeatureSource(
 	return {
 		type: "combined",
 		featureSourceNames,
-		data: null,
-		lastUpdate: null,
-		lastActionType: null,
 	};
 }

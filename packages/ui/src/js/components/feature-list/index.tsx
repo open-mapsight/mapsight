@@ -46,6 +46,7 @@ import useFeatureListState from "./hooks/useFeatureListState";
 import {useMakeHeaderSticky} from "./hooks/useMakeHeaderSticky";
 import useRestoreDocumentScroll from "./hooks/useRestoreDocumentScroll";
 import useSelectFeature from "./hooks/useSelectFeature";
+import FeatureListLayerSwitcherControl from "./layer-switcher-control";
 import Pagination from "./pagination";
 import FeatureListTagSwitcherControl from "./tag-switcher-control";
 
@@ -214,6 +215,7 @@ function FeatureListInner(
 	const {
 		filterControl,
 		sortControl,
+		layerSwitcherControl,
 		tagSwitcherControl,
 		cyclingControl,
 		integratedList,
@@ -255,11 +257,17 @@ function FeatureListInner(
 						<FeatureCycling filteredFeatures={filteredFeatures} />
 					)}
 
-					{integratedList && layerSwitcherShowExternal && (
-						<LayerSwitcher
-							configSelector={layerSwitcherConfigExternalSelector}
-						/>
-					)}
+					{integratedList &&
+						layerSwitcherShowExternal &&
+						(layerSwitcherControl ? (
+							<FeatureListLayerSwitcherControl />
+						) : (
+							<LayerSwitcher
+								configSelector={
+									layerSwitcherConfigExternalSelector
+								}
+							/>
+						))}
 
 					{integratedList &&
 						tagSwitcherShow &&

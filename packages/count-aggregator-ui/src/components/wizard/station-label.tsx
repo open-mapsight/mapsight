@@ -1,5 +1,6 @@
 import {type ReactElement, memo} from "react";
 
+import {formatStationLabel} from "../../lib/stations.js";
 import type {Station} from "../../types";
 import {ColorDot} from "./color-dot.js";
 
@@ -22,7 +23,7 @@ export const StationLabel = memo(function StationLabel({
 			>
 				{station ? (
 					<>
-						{station.label}
+						{formatStationLabel(station)}
 						{station.sectionDescription ? (
 							<span className="msca:ml-1 msca:text-sm msca:text-gray-600">
 								{station.sectionDescription}

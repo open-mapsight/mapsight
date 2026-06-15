@@ -8,6 +8,7 @@ export type CountAggregatorTranslationKey =
 	| "calendar.end"
 	| "calendar.open"
 	| "calendar.start"
+	| "chart.empty"
 	| "chartType.area"
 	| "chartType.column"
 	| "chartType.note"
@@ -17,10 +18,13 @@ export type CountAggregatorTranslationKey =
 	| "dateRange.currentMonth"
 	| "dateRange.currentYear"
 	| "dateRange.from"
+	| "dateRange.last30Days"
+	| "dateRange.last7Days"
 	| "dateRange.lastMonth"
 	| "dateRange.lastYear"
 	| "dateRange.section"
 	| "dateRange.suggestions"
+	| "dateRange.today"
 	| "dateRange.toInclusive"
 	| "events.allDay"
 	| "events.empty"
@@ -76,6 +80,7 @@ const de: CountAggregatorTranslations = {
 	"calendar.end": "Zum Kalender (Enddatum)",
 	"calendar.open": "Zum Kalender",
 	"calendar.start": "Zum Kalender (Startdatum)",
+	"chart.empty": "Für die aktuelle Auswahl sind keine Messwerte verfügbar.",
 	"chartType.area": "Flächendiagramm",
 	"chartType.column": "Balkendiagramm",
 	"chartType.note":
@@ -87,10 +92,13 @@ const de: CountAggregatorTranslations = {
 	"dateRange.currentMonth": "Laufender Monat",
 	"dateRange.currentYear": "Laufendes Jahr",
 	"dateRange.from": "Vom",
+	"dateRange.last30Days": "Letzte 30 Tage",
+	"dateRange.last7Days": "Letzte 7 Tage",
 	"dateRange.lastMonth": "Letzter Monat",
 	"dateRange.lastYear": "Letztes Jahr",
 	"dateRange.section": "Zeitraum",
 	"dateRange.suggestions": "Vorschläge:",
+	"dateRange.today": "Heute",
 	"dateRange.toInclusive": "bis einschließlich",
 	"events.allDay": "(ganztägig)",
 	"events.empty": "Keine Einträge",
@@ -145,6 +153,7 @@ const en: CountAggregatorTranslations = {
 	"calendar.end": "Open calendar (end date)",
 	"calendar.open": "Open calendar",
 	"calendar.start": "Open calendar (start date)",
+	"chart.empty": "No measurements are available for the current selection.",
 	"chartType.area": "Area chart",
 	"chartType.column": "Bar chart",
 	"chartType.note":
@@ -155,10 +164,13 @@ const en: CountAggregatorTranslations = {
 	"dateRange.currentMonth": "Current month",
 	"dateRange.currentYear": "Current year",
 	"dateRange.from": "From",
+	"dateRange.last30Days": "Last 30 days",
+	"dateRange.last7Days": "Last 7 days",
 	"dateRange.lastMonth": "Last month",
 	"dateRange.lastYear": "Last year",
 	"dateRange.section": "Date range",
 	"dateRange.suggestions": "Suggestions:",
+	"dateRange.today": "Today",
 	"dateRange.toInclusive": "to and including",
 	"events.allDay": "(all day)",
 	"events.empty": "No entries",

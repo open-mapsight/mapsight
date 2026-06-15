@@ -9,6 +9,7 @@ import Select, {
 
 import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
+import {formatStationLabel} from "../../lib/stations.js";
 import {isDefined} from "../../lib/utils.js";
 import type {Station} from "../../types";
 
@@ -55,7 +56,7 @@ function createFormatOptionLabel(showDescriptionInSelection: boolean) {
 					className="msca:font-bold"
 					title={`${station.label ?? ""} ${station.sectionDescription ?? ""} (${station.originId})`}
 				>
-					{station.label || station.originId}
+					{formatStationLabel(station)}
 				</strong>
 				{showDesc && station.sectionDescription ? (
 					<>
@@ -71,7 +72,7 @@ function createFormatOptionLabel(showDescriptionInSelection: boolean) {
 }
 
 function getOptionLabel(station: Station): string {
-	return `${station.label ?? ""} ${station.typeName} ${station.sectionDescription ?? ""}`;
+	return `${formatStationLabel(station)} ${station.typeName} ${station.sectionDescription ?? ""}`;
 }
 
 export const StationSelect = memo(function StationSelect({
