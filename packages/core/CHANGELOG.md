@@ -1,5 +1,11 @@
 # @mapsight/core
 
+## 14.3.0
+
+### Minor Changes
+
+- 6cd6e11: Add bounded feature source history and normalize feature source runtime indexes.
+
 ## 14.2.0
 
 ### Minor Changes

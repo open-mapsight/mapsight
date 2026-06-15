@@ -7,8 +7,8 @@
 	"dependencies": {
 		"@mapsight/lib-js": "^3.0.4",
 		"@mapsight/lib-ol": "^4.1.0",
-		"@mapsight/traffic-style": "^5.1.0",
-		"@mapsight/ui": "^7.2.0",
+		"@mapsight/traffic-style": "^5.2.0",
+		"@mapsight/ui": "^7.2.1",
 		"@mapsight/vite-host-embed": "^1.1.0",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
@@ -18,7 +18,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^10.0.0",
+		"@mapsight/vector-style-compiler": "^11.0.0",
 		"@types/node": "^24.13.2",
 		"@types/react": "^19.2.15",
 		"@types/react-dom": "^19.2.3",
