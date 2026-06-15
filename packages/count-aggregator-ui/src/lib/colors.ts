@@ -9,14 +9,21 @@ export const STATION_COLORS = [
 	"#519c95",
 ] as const;
 
+const themedStationColors = STATION_COLORS.map(
+	(color, index) => `var(--msca-chart-color-${index + 1}, ${color})`,
+);
+
 export function getColorForStationIndex(index: number | null = null): string {
 	if (index === null) {
 		return "#000";
 	}
 
-	return STATION_COLORS[index % STATION_COLORS.length] ?? "#6390ba";
+	return (
+		themedStationColors[index % themedStationColors.length] ??
+		STATION_COLORS[0]
+	);
 }
 
-export const CHART_COLORS = STATION_COLORS.map((color) => ({
+export const CHART_COLORS = themedStationColors.map((color) => ({
 	color,
 })) as Array<{color: string}>;

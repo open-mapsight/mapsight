@@ -73,7 +73,10 @@ export function CountAggregatorRoot({
 		<CountAggregatorRootContext.Provider value={contextValue}>
 			<div
 				ref={rootRef}
-				className={cn("msp-count-aggregator", className)}
+				className={cn(
+					"msp-count-aggregator msca:min-w-0 msca:max-w-full",
+					className,
+				)}
 				style={{...themeStyle, ...style}}
 			>
 				{children}

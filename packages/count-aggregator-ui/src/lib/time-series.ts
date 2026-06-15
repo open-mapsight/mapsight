@@ -4,7 +4,7 @@ import {
 	parseLocalDateTime,
 } from "@mapsight/count-aggregator-api";
 
-import type {StationValue} from "../types/index.js";
+import type {StationValue} from "../types";
 
 export function mapDataValuePointsToChartPoints(
 	points: readonly DataValuePoint[],

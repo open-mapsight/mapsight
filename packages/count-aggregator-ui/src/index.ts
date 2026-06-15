@@ -57,6 +57,7 @@ export {
 
 export {getColorForStationIndex, STATION_COLORS} from "./lib/colors.js";
 export {dateToYmd, ymdToDate} from "./lib/dates.js";
+export {formatStationLabel} from "./lib/stations.js";
 
 export {
 	createSmartCityMetricsPartialContentHandler,

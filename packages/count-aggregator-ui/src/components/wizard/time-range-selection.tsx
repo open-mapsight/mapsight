@@ -7,12 +7,14 @@ import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
 import {
 	dateToYmd,
+	getDaysAgo,
 	getFirstDayOfLastYear,
 	getFirstDayOfMonth,
 	getFirstDayOfYear,
 	getLastDayOfLastYear,
 	getLastDayOfMonth,
 	getLastDayOfYear,
+	getToday,
 } from "../../lib/dates.js";
 import {WizardButton} from "./wizard-button.js";
 
@@ -72,6 +74,28 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 	const {t} = useCountAggregatorI18n();
 	const presetButtons = useMemo(() => {
 		const definitions = [
+			{
+				label: t("dateRange.today"),
+				onClick: () => {
+					const today = getToday();
+					setStartDate(today);
+					setEndDate(today);
+				},
+			},
+			{
+				label: t("dateRange.last7Days"),
+				onClick: () => {
+					setStartDate(getDaysAgo(6));
+					setEndDate(getToday());
+				},
+			},
+			{
+				label: t("dateRange.last30Days"),
+				onClick: () => {
+					setStartDate(getDaysAgo(29));
+					setEndDate(getToday());
+				},
+			},
 			{
 				label: t("dateRange.lastYear"),
 				onClick: () => {

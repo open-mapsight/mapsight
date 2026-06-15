@@ -24,11 +24,17 @@ function OverviewChart({
 	stationIds,
 	config,
 	stationsById,
+	variant,
+	chartClassName,
+	hideTitle,
 }: {
 	appId: string;
 	stationIds: readonly number[];
 	config: OverviewChartConfig;
 	stationsById: Map<number, Station> | undefined;
+	variant: "card" | "plain";
+	chartClassName?: string;
+	hideTitle: boolean;
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
@@ -82,10 +88,20 @@ function OverviewChart({
 		],
 	);
 
+	const articleClassName =
+		variant === "card"
+			? "msca:min-w-0 msca:max-w-full msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)]"
+			: "msca:min-w-0 msca:max-w-full msca:bg-transparent";
+	const bodyClassName =
+		variant === "card" ? "msca:min-w-0 msca:p-6" : "msca:min-w-0";
+
 	return (
-		<article className="msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)]">
-			<div className="msca:p-6">
-				<Section title={config.title}>
+		<article className={articleClassName}>
+			<div className={bodyClassName}>
+				<Section
+					title={config.title}
+					titleClassName={hideTitle ? "msca:sr-only" : undefined}
+				>
 					<TimeSeriesChart
 						type={config.chartType}
 						selectedStationIds={stationIds}
@@ -94,6 +110,8 @@ function OverviewChart({
 						startDate={startDate}
 						endDate={endDate}
 						stationsById={stationsById}
+						className={chartClassName}
+						emptyMessage={t("chart.empty")}
 					/>
 				</Section>
 
@@ -110,14 +128,20 @@ export function OverviewChartPanel({
 	stationIds,
 	charts,
 	stationsById,
+	variant = "card",
+	chartClassName,
+	hideTitles = false,
 }: {
 	appId: string;
 	stationIds: readonly number[];
 	charts: readonly OverviewChartConfig[];
 	stationsById: Map<number, Station> | undefined;
+	variant?: "card" | "plain";
+	chartClassName?: string;
+	hideTitles?: boolean;
 }): ReactElement {
 	return (
-		<div className="msca:space-y-6">
+		<div className="msca:min-w-0 msca:max-w-full msca:space-y-6">
 			{charts.map((chart) => (
 				<OverviewChart
 					key={`${chart.resolution}-${chart.limit}-${chart.chartType}`}
@@ -125,6 +149,9 @@ export function OverviewChartPanel({
 					stationIds={stationIds}
 					config={chart}
 					stationsById={stationsById}
+					variant={variant}
+					chartClassName={chartClassName}
+					hideTitle={hideTitles}
 				/>
 			))}
 		</div>

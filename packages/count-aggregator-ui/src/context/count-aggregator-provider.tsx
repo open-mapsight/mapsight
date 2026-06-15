@@ -11,10 +11,7 @@ import {
 	getCountAggregatorDictionary,
 	resolveCountAggregatorLocale,
 } from "../lib/i18n.js";
-import type {
-	CountAggregatorAppConfig,
-	CountAggregatorConfig,
-} from "../types/index.js";
+import type {CountAggregatorAppConfig, CountAggregatorConfig} from "../types";
 
 const CountAggregatorConfigContext =
 	createContext<CountAggregatorConfig | null>(null);

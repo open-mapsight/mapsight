@@ -8,6 +8,7 @@ export interface CountAggregatorTheme {
 		surface?: string;
 		surfaceMuted?: string;
 	};
+	chartColors?: readonly string[];
 	radius?: string;
 }
 
@@ -55,6 +56,10 @@ export function createTheme(
 
 	if (theme.colors?.surfaceMuted !== undefined) {
 		style[THEME_VAR_MAP["colors.surfaceMuted"]] = theme.colors.surfaceMuted;
+	}
+
+	for (const [index, color] of (theme.chartColors ?? []).entries()) {
+		style[`--msca-chart-color-${index + 1}`] = color;
 	}
 
 	if (theme.radius !== undefined) {

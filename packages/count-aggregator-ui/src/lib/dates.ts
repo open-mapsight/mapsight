@@ -1,4 +1,4 @@
-import type {DataResolution} from "../types/index.js";
+import type {DataResolution} from "../types";
 
 export function dateToYmd(date: Date): string {
 	const year = date.getFullYear();
@@ -28,6 +28,20 @@ export function getLastDayOfMonth(
 	return new Date(year, month - 1, date.getDate());
 }
 
+export function getToday(): Date {
+	const now = new Date();
+	return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+export function getDaysAgo(days: number): Date {
+	const today = getToday();
+	return new Date(
+		today.getFullYear(),
+		today.getMonth(),
+		today.getDate() - days,
+	);
+}
+
 export function getFirstDayOfYear(): Date {
 	const currYear = new Date().getFullYear();
 	return new Date(currYear, 0);
@@ -46,14 +60,6 @@ export function getFirstDayOfLastYear(): Date {
 export function getLastDayOfLastYear(): Date {
 	const currYear = new Date().getFullYear();
 	return new Date(currYear - 1, 11, 31);
-}
-
-export function dateToInternalString(date: Date | null): string {
-	if (date === null) {
-		return "";
-	}
-
-	return dateToYmd(date);
 }
 
 export function getTooltipDateFormat(

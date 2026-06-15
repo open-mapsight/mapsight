@@ -131,6 +131,8 @@ export interface TimeSeriesChartProps {
 	startDate: Date;
 	endDate: Date;
 	stationsById: Map<number, Station> | undefined;
+	className?: string;
+	emptyMessage?: string;
 }
 
 export type {Resolution, StationType};

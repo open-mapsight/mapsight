@@ -69,8 +69,8 @@ export async function fetchMetricSumValue(
 	const apiStationId = toCountAggregatorStationId(stationId);
 	const response = await getStationSums(client, stationType, apiStationId);
 
-	let rawValue: number | null = null;
-	let lastUpdatedAt: Date | null = null;
+	let rawValue: number | null;
+	let lastUpdatedAt: Date | null;
 
 	if (kind === "sumTotal") {
 		rawValue = response.total ?? null;

@@ -1,7 +1,10 @@
+import {createElement} from "react";
+
+import {render, screen} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 
 import type {AggregatedValuesData, StationValue} from "../../types/index.js";
-import {prepareChartValues} from "./time-series-chart.js";
+import {TimeSeriesChart, prepareChartValues} from "./time-series-chart.js";
 
 function createValues(count: number): StationValue[] {
 	return Array.from({length: count}, (_, index) => ({
@@ -50,5 +53,26 @@ describe("prepareChartValues", () => {
 
 		expect(tooMuchData).toBe(false);
 		expect(valuesByStationId).toBeUndefined();
+	});
+});
+
+describe("TimeSeriesChart", () => {
+	it("shows an empty state after data loaded without measurements", () => {
+		render(
+			createElement(TimeSeriesChart, {
+				type: "column",
+				selectedStationIds: [1],
+				valuesByStationId: new Map([[1, []]]),
+				resolution: "daily",
+				startDate: new Date(2026, 5, 1),
+				endDate: new Date(2026, 5, 2),
+				stationsById: new Map(),
+				emptyMessage:
+					"Für die aktuelle Auswahl sind keine Messwerte verfügbar.",
+			}),
+		);
+
+		expect(screen.getByRole("status")).toBeTruthy();
+		expect(screen.getByText(/keine messwerte verfügbar/i)).toBeTruthy();
 	});
 });

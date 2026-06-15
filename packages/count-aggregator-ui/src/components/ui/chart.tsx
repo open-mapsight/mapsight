@@ -72,7 +72,7 @@ export function ChartContainer({
 			<div
 				data-chart={chartId}
 				className={cn(
-					"msp-count-aggregator-chart msca:flex msca:aspect-auto msca:justify-center msca:text-xs",
+					"msp-count-aggregator-chart msca:flex msca:min-w-0 msca:max-w-full msca:aspect-auto msca:justify-center msca:overflow-hidden msca:text-xs",
 					className,
 				)}
 				style={{...cssVars, ...style}}
@@ -97,10 +97,12 @@ export function ChartTooltipContent({
 	active,
 	payload,
 	labelFormatter,
+	valueFormatter,
 }: {
 	active?: boolean;
 	payload?: TooltipPayloadItem[];
 	labelFormatter?: (label: number) => ReactNode;
+	valueFormatter?: (value: number) => ReactNode;
 }): ReactElement | null {
 	const {config} = useChartContext();
 
@@ -137,7 +139,10 @@ export function ChartTooltipContent({
 								</span>
 							</div>
 							<span className="msca:font-medium msca:tabular-nums msca:text-gray-900">
-								{item.value?.toLocaleString()}
+								{item.value === undefined
+									? undefined
+									: (valueFormatter?.(item.value) ??
+										item.value.toLocaleString())}
 							</span>
 						</div>
 					);

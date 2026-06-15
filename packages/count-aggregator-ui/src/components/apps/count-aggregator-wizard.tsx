@@ -146,7 +146,13 @@ function SelectionPanel({
 	);
 }
 
-export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
+export function CountAggregatorWizard({
+	appId,
+	initialSelectedStationIds = [],
+}: {
+	appId: string;
+	initialSelectedStationIds?: readonly number[];
+}): ReactElement {
 	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
 	const isStepped = appConfig.uiVariant === "stepped";
@@ -164,7 +170,7 @@ export function CountAggregatorWizard({appId}: {appId: string}): ReactElement {
 	const [step, setStep] = useState<0 | 1>(0);
 	const [selectedStationIds, setSelectedStationIds] = useState<
 		readonly number[]
-	>([]);
+	>(initialSelectedStationIds);
 	const [startDate, setStartDate] = useState(getFirstDayOfMonth);
 	const [endDate, setEndDate] = useState(getLastDayOfMonth);
 	const [resolution, setResolution] = useState<DataResolution>(

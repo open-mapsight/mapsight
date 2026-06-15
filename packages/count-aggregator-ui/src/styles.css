@@ -73,7 +73,8 @@
 }
 
 @import "flatpickr/dist/flatpickr.min.css" layer(components);
-@import "./feature-details-metrics/feature-details-metrics.css" layer(components);
+@import "./feature-details-metrics/feature-details-metrics.css"
+	layer(components);
 
 /* ── Root shell: isolation + design tokens ─────────────────────────────── */
 
@@ -224,16 +225,18 @@
 	}
 }
 
-#msp-count-aggregator-portal {
-	position: relative;
-	z-index: 50;
-}
-
 /* ── Charts (Recharts) ─────────────────────────────────────────────────── */
 
 .msp-count-aggregator-chart {
 	--color-border: var(--msca-color-border);
 	--color-muted-foreground: var(--msca-color-muted-foreground);
+}
+
+.msp-count-aggregator-chart .recharts-responsive-container,
+.msp-count-aggregator-chart .recharts-wrapper,
+.msp-count-aggregator-chart .recharts-surface {
+	max-width: 100%;
+	overflow: hidden;
 }
 
 .msp-count-aggregator-chart .recharts-cartesian-grid-horizontal line,
@@ -246,7 +249,7 @@
 	font-size: var(--msca-text-xs);
 }
 
-/* ── Flatpickr: raise specificity inside embed root ────────────────────── */
+/* ── Flatpickr: scoped popup inside the count-aggregator portal ─────────── */
 
 .msp-count-aggregator .flatpickr-calendar {
 	background: var(--msca-color-surface);
