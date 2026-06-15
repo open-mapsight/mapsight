@@ -45,7 +45,7 @@ const store = createMapsightStore(
 const editor = new EditorMixin(store, "vectorEditor", {
 	displayStyle: {
 		style: "features",
-		mapsightIconId: getMapsightIconId() || "ort",
+		mapsightIconId: getMapsightIconId(),
 		isTemporaryRestriction: false,
 	},
 	drawStyle: "drawMeasure",

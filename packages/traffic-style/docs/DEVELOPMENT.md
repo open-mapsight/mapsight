@@ -65,8 +65,8 @@ multi-part symbols, etc.). For simple POI pictograms, use the composable path ab
    `-xsmall.png`) to `img/mapsight-icons-2x/`
 5. Describe the new icon in `src/meta.json`
 6. Optionally add it to the fallback map in `src/scss/_variables.scss`
-7. Search and replace cache-busting strings in `src/scss/**` in the format
-   `?v=xxxx-xx-xx-xx-xx` (TODO: automate or centralize in one file)
+7. Manually update cache-busting strings in `src/scss/**` using the format
+   `?v=xxxx-xx-xx-xx-xx`, and keep the value consistent across all references.
 8. Build everything using `pnpm run clean-build`
 
 ---
