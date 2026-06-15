@@ -43,6 +43,32 @@ describe("createMapsightConfigSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
+	it("parses bounded feature source history config", () => {
+		const result = exampleConfigSchema.safeParse({
+			featureSources: {
+				editor: {
+					type: "local",
+					enableHistory: true,
+					historyLimit: 20,
+				},
+			},
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects invalid feature source history limits", () => {
+		const result = exampleConfigSchema.safeParse({
+			featureSources: {
+				editor: {
+					type: "local",
+					enableHistory: true,
+					historyLimit: 0,
+				},
+			},
+		});
+		expect(result.success).toBe(false);
+	});
+
 	it("parses list config fields used by featureList()", () => {
 		const result = exampleConfigSchema.safeParse({
 			list: {

@@ -16,6 +16,7 @@ export const featureSourceConfigSchema = z
 		doRefresh: z.boolean().optional(),
 		timer: z.number().optional(),
 		enableHistory: z.boolean().optional(),
+		historyLimit: z.number().int().positive().optional(),
 	})
 	.strict();
 

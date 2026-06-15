@@ -71,6 +71,8 @@ export type LoadOptions =
 	| SharedLoadOptions
 	| (LocalStateLoaderOptions & SharedLoadOptions);
 
+type FeatureSourceMutationOptions = unknown;
+
 export const undo = (controllerName: string, id: string) =>
 	withPath(
 		{
@@ -93,7 +95,7 @@ export const addFeature = (
 	controllerName: string,
 	sourceId: string,
 	feature: Feature,
-	options?: unknown, // TODO: type the options for all the actions in this file
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -112,7 +114,7 @@ export const updateFeature = (
 	sourceId: string,
 	featureId: FeatureId,
 	feature: Feature,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -133,7 +135,7 @@ export const updateFeatureProperty = (
 	featureId: FeatureId,
 	propertyId: string,
 	value: unknown,
-	options: unknown,
+	options: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -153,7 +155,7 @@ export const updateFeatures = (
 	controllerName: string,
 	id: string,
 	features: Array<Feature>,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -172,7 +174,7 @@ export const updateFeatureGeometry = (
 	id: string,
 	featureId: FeatureId,
 	geometry: Geometry,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -191,7 +193,7 @@ export const addFeatures = (
 	controllerName: string,
 	id: string,
 	features: Array<Feature>,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -209,7 +211,7 @@ export const removeFeature = (
 	controllerName: string,
 	id: string,
 	featureId: string,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -227,7 +229,7 @@ export const removeFeatures = (
 	controllerName: string,
 	id: string,
 	featureIds: Array<FeatureId>,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -244,7 +246,7 @@ export const removeFeatures = (
 export const removeAllFeatures = (
 	controllerName: string,
 	id: string,
-	options?: unknown,
+	options?: FeatureSourceMutationOptions,
 ) =>
 	controlled(
 		withPath(
@@ -364,7 +366,7 @@ export const load = (
 				},
 				function handleLoadRejected(err) {
 					dispatch(loadFailure(controllerName, id, err));
-					return Promise.reject(err);
+					throw err;
 				},
 			),
 			refreshByTimer(currentState).then(function handleRefreshFulfilled(
@@ -442,8 +444,7 @@ async function loadWithCache(
 	const canUseCache = !forceRefresh && state.data;
 	if (useCache === USE_CACHE_ONLY && !canUseCache) {
 		await Promise.resolve();
-		await Promise.reject(ERROR_COLD_CACHE);
-		return;
+		throw new Error(ERROR_COLD_CACHE);
 	}
 
 	if (useCache !== USE_CACHE_NO && canUseCache) {

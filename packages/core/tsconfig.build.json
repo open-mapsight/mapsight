@@ -1,0 +1,9 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./tsconfig.json",
+	"exclude": ["**/__tests__/**", "**/*.test.ts", "src/js/test/**"],
+	"compilerOptions": {
+		"noEmit": false,
+		"outDir": "dist"
+	}
+}
