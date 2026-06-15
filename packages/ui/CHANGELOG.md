@@ -1,5 +1,33 @@
 # @mapsight/ui
 
+## 7.2.1
+
+### Patch Changes
+
+- 25c5f29: Stop initializing runtime-only feature source state in UI feature source config
+  helpers.
+
+    The helpers now return only feature source configuration fields and rely on the
+    core runtime state normalization introduced in
+    https://github.com/open-mapsight/mapsight/commit/6cd6e11ffe73633eeb55f8e02425748baefe385d
+    to populate `data`, `lastUpdate`, and `lastActionType`.
+
+- 25c5f29: Add more flexible layer switcher presentation options.
+
+    Layer switchers can now render base layers in their own section while keeping
+    overlay layers grouped separately, with base layer entries isolated from feature
+    source updates. Feature lists can also render the external layer switcher behind
+    a compact filter-toggle control.
+
+    The default layer switcher CSS stays intentionally minimal; the richer split
+    layout sizing, spacing, and expanded overlay dimensions live in the existing
+    `2022-03` theme.
+
+- Updated dependencies [6cd6e11]
+- Updated dependencies [77faf3d]
+    - @mapsight/core@14.3.0
+    - @mapsight/traffic-style@5.2.0
+
 ## 7.2.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @mapsight/traffic-style
 
+## 5.2.0
+
+### Minor Changes
+
+- 77faf3d: Add icon metadata helpers, fix variant fallback, and align composed default pictogram icons with the legacy bitmap footprint.
+
 ## 5.1.0
 
 ### Minor Changes
