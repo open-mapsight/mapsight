@@ -5,6 +5,8 @@ import {CatalogPage} from "./icons/catalog-page.tsx";
 import {EditorPage} from "./icons/editor-page.tsx";
 import {ShowcaseLayout} from "./layout/showcase-layout.tsx";
 import {LandingPage} from "./pages/landing-page.tsx";
+import {ImprintPage} from "./pages/legal/imprint-page.tsx";
+import {PrivacyPage} from "./pages/legal/privacy-page.tsx";
 import {CombinedListPage} from "./pages/ui-demos/combined-list-page.tsx";
 import {CustomPage} from "./pages/ui-demos/custom-page.tsx";
 import {FullPage} from "./pages/ui-demos/full-page.tsx";
@@ -35,6 +37,8 @@ export function App() {
 						path="count-aggregator"
 						element={<CountAggregatorDemoPage />}
 					/>
+					<Route path="imprint" element={<ImprintPage />} />
+					<Route path="privacy" element={<PrivacyPage />} />
 				</Route>
 				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>

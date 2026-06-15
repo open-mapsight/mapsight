@@ -78,14 +78,13 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 
 export function CountAggregatorDemoPage(): ReactElement {
 	return (
-		<div className="count-aggregator-demo">
-			<div className="count-aggregator-demo__intro">
+		<div className="showcase-page count-aggregator-demo">
+			<div className="showcase-page__hero">
 				<h1>Count aggregator</h1>
 				<p>
-					Stepped wizard wired to a <strong>mock API</strong> served
-					by the showcase dev server at{" "}
-					<code>{COUNT_AGGREGATOR_MOCK_API_BASE}</code>. No live
-					Mapsight tenant or secrets required.
+					Explore an embeddable reporting flow for public time series
+					data. Pick stations, choose a time range, compare daily
+					values, and export the result as a chart, table, or CSV.
 				</p>
 			</div>
 

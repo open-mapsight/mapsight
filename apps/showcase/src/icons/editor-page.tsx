@@ -17,11 +17,7 @@ import {FEATURE_SOURCES} from "@mapsight/ui/config/constants/controllers";
 
 import {updateFeatureProperty} from "@mapsight/core/lib/feature-sources/actions";
 
-import {
-	ICON_BACKGROUND_PALETTE,
-	ICON_FOREGROUND_PALETTE,
-} from "./icon-color-palette.ts";
-import {IconColorPicker} from "./icon-color-picker.tsx";
+import {IconColorControls} from "./icon-color-controls.tsx";
 import {IconPreview} from "./icon-preview.tsx";
 import {
 	DEFAULT_ICON_BACKGROUND,
@@ -61,7 +57,7 @@ function EditorPageContent({plainMap}: {plainMap: boolean}) {
 	const [contentMode, setContentMode] =
 		useState<IconContentMode>("pictogram");
 	const [pictogram, setPictogram] = useState(pictogramIds[0] ?? "fa-marker");
-	const [label, setLabel] = useState("");
+	const [label, setLabel] = useState("A");
 	const [background, setBackground] = useState(DEFAULT_ICON_BACKGROUND);
 	const [foregroundOverride, setForegroundOverride] = useState<string | null>(
 		null,
@@ -136,13 +132,15 @@ function EditorPageContent({plainMap}: {plainMap: boolean}) {
 			className={`icon-route icon-route--editor app${plainMap ? " icon-route--plain-map" : ""}`}
 		>
 			<aside className="panel">
-				<h1>@mapsight/traffic-style/runtime-dev</h1>
-				<p>
-					Compose a runtime icon and copy the resulting{" "}
-					<code>mapsightIconId</code>. The map mixes classic sprites,
-					default runtime icons, colored runtime icons, and your live
-					editor preview feature.
-				</p>
+				<header className="icon-route__header">
+					<h1>Icon editor</h1>
+					<p>
+						Build a map pictogram by choosing its symbol,
+						background, and foreground colors. The preview shows the
+						generated icon variants and how the result appears on a
+						real map.
+					</p>
+				</header>
 
 				<div className="field">
 					<span className="field__label">Icon content</span>
@@ -163,7 +161,12 @@ function EditorPageContent({plainMap}: {plainMap: boolean}) {
 							type="button"
 							className={`mode-toggle__btn${contentMode === "label" ? " is-active" : ""}`}
 							aria-pressed={contentMode === "label"}
-							onClick={() => setContentMode("label")}
+							onClick={() => {
+								setContentMode("label");
+								if (label.trim() === "") {
+									setLabel("A");
+								}
+							}}
 						>
 							Label
 						</button>
@@ -196,50 +199,35 @@ function EditorPageContent({plainMap}: {plainMap: boolean}) {
 							maxLength={2}
 							onChange={(event) => setLabel(event.target.value)}
 							placeholder="e.g. A1"
+							pattern="[A-Z0-9]{1,2}"
+							style={{maxWidth: "4em", textAlign: "center"}}
 						/>
 					</div>
 				)}
 
-				<div className="color-row">
-					<IconColorPicker
-						id="background"
-						label="Background"
-						value={background}
-						palette={ICON_BACKGROUND_PALETTE}
-						onChange={setBackground}
-						onReset={() => setBackground(DEFAULT_ICON_BACKGROUND)}
-						resetDisabled={background === DEFAULT_ICON_BACKGROUND}
-					/>
-					<IconColorPicker
-						id="foreground"
-						label={
-							<>
-								Foreground
-								{foregroundIsAuto ? (
-									<span className="field__hint"> (auto)</span>
-								) : null}
-							</>
-						}
-						value={resolvedForeground}
-						palette={ICON_FOREGROUND_PALETTE}
-						onChange={setForegroundOverride}
-						onReset={() => setForegroundOverride(null)}
-						resetDisabled={foregroundIsAuto}
-						note={
-							foregroundIsAuto
-								? "Contrast is picked automatically from the background."
-								: undefined
-						}
-					/>
+				<IconColorControls
+					background={background}
+					foreground={resolvedForeground}
+					foregroundIsAuto={foregroundIsAuto}
+					onBackgroundChange={setBackground}
+					onBackgroundReset={() =>
+						setBackground(DEFAULT_ICON_BACKGROUND)
+					}
+					onForegroundChange={setForegroundOverride}
+					onForegroundReset={() => setForegroundOverride(null)}
+				/>
+
+				<hr style={{borderTop: "1px solid #ccc", margin: "1em 0"}} />
+
+				<div className="field">
+					<span className="field__label">Preview</span>
+					{previewSpec ? <IconPreview spec={previewSpec} /> : null}
 				</div>
 
-				<div className="output-card">
-					<div className="output-card__header">
-						<strong>mapsightIconId</strong>
-						<span className="output-card__hint">
-							Feature property value
-						</span>
-					</div>
+				<hr style={{borderTop: "1px solid #ccc", margin: "1em 0"}} />
+
+				<div className="field">
+					<span className="field__label">mapsightIconId</span>
 					<div className="id-output" aria-live="polite">
 						{mapsightIconId || (
 							<span className="id-output__empty">
@@ -247,20 +235,13 @@ function EditorPageContent({plainMap}: {plainMap: boolean}) {
 							</span>
 						)}
 					</div>
-					<div className="output-card__subheader">
-						<strong>GeoJSON feature</strong>
-						<span className="output-card__hint">
-							Rendered on the map
-						</span>
-					</div>
+				</div>
+
+				<div className="field">
+					<span className="field__label">GeoJSON</span>
 					<pre className="geojson-output">
 						<code>{editorFeatureJson}</code>
 					</pre>
-				</div>
-
-				<div className="preview-card">
-					<strong>Live preview (all variants)</strong>
-					{previewSpec ? <IconPreview spec={previewSpec} /> : null}
 				</div>
 
 				<div className="stats">
