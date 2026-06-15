@@ -156,6 +156,7 @@ export type LayerSwitcherConfigState = {
 	setFeatureSourceId: string[] | true | undefined;
 	grouped: boolean;
 	layerIdsSelector: (state: object) => string[];
+	splitBaseLayers?: boolean;
 };
 
 export type FetchTextState = {
@@ -246,6 +247,7 @@ export type FullUiState = {
 		stickyHeader: boolean;
 		highlightOnMouse: boolean;
 		sortControl: boolean;
+		layerSwitcherControl: boolean;
 		tagSwitcherControl: boolean;
 		detailsInList: boolean;
 		integratedList: boolean;

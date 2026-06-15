@@ -16,6 +16,7 @@ import {translate} from "../../helpers/i18n";
 import GroupedLayerSwitcher from "./GroupedLayerSwitcher";
 import LayerSwitcher from "./LayerSwitcher";
 import LayerSwitcherEntry from "./LayerSwitcherEntry";
+import SplitBaseLayerSwitcher from "./SplitBaseLayerSwitcher";
 
 // TODO das berechnen der LayerListen (abhängig von grouped und layerIdSelector) in einen Selector packen,
 //  damit diese Berechnung nur bei Änderungen am store berechnet neu wird
@@ -27,6 +28,7 @@ export type LayerSwitcherContainerProps = {
 	onClose?: () => void;
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
+	splitBaseLayers?: boolean;
 	setFeatureSourceIdPath?: ActionPath | null;
 };
 
@@ -36,11 +38,12 @@ function LayerSwitcherContainer({
 	onClose,
 	layerIdsSelector = layerIdsIntegratedSwitcherSelector,
 	grouped = false,
+	splitBaseLayers = false,
 	setFeatureSourceIdPath,
 	...attributes
 }: LayerSwitcherContainerProps) {
-	const renderLayerEntry = useCallback(
-		(id: string) => (
+	const createLayerEntry = useCallback(
+		(id: string, entrySetFeatureSourceIdPath?: ActionPath | null) => (
 			<LayerSwitcherEntry
 				key={id}
 				layerId={id}
@@ -51,25 +54,50 @@ function LayerSwitcherContainer({
 				featureSourceIdSelector={makeFeatureSourceIdFromLayerIdSelector(
 					id,
 				)}
-				setFeatureSourceIdPath={setFeatureSourceIdPath}
+				setFeatureSourceIdPath={entrySetFeatureSourceIdPath}
 			/>
 		),
-		[setFeatureSourceIdPath],
+		[],
 	);
-
-	const Switcher = grouped ? GroupedLayerSwitcher : LayerSwitcher;
+	const renderLayerEntry = useCallback(
+		(id: string) => createLayerEntry(id, setFeatureSourceIdPath),
+		[createLayerEntry, setFeatureSourceIdPath],
+	);
+	const renderBaseLayerEntry = useCallback(
+		(id: string) => createLayerEntry(id, null),
+		[createLayerEntry],
+	);
 
 	return (
 		<T
 			className={`${baseClassName} ${baseClassName}--${
-				grouped ? "grouped" : "ungrouped"
+				splitBaseLayers
+					? "split-base-layers"
+					: grouped
+						? "grouped"
+						: "ungrouped"
 			}`}
 		>
-			<Switcher
-				layerIdsSelector={layerIdsSelector}
-				renderEntry={renderLayerEntry}
-				{...attributes}
-			/>
+			{splitBaseLayers ? (
+				<SplitBaseLayerSwitcher
+					layerIdsSelector={layerIdsSelector}
+					renderBaseLayerEntry={renderBaseLayerEntry}
+					renderEntry={renderLayerEntry}
+					{...attributes}
+				/>
+			) : grouped ? (
+				<GroupedLayerSwitcher
+					layerIdsSelector={layerIdsSelector}
+					renderEntry={renderLayerEntry}
+					{...attributes}
+				/>
+			) : (
+				<LayerSwitcher
+					layerIdsSelector={layerIdsSelector}
+					renderEntry={renderLayerEntry}
+					{...attributes}
+				/>
+			)}
 
 			{onClose && (
 				<button

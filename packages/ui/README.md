@@ -62,6 +62,10 @@ as assets (Vite/Webpack `~` alias — see starters and [
 Copy `@mapsight/traffic-style` icons (`mapsight-icons*`) to `public/img/` separately — they are fetched at runtime via
 `imagesUrl`, not via this SCSS path.
 
+When contributing UI SCSS, keep base partials such as `src/scss/blocks/*` minimal and structural. Opinionated visual
+treatment — fixed dimensions, dense spacing, expanded panel widths, grid breakpoints, and host-specific sizing — belongs
+in an explicit theme under `src/scss/themes/` or in the host app's own stylesheet.
+
 Copy-out templates: [
 `starters/mapsight-host-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-host-starter), [
 `starters/mapsight-next-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-next-starter), [

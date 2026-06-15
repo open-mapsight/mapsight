@@ -86,6 +86,8 @@ const en: Record<string, string> = {
 	"ui.map-overlay.layer-switcher.layers": "layers",
 	"ui.map-overlay.layer-switcher.closeLayers": "close layer picker",
 	"ui.map-overlay.layer-switcher.openLayers": "open layer picker",
+	"ui.layer-switcher.baseLayers": "Base map",
+	"ui.layer-switcher.overlayLayers": "Data layers",
 
 	"ui.map.usage.heading": "Keyboard shortcuts for map usage",
 	"ui.map.usage.html":

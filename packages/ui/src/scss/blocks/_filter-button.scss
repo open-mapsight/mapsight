@@ -41,8 +41,8 @@
 	&--icon-sort-active {
 		height: 33px;
 		width: 40px;
-		background: transparent url(variables.$ms3-uiIconPath + "sort.svg") no-repeat
-			center;
+		background: transparent url(variables.$ms3-uiIconPath + "sort.svg")
+			no-repeat center;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -50,8 +50,9 @@
 
 		&:hover,
 		&:focus {
-			background: transparent url(variables.$ms3-uiIconPath + "sort-active.svg")
-				no-repeat center;
+			background: transparent
+				url(variables.$ms3-uiIconPath + "sort-active.svg") no-repeat
+				center;
 		}
 	}
 
@@ -60,11 +61,13 @@
 	}
 
 	&--icon-tags,
-	&--icon-tags-active {
+	&--icon-tags-active,
+	&--icon-layers,
+	&--icon-layers-active {
 		height: 33px;
 		width: 40px;
-		background: transparent url(variables.$ms3-uiIconPath + "layers.svg") no-repeat
-			center;
+		background: transparent url(variables.$ms3-uiIconPath + "layers.svg")
+			no-repeat center;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -72,8 +75,8 @@
 
 		&:hover,
 		&:focus {
-			background: transparent url(variables.$ms3-uiIconPath + "layers.svg")
-				no-repeat center;
+			background: transparent
+				url(variables.$ms3-uiIconPath + "layers.svg") no-repeat center;
 			filter: brightness(0.85);
 		}
 	}
@@ -82,11 +85,15 @@
 		filter: brightness(0.85);
 	}
 
+	&--icon-layers-active {
+		filter: brightness(0.85);
+	}
+
 	&--icon-reset {
 		height: 33px;
 		width: 40px;
-		background: transparent url(variables.$ms3-uiIconPath + "reset.svg") no-repeat
-			center;
+		background: transparent url(variables.$ms3-uiIconPath + "reset.svg")
+			no-repeat center;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -94,8 +101,9 @@
 
 		&:hover,
 		&:focus {
-			background: transparent url(variables.$ms3-uiIconPath + "reset-active.svg")
-				no-repeat center;
+			background: transparent
+				url(variables.$ms3-uiIconPath + "reset-active.svg") no-repeat
+				center;
 		}
 	}
 }
