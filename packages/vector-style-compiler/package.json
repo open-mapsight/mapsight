@@ -34,6 +34,8 @@
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
+		"./mapsight-vector-style.css-data.json": "./dist/mapsight-vector-style.css-data.json",
+		"./mapsight-vector-style.web-types.json": "./dist/mapsight-vector-style.web-types.json",
 		"./*": {
 			"types": "./dist/*.d.ts",
 			"default": "./dist/*.js"
@@ -55,19 +57,22 @@
 	},
 	"scripts": {
 		"bench": "node __tests__/performance.engines.bench.ts",
-		"build": "run-s build:setup build:modules copy:templates",
+		"build": "run-s build:setup build:modules generate:ide-metadata copy:templates copy:ide-metadata",
 		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:*",
+		"copy:ide-metadata": "cp src/data/generated/* dist/",
 		"copy:templates": "cp src/js/template.source.js dist/template.source.js",
 		"data:sort-custom-css-properties": "json -I -f src/data/custom-css-properties.json -o jsony-tab -e 'this.sort((a, b) => a.name.localeCompare(b.name))' -A",
+		"generate:ide-metadata": "node scripts/update-ide-metadata.mts",
 		"lint": "eslint",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"update-readme": "node scripts/update-readme.mts",
 		"watch": "run-s copy:templates \"tsc -p tsconfig.build.json --watch\""
 	},
-	"types": "./dist/index.d.ts"
+	"types": "./dist/index.d.ts",
+	"web-types": "./dist/mapsight-vector-style.web-types.json"
 }
