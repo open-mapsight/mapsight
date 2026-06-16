@@ -68,10 +68,6 @@ const WEBP_OPTIONS = {
 	effort: 6,
 } as const;
 
-const SVGO_OPTIONS: Config = {
-	multipass: true,
-};
-
 const scriptName = path.basename(process.argv[1] ?? "optimize-icons.ts");
 
 async function main() {
@@ -89,6 +85,7 @@ async function main() {
 			target: {type: "string", short: "t", default: "svg,png,webp"},
 			force: {type: "boolean", default: false},
 			verbose: {type: "boolean", default: false},
+			pretty: {type: "boolean", default: false},
 		},
 	});
 	const srcArg = cliArgs.src;
@@ -98,11 +95,12 @@ async function main() {
 	const targetArg = cliArgs.target;
 	const force = cliArgs.force;
 	const verbose = cliArgs.verbose;
+	const pretty = cliArgs.pretty ?? false;
 
 	if (typeof srcArg !== "string" || typeof destArg !== "string") {
 		fail(
 			`Usage: node ${scriptName} --src <dir> --dest <dir> ` +
-				`[--scale <number>] [--concurrency <number>] [--target <formats>] [--force]`,
+				`[--scale <number>] [--concurrency <number>] [--target <formats>] [--force] [--pretty]`,
 		);
 	}
 
@@ -153,12 +151,13 @@ async function main() {
 		fail("--src and --dest must not overlap.");
 	}
 
+	const svgoOptions = createSvgoOptions(pretty);
 	const configHash = hashConfig({
 		cacheVersion: CACHE_VERSION,
 		scale,
 		png: PNG_OPTIONS,
 		webp: WEBP_OPTIONS,
-		svgo: SVGO_OPTIONS,
+		svgo: svgoOptions,
 	});
 
 	if (verbose) {
@@ -204,6 +203,7 @@ async function main() {
 			scale,
 			verbose: verbose ?? false,
 			absDest,
+			svgoOptions,
 		}),
 	);
 
@@ -328,6 +328,7 @@ interface ProcessJobArgs {
 	scale: number;
 	verbose: boolean;
 	absDest: string;
+	svgoOptions: Config;
 }
 
 async function processJob(args: ProcessJobArgs): Promise<ProcessResult> {
@@ -340,10 +341,14 @@ async function processJob(args: ProcessJobArgs): Promise<ProcessResult> {
 		scale,
 		verbose,
 		absDest,
+		svgoOptions,
 	} = args;
 
 	try {
 		const srcStat = await stat(job.absSource);
+		if (job.kind === "svg") {
+			await validateSvgSource(job.absSource);
+		}
 
 		const nextEntry: ManifestEntry = {
 			srcMtimeMs: srcStat.mtimeMs,
@@ -370,7 +375,7 @@ async function processJob(args: ProcessJobArgs): Promise<ProcessResult> {
 		}
 
 		if (job.kind === "svg") {
-			await processSvgJob(job, scale);
+			await processSvgJob(job, scale, svgoOptions);
 		} else {
 			await processPngJob(job, scale);
 		}
@@ -416,11 +421,48 @@ async function needsProcessing(args: {
 	return false;
 }
 
-async function processSvgJob(job: FileJob, scale: number) {
+function createSvgoOptions(pretty: boolean): Config {
+	const options: Config = {
+		multipass: true,
+		plugins: [
+			"preset-default",
+			"removeTitle",
+			{name: "removeAttrs", params: {attrs: ["class", "id"]}},
+		],
+	};
+
+	if (pretty) {
+		options.js2svg = {
+			pretty: true,
+			indent: "\t",
+			finalNewline: true,
+		};
+	}
+
+	return options;
+}
+
+async function validateSvgSource(absSource: string) {
+	const svgContent = await readFile(absSource, "utf8");
+
+	if (/\b(?:xmlns:xlink|xlink:[\w-]+)\s*=/i.test(svgContent)) {
+		throw new Error(
+			"SVG uses xlink attributes. Inline the referenced shapes before optimizing.",
+		);
+	}
+
+	if (/<style[\s>]/i.test(svgContent)) {
+		throw new Error(
+			"SVG contains a <style> element. Use presentation attributes instead.",
+		);
+	}
+}
+
+async function processSvgJob(job: FileJob, scale: number, svgoOptions: Config) {
 	const svgContent = await readFile(job.absSource, "utf8");
 	const optimized = optimizeSvg(svgContent, {
 		path: job.absSource,
-		...SVGO_OPTIONS,
+		...svgoOptions,
 	});
 
 	const optimizedSvg = optimized.data;

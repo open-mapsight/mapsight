@@ -7,6 +7,7 @@ export default defineConfig({
 			"src/lib/icon/**/*.test.ts",
 			"src/lib/pictograms/**/*.test.ts",
 			"src/lib/runtime/**/*.test.ts",
+			"scripts/*.test.ts",
 			"scripts/lib/**/*.test.ts",
 		],
 	},

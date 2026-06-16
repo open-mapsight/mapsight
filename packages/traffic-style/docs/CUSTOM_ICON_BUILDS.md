@@ -6,7 +6,7 @@ colors. The default package still ships the full catalog; these CLIs let consumi
 apps tailor what lands in their bundle.
 
 Install `@mapsight/traffic-style` as a dependency. The binaries are exposed as
-`traffic-icon-sprite` and `traffic-composable-icons`.
+`traffic-icon-sprite`, `traffic-composable-icons`, and `traffic-copy-assets`.
 
 For runtime pictograms without pre-baking, you can also call `registerPictograms`
 from `@mapsight/traffic-style/pictograms` at app startup (same mechanism as the
@@ -38,7 +38,7 @@ registry, the bare command names work as documented below.
 }
 ```
 
-Same pattern for `traffic-composable-icons.js`. Use
+Same pattern for `traffic-composable-icons.js` and `traffic-copy-assets.js`. Use
 `node_modules/@mapsight/traffic-style/meta.json` for `--meta-path` unless you are
 editing `src/meta.json` locally and have not rebuilt traffic-style yet (then point
 at `packages/traffic-style/src/meta.json` temporarily).
@@ -106,6 +106,52 @@ traffic-icon-sprite --watch --output-scss tmp/ --output-img public/img/
 
 Pass `--groups` with an empty value (`--groups ""`) to include every non-composable
 icon for the selected variants.
+
+---
+
+## Copy deploy assets
+
+Use `traffic-copy-assets` instead of a broad `cp -R node_modules/@mapsight/traffic-style/img/*`
+when a host app wants the package image tree but not every pre-baked composable icon.
+By default it copies the full image tree.
+
+```bash
+traffic-copy-assets --dest public/img
+```
+
+To keep sprite/support assets and skip the generated composable PNG/SVG catalog:
+
+```bash
+traffic-copy-assets --dest public/img --without-composable-icons
+```
+
+The package catalog keeps formats split by directory: `mapsight-icons/` contains
+1x PNGs, `mapsight-icons-2x/` contains 2x PNGs, and `mapsight-icons-svg/`
+contains SVGs. WebP is not published in the default catalog, but
+`traffic-optimize-icons --target webp` is available for host apps that want
+custom WebP assets.
+
+The catalog filters mirror the sprite/composable build CLIs:
+
+```bash
+# Copy only 2x default/small assets from these groups, excluding composables.
+traffic-copy-assets --dest public/img \
+  --without-composable-icons \
+  --groups default,education \
+  --variants default,small \
+  --res 2x \
+  --filetypes png
+```
+
+In a pnpm workspace linked to this repo:
+
+```json
+{
+	"scripts": {
+		"copy:traffic-style": "node node_modules/@mapsight/traffic-style/scripts/traffic-copy-assets.js --dest public/img --without-composable-icons"
+	}
+}
+```
 
 ### Adding custom sprite tiles
 
