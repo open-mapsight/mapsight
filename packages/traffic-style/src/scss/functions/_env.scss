@@ -1,0 +1,15 @@
+@use "sass:meta";
+@use "sass:string";
+
+/// Resolve image paths from the style env `imagesUrl` (see MapController default style env).
+/// Pass multiple parts when the path includes runtime CSS functions, e.g.
+/// `imageUrl("parking-dynamic/", attr(occupancyTrendString), ".png")`.
+@function imageUrl($parts...) {
+	$value: "calc(attr(--env-imagesUrl)";
+
+	@each $part in $parts {
+		$value: $value + " + " + meta.inspect($part);
+	}
+
+	@return string.unquote($value + ")");
+}

@@ -1,4 +1,4 @@
-@use "sass:string";
+@use "../functions/env";
 @use "../variables";
 
 #features [type="parking"] {
@@ -26,9 +26,7 @@
 				icon: {
 					anchorX: -14px;
 					anchorY: 12px;
-					src: string.unquote(
-						'calc(attr(--env-imagesUrl) + "parking-dynamic/" + attr(occupancyTrendString) + ".png")'
-					);
+					src: env.imageUrl("parking-dynamic/", attr(occupancyTrendString), ".png");
 				}
 
 				[state="highlight"],
