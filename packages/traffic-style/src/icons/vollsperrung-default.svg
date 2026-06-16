@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
 	<g fill="none" fill-rule="evenodd">
-		<circle cx="20" cy="20" r="11.5" fill="#FFF" stroke="#000" />
-		<circle cx="20" cy="20" r="8.75" fill="#FFF" stroke="#B80707" stroke-linejoin="square" stroke-width="2.5" />
-		<circle cx="20" cy="20" r="10.5" stroke="#FFF" />
+		<circle cx="20" cy="20" r="11.5" fill="#fff" stroke="#000"/>
+		<circle cx="20" cy="20" r="8.75" fill="#fff" stroke="#b80707" stroke-linejoin="square" stroke-width="2.5"/>
+		<circle cx="20" cy="20" r="10.5" stroke="#fff"/>
 	</g>
 </svg>
