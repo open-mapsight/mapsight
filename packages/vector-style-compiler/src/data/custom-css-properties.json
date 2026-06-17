@@ -1,199 +1,238 @@
 [
 	{
 		"name": "circle-fill-color",
-		"description": "",
+		"description": "Fill color for circle point symbols. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "circle-radius",
-		"description": "",
+		"description": "Radius in pixels for circle point symbols. OpenLayers requires a radius to render a Circle image style.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "circle-stroke-color",
-		"description": "",
+		"description": "Stroke color for the outline of circle point symbols. Accepts OpenLayers stroke color values.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "circle-stroke-width",
-		"description": "",
+		"description": "Stroke width in pixels for the outline of circle point symbols.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "fill-color",
-		"description": "",
+		"description": "Fill color for polygon interiors. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-anchorx",
-		"description": "",
+		"description": "Horizontal icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-anchory",
-		"description": "",
+		"description": "Vertical icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-offsetx",
-		"description": "",
+		"description": "Horizontal sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-offsety",
-		"description": "",
+		"description": "Vertical sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-opacity",
-		"description": "",
+		"description": "Icon opacity from 0 to 1.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-scale",
-		"description": "",
+		"description": "Icon scale factor. OpenLayers accepts a single number or a two-dimensional scale; do not combine absolute icon width/height with scale.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-sizex",
-		"description": "",
+		"description": "Width in pixels of the icon image or sprite sub-rectangle selected from the source image.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-sizey",
-		"description": "",
+		"description": "Height in pixels of the icon image or sprite sub-rectangle selected from the source image.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-snaptopixel",
-		"description": "",
+		"description": "Whether icon rendering should align to device pixels where supported by the OpenLayers image style renderer.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "icon-src",
-		"description": "",
+		"description": "Image URL used for icon point symbols. OpenLayers requires a source image or loaded image to render an Icon style.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "image-circle-fill-color",
-		"description": "",
+		"description": "Fill color for a circle image symbol nested under the style image property.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "image-circle-radius",
-		"description": "",
+		"description": "Radius in pixels for a circle image symbol nested under the style image property.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "image-type",
-		"description": "",
+		"description": "Mapsight image symbolizer selector. Use it to choose the OpenLayers image style kind, such as a circle or icon, for point rendering.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "stroke-color",
-		"description": "",
+		"description": "Stroke color for line strings and polygon boundaries. Accepts OpenLayers color, gradient, or pattern values.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "stroke-linedash",
-		"description": "",
+		"description": "Line dash pattern for strokes: an array of numbers specifying alternating drawn segment and gap lengths.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html",
+		"references": [
+			{
+				"name": "OpenLayers line styles example",
+				"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+			}
+		],
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-alignment",
-		"description": "",
+		"description": "Mapsight text alignment helper for label placement. Prefer text-textAlign when mapping directly to OpenLayers Text textAlign.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-fill-color",
-		"description": "",
+		"description": "Fill color for label text. OpenLayers uses a dark default fill (#333) when no text fill is provided; use null for no fill.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-font",
-		"description": "",
+		"description": "CSS font string for labels, as accepted by CanvasRenderingContext2D.font. OpenLayers defaults to '10px sans-serif'.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-offsetx",
-		"description": "",
+		"description": "Horizontal label offset in pixels. OpenLayers defaults to 0.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-offsety",
-		"description": "",
+		"description": "Vertical label offset in pixels. OpenLayers defaults to 0.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-placement",
-		"description": "",
+		"description": "Label placement mode. Use 'point' for point placement or 'line' to render text along line geometry.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-stroke-color",
-		"description": "",
+		"description": "Stroke color for label outlines. Useful for improving text contrast over map content.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-stroke-width",
-		"description": "",
+		"description": "Stroke width in pixels for label outlines.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-testalign",
-		"description": "",
+		"description": "Legacy or misspelled Mapsight text alignment property. Prefer text-textAlign.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-text",
-		"description": "",
+		"description": "Label text content. OpenLayers accepts plain strings with line breaks or rich text arrays; Mapsight values can also be dynamic via attr(...).",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-textalign",
-		"description": "",
+		"description": "Horizontal label alignment. OpenLayers supports 'left', 'right', 'center', 'end', and 'start'.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "text-textbaseline",
-		"description": "",
+		"description": "Vertical label baseline. OpenLayers supports 'bottom', 'top', 'middle', 'alphabetic', 'hanging', and 'ideographic'.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
 	{
 		"name": "zindex",
-		"description": "",
+		"description": "Z index for this style. OpenLayers uses it to order style rendering; higher values draw above lower values.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	}

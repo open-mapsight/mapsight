@@ -243,6 +243,29 @@ it("throws exception on invalid :not() selector", () => {
 	);
 });
 
+it("parses nested declaration blocks as property paths", () => {
+	const rules = cssToRules(`
+		.clusterLabel {
+			text {
+				stroke {
+					color: "red";
+				}
+			}
+		}
+	`);
+
+	expect(rules.rules[0]?.declarations).toEqual({
+		clusterLabel: {
+			text: {
+				stroke: {
+					color: {value: "'red'"},
+				},
+			},
+		},
+	});
+	expect(rules.__meta.declarationNames).toEqual(["text"]);
+});
+
 it("parses full css to rules correctly", () => {
 	const rules = cssToRules(testCss);
 	expect(rules).toMatchSnapshot();
