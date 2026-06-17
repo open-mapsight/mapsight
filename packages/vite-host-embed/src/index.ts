@@ -1,10 +1,11 @@
 export {rewriteCssUrlPaths, rewriteAbsoluteAssetPaths} from "./css.ts";
-export {finalizeAppStylesheet} from "./finalize.ts";
+export {finalizeAppStylesheet, finalizeEntryModules} from "./finalize.ts";
 export {buildCacheControlBlock, buildHtaccess} from "./htaccess.ts";
 export {
 	buildSnippetsFromHtml,
 	extractSnippetRegion,
 	renderSnippetDocument,
+	renderScriptSafeCmsHintsInHtml,
 	stripCmsHintsForDevHtml,
 } from "./extract-snippets.ts";
 export {mapsightHostEmbedDevPlugin} from "./dev-assets.ts";

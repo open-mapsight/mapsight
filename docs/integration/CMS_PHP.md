@@ -75,17 +75,18 @@ Each CMS placement passes config inline in an ES module `<script>` block. **Do n
 </script>
 ```
 
-### 2. Stable entry filenames for CMS imports
+### 2. Stable wrapper filenames for CMS imports
 
 Snippet `<script>` tags import **stable** filenames (revalidated on deploy):
 
-| File           | Purpose                                                                        |
-| -------------- | ------------------------------------------------------------------------------ |
-| `embed.js`     | Re-exports `browserEmbed` from `@mapsight/ui/embed/browser` + CSS side effects |
-| `mapsight.css` | Extracted stylesheet (linked explicitly — lib mode does not auto-inject CSS)   |
-| `<preset>.js`  | Thin re-export stubs per embed type (`simpleMap.js`, …)                        |
+| File           | Purpose                                                    |
+| -------------- | ---------------------------------------------------------- |
+| `embed.js`     | Stable wrapper for the hashed `browserEmbed` runtime entry |
+| `mapsight.css` | Stable wrapper for the hashed stylesheet                   |
+| `<preset>.js`  | Stable wrappers per embed type (`simpleMap.js`, …)         |
 
 Shared dependencies (OpenLayers, React/Redux, vector styles) land in **content-hashed chunks** safe for long cache.
+If a stable wrapper should support default imports, list its basename in `defaultEntryExports`; otherwise wrappers only re-export named exports.
 
 ### 3. Asset paths are configurable at the call site
 
@@ -117,7 +118,7 @@ imagesUrl: "/mapsight-assets/img/",
 Typical steps in a host app that ships CMS assets:
 
 1. **Vite lib mode** — multi-entry build (`embed.js`, preset stubs) with `minifyInternalExports: false` so named exports survive minification.
-2. **`@mapsight/vite-host-embed`** — `mapsightHostEmbedPlugin` in embed build mode: copy traffic-style icons/data, stabilize `mapsight.css`, rewrite vector-style CSS `url()` paths, extract `snippetSources` → `dist/snippets/`, write `.htaccess`. UI chrome icons ship in `assets/` via the Vite CSS pipeline.
+2. **`@mapsight/vite-host-embed`** — `mapsightHostEmbedPlugin` in embed build mode: copy traffic-style icons/data, hash the JS/CSS entry assets, write stable JS/CSS wrappers, rewrite vector-style CSS `url()` paths, extract `snippetSources` → `dist/snippets/`, write `.htaccess`. UI chrome icons ship in `assets/` via the Vite CSS pipeline.
 3. **Local dev** — `mapsightHostEmbedDevPlugin` so `index.html` uses the same import paths as production snippets.
 4. **Upload** — rsync `dist/mapsight-assets/` to web root (e.g. `/mapsight-assets/`).
 
@@ -134,10 +135,13 @@ After build, a typical tree:
 ```
 /mapsight-assets/
 ├── assets/
-│   ├── embed.js              ← stable entry (browserEmbed)
-│   ├── simpleMap.js          ← preset stub
-│   ├── mapsight.css          ← stable stylesheet (+ bundled UI icon assets)
-│   ├── ol-<hash>.js          ← long-cache chunk
+│   ├── embed.js                 ← stable wrapper for browserEmbed
+│   ├── embed-<hash>.js          ← long-cache browserEmbed entry
+│   ├── simpleMap.js             ← stable wrapper for preset stub
+│   ├── simpleMap-<hash>.js      ← long-cache preset stub
+│   ├── mapsight.css             ← stable wrapper importing the hashed app CSS
+│   ├── mapsight-host-<hash>.css ← long-cache app stylesheet
+│   ├── ol-<hash>.js             ← long-cache chunk
 │   └── react-redux-<hash>.js
 ├── data/                     ← example GeoJSON
 ├── img/                      ← traffic-style icons, sprites
@@ -152,10 +156,10 @@ Paste-ready HTML is written beside the deploy tree at `dist/snippets/` (not uplo
 
 ## Caching strategy
 
-| Files                                    | Cache-Control                 | Rationale                          |
-| ---------------------------------------- | ----------------------------- | ---------------------------------- |
-| `*-hash.js`                              | `immutable, max-age=31536000` | Content-addressed                  |
-| `embed.js`, preset stubs, `mapsight.css` | `no-cache`                    | Stable names; revalidate on deploy |
+| Files                                    | Cache-Control                 | Rationale                                  |
+| ---------------------------------------- | ----------------------------- | ------------------------------------------ |
+| `*-hash.js`, `*-hash.css`                | `immutable, max-age=31536000` | Content-addressed                          |
+| `embed.js`, preset stubs, `mapsight.css` | `no-cache`                    | Tiny stable wrappers; revalidate on deploy |
 
 `.htaccess` should passthrough `/assets/`, `/img/`, and `/data/` without rewriting to PHP.
 
@@ -201,7 +205,7 @@ For faster first paint, a PHP controller can POST embed options to a small Node 
 
 ## Checklist — for IT / integrators
 
-- [ ] Stable entry filenames documented for CMS editors
+- [ ] Stable wrapper filenames documented for CMS editors
 - [ ] Snippets use inline config — no per-page JS rebuild
 - [ ] `imagesUrl` and GeoJSON URLs correct for target environment
 - [ ] Stylesheet linked explicitly

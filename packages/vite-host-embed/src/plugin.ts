@@ -5,7 +5,7 @@ import type {Plugin} from "vite";
 
 import {rewriteAbsoluteAssetPaths} from "./css.ts";
 import {buildSnippetsFromHtml} from "./extract-snippets.ts";
-import {finalizeAppStylesheet} from "./finalize.ts";
+import {finalizeAppStylesheet, finalizeEntryModules} from "./finalize.ts";
 import {buildHtaccess} from "./htaccess.ts";
 import {renderSnippetsReadme} from "./snippets.ts";
 import type {HostEmbedConfig} from "./types.ts";
@@ -39,6 +39,7 @@ export function mapsightHostEmbedPlugin(
 				// No data directory — skip.
 			}
 			await finalizeAppStylesheet(assetsDir, config);
+			await finalizeEntryModules(assetsDir, config);
 			await rewriteAbsoluteAssetPaths(assetsDir, config.assetsBase);
 			await fs.mkdir(snippetsDir, {recursive: true});
 

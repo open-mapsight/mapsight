@@ -1,3 +1,5 @@
+import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 import {describe, expect, it} from "vitest";
@@ -7,6 +9,9 @@ import {
 	buildHtaccess,
 	buildSnippetsFromHtml,
 	extractSnippetRegion,
+	finalizeAppStylesheet,
+	finalizeEntryModules,
+	renderScriptSafeCmsHintsInHtml,
 	renderSnippetsReadme,
 	rewriteCssUrlPaths,
 	stripCmsHintsForDevHtml,
@@ -43,6 +48,133 @@ describe("buildHtaccess", () => {
 	});
 });
 
+describe("finalizeAppStylesheet", () => {
+	it("keeps the hashed app stylesheet and writes a stable import wrapper", async () => {
+		const assetsDir = await fs.mkdtemp(
+			path.join(os.tmpdir(), "mapsight-host-embed-"),
+		);
+
+		try {
+			await fs.writeFile(
+				path.join(assetsDir, "mapsight-host-abc12345.css"),
+				".app{color:red}",
+				"utf8",
+			);
+			await fs.writeFile(
+				path.join(assetsDir, "other-def67890.css"),
+				".other{color:blue}",
+				"utf8",
+			);
+
+			await finalizeAppStylesheet(assetsDir, {
+				...baseConfig,
+				appStylesheetPrefix: "mapsight-host",
+			});
+
+			await expect(
+				fs.readFile(
+					path.join(assetsDir, "mapsight-host-abc12345.css"),
+					"utf8",
+				),
+			).resolves.toBe(".app{color:red}");
+			await expect(
+				fs.readFile(path.join(assetsDir, "mapsight.css"), "utf8"),
+			).resolves.toBe('@import "./mapsight-host-abc12345.css";\n');
+			await expect(
+				fs.access(path.join(assetsDir, "other-def67890.css")),
+			).rejects.toThrow();
+		} finally {
+			await fs.rm(assetsDir, {recursive: true, force: true});
+		}
+	});
+});
+
+describe("finalizeEntryModules", () => {
+	it("keeps hashed entry modules and writes stable re-export wrappers", async () => {
+		const assetsDir = await fs.mkdtemp(
+			path.join(os.tmpdir(), "mapsight-host-embed-"),
+		);
+
+		try {
+			await fs.writeFile(
+				path.join(assetsDir, "embed.js"),
+				"export default function browserEmbed() {}\n",
+				"utf8",
+			);
+			await fs.writeFile(
+				path.join(assetsDir, "simpleMap.js"),
+				"export function simpleMap() {}\n",
+				"utf8",
+			);
+
+			await finalizeEntryModules(assetsDir, baseConfig);
+
+			const entries = await fs.readdir(assetsDir);
+			const hashedEmbed = entries.find((name) =>
+				/^embed-[a-zA-Z0-9_-]{8}\.js$/.test(name),
+			);
+			const hashedSimpleMap = entries.find((name) =>
+				/^simpleMap-[a-zA-Z0-9_-]{8}\.js$/.test(name),
+			);
+
+			expect(hashedEmbed).toBeDefined();
+			expect(hashedSimpleMap).toBeDefined();
+			await expect(
+				fs.readFile(path.join(assetsDir, hashedEmbed!), "utf8"),
+			).resolves.toBe("export default function browserEmbed() {}\n");
+			await expect(
+				fs.readFile(path.join(assetsDir, hashedSimpleMap!), "utf8"),
+			).resolves.toBe("export function simpleMap() {}\n");
+			await expect(
+				fs.readFile(path.join(assetsDir, "embed.js"), "utf8"),
+			).resolves.toBe(
+				`export * from "./${hashedEmbed}";\nexport {default} from "./${hashedEmbed}";\n`,
+			);
+			await expect(
+				fs.readFile(path.join(assetsDir, "simpleMap.js"), "utf8"),
+			).resolves.toBe(`export * from "./${hashedSimpleMap}";\n`);
+		} finally {
+			await fs.rm(assetsDir, {recursive: true, force: true});
+		}
+	});
+
+	it("can write named-only wrappers for all entries", async () => {
+		const assetsDir = await fs.mkdtemp(
+			path.join(os.tmpdir(), "mapsight-host-embed-"),
+		);
+
+		try {
+			await fs.writeFile(
+				path.join(assetsDir, "embed.js"),
+				"export function mountEmbed() {}\n",
+				"utf8",
+			);
+			await fs.writeFile(
+				path.join(assetsDir, "simpleMap.js"),
+				"export function simpleMap() {}\n",
+				"utf8",
+			);
+
+			await finalizeEntryModules(assetsDir, {
+				...baseConfig,
+				defaultEntryExports: [],
+			});
+
+			const entries = await fs.readdir(assetsDir);
+			const hashedEmbed = entries.find((name) =>
+				/^embed-[a-zA-Z0-9_-]{8}\.js$/.test(name),
+			);
+
+			expect(hashedEmbed).toBeDefined();
+			await expect(
+				fs.readFile(path.join(assetsDir, "embed.js"), "utf8"),
+			).resolves.toBe(`export * from "./${hashedEmbed}";\n`);
+		} finally {
+			await fs.rm(assetsDir, {recursive: true, force: true});
+		}
+	});
+});
+
 describe("renderSnippetsReadme", () => {
 	it("points to dist/snippets and integration docs", () => {
 		const readme = renderSnippetsReadme(baseConfig);
@@ -66,6 +198,40 @@ describe("extractSnippetRegion", () => {
 		expect(extractSnippetRegion(source, "index.html")).toBe(
 			'<div id="demo"></div>',
 		);
+	});
+
+	it("renders CMS hints inside scripts as JavaScript comments", () => {
+		const source = `<!-- mapsight:snippet:start -->
+<p><!-- mapsight:cms:replace text --></p>
+<script type="module">
+simpleMap({
+	imagesUrl: "/mapsight-assets/img/", <!-- mapsight:cms:replace imagesUrl -->
+});
+</script>
+<!-- mapsight:snippet:end -->`;
+
+		expect(extractSnippetRegion(source, "index.html"))
+			.toBe(`<p><!-- mapsight:cms:replace text --></p>
+<script type="module">
+simpleMap({
+	imagesUrl: "/mapsight-assets/img/", // mapsight:cms:replace imagesUrl
+});
+</script>`);
+	});
+});
+
+describe("renderScriptSafeCmsHintsInHtml", () => {
+	it("only rewrites CMS hint comments inside script blocks", () => {
+		const html = `<p><!-- mapsight:cms:replace text --></p>
+<script>
+value, <!-- mapsight:cms:replace value -->
+</script>`;
+
+		expect(renderScriptSafeCmsHintsInHtml(html))
+			.toBe(`<p><!-- mapsight:cms:replace text --></p>
+<script>
+value, // mapsight:cms:replace value
+</script>`);
 	});
 });
 

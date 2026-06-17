@@ -4,7 +4,7 @@ export function buildCacheControlBlock(config: HostEmbedCacheConfig): string {
 	const typeEntryPattern = Object.keys(config.embedTypeEntries).join("|");
 	const escapedStylesheet = config.appStylesheet.replace(".", "\\.");
 
-	return `# Cache: stable entry files revalidate; hashed chunks are immutable.
+	return `# Cache: stable entry wrappers revalidate; hashed modules and CSS are immutable.
 <IfModule mod_headers.c>
 	<FilesMatch "-[a-zA-Z0-9_-]{8,}\\.(js|css)$">
 		Header set Cache-Control "public, max-age=31536000, immutable"
