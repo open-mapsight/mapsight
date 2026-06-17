@@ -12,12 +12,36 @@ import mapSelector, {type Selector} from "./mapSelector.ts";
 const isDeclaration = (val: Rule["nodes"][number]): val is Declaration =>
 	val.type === "decl";
 
-export default function mapRule(rule: Rule) {
+const isRule = (val: Rule["nodes"][number]): val is Rule => val.type === "rule";
+
+const isPropertyRule = (rule: Rule) => /^[A-Za-z_][\w-]*$/.test(rule.selector);
+
+function mapRuleDeclarations(
+	rule: Rule,
+	prefix: Array<string> = [],
+): Array<ReturnType<typeof mapDeclaration>> {
 	const declarations =
 		rule.nodes
 			?.filter(isDeclaration)
-			.map(mapDeclaration)
+			.map((declaration) => mapDeclaration(declaration, prefix))
 			.filter((a) => !!a) ?? [];
+
+	const nestedDeclarations =
+		rule.nodes
+			?.filter(isRule)
+			.filter(isPropertyRule)
+			.flatMap((nestedRule) =>
+				mapRuleDeclarations(nestedRule, [
+					...prefix,
+					nestedRule.selector,
+				]),
+			) ?? [];
+
+	return [...declarations, ...nestedDeclarations];
+}
+
+export default function mapRule(rule: Rule) {
+	const declarations = mapRuleDeclarations(rule);
 
 	const mergedDeclaration: DeclarationNode = deepMerge(
 		{},

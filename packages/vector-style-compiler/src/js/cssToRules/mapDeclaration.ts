@@ -17,6 +17,7 @@ export type Declaration = {
 
 export default function mapDeclaration(
 	declaration: CssDeclaration,
+	prefix: Array<string> = [],
 ): Declaration {
 	const {value, __meta: valueMeta} = mapValue(declaration.value);
 
@@ -24,7 +25,7 @@ export default function mapDeclaration(
 		throw new Error("Declaration is lacking property");
 	}
 
-	const keyParts = declaration.prop.split("-");
+	const keyParts = [...prefix, ...declaration.prop.split("-")];
 
 	// build deep object
 	const result: DeclarationNode = {};

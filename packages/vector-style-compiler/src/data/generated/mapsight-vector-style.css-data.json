@@ -1,0 +1,1305 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vscode-css-languageservice/main/docs/customData.schema.json",
+	"version": 1.1,
+	"properties": [
+		{
+			"name": "circle-fill-color",
+			"description": "Fill color for circle point symbols. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "fill-color",
+			"description": "Fill color for polygon interiors. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle-fill",
+			"description": "Sass nested namespace for Mapsight vector style properties matching circle-fill-*.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "color",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle-radius",
+			"description": "Radius in pixels for circle point symbols. OpenLayers requires a radius to render a Circle image style.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "radius",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle-stroke-color",
+			"description": "Stroke color for the outline of circle point symbols. Accepts OpenLayers stroke color values.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-color",
+			"description": "Stroke color for line strings and polygon boundaries. Accepts OpenLayers color, gradient, or pattern values.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle-stroke",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "circle-stroke-width",
+			"description": "Stroke width in pixels for the outline of circle point symbols.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-width",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "width",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "fill",
+			"description": "Sass nested namespace for Mapsight vector style properties matching fill-*.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-anchorx",
+			"description": "Horizontal icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-anchorX",
+			"description": "Case-preserving alias for Mapsight vector style property icon-anchorx.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "anchorx",
+			"description": "Nested form of Mapsight vector style property icon-anchorx.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "anchorX",
+			"description": "Nested form of Mapsight vector style property icon-anchorx.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-anchory",
+			"description": "Vertical icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-anchorY",
+			"description": "Case-preserving alias for Mapsight vector style property icon-anchory.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "anchory",
+			"description": "Nested form of Mapsight vector style property icon-anchory.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "anchorY",
+			"description": "Nested form of Mapsight vector style property icon-anchory.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-offsetx",
+			"description": "Horizontal sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-offsetX",
+			"description": "Case-preserving alias for Mapsight vector style property icon-offsetx.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "offsetx",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "offsetX",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-offsety",
+			"description": "Vertical sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-offsetY",
+			"description": "Case-preserving alias for Mapsight vector style property icon-offsety.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "offsety",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "offsetY",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-opacity",
+			"description": "Icon opacity from 0 to 1.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "opacity",
+			"description": "Nested form of Mapsight vector style property icon-opacity.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-scale",
+			"description": "Icon scale factor. OpenLayers accepts a single number or a two-dimensional scale; do not combine absolute icon width/height with scale.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "scale",
+			"description": "Nested form of Mapsight vector style property icon-scale.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-sizex",
+			"description": "Width in pixels of the icon image or sprite sub-rectangle selected from the source image.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-sizeX",
+			"description": "Case-preserving alias for Mapsight vector style property icon-sizex.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "sizex",
+			"description": "Nested form of Mapsight vector style property icon-sizex.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "sizeX",
+			"description": "Nested form of Mapsight vector style property icon-sizex.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-sizey",
+			"description": "Height in pixels of the icon image or sprite sub-rectangle selected from the source image.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-sizeY",
+			"description": "Case-preserving alias for Mapsight vector style property icon-sizey.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "sizey",
+			"description": "Nested form of Mapsight vector style property icon-sizey.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "sizeY",
+			"description": "Nested form of Mapsight vector style property icon-sizey.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-snaptopixel",
+			"description": "Whether icon rendering should align to device pixels where supported by the OpenLayers image style renderer.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-snapToPixel",
+			"description": "Case-preserving alias for Mapsight vector style property icon-snaptopixel.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "snaptopixel",
+			"description": "Nested form of Mapsight vector style property icon-snaptopixel.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "snapToPixel",
+			"description": "Nested form of Mapsight vector style property icon-snaptopixel.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "icon-src",
+			"description": "Image URL used for icon point symbols. OpenLayers requires a source image or loaded image to render an Icon style.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "src",
+			"description": "Nested form of Mapsight vector style property icon-src.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image-circle-fill-color",
+			"description": "Fill color for a circle image symbol nested under the style image property.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image-circle",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image-circle-fill",
+			"description": "Sass nested namespace for Mapsight vector style properties matching image-circle-fill-*.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image-circle-radius",
+			"description": "Radius in pixels for a circle image symbol nested under the style image property.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Circle.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "image-type",
+			"description": "Mapsight image symbolizer selector. Use it to choose the OpenLayers image style kind, such as a circle or icon, for point rendering.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "type",
+			"description": "Nested form of Mapsight vector style property image-type.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-linedash",
+			"description": "Line dash pattern for strokes: an array of numbers specifying alternating drawn segment and gap lengths.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "OpenLayers line styles example",
+					"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-lineDash",
+			"description": "Case-preserving alias for Mapsight vector style property stroke-linedash.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "OpenLayers line styles example",
+					"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "linedash",
+			"description": "Nested form of Mapsight vector style property stroke-linedash.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "OpenLayers line styles example",
+					"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "lineDash",
+			"description": "Nested form of Mapsight vector style property stroke-linedash.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "OpenLayers line styles example",
+					"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-alignment",
+			"description": "Mapsight text alignment helper for label placement. Prefer text-textAlign when mapping directly to OpenLayers Text textAlign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "alignment",
+			"description": "Nested form of Mapsight vector style property text-alignment.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-fill-color",
+			"description": "Fill color for label text. OpenLayers uses a dark default fill (#333) when no text fill is provided; use null for no fill.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-fill",
+			"description": "Sass nested namespace for Mapsight vector style properties matching text-fill-*.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-font",
+			"description": "CSS font string for labels, as accepted by CanvasRenderingContext2D.font. OpenLayers defaults to '10px sans-serif'.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "font",
+			"description": "Nested form of Mapsight vector style property text-font.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-offsetx",
+			"description": "Horizontal label offset in pixels. OpenLayers defaults to 0.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-offsetX",
+			"description": "Case-preserving alias for Mapsight vector style property text-offsetx.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-offsety",
+			"description": "Vertical label offset in pixels. OpenLayers defaults to 0.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-offsetY",
+			"description": "Case-preserving alias for Mapsight vector style property text-offsety.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-placement",
+			"description": "Label placement mode. Use 'point' for point placement or 'line' to render text along line geometry.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "placement",
+			"description": "Nested form of Mapsight vector style property text-placement.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-stroke-color",
+			"description": "Stroke color for label outlines. Useful for improving text contrast over map content.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-stroke",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-stroke-width",
+			"description": "Stroke width in pixels for label outlines.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-testalign",
+			"description": "Legacy or misspelled Mapsight text alignment property. Prefer text-textAlign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "testalign",
+			"description": "Nested form of Mapsight vector style property text-testalign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-text",
+			"description": "Label text content. OpenLayers accepts plain strings with line breaks or rich text arrays; Mapsight values can also be dynamic via attr(...).",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-textalign",
+			"description": "Horizontal label alignment. OpenLayers supports 'left', 'right', 'center', 'end', and 'start'.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-textAlign",
+			"description": "Case-preserving alias for Mapsight vector style property text-textalign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "textalign",
+			"description": "Nested form of Mapsight vector style property text-textalign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "textAlign",
+			"description": "Nested form of Mapsight vector style property text-textalign.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-textbaseline",
+			"description": "Vertical label baseline. OpenLayers supports 'bottom', 'top', 'middle', 'alphabetic', 'hanging', and 'ideographic'.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "text-textBaseline",
+			"description": "Case-preserving alias for Mapsight vector style property text-textbaseline.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "textbaseline",
+			"description": "Nested form of Mapsight vector style property text-textbaseline.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "textBaseline",
+			"description": "Nested form of Mapsight vector style property text-textbaseline.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Text.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "zindex",
+			"description": "Z index for this style. OpenLayers uses it to order style rendering; higher values draw above lower values.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Style.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		}
+	],
+	"atDirectives": [],
+	"pseudoClasses": [
+		{
+			"name": ":selected",
+			"description": "Matches selected Mapsight vector features."
+		},
+		{
+			"name": ":highlighted",
+			"description": "Matches highlighted Mapsight vector features."
+		}
+	],
+	"pseudoElements": []
+}
