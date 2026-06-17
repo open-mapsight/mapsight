@@ -12,6 +12,7 @@ import {CustomPage} from "./pages/ui-demos/custom-page.tsx";
 import {FullPage} from "./pages/ui-demos/full-page.tsx";
 import {RouterPage} from "./pages/ui-demos/router-page.tsx";
 import {SimpleMapPage} from "./pages/ui-demos/simple-map-page.tsx";
+import {VectorWebglComparisonPage} from "./pages/ui-demos/vector-webgl-comparison-page.tsx";
 
 export function App() {
 	return (
@@ -28,6 +29,10 @@ export function App() {
 						element={<CombinedListPage />}
 					/>
 					<Route path="ui/simple-map" element={<SimpleMapPage />} />
+					<Route
+						path="ui/vector-webgl"
+						element={<VectorWebglComparisonPage />}
+					/>
 					<Route path="ui/full" element={<FullPage />} />
 					<Route path="ui/custom" element={<CustomPage />} />
 					<Route path="ui/router/*" element={<RouterPage />} />

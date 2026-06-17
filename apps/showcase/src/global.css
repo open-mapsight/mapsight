@@ -197,6 +197,130 @@ body {
 	min-height: 0;
 }
 
+.ui-demo-embed:has(.vector-webgl-demo) {
+	padding: 0;
+	overflow: hidden;
+}
+
+.ui-demo-embed__frame:has(.vector-webgl-demo) {
+	max-width: none;
+	min-height: 0;
+}
+
+.vector-webgl-demo {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	background: #f8fafc;
+}
+
+.vector-webgl-demo .ms3-map-wrapper {
+	flex: 1;
+	height: 100%;
+	max-height: none;
+	min-height: 0;
+}
+
+.vector-webgl-demo .ms3-map-target {
+	flex: 1;
+	min-height: 0;
+	background: #f8fafc;
+}
+
+.vector-webgl-demo__panel {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	gap: 1rem;
+	align-items: center;
+	padding: 0.7rem 1rem;
+	border-bottom: 1px solid #d8dee6;
+	background: #fff;
+}
+
+.vector-webgl-demo__panel h1 {
+	margin: 0 0 0.25rem;
+	font-size: 1.05rem;
+	line-height: 1.2;
+}
+
+.vector-webgl-demo__panel p {
+	max-width: 54rem;
+	margin: 0;
+	color: #5b6773;
+	font-size: 0.9rem;
+}
+
+.vector-webgl-demo__panel code {
+	margin: 0 0.25em;
+	padding: 0.1em 0.3em;
+	border-radius: 4px;
+	background: #f1f5f9;
+	color: #334155;
+	font-size: 0.9em;
+}
+
+.vector-webgl-demo__controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.vector-webgl-demo__button {
+	border: 1px solid #cbd5e1;
+	border-radius: 999px;
+	padding: 0.35rem 0.7rem;
+	background: #fff;
+	color: #334155;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.vector-webgl-demo__button:hover {
+	background: #f8fafc;
+}
+
+.vector-webgl-demo__button.is-active {
+	border-color: #93c5fd;
+	background: #eff6ff;
+	color: #1d4ed8;
+}
+
+.vector-webgl-demo__stats {
+	display: grid;
+	grid-template-columns: repeat(2, max-content);
+	gap: 0.4rem 1rem;
+	margin: 0;
+	font-size: 0.85rem;
+}
+
+.vector-webgl-demo__stats div {
+	display: grid;
+	gap: 0.1rem;
+}
+
+.vector-webgl-demo__stats dt {
+	color: #64748b;
+}
+
+.vector-webgl-demo__stats dd {
+	margin: 0;
+	font-weight: 700;
+	color: #15202b;
+}
+
+@media (max-width: 900px) {
+	.vector-webgl-demo__panel {
+		grid-template-columns: 1fr;
+		align-items: start;
+	}
+
+	.vector-webgl-demo__stats {
+		grid-template-columns: 1fr;
+	}
+}
+
 .ui-demo-router-nav {
 	border-bottom: 1px solid #d8dee6;
 	background: #fff;
