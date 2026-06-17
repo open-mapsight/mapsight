@@ -169,6 +169,58 @@ Average <1μs/feature, configurable sizes.
 
 ## Docs
 
+#### IDE metadata
+
+The package ships generated IDE metadata for Mapsight vector styles:
+
+- `dist/mapsight-vector-style.css-data.json` for VS Code-compatible CSS custom
+  data.
+- `dist/mapsight-vector-style.web-types.json` for JetBrains Web Types.
+
+JetBrains IDEs can discover the Web Types metadata automatically through the
+package's `web-types` field once the package is installed.
+
+VS Code users can reference the CSS custom data file from workspace settings:
+
+```json
+{
+	"css.customData": [
+		"./node_modules/@mapsight/vector-style-compiler/dist/mapsight-vector-style.css-data.json"
+	],
+	"scss.customData": [
+		"./node_modules/@mapsight/vector-style-compiler/dist/mapsight-vector-style.css-data.json"
+	]
+}
+```
+
+Maintainers working on the generated metadata can use
+[IDE_SUPPORT.md](https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/docs/IDE_SUPPORT.md)
+for implementation notes.
+
+#### JetBrains manual fallback
+
+Web Types should be preferred. If a JetBrains IDE does not discover the package
+metadata, go to `Settings -> Editor -> Inspections`, search for `Unknown CSS
+property`, and add the following string under `Options -> Custom CSS Properties`:
+
+<code>
+
+<!-- CUSTOM_CSS_PROPERTIES_LIST: -->
+
+circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-color,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
+</code>
+
+## Benchmarking
+
+- `pnpm bench`
+    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless Playwright.
+    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright browser process using `pidusage`).
+    - Browser RSS is process-level memory (not JS-heap-only), so use it for trend/comparison signals.
+    - For stronger GC signal in Node, run with exposed GC:
+        - `NODE_OPTIONS=--expose-gc pnpm bench`
+    - You can increase run length / repeat count for more stable memory trends:
+        - `BENCH_WORKLOAD_ROUNDS=30 BENCH_WORKLOAD_TICKS=500 pnpm bench`
+
 ### Custom CSS properties
 
 <!-- CUSTOM_CSS_PROPERTIES_DOCS: -->

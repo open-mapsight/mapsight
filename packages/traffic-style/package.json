@@ -5,6 +5,7 @@
 	"type": "module",
 	"bin": {
 		"traffic-composable-icons": "scripts/traffic-composable-icons.js",
+		"traffic-copy-assets": "scripts/traffic-copy-assets.js",
 		"traffic-icon-sprite": "scripts/traffic-icon-sprite.js",
 		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
@@ -84,7 +85,7 @@
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
 	"scripts": {
-		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:icons2x build:iconsSvg build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
+		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
 		"build:composable-icons": "run-p build:composable-icons:*",
 		"build:composable-icons:1x": "node scripts/dev/build-composable-icons.ts --scale 1",
 		"build:composable-icons:2x": "node scripts/dev/build-composable-icons.ts --scale 2",
@@ -94,9 +95,10 @@
 		"build:icon-sprites": "run-p build:icon-sprites:* && cp dist/mapsight-traffic-style-icon-sprite-*.scss .",
 		"build:icon-sprites:1x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-1x",
 		"build:icon-sprites:2x": "node scripts/traffic-icon-sprite.ts ./dist/img/mapsight-icons-2x/ --meta-path dist/meta.json --sprite-name mapsight-traffic-style-icon-sprite-2x",
-		"build:icons": "node scripts/optimize-icons.ts --src ./src/icons/ --dest ./dist/img/mapsight-icons/",
-		"build:icons2x": "node scripts/optimize-icons.ts --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
-		"build:iconsSvg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
+		"build:icons": "run-p build:icons:*",
+		"build:icons:1x": "node scripts/optimize-icons.ts --target png --src ./src/icons/ --dest ./dist/img/mapsight-icons/",
+		"build:icons:2x": "node scripts/optimize-icons.ts --target png --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
+		"build:icons:svg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
 		"build:meta": "node scripts/dev/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
 		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:pictograms:modules",
 		"build:pictograms:fontawesome": "node scripts/dev/import-fontawesome.ts",

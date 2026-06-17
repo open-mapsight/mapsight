@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="34" height="34" viewBox="0 0 34 34"><g fill="none" fill-rule="evenodd"><rect x="5.5" y="5.5" width="23" height="23" rx="3" fill="#ffffff" stroke="#ffffff" stroke-width="1.5"/><g transform="translate(8 8) scale(0.75) translate(0 0)" color="#000000"><g transform="translate(-5 -5)"><title>mapsight-icons-svg/icn/poi/ort-plain</title><defs><path fill="currentColor" id="a" d="m24 9.113-.025 8.989s-.616.902-3.132.902-4.255-2.083-6.598-2.083S11 17.861 11 18.643v-8.99c0-.75.901-1.668 3.245-1.668 2.343 0 4.106 2.03 6.622 2.03S24 9.113 24 9.113"/></defs><g fill-rule="evenodd"><path fill="currentColor" d="M11 14h1.475v12H11z"/><use xlink:href="#a"/></g></g></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
+	<g fill="none" fill-rule="evenodd">
+		<rect width="23" height="23" x="5.5" y="5.5" fill="#fff" stroke="#fff" stroke-width="1.5" rx="3"/>
+		<g fill="currentColor" color="#000">
+			<path d="M12.5 14.75h1.106v9H12.5z"/>
+			<path d="m22.25 11.085-.019 6.741s-.462.677-2.349.677-3.191-1.562-4.948-1.562-2.434.705-2.434 1.291V11.49c0-.563.676-1.251 2.434-1.251 1.757 0 3.08 1.522 4.966 1.522s2.35-.676 2.35-.676"/>
+		</g>
+	</g>
+</svg>

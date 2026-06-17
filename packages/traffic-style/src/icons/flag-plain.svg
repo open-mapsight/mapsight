@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
-	<title>mapsight-icons-svg/icn/flag/flag-plain</title>
 	<g fill="none" fill-rule="evenodd" transform="translate(2 1)">
-		<ellipse cx="12.5" cy="27.5" stroke="#000" stroke-linejoin="round" stroke-width="1.5" rx="12.5" ry="4.5" />
-		<path fill="#FFF" fill-rule="nonzero" d="M13 13h16V0H13z" />
-		<path stroke="#000" stroke-linejoin="round" stroke-width="2" d="M13 12.6h16V0H13v27z" />
+		<ellipse cx="12.5" cy="27.5" stroke="#000" stroke-linejoin="round" stroke-width="1.5" rx="12.5" ry="4.5"/>
+		<path fill="#fff" fill-rule="nonzero" d="M13 13h16V0H13z"/>
+		<path stroke="#000" stroke-linejoin="round" stroke-width="2" d="M13 12.6h16V0H13v27z"/>
 	</g>
 </svg>

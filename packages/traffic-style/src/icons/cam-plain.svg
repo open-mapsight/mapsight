@@ -1,8 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
-	<title>mapsight-icons-svg/icn/parken/cam-plain</title>
 	<g fill="none" fill-rule="evenodd">
-		<rect width="23" height="23" x="5.5" y="5.5" fill="#035799" stroke="#FFF" rx="3" />
-		<path fill="#FFF"
-			  d="m23.033 10.165 1.645 5.78-4.69 1.376v7.704h-1.996v-7.098l-1.572.432-5.775-4.601 12.388-3.593Zm-12.14 5.487 2.473 1.998-3.49 1.248-.9-2.562 1.917-.684Z" />
+		<rect width="23" height="23" x="5.5" y="5.5" fill="#035799" stroke="#fff" rx="3"/>
+		<path fill="#fff" d="m23.033 10.165 1.645 5.78-4.69 1.376v7.704h-1.996v-7.098l-1.572.432-5.775-4.601zm-12.14 5.487 2.473 1.998-3.49 1.248-.9-2.562z"/>
 	</g>
 </svg>

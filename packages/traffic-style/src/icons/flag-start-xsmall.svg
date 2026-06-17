@@ -1,11 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
-	<title>mapsight-icons-svg/icn/flag/flag-start-xsmall</title>
 	<g fill="none" fill-rule="evenodd" transform="translate(2.8 2.1)">
-		<ellipse cx="9.8" cy="21" stroke="#FFF" stroke-linejoin="round" stroke-width="4" rx="9.8" ry="3.5" />
-		<ellipse cx="9.8" cy="21" stroke="#000" stroke-linejoin="round" stroke-width="1.5" rx="9.8" ry="3.5" />
-		<path fill="#FFF" fill-rule="nonzero" stroke="#FFF" stroke-linejoin="round" stroke-width="4" d="M9.8 9.8h12.6V0H9.8v21z" />
-		<path stroke="#000" stroke-linejoin="round" stroke-width="2" d="M9.8 9.8h12.6V0H9.8v21z" />
-		<path fill="#000" fill-rule="nonzero" d="M12.6 4.2h4.2v1.4h-4.2z" />
-		<path fill="#000" fill-rule="nonzero" d="m16.1 2.1 3.5 2.8-3.5 2.8z" />
+		<ellipse cx="9.8" cy="21" stroke="#fff" stroke-linejoin="round" stroke-width="4" rx="9.8" ry="3.5"/>
+		<ellipse cx="9.8" cy="21" stroke="#000" stroke-linejoin="round" stroke-width="1.5" rx="9.8" ry="3.5"/>
+		<path fill="#fff" fill-rule="nonzero" stroke="#fff" stroke-linejoin="round" stroke-width="4" d="M9.8 9.8h12.6V0H9.8v21z"/>
+		<path stroke="#000" stroke-linejoin="round" stroke-width="2" d="M9.8 9.8h12.6V0H9.8v21z"/>
+		<path fill="#000" fill-rule="nonzero" d="M12.6 4.2h4.2v1.4h-4.2z"/>
+		<path fill="#000" fill-rule="nonzero" d="m16.1 2.1 3.5 2.8-3.5 2.8z"/>
 	</g>
 </svg>
