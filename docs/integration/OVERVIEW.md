@@ -12,7 +12,7 @@ For _who_ needs _what kind of map_, see [GIS stack choices](../ecosystem/GIS_STA
 Most production deployments combine three layers. Each can be minimal or full-featured:
 
 | Layer                  | Role                                            | Typical technology                                                            | Mapsight touchpoint                            |
-|------------------------|-------------------------------------------------|-------------------------------------------------------------------------------|------------------------------------------------|
+| ---------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
 | **Content / delivery** | Page shell, editorial workflow, embed placement | CMS (PHP, Java, or static site generator)                                     | HTML snippets, inline config, optional SSR     |
 | **Data preparation**   | Fetch, transform, serve GeoJSON or APIs         | CMS APIs, [mapsight-pulp](PULP.md), optional [data platform](DATA_BACKEND.md) | `featureSources`, HTTP loaders, TanStack Query |
 | **Mapsight frontend**  | Map, list, filters, theming                     | This monorepo — embed or SPA                                                  | `create()` / `browserEmbed`, Redux GIS store   |
@@ -80,7 +80,7 @@ host embed build: [`starters/mapsight-host-starter`](../../starters/mapsight-hos
 ### Embed API
 
 | API                                                  | Export                       | Role                                        |
-|------------------------------------------------------|------------------------------|---------------------------------------------|
+| ---------------------------------------------------- | ---------------------------- | ------------------------------------------- |
 | `browserEmbed(container, options)`                   | `@mapsight/ui/embed/browser` | CMS embed bootstrap; optional SSR hydration |
 | `create(container, styleFunction, config, options?)` | `@mapsight/ui`               | Direct mount — SPAs and custom React hosts  |
 
@@ -111,7 +111,7 @@ sequenceDiagram
 ## Integration targets
 
 | Host pattern               | Reference in monorepo                                                            | Guide                                       |
-|----------------------------|----------------------------------------------------------------------------------|---------------------------------------------|
+| -------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------- |
 | PHP / generic CMS snippets | [`starters/mapsight-host-starter`](../../starters/mapsight-host-starter)         | [CMS_PHP.md](CMS_PHP.md)                    |
 | Java CMS (Infosite)        | Pending Java module research                                                     | [CMS_INFOSITE.md](CMS_INFOSITE.md) **stub** |
 | Vite + React Router SPA    | [`starters/mapsight-vite-spa-starter`](../../starters/mapsight-vite-spa-starter) | [REACT_SPA.md](REACT_SPA.md)                |
@@ -128,7 +128,7 @@ example is pending maintainer input.
 Choose based on complexity — not every deployment needs all three:
 
 | Need                                                                | Option                                                    | Guide                              |
-|---------------------------------------------------------------------|-----------------------------------------------------------|------------------------------------|
+| ------------------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------- |
 | Static or CMS-published GeoJSON                                     | Direct URL in embed config                                | [CMS_PHP.md](CMS_PHP.md)           |
 | Scheduled transforms → static GeoJSON (feeds, KML, domain handlers) | mapsight-pulp (cron/systemd)                              | [PULP.md](PULP.md)                 |
 | Same-origin basemap tiles (cache, merge, branding)                  | [tile-proxy](https://github.com/open-mapsight/tile-proxy) | [TILE_PROXY.md](TILE_PROXY.md)     |

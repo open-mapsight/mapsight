@@ -1,10 +1,13 @@
 # React SPA integration
 
-**Copy-out template:** [`starters/mapsight-vite-spa-starter`](../../starters/mapsight-vite-spa-starter) — minimal Vite + React Router SPA with one map route and semver `@mapsight/*` pins.
+**Copy-out template:** [`starters/mapsight-vite-spa-starter`](../../starters/mapsight-vite-spa-starter) — minimal Vite +
+React Router SPA with one map route and semver `@mapsight/*` pins.
 
-**Feature demo:** [`apps/showcase`](../../apps/showcase) — richer UI surface (icon catalog, count-aggregator, TanStack Query) for contributors exploring package capabilities.
+**Feature demo:** [`apps/showcase`](../../apps/showcase) — richer UI surface (icon catalog, count-aggregator, TanStack
+Query) for contributors exploring package capabilities.
 
-Use this when Mapsight is the **primary frontend** (demo apps, internal tools, standalone dashboards) rather than a CMS HTML snippet.
+Use this when Mapsight is the **primary frontend** (demo apps, internal tools, standalone dashboards) rather than a CMS
+HTML snippet.
 
 ---
 
@@ -17,7 +20,8 @@ Use this when Mapsight is the **primary frontend** (demo apps, internal tools, s
 | Host CMS owns chrome                 | App owns chrome (nav, footer)          |
 | Primary municipal communicative maps | Demos, showcases, count-aggregator lab |
 
-Many production **communicative** maps use CMS embeds; SPAs prove package integration and support contributor development.
+Many production **communicative** maps use CMS embeds; SPAs prove package integration and support contributor
+development.
 
 ---
 
@@ -37,17 +41,25 @@ Many production **communicative** maps use CMS embeds; SPAs prove package integr
 ## Integration pattern
 
 1. **Create store** via `@mapsight/ui` `Instance` (or lower-level `create()`) on a route-mounted container ref.
-2. **Load config** from route params, static JSON, or fetched at runtime — unlike CMS embeds, config often lives in TS modules.
-3. **Style pipeline** — run `vector-style-compiler` and copy traffic-style icons as part of `npm run build` (see starter `package.json` scripts).
-4. **Assets** — copy `@mapsight/traffic-style` image dirs to `public/img/` for map icons (`mapsight-icons*`). UI chrome icons (`mapsight-ui/*`) resolve from `@mapsight/ui` through SCSS (`$ms3-iconPath: "~@mapsight/ui/dist/img/"`) and are emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss).
+2. **Load config** from route params, static JSON, or fetched at runtime — unlike CMS embeds, config often lives in TS
+   modules.
+3. **Style pipeline** — run `vector-style-compiler` and copy traffic-style icons as part of `npm run build` (see starter
+   `package.json` scripts).
+4. **Assets** — copy `@mapsight/traffic-style` image dirs to `public/img/` for map icons (`mapsight-icons*`). UI chrome
+   icons (`mapsight-ui/*`) resolve from `@mapsight/ui` through SCSS (`$ms3-iconPath: "~@mapsight/ui/dist/img/"`) and are
+   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss).
 
-The vite-spa starter mounts the map only on `/`. Navigating to `/about` unmounts `Instance` and tears down its store. If you keep `Instance` at a layout level across routes, call `resetMapsightCore` when leaving map modules — see the starter README.
+The vite-spa starter mounts the map only on `/`. Navigating to `/about` unmounts `Instance` and tears down its store. If
+you keep `Instance` at a layout level across routes, call `resetMapsightCore` when leaving map modules — see the starter
+README.
 
 ---
 
 ## Count Aggregator demo
 
-Showcase includes a count-aggregator page wired to a **local mock API** (`vite.count-aggregator-mock.ts`) so contributors can exercise `@mapsight/count-aggregator-ui` without a live platform. Replace mock base URL with host platform public API in production apps.
+Showcase includes a count-aggregator page wired to a **local mock API** (`vite.count-aggregator-mock.ts`) so
+contributors can exercise `@mapsight/count-aggregator-ui` without a live platform. Replace mock base URL with host
+platform public API in production apps.
 
 See [DATA_BACKEND.md](DATA_BACKEND.md) for the optional platform pattern.
 
@@ -61,7 +73,8 @@ Private host apps may use TanStack Router instead of React Router. Integration r
 - Call `resetMapsightCore` when leaving map routes to avoid stale global store state
 - Use path-scoped containers — one store per mount unless intentionally sharing via `mergeAll`
 
-No TanStack Router reference app ships in the public monorepo; follow the vite-spa starter embed lifecycle with router lifecycle hooks.
+No TanStack Router reference app ships in the public monorepo; follow the vite-spa starter embed lifecycle with router
+lifecycle hooks.
 
 ---
 

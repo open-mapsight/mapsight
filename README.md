@@ -9,9 +9,9 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 ## Package overview
 
 | Package                                                                                                                                                                                | Description                                                                                                                                                                                                                                                                                                                                                             |
-|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <nobr>⛓️ [**`core`**](packages/core/README.md)</nobr><br>![NPM Version](https://img.shields.io/npm/v/%40mapsight%2Fcore?style=flat)                                                    | **Mapsight Core (Redux Store)**<br>The core of Mapsight, providing the Redux store and the core architecture (controllers, base actions, redux devtools).                                                                                                                                                                                                               |
-| <nobr>🖥️ [**`ui`**](packages/ui/README.md)</nobr><br>![NPM Version](https://img.shields.io/npm/v/%40mapsight%2Fui?style=flat)                                                         | **Default UI (React)**<br>The default UI and component library with maps, lists, filters, switchers, etc. Mapsight UI allows you to compose your own UI from the provided components or use a default UI with some configuration and customizations.                                                                                                                    |
+| <nobr>🖥️ [**`ui`**](packages/ui/README.md)</nobr><br>![NPM Version](https://img.shields.io/npm/v/%40mapsight%2Fui?style=flat)                                                          | **Default UI (React)**<br>The default UI and component library with maps, lists, filters, switchers, etc. Mapsight UI allows you to compose your own UI from the provided components or use a default UI with some configuration and customizations.                                                                                                                    |
 | <nobr>🎨 [**`traffic-style`**](packages/traffic-style/README.md)</nobr><br>![NPM Version](https://img.shields.io/npm/v/%40mapsight%2Ftraffic-style?style=flat)                         | **Default style package (icons and vector styles)**<br>The default style package with icons and vector styles, tailored for traffic applications, but also provides a set of general POI styles and icons, suitable for various use cases.                                                                                                                              |
 | <nobr>✏️ [**`vector-style-compiler`**](packages/vector-style-compiler/README.md)</nobr><br>![NPM Version](https://img.shields.io/npm/v/%40mapsight%2Fvector-style-compiler?style=flat) | **CSS → OL StyleFunction compiler**<br>The vector style compiler is a tool that converts a subset of CSS styles into a multi-layer cached efficient OpenLayers style function, letting you style based on zoom, feature properties, environment, and more. It also allows you to freely add more geometries based on the base features to build complex vector objects. |
 | <nobr>📦 [**`vite-host-embed`**](packages/vite-host-embed/README.md)</nobr>                                                                                                            | **Host embed Vite plugin**<br>Lib-mode post-build finalize, HTML snippet markers (`snippetSources`), dev deploy-path aliases, snippet preview.                                                                                                                                                                                                                          |
@@ -24,10 +24,10 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 
 ## Applications
 
-| Application                                                  | Description                                                                 |
-|:-------------------------------------------------------------|:----------------------------------------------------------------------------|
+| Application                                               | Description                                                                 |
+| :-------------------------------------------------------- | :-------------------------------------------------------------------------- |
 | <nobr>🧑‍🎨 [**`vector-editor`**](apps/vector-editor)</nobr> | Vector editor for creating and editing vector features exported as GeoJSON. |
-| <nobr>💡 [**`showcase`**](apps/showcase)</nobr>              | Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons.     |
+| <nobr>💡 [**`showcase`**](apps/showcase)</nobr>           | Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons.     |
 
 ## Starters
 
@@ -35,7 +35,7 @@ Copy-out host integration templates under [`starters/`](starters/) — semver `@
 monorepo unit. See [`starters/README.md`](starters/README.md).
 
 | Starter                                                               | Status   | Description                                              |
-|:----------------------------------------------------------------------|:---------|:---------------------------------------------------------|
+| :-------------------------------------------------------------------- | :------- | :------------------------------------------------------- |
 | [**`mapsight-host-starter`**](starters/mapsight-host-starter)         | **Beta** | Host embed build (`browserEmbed` + paste-ready snippet). |
 | **`mapsight-next-starter`**                                           | **WIP**  | Next.js App Router copy-out template.                    |
 | [**`mapsight-vite-spa-starter`**](starters/mapsight-vite-spa-starter) | **WIP**  | Minimal Vite + React Router SPA copy-out template.       |
@@ -47,7 +47,7 @@ and [getting started](docs/getting-started.md). The [private workspace](#private
 to maintainers with a private checkout.
 
 | Topic                  | Document                                                                               |
-|------------------------|----------------------------------------------------------------------------------------|
+| ---------------------- | -------------------------------------------------------------------------------------- |
 | Hub                    | [`docs/README.md`](docs/README.md)                                                     |
 | Getting started        | [`docs/getting-started.md`](docs/getting-started.md)                                   |
 | Host embed starter     | [`starters/mapsight-host-starter`](starters/mapsight-host-starter)                     |

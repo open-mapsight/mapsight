@@ -9,7 +9,7 @@ on a schedule.
 ## When to use pulp
 
 | Scenario                                                  | CMS-only | Pulp | Platform |
-|-----------------------------------------------------------|----------|------|----------|
+| --------------------------------------------------------- | -------- | ---- | -------- |
 | Static GeoJSON files edited in CMS                        | ✓        | —    | —        |
 | Merge CMS GeoJSON + external HTTP feed                    | —        | ✓    | —        |
 | Domain transforms (Concert, TIC, KML→GeoJSON, CSV)        | —        | ✓    | —        |
@@ -78,7 +78,7 @@ Pulp does **not** run inside the browser or the Node monorepo build.
 ## Operations
 
 | Concern      | Guidance                                                                              |
-|--------------|---------------------------------------------------------------------------------------|
+| ------------ | ------------------------------------------------------------------------------------- |
 | Scheduling   | systemd timer or cron; monitor job success/failure                                    |
 | Output paths | Stable URLs for embed config; atomic writes (temp file + rename) where possible       |
 | Caching      | Long cache headers on versioned or timestamped files; shorter cache if URLs are fixed |

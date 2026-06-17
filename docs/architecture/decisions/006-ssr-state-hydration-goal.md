@@ -6,33 +6,43 @@
 
 ## Context
 
-Communicative maps on CMS pages benefit from **first meaningful paint** with list/map HTML, then client interactivity without losing GIS state.
+Communicative maps on CMS pages benefit from **first meaningful paint** with list/map HTML, then client interactivity
+without losing GIS state.
 
 **What exists in the monorepo:**
 
-- `browserEmbed` reads `data-dehydrated-state` from the container ([`packages/ui/src/js/embed/browser.ts`](../../../packages/ui/src/js/embed/browser.ts))
-- Node render entry points ([`packages/ui/src/js/server-handler.js`](../../../packages/ui/src/js/server-handler.js), [`packages/ui/src/js/embed/node.ts`](../../../packages/ui/src/js/embed/node.ts))
+- `browserEmbed` reads `data-dehydrated-state` from the container ([
+  `packages/ui/src/js/embed/browser.ts`](../../../packages/ui/src/js/embed/browser.ts))
+- Node render entry points ([`packages/ui/src/js/server-handler.js`](../../../packages/ui/src/js/server-handler.js), [
+  `packages/ui/src/js/embed/node.ts`](../../../packages/ui/src/js/embed/node.ts))
 
 **What worked in production (reference deployment):**
 
 A **PHP CMS controller** pattern:
 
 1. POST embed options (preset, state, request URI) to a **small Node SSR service** (short timeout, size cap).
-2. On success — inject returned **HTML shell** + **`reHydratedState`** into the page; client preset bootstraps on `DOMContentLoaded`.
-3. On failure or timeout — **graceful fallback**: same embed markup and client-only bootstrap with inline JSON options (SSR inactive comment in HTML). Page still works; no hard dependency on SSR uptime.
+2. On success — inject returned **HTML shell** + **`reHydratedState`** into the page; client preset bootstraps on
+   `DOMContentLoaded`.
+3. On failure or timeout — **graceful fallback**: same embed markup and client-only bootstrap with inline JSON options (
+   SSR inactive comment in HTML). Page still works; no hard dependency on SSR uptime.
 
-This pattern predates current framework conventions and **should not be “Accepted” as the final architecture** until we evaluate modern alternatives.
+This pattern predates current framework conventions and **should not be “Accepted” as the final architecture** until we
+evaluate modern alternatives.
 
-**Also evolving:** Next.js, React Router (framework mode), TanStack Start, and similar **full-stack React** models offer different hydration stories than POST-to-Node-microservice.
+**Also evolving:** Next.js, React Router (framework mode), TanStack Start, and similar **full-stack React** models offer
+different hydration stories than POST-to-Node-microservice.
 
-**Open:** server runtime (**Node vs Bun**), whether SSR stays a sidecar service vs framework-integrated, and how Infosite/TYPO3 hosts wire it when CMS integration packages open-source.
+**Open:** server runtime (**Node vs Bun**), whether SSR stays a sidecar service vs framework-integrated, and how
+Infosite/TYPO3 hosts wire it when CMS integration packages open-source.
 
 ## Decision
 
 ### Direction (not final)
 
-1. **Hydration contract stays** — server emits HTML + serializable GIS state; client `browserEmbed` rehydrates ([Principles](../PRINCIPLES.md)).
-2. **Graceful degradation is required** — CMS pages must work when the SSR service is down (proven in reference PHP controller).
+1. **Hydration contract stays** — server emits HTML + serializable GIS state; client `browserEmbed`
+   rehydrates ([Principles](../PRINCIPLES.md)).
+2. **Graceful degradation is required** — CMS pages must work when the SSR service is down (proven in reference PHP
+   controller).
 3. **Evaluate modern host patterns** before locking implementation:
     - Legacy: PHP → POST → Node/Bun sidecar (reference deployment)
     - Framework: Next.js / React Router / TanStack Start SSR routes
@@ -73,5 +83,6 @@ This pattern predates current framework conventions and **should not be “Accep
 
 - [`packages/ui/src/js/embed/browser.ts`](../../../packages/ui/src/js/embed/browser.ts)
 - [`packages/ui/src/js/server-handler.js`](../../../packages/ui/src/js/server-handler.js)
-- [`starters/mapsight-next-starter`](../../../starters/mapsight-next-starter) — Next host copy-out template (evaluate, not mandate)
+- [`starters/mapsight-next-starter`](../../../starters/mapsight-next-starter) — Next host copy-out template (evaluate,
+  not mandate)
 - Planned: [integration/SSR_HYDRATION.md](../../integration/SSR_HYDRATION.md)

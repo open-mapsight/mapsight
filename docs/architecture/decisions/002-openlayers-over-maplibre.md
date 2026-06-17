@@ -6,7 +6,8 @@
 
 ## Context
 
-Mapsight needs a web map engine that supports **mixed raster and vector workflows**, OGC layers (WMS/WFS), GeoJSON-heavy feature state, and a **custom vector styling pipeline** (`@mapsight/vector-style-compiler`, traffic styles).
+Mapsight needs a web map engine that supports **mixed raster and vector workflows**, OGC layers (WMS/WFS), GeoJSON-heavy
+feature state, and a **custom vector styling pipeline** (`@mapsight/vector-style-compiler`, traffic styles).
 
 Evaluated against MapLibre GL JS (vector-tile first) and Leaflet (lightweight, plugin ecosystem).
 
@@ -14,7 +15,8 @@ Evaluated against MapLibre GL JS (vector-tile first) and Leaflet (lightweight, p
 
 Standardize on **OpenLayers** as the map engine synced to Redux in `@mapsight/core`.
 
-Use MapLibre/Leaflet only in experimental or host-specific code outside the core stack — not as the supported Mapsight runtime.
+Use MapLibre/Leaflet only in experimental or host-specific code outside the core stack — not as the supported Mapsight
+runtime.
 
 ## Consequences
 
@@ -40,5 +42,6 @@ Use MapLibre/Leaflet only in experimental or host-specific code outside the core
 ## References
 
 - [`packages/core/docs/REDUX_ARCHITECTURE.md`](../../../packages/core/docs/REDUX_ARCHITECTURE.md)
-- [`packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md`](../../../packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md)
+- [
+  `packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md`](../../../packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md)
 - [`packages/lib-ol`](../../../packages/lib-ol/)

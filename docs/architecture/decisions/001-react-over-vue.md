@@ -6,7 +6,9 @@
 
 ## Context
 
-Mapsight targets **CMS embeds**, small SPAs, and React-friendly host stacks (Infosite/TYPO3 pages, custom municipal sites, Next.js demos). The German municipal GIS ecosystem also includes **Vue-based geoportals** (notably Masterportal), which serve a different product channel — pro-user portals, not communicative embeds.
+Mapsight targets **CMS embeds**, small SPAs, and React-friendly host stacks (Infosite/TYPO3 pages, custom municipal
+sites, Next.js demos). The German municipal GIS ecosystem also includes **Vue-based geoportals** (notably Masterportal),
+which serve a different product channel — pro-user portals, not communicative embeds.
 
 We needed a UI library that:
 
@@ -18,7 +20,8 @@ We needed a UI library that:
 
 Use **React** as the primary UI framework for `@mapsight/ui` and reference applications.
 
-Mapsight does **not** ship a Vue adapter. Geoportals may continue to use Vue (Masterportal, etc.) alongside Mapsight embeds on the same host.
+Mapsight does **not** ship a Vue adapter. Geoportals may continue to use Vue (Masterportal, etc.) alongside Mapsight
+embeds on the same host.
 
 ## Consequences
 

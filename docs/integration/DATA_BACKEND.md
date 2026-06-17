@@ -1,8 +1,10 @@
 # Optional data platform pattern
 
-Some deployments need more than CMS-published GeoJSON and [mapsight-pulp](PULP.md) transforms: **structured imports**, a **station model**, time-series storage, and a **public read API** for Count Aggregator and similar dashboards.
+Some deployments need more than CMS-published GeoJSON and [mapsight-pulp](PULP.md) transforms: **structured imports**, a
+**station model**, time-series storage, and a **public read API** for Count Aggregator and similar dashboards.
 
-Mapsight monorepo packages (`@mapsight/count-aggregator-api`, `@mapsight/count-aggregator-ui`) consume such an API — but the **platform application itself is host-operated** and not part of the open-source monorepo today.
+Mapsight monorepo packages (`@mapsight/count-aggregator-api`, `@mapsight/count-aggregator-ui`) consume such an API — but
+the **platform application itself is host-operated** and not part of the open-source monorepo today.
 
 ---
 
@@ -37,7 +39,8 @@ flowchart TB
   UI --> Public
 ```
 
-Typical stack (reference deployments): **Laravel** backend, **React** admin modules, relational DB, optional Meilisearch. Exact versions and modules vary by host.
+Typical stack (reference deployments): **Laravel** backend, **React** admin modules, relational DB, optional
+Meilisearch. Exact versions and modules vary by host.
 
 ---
 
@@ -78,7 +81,8 @@ The reference platform is **proprietary today** (may open-source later). That af
 - opencode.de / CIVITAS component listings
 - What can be copied into public documentation vs maintainer-only notes
 
-Public docs describe the **pattern**; deployment-specific URLs, customer names, and admin modules stay in private maintainer docs.
+Public docs describe the **pattern**; deployment-specific URLs, customer names, and admin modules stay in private
+maintainer docs.
 
 ---
 

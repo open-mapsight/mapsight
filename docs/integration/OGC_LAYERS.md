@@ -56,7 +56,7 @@ Prefer static GeoJSON or server-prepared files for communicative embeds.
 Browsers block cross-origin WMS/WFS unless GeoServer sends CORS headers or the layer is **same-origin**.
 
 | Situation                    | Approach                                                         |
-|------------------------------|------------------------------------------------------------------|
+| ---------------------------- | ---------------------------------------------------------------- |
 | GeoServer public with CORS   | Direct layer URL in config                                       |
 | GeoServer internal only      | Reverse proxy on CMS host (`/geoserver/…`)                       |
 | Masterportal-style OGC proxy | Geoportal proxy — different from XYZ [tile-proxy](TILE_PROXY.md) |

@@ -8,7 +8,7 @@ does not replace GeoServer, QGIS, or your ETL pipeline.
 ## What web needs from you
 
 | Deliverable         | Description                                                                   |
-|---------------------|-------------------------------------------------------------------------------|
+| ------------------- | ----------------------------------------------------------------------------- |
 | **Accessible URL**  | HTTPS URL the browser can `GET` (or documented proxy path)                    |
 | **Format**          | GeoJSON `FeatureCollection` preferred for thematic points/lines/polygons      |
 | **CRS**             | **EPSG:4326** (WGS84 lon/lat) unless integrator configures another projection |
@@ -33,7 +33,7 @@ Hand off using the checklist at the end of this page.
 Common fields consumed by list and filter UI (names are convention — agree with integrator):
 
 | Property          | Used for                                         |
-|-------------------|--------------------------------------------------|
+| ----------------- | ------------------------------------------------ |
 | `name`            | List title, popup heading                        |
 | `listInformation` | List subtitle / summary line                     |
 | `mapsightIconId`  | Icon from host style bundle                      |
@@ -46,7 +46,7 @@ See a working example in [
 ### Size and performance
 
 | Guideline               | Recommendation                                                                        |
-|-------------------------|---------------------------------------------------------------------------------------|
+| ----------------------- | ------------------------------------------------------------------------------------- |
 | Browser `xhr-json` load | Keep **under ~5–10 MB** uncompressed where possible                                   |
 | Larger datasets         | Split by region/theme, simplify geometry, or serve via [pulp](PULP.md) / platform API |
 | Refresh                 | Set cache headers on static files; document expected staleness                        |
@@ -63,7 +63,7 @@ GeoServer; integrator wires WMS/WFS URLs — see [OGC_LAYERS](OGC_LAYERS.md).
 ## Publishing paths
 
 | Pattern                                            | When                                                                  |
-|----------------------------------------------------|-----------------------------------------------------------------------|
+| -------------------------------------------------- | --------------------------------------------------------------------- |
 | **Static GeoJSON file** on web server or CMS media | Small/medium datasets, infrequent updates                             |
 | **mapsight-pulp** scheduled job                    | Feeds, transforms, KML→GeoJSON — [PULP](PULP.md)                      |
 | **Platform API**                                   | Time-series, admin-managed stations — [DATA_BACKEND](DATA_BACKEND.md) |

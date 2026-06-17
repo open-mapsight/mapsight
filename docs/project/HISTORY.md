@@ -1,12 +1,14 @@
 # Project history
 
-Timeline of Mapsight as a **product and monorepo**. Facts below are **not yet verified**. For code-level detail, see git history and package releases.
+Timeline of Mapsight as a **product and monorepo**. Facts below are **not yet verified**. For code-level detail, see git
+history and package releases.
 
 ---
 
 ## Origins
 
-Mapsight grew out of **municipal communicative map** work in Germany — embeddable React/OpenLayers experiences integrated with **CMS-hosted pages**, not standalone geoportals. Early focus:
+Mapsight grew out of **municipal communicative map** work in Germany — embeddable React/OpenLayers experiences
+integrated with **CMS-hosted pages**, not standalone geoportals. Early focus:
 
 - Declarative map + list + filter UX for public audiences
 - PHP-side data preparation (later extracted as **mapsight-pulp**)
@@ -27,9 +29,12 @@ Mapsight grew out of **municipal communicative map** work in Germany — embedda
 
 ## People and open source
 
-Mapsight builds on work by **many contributors** over several years — including teams and individuals who shaped the early architecture, CMS integrations, and municipal deployments.
+Mapsight builds on work by **many contributors** over several years — including teams and individuals who shaped the
+early architecture, CMS integrations, and municipal deployments.
 
-We intend to publish a **contributor acknowledgements** section here (with consent and bios suitable for portfolios). That includes thanking **neonaut** and others involved in bringing Mapsight to open source. **Pending:** confirmation and details from past contributors.
+We intend to publish a **contributor acknowledgements** section here (with consent and bios suitable for portfolios).
+That includes thanking **neonaut** and others involved in bringing Mapsight to open source. **Pending:** confirmation
+and details from past contributors.
 
 If you contributed and would like to be listed (or prefer anonymity), contact the current maintainers.
 
@@ -37,9 +42,11 @@ If you contributed and would like to be listed (or prefer anonymity), contact th
 
 ## Technical lineage
 
-- **Redux as GIS runtime** — intentional choice to keep map, UI, and data in one replayable store ([`@mapsight/core` docs](../../packages/core/docs/REDUX_ARCHITECTURE.md)).
+- **Redux as GIS runtime** — intentional choice to keep map, UI, and data in one replayable store ([
+  `@mapsight/core` docs](../../packages/core/docs/REDUX_ARCHITECTURE.md)).
 - **OpenLayers** — web map engine; vector and raster layers from host-configured sources.
-- **Count aggregator** — domain package for traffic/counting visualizations; optional **platform** backend for imports and public API (host-operated today).
+- **Count aggregator** — domain package for traffic/counting visualizations; optional **platform** backend for imports
+  and public API (host-operated today).
 
 ---
 
@@ -49,7 +56,8 @@ Mapsight is one layer in a **wider municipal GIS stack**:
 
 - **GeoServer** (or equivalent) publishes OGC layers consumed by communicative maps and optional geoportals.
 - **Masterportal / CIVITAS** serve pro-user geoportals — adjacent products, not Mapsight replacements.
-- **CMS** (e.g. Infosite, TYPO3) hosts embeds, supplies content, and drives Mapsight through declarative JSON — the primary delivery channel for embed-first maps.
+- **CMS** (e.g. Infosite, TYPO3) hosts embeds, supplies content, and drives Mapsight through declarative JSON — the
+  primary delivery channel for embed-first maps.
 
 ---
 

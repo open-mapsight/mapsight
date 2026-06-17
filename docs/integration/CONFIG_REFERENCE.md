@@ -96,7 +96,8 @@ WMS/WFS: [OGC_LAYERS](OGC_LAYERS.md) — not the same as XYZ basemap / tile-prox
 ```
 
 Preset factories in host apps (e.g. `simpleMap()`) return this object. The stable CMS `embed.js` entry re-exports
-`browserEmbed` and pulls in stylesheet side effects — see [`starters/mapsight-host-starter`](../../starters/mapsight-host-starter).
+`browserEmbed` and pulls in stylesheet side effects — see [
+`starters/mapsight-host-starter`](../../starters/mapsight-host-starter).
 
 ---
 

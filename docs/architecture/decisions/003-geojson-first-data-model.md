@@ -6,7 +6,8 @@
 
 ## Context
 
-Mapsight’s Redux store describes **features, lists, filters, and selection** as serializable state. Hosts supply data from CMS, [mapsight-pulp](https://github.com/open-mapsight/pulp), GeoServer, ArcGIS REST, and static files.
+Mapsight’s Redux store describes **features, lists, filters, and selection** as serializable state. Hosts supply data
+from CMS, [mapsight-pulp](https://github.com/open-mapsight/pulp), GeoServer, ArcGIS REST, and static files.
 
 We needed a **primary in-memory model** for features that:
 
@@ -16,9 +17,11 @@ We needed a **primary in-memory model** for features that:
 
 ## Decision
 
-Treat **GeoJSON FeatureCollections** (and Mapsight’s feature-source abstractions built on them) as the **primary feature data model** in core state.
+Treat **GeoJSON FeatureCollections** (and Mapsight’s feature-source abstractions built on them) as the **primary feature
+data model** in core state.
 
-WMS/WFS, KML, and other formats are **supported as layers or inputs**, transformed at the boundary (loaders, pulp, host APIs) — not as the canonical Redux document shape.
+WMS/WFS, KML, and other formats are **supported as layers or inputs**, transformed at the boundary (loaders, pulp, host
+APIs) — not as the canonical Redux document shape.
 
 ## Consequences
 

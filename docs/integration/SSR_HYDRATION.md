@@ -19,7 +19,6 @@ Client [`browserEmbed`](../../packages/ui/src/js/embed/browser.ts) reads the att
 passed explicitly, merges into create options, and runs the initial render.
 
 ```html
-
 <div
 	id="mapsight-embed-1"
 	data-dehydrated-state='{"mapsightCore":{…},"app":{…}}'
@@ -45,7 +44,7 @@ Pages must never hard-depend on SSR uptime. This pattern is proven in reference 
 ## Implementation paths under evaluation
 
 | Path                             | Fit                       | Notes                                             |
-|----------------------------------|---------------------------|---------------------------------------------------|
+| -------------------------------- | ------------------------- | ------------------------------------------------- |
 | **PHP → Node/Bun sidecar**       | Classic CMS hosts         | POST embed options; separate process ops overhead |
 | **Next.js / TanStack Start SSR** | Modern React hosts        | See [NEXTJS.md](NEXTJS.md); evaluate per app      |
 | **React Router framework SSR**   | SPA-first municipal sites | Middle ground                                     |
@@ -76,10 +75,7 @@ POST JSON to an internal render endpoint (localhost or private network):
 	"options": {
 		"imagesUrl": "/mapsight-assets/img/",
 		"featureSourceUrl": "/mapsight-assets/data/demo.geojson",
-		"startCoordinates": [
-			10.5,
-			52.2
-		],
+		"startCoordinates": [10.5, 52.2],
 		"startZoom": 12
 	}
 }
@@ -93,7 +89,6 @@ client-only snippet.
 Return HTML fragment for the container plus dehydrated state:
 
 ```html
-
 <div
 	id="mapsight-embed-demo"
 	class="mapsight-embed"
@@ -111,7 +106,7 @@ Same snippet imports `browserEmbed` — it reads `data-dehydrated-state` automat
 ### Security notes
 
 | Topic      | Guidance                                                                                                     |
-|------------|--------------------------------------------------------------------------------------------------------------|
+| ---------- | ------------------------------------------------------------------------------------------------------------ |
 | Network    | Sidecar on loopback or internal VLAN — not public internet                                                   |
 | Auth       | CMS→sidecar only; no anonymous public POST                                                                   |
 | Secrets    | Never serialize API keys into dehydrated state                                                               |

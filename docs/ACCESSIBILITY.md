@@ -8,7 +8,7 @@ tree has **not** completed a formal WCAG audit.
 ## Status (June 2026)
 
 | Area                                 | Status                                                                                           |
-|--------------------------------------|--------------------------------------------------------------------------------------------------|
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | Formal WCAG 2.x conformance audit    | **Not completed**                                                                                |
 | Keyboard use in map/list UI          | Partial — varies by component                                                                    |
 | Screen reader support for map canvas | **Limited** — OpenLayers canvas model                                                            |

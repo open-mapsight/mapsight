@@ -36,10 +36,10 @@ Use Node and pnpm versions from root `package.json` `engines`.
    guidance).
 2. Keep diffs focused; match surrounding style.
 3. Run locally before push:
-	- `pnpm typecheck`
-	- `pnpm lint`
-	- `pnpm test` (or affected packages via turbo filters)
-	- `pnpm run check`
+    - `pnpm typecheck`
+    - `pnpm lint`
+    - `pnpm test` (or affected packages via turbo filters)
+    - `pnpm run check`
 4. Open a PR with a clear description and test plan.
 
 Husky hooks run leak checks and lint-staged on commit/push.
@@ -52,8 +52,8 @@ Husky hooks run leak checks and lint-staged on commit/push.
    `013-short-title.md`.
 2. Fill Context, Decision, Alternatives, Consequences — plain language, not formal committee prose.
 3. Add a row to [`decisions/README.md`](../architecture/decisions/README.md) index.
-4. If the decision changes maintainer status, update [`CURRENT_VS_TARGET.md`](../architecture/CURRENT_VS_TARGET.md) *
-   *Decision** column.
+4. If the decision changes maintainer status, update [`CURRENT_VS_TARGET.md`](../architecture/CURRENT_VS_TARGET.md) \*
+   \*Decision\*\* column.
 5. Link related package docs (Redux, integration guides) in the **References** section.
 
 Write one for framework choices, public API/config contracts, explicit non-goals, and licensing/ecosystem alignment.
@@ -66,7 +66,7 @@ Status values: **Documented** · **Open** · **Deprecated** · **Superseded by D
 ## Updating documentation
 
 | Change type             | Update                                                              |
-|-------------------------|---------------------------------------------------------------------|
+| ----------------------- | ------------------------------------------------------------------- |
 | New integration pattern | `docs/integration/*` + link from [docs/README.md](../README.md)     |
 | Status matrix           | [CURRENT_VS_TARGET.md](../architecture/CURRENT_VS_TARGET.md)        |
 | Ecosystem/deployment    | [ECOSYSTEM.md](../architecture/ECOSYSTEM.md) (public patterns only) |

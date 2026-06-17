@@ -62,7 +62,7 @@ goal.
 ## Comparison
 
 | Dimension        | Masterportal                               | Mapsight                                                                                       |
-|------------------|--------------------------------------------|------------------------------------------------------------------------------------------------|
+| ---------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | Product shape    | Monolithic portal SPA                      | npm packages + embed API                                                                       |
 | Framework        | Vue 3 + Vuex 4                             | React + Redux (core only)                                                                      |
 | Config           | Split JSON files                           | Serializable Redux tree + Zod                                                                  |
@@ -84,7 +84,7 @@ goal.
 ## When to choose which
 
 | Need                                                                     | Lean toward                                                                |
-|--------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | Thematic map in a city website, campaign, or association site            | **Mapsight** embed or SPA                                                  |
 | Map must **match host site** design (not look like a separate GIS app)   | **Mapsight**                                                               |
 | Full geoportal: layer catalog, pro tools, OIDC layer sets, print         | **Masterportal** or CIVITAS geoportal slot                                 |
@@ -123,7 +123,7 @@ Stakeholder and stack nuance: [GIS stack choices](GIS_STACK_CHOICES.md).
 ## CIVITAS CORE
 
 |              | CIVITAS/CORE        | Masterportal | Mapsight                                                            |
-|--------------|---------------------|--------------|---------------------------------------------------------------------|
+| ------------ | ------------------- | ------------ | ------------------------------------------------------------------- |
 | Code license | EUPL-1.2            | MIT          | Undecided ([blocker](../LICENSING.md) for formal ecosystem listing) |
 | Docs license | CC-BY-SA 4.0        | —            | —                                                                   |
 | PMPC stance  | Explicit on website | —            | TBD                                                                 |

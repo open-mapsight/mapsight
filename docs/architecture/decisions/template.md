@@ -25,7 +25,7 @@ What we chose, in one or two short paragraphs.
 ## Alternatives considered
 
 | Option | Why not |
-|--------|---------|
+| ------ | ------- |
 | …      | …       |
 
 ## References

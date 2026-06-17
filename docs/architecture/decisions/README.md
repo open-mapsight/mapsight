@@ -10,7 +10,7 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 ## Index
 
 | ID                                                | Title                                            | State                                    |
-|---------------------------------------------------|--------------------------------------------------|------------------------------------------|
+| ------------------------------------------------- | ------------------------------------------------ | ---------------------------------------- |
 | [001](001-react-over-vue.md)                      | React over Vue                                   | Documented                               |
 | [002](002-openlayers-over-maplibre.md)            | OpenLayers over MapLibre GL                      | Documented                               |
 | [003](003-geojson-first-data-model.md)            | GeoJSON-first data model                         | Documented                               |

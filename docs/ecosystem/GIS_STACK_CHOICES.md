@@ -19,7 +19,7 @@ see [Positioning](POSITIONING.md).
 ## Three product channels
 
 | Channel                    | Audience                                            | Typical product                                              | Mapsight                                               |
-|----------------------------|-----------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------|
+| -------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
 | **Communicative maps**     | Residents, visitors, road users, campaign audiences | Thematic embeds in CMS pages, traffic info sites, microsites | **Primary scope**                                      |
 | **Geoportal / Fachportal** | Planners, contractors, GIS power users              | Masterportal, CIVITAS geoportal slot, Lizmap                 | **Adjacent** — different product                       |
 | **GIS back-office**        | Data stewards, analysts                             | QGIS Desktop, GeoServer admin, ETL                           | **Out of scope** — publishes data Mapsight may consume |
@@ -62,7 +62,7 @@ Product comparison: [Positioning](POSITIONING.md).
 ## Stakeholder matrix
 
 | Stakeholder                                                                             | Typical use cases                                                                               | Host pattern                                    | Geoportal needed?      | Mapsight fit                                                                   |
-|-----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------------------|------------------------|--------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------ |
 | **Municipality / public administration**                                                | Resident info, participation, smart city, city plan                                             | City CMS, maps subdomain                        | Sometimes (GIS dept)   | **Strong**                                                                     |
 | **Traffic / mobility public bodies** (VMZ, road authority, regional traffic management) | Roadworks, diversions, construction routing, live traffic layers, regional traffic storytelling | Maps subdomain, CMS or dedicated traffic portal | Rarely                 | **Strong** — often with proprietary routing/traffic modules alongside OSS core |
 | **Stadtmarketing / tourism / culture**                                                  | Event maps, round tours, audio-guide routes, festival wayfinding                                | SPA, CMS embed, partner iframe                  | Rarely                 | **Strong** — thematic UX without geoportal overhead                            |
@@ -84,7 +84,7 @@ embeds or static map exports to third parties** — multi-tenant presets, quotas
 ## Product-type comparison
 
 | Approach                             | Typical use                           | Open / sovereign                             | CMS or embed                          | Pro geoportal tools      | Mapsight stance                                                |
-|--------------------------------------|---------------------------------------|----------------------------------------------|---------------------------------------|--------------------------|----------------------------------------------------------------|
+| ------------------------------------ | ------------------------------------- | -------------------------------------------- | ------------------------------------- | ------------------------ | -------------------------------------------------------------- |
 | **Mapsight + host site**             | Communicative maps (all stakeholders) | Strong (OSS; [license TBD](../LICENSING.md)) | **Native embed**; host-native theming | No                       | **Primary product**                                            |
 | **GeoServer (+ PostGIS)**            | OGC layer publishing                  | Strong (OSS)                                 | N/A (server)                          | Feeds geoportal & embeds | **Use together** — data layer                                  |
 | **Masterportal / CIVITAS geoportal** | Municipal geoportal                   | Strong (EUPL/MIT)                            | Weak (full-page portal)               | Partial                  | **Adjacent** — not duplicate                                   |
@@ -102,21 +102,21 @@ Communicative maps need a **basemap** under thematic layers. Mapsight does **not
 config. See [Ecosystem § basemap patterns](../architecture/ECOSYSTEM.md):
 
 | Pattern                   | Summary                                                                                         | Guide                                         |
-|---------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| ------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------- |
 | **Tile proxy**            | Same-origin `/tiles/…`; cache and optional transform — preferred for production municipal hosts | [TILE_PROXY.md](../integration/TILE_PROXY.md) |
 | **Direct XYZ**            | OSM, basemap.de, vendor tiles — OK with ToS, attribution, rate limits                           | [Ecosystem](../architecture/ECOSYSTEM.md)     |
 | **GeoServer WMS**         | Official municipal raster basemap                                                               | [Ecosystem](../architecture/ECOSYSTEM.md)     |
 | **Municipal tile server** | Geo dept XYZ/WMTS, often fronted by proxy                                                       | [TILE_PROXY.md](../integration/TILE_PROXY.md) |
 
-For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), prefer **same-origin tile proxy** or *
-*self-hosted/municipal** basemaps over browser-direct calls to global SaaS tile APIs.
+For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), prefer **same-origin tile proxy** or \*
+\*self-hosted/municipal\*\* basemaps over browser-direct calls to global SaaS tile APIs.
 
 ---
 
 ## Glossary
 
 | Term                    | Meaning                                                                  | Mapsight                                    |
-|-------------------------|--------------------------------------------------------------------------|---------------------------------------------|
+| ----------------------- | ------------------------------------------------------------------------ | ------------------------------------------- |
 | **Communicative map**   | Thematic map for broad audiences in host content                         | **Primary scope**                           |
 | **Fachportal**          | German term for specialist / geo portal                                  | Often a **geoportal** channel               |
 | **Feature source**      | Config slice loading GeoJSON/API data into the map                       | `featureSources` in embed JSON              |

@@ -7,7 +7,7 @@ Conventions for contributing to the Mapsight monorepo. AI agents: see also [`AGE
 ## Toolchain
 
 | Tool           | Version / note                                                                                        |
-|----------------|-------------------------------------------------------------------------------------------------------|
+| -------------- | ----------------------------------------------------------------------------------------------------- |
 | **Node**       | ^24.15.0 (see root `package.json` `engines`)                                                          |
 | **pnpm**       | ^11.1.2 — workspace package manager                                                                   |
 | **Turborepo**  | `turbo build`, `turbo test`, `turbo typecheck`, etc.                                                  |
@@ -22,7 +22,7 @@ Install from repo root: `pnpm install`
 Packages that **emit** from `tsc` split configs:
 
 | File                  | Role                                                                          |
-|-----------------------|-------------------------------------------------------------------------------|
+| --------------------- | ----------------------------------------------------------------------------- |
 | `tsconfig.json`       | Full project — lib + tests, `noEmit: true`; used by IDE, `pnpm typecheck`, CI |
 | `tsconfig.build.json` | Emit only — excludes tests, sets `outDir`                                     |
 
@@ -45,7 +45,7 @@ Reference: `packages/core`, `packages/ui`, `packages/count-aggregator-api`.
 ## Testing pyramid
 
 | Layer            | Tool                   | Where                                         |
-|------------------|------------------------|-----------------------------------------------|
+| ---------------- | ---------------------- | --------------------------------------------- |
 | Unit / component | Vitest                 | Packages (required in `@mapsight/core`)       |
 | E2E              | Playwright             | `@mapsight/core` (`test:e2e`)                 |
 | Coverage         | Uneven across packages | Target: tiered expectations per package (TBD) |
@@ -60,7 +60,7 @@ upstream).
 ## Lint and format
 
 | Command                              | Purpose                      |
-|--------------------------------------|------------------------------|
+| ------------------------------------ | ---------------------------- |
 | `pnpm lint`                          | ESLint via turbo             |
 | `pnpm format:check` / `format:write` | Prettier                     |
 | `pnpm syncpack:lint`                 | Dependency version alignment |
@@ -74,7 +74,7 @@ Pre-commit: Husky runs `lint-staged` on staged files.
 `pnpm run check` runs guard scripts **in parallel**:
 
 | Script                          | Purpose                                                     |
-|---------------------------------|-------------------------------------------------------------|
+| ------------------------------- | ----------------------------------------------------------- |
 | `check:no-private-leak`         | No `private/` paths on public branches; lockfile importers  |
 | `check:node-ts-runtime`         | Node scripts use plain `node file.ts` — no ts-node/tsx/jiti |
 | `check:typecheck-test-coverage` | Packages with tests must include them in `tsconfig.json`    |

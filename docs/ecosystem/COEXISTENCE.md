@@ -7,7 +7,8 @@ Same organisation, **different product channels** — not a fork-or-merge choice
 | **Geoportal**           | Full-page portal (`/geoportal/…`)   | Masterportal / CIVITAS geoportal slot |
 | **Communicative embed** | CMS pages, campaigns, thematic maps | **Mapsight** (primary scope)          |
 
-See [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md) for stakeholder framing and [Positioning](POSITIONING.md) for capability comparison.
+See [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md) for stakeholder framing and [Positioning](POSITIONING.md) for
+capability comparison.
 
 ---
 
@@ -26,7 +27,8 @@ Handoff details: [Publishing data](../integration/PUBLISHING_DATA.md), [OGC laye
 
 ## Basemap policy
 
-Geoportal and embeds may use **different basemap URLs** and attribution blocks. Align **privacy policy** and visitor-facing attribution across both surfaces.
+Geoportal and embeds may use **different basemap URLs** and attribution blocks. Align **privacy policy** and
+visitor-facing attribution across both surfaces.
 
 Basemap patterns: [Ecosystem § basemaps](../architecture/ECOSYSTEM.md).
 

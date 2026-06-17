@@ -8,7 +8,7 @@ self-service integrators. See [Current vs target](architecture/CURRENT_VS_TARGET
 ## Start here — by role
 
 | I am…                                     | Start with                                                                                                                                          |
-|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Evaluating** product fit or procurement | [GIS stack choices](ecosystem/GIS_STACK_CHOICES.md) → [Positioning](ecosystem/POSITIONING.md) → [Licensing](LICENSING.md)                           |
 | **Integrating** a CMS snippet embed       | [Integration overview](integration/OVERVIEW.md) → [CMS embed pattern](integration/CMS_PHP.md) → [Config reference](integration/CONFIG_REFERENCE.md) |
 | **Integrating** a React SPA or Next app   | [Getting started](getting-started.md) → [REACT_SPA](integration/REACT_SPA.md) or [NEXTJS](integration/NEXTJS.md)                                    |
@@ -45,7 +45,7 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 ## Architecture
 
 | Document                                                  | About                                       |
-|-----------------------------------------------------------|---------------------------------------------|
+| --------------------------------------------------------- | ------------------------------------------- |
 | [ECOSYSTEM.md](architecture/ECOSYSTEM.md)                 | Technical deployment stack, repos, basemaps |
 | [PRINCIPLES.md](architecture/PRINCIPLES.md)               | Product goals and non-goals                 |
 | [CURRENT_VS_TARGET.md](architecture/CURRENT_VS_TARGET.md) | Implementation status matrix                |
@@ -55,7 +55,7 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 ## Ecosystem
 
 | Document                                               | About                                                     |
-|--------------------------------------------------------|-----------------------------------------------------------|
+| ------------------------------------------------------ | --------------------------------------------------------- |
 | [GIS_STACK_CHOICES.md](ecosystem/GIS_STACK_CHOICES.md) | Product channels, stakeholder matrix, stack comparison    |
 | [POSITIONING.md](ecosystem/POSITIONING.md)             | Masterportal comparison; CIVITAS geoportal context        |
 | [COEXISTENCE.md](ecosystem/COEXISTENCE.md)             | Mapsight embeds alongside Masterportal / shared GeoServer |
@@ -63,7 +63,7 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 ## Integration
 
 | Document                                                   | About                                          |
-|------------------------------------------------------------|------------------------------------------------|
+| ---------------------------------------------------------- | ---------------------------------------------- |
 | [OVERVIEW.md](integration/OVERVIEW.md)                     | Three-layer model, embed lifecycle             |
 | [getting-started.md](getting-started.md)                   | npm library path — install to first map        |
 | [CONFIG_REFERENCE.md](integration/CONFIG_REFERENCE.md)     | Embed JSON anatomy + Zod entry points          |
@@ -85,20 +85,20 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 ## Compliance
 
 | Document                             | About                            |
-|--------------------------------------|----------------------------------|
+| ------------------------------------ | -------------------------------- |
 | [LICENSING.md](LICENSING.md)         | License status + FAQ             |
 | [ACCESSIBILITY.md](ACCESSIBILITY.md) | Accessibility status (pre-audit) |
 
 ## Development
 
 | Document                             | About                                                       |
-|--------------------------------------|-------------------------------------------------------------|
+| ------------------------------------ | ----------------------------------------------------------- |
 | [Development](development/README.md) | Contributor workflow, standards, releases, maintainer tasks |
 
 ## Implementation deep dives
 
 | Topic                                                   | Location                                                                                                                          |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | Mapsight Redux Architecture (`@mapsight/core`)          | [packages/core/docs/REDUX_ARCHITECTURE.md](../packages/core/docs/REDUX_ARCHITECTURE.md)                                           |
 | Mapsight Action API — Decision Guide (`@mapsight/core`) | [packages/core/docs/ACTION_GUIDE.md](../packages/core/docs/ACTION_GUIDE.md)                                                       |
 | Vector style compiler — architecture deep dive          | [packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md](../packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md) |
@@ -107,14 +107,14 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 ## Demo applications
 
 | App           | Path                                          | Use for                    |
-|---------------|-----------------------------------------------|----------------------------|
+| ------------- | --------------------------------------------- | -------------------------- |
 | Showcase      | [`apps/showcase`](../apps/showcase)           | React Router SPA, UI demos |
 | Vector editor | [`apps/vector-editor`](../apps/vector-editor) | GeoJSON editing            |
 
 ## Copy-out starters
 
 | Starter                   | Path                                                                          | Use for                                    |
-|---------------------------|-------------------------------------------------------------------------------|--------------------------------------------|
+| ------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
 | Host embed starter (beta) | [`starters/mapsight-host-starter`](../starters/mapsight-host-starter)         | Vite lib embed build + paste-ready snippet |
 | Next.js starter (WIP)     | [`starters/mapsight-next-starter`](../starters/mapsight-next-starter)         | Next.js App Router copy-out template       |
 | Vite SPA starter (WIP)    | [`starters/mapsight-vite-spa-starter`](../starters/mapsight-vite-spa-starter) | Minimal React Router SPA copy-out template |

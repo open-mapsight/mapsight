@@ -61,7 +61,7 @@ pnpm --filter mapsight-next-starter build
 ## When Next vs CMS embed
 
 | Choose CMS embed                   | Choose Next host                          |
-|------------------------------------|-------------------------------------------|
+| ---------------------------------- | ----------------------------------------- |
 | Editorial CMS owns pages           | App team owns all routes                  |
 | Many topical embeds on one domain  | Map features are part of a JS application |
 | PHP/Java CMS already in production | Greenfield or Next-native stack           |
