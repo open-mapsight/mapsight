@@ -96,7 +96,7 @@ function renderScriptSafeCmsHints(code: string): string {
 
 export function renderScriptSafeCmsHintsInHtml(html: string): string {
 	return html.replace(
-		/(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi,
+		/(<script\b[^>]*>)([\s\S]*?)(<\/script\b[^>]*>)/gi,
 		(_, open: string, code: string, close: string) =>
 			`${open}${renderScriptSafeCmsHints(code)}${close}`,
 	);
