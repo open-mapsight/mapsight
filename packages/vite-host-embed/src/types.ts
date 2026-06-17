@@ -6,17 +6,19 @@ export type HostEmbedSnippetConfig = {
 export type HostEmbedConfig = {
 	/** Deploy URL prefix for static assets, e.g. `/mapsight-assets`. */
 	assetsBase: string;
-	/** Shared runtime entry basename (without `.js`). */
+	/** Stable shared runtime wrapper basename (without `.js`). */
 	runtimeEntry: string;
-	/** Stable app stylesheet filename written after the embed build. */
+	/** Stable app stylesheet wrapper filename written after the embed build. */
 	appStylesheet: string;
-	/** Public script name → Vite lib entry module path (used for cache headers). */
+	/** Public wrapper name → Vite lib entry module path. */
 	embedTypeEntries: Record<string, string>;
+	/** Wrapper names whose hashed entry module has a default export. Default: `[runtimeEntry]`. */
+	defaultEntryExports?: string[];
 	/** Output directory relative to the app root. Default: `dist/mapsight-assets`. */
 	outDir?: string;
 	/** Snippet output directory relative to the app root (not deployed). Default: `dist/snippets`. */
 	snippetsDir?: string;
-	/** Prefer a hashed CSS entry matching this prefix when stabilizing the stylesheet. */
+	/** Prefer a hashed CSS entry matching this prefix for the wrapper import. */
 	appStylesheetPrefix?: string;
 	/** Dev CSS entry for `${assetsBase}/assets/${appStylesheet}`. Default: `entries/mapsight.entry.css`. */
 	appStylesheetEntry?: string;

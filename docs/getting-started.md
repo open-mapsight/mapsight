@@ -2,7 +2,8 @@
 
 Minimal path: install packages → style function → config JSON → mount a map. **No municipal stack required.**
 
-Mapsight in this repository is **WIP** — the steps below reflect the npm library contract; production CMS deployments add host builds, data pipelines, and ops layers (see [Integration overview](integration/OVERVIEW.md)).
+Mapsight in this repository is **WIP** — the steps below reflect the npm library contract; production CMS deployments
+add host builds, data pipelines, and ops layers (see [Integration overview](integration/OVERVIEW.md)).
 
 ---
 
@@ -25,7 +26,9 @@ Add peer dependencies (`react`, `react-dom`, `ol`, …) as required by your bund
 
 ## 1. Style function
 
-Mapsight needs a compiled vector `styleFunction` (OpenLayers styling). Fastest path: build from `@mapsight/traffic-style` or `@mapsight/vector-style-compiler` — see [traffic-style README](../packages/traffic-style/README.md).
+Mapsight needs a compiled vector `styleFunction` (OpenLayers styling). Fastest path: build from
+`@mapsight/traffic-style` or `@mapsight/vector-style-compiler` —
+see [traffic-style README](../packages/traffic-style/README.md).
 
 ---
 
@@ -55,7 +58,8 @@ const mapsightConfig = {
 
 Validated in development via Zod — see [Config reference](integration/CONFIG_REFERENCE.md).
 
-**Basemaps:** raw OSM URLs are fine for local dev. Production hosts usually use a self-hosted or proxied basemap — see [Ecosystem § basemaps](architecture/ECOSYSTEM.md).
+**Basemaps:** raw OSM URLs are fine for local dev. Production hosts usually use a self-hosted or proxied basemap —
+see [Ecosystem § basemaps](architecture/ECOSYSTEM.md).
 
 ---
 
@@ -91,9 +95,12 @@ browserEmbed(
 );
 ```
 
-Full build + snippet pattern: [CMS_PHP](integration/CMS_PHP.md), the reference starter [`starters/mapsight-host-starter`](../starters/mapsight-host-starter), and [`@mapsight/vite-host-embed`](../packages/vite-host-embed/README.md).
+Full build + snippet pattern: [CMS_PHP](integration/CMS_PHP.md), the reference starter [
+`starters/mapsight-host-starter`](../starters/mapsight-host-starter), and [
+`@mapsight/vite-host-embed`](../packages/vite-host-embed/README.md).
 
-For count-aggregator CMS pages (full app shell, not lib-mode map embeds), see [`count-aggregator-ui`](../packages/count-aggregator-ui/README.md#cms-app-shell-embed).
+For count-aggregator CMS pages (full app shell, not lib-mode map embeds), see [
+`count-aggregator-ui`](../packages/count-aggregator-ui/README.md#cms-app-shell-embed).
 
 ---
 

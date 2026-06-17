@@ -2,7 +2,9 @@
 
 What exists in the monorepo today versus planned direction.
 
-> **For evaluators:** Mapsight is used in **controlled production deployments**, but the open-source tree is **WIP** — embed patterns, pulp, and tile-proxy are documented; OSI license, Infosite Java modules, SSR standardization, and i18n remain open. See [Licensing](../LICENSING.md).
+> **For evaluators:** Mapsight is used in **controlled production deployments**, but the open-source tree is **WIP** —
+> embed patterns, pulp, and tile-proxy are documented; OSI license, Infosite Java modules, SSR standardization, and i18n
+> remain open. See [Licensing](../LICENSING.md).
 
 Legend: **Done** · **Partial** · **Planned** · **Out of scope**
 

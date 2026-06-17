@@ -6,9 +6,11 @@
 
 ## Context
 
-Mapsight serves many host types — municipalities, Stadtmarketing, NGOs, commercial sites — not only German Kommunen. Stakeholders often ask whether Mapsight replaces geoportals, GeoServer, or Google Maps.
+Mapsight serves many host types — municipalities, Stadtmarketing, NGOs, commercial sites — not only German Kommunen.
+Stakeholders often ask whether Mapsight replaces geoportals, GeoServer, or Google Maps.
 
-We need an explicit **product boundary** for architecture docs, integration guides, and ecosystem positioning ([GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md)).
+We need an explicit **product boundary** for architecture docs, integration guides, and ecosystem
+positioning ([GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md)).
 
 ## Decision
 
@@ -29,7 +31,8 @@ Mapsight’s **primary product** is **communicative, embed-first** maps:
 - **mapsight-pulp** — scheduled ETL to static GeoJSON
 - Optional **data platform** — time-series / Count Aggregator backends
 
-Mapsight is **not Kommune-only** — any integrator may use OSS packages; PMPC and data-trust arguments apply especially when **public money** or **municipal basemaps** are involved.
+Mapsight is **not Kommune-only** — any integrator may use OSS packages; PMPC and data-trust arguments apply especially
+when **public money** or **municipal basemaps** are involved.
 
 ## Consequences
 

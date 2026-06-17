@@ -1,7 +1,8 @@
 # @mapsight/vite-host-embed
 
-Vite plugin for **Mapsight host embed** production builds: copies static assets, stabilizes the app stylesheet, rewrites
-CSS `url()` paths, writes paste-ready HTML snippets, and optionally generates Apache `.htaccess` rules.
+Vite plugin for **Mapsight host embed** production builds: copies static assets, writes stable JS/CSS wrappers around
+hashed assets, rewrites CSS `url()` paths, writes paste-ready HTML snippets, and optionally generates Apache `.htaccess`
+rules.
 
 Reference implementation: [
 `starters/mapsight-host-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-host-starter).
@@ -97,12 +98,13 @@ imagesUrl: "/mapsight-assets/img/",
 | Option                | Default                | Purpose                                                                                 |
 | --------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
 | `assetsBase`          | —                      | Deploy URL prefix (`/mapsight-assets`)                                                  |
-| `runtimeEntry`        | —                      | Shared `browserEmbed` entry basename                                                    |
-| `appStylesheet`       | —                      | Stable CSS filename after post-build rename                                             |
-| `embedTypeEntries`    | —                      | Preset entry names (used in cache headers)                                              |
+| `runtimeEntry`        | —                      | Shared `browserEmbed` wrapper basename                                                  |
+| `appStylesheet`       | —                      | Stable CSS wrapper filename written after build                                         |
+| `embedTypeEntries`    | —                      | Preset wrapper names and Vite lib entry paths                                           |
+| `defaultEntryExports` | `[runtimeEntry]`       | Wrapper names that should re-export a default export from the hashed entry              |
 | `outDir`              | `dist/mapsight-assets` | Deploy tree relative to app root                                                        |
 | `snippetsDir`         | `dist/snippets`        | Paste-ready HTML + README (not uploaded)                                                |
-| `appStylesheetPrefix` | —                      | Prefer hashed CSS matching this prefix                                                  |
+| `appStylesheetPrefix` | —                      | Prefer hashed CSS matching this prefix for the stable wrapper import                    |
 | `imgDir`              | `public/img`           | Source traffic-style icons copied to deploy `img/` (runtime `imagesUrl`; not UI chrome) |
 | `dataDir`             | `public/data`          | Source data copied to deploy `data/` when present                                       |
 | `snippetSources`      | —                      | HTML files with `<!-- mapsight:snippet:start/end -->` to extract at build               |

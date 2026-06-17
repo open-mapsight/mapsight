@@ -1,6 +1,7 @@
 # Publishing data for Mapsight embeds
 
-Guide for **GIS / data stewards** handing off thematic layers to web teams. Mapsight **consumes** published data — it does not replace GeoServer, QGIS, or your ETL pipeline.
+Guide for **GIS / data stewards** handing off thematic layers to web teams. Mapsight **consumes** published data — it
+does not replace GeoServer, QGIS, or your ETL pipeline.
 
 ---
 
@@ -39,7 +40,8 @@ Common fields consumed by list and filter UI (names are convention — agree wit
 | `description`     | Popup HTML (sanitize before publish if from CMS) |
 | `tagGroups`       | Tag filter UI (nested groups → tags)             |
 
-See a working example in [`starters/mapsight-host-starter/public/data/demo.geojson`](../../starters/mapsight-host-starter/public/data/demo.geojson).
+See a working example in [
+`starters/mapsight-host-starter/public/data/demo.geojson`](../../starters/mapsight-host-starter/public/data/demo.geojson).
 
 ### Size and performance
 
@@ -53,7 +55,8 @@ See a working example in [`starters/mapsight-host-starter/public/data/demo.geojs
 
 ## OGC layers (WMS / WFS)
 
-Raster overlays and WFS-backed layers are configured in **`map.layers`**, not `featureSources`. Steward publishes in GeoServer; integrator wires WMS/WFS URLs — see [OGC_LAYERS](OGC_LAYERS.md).
+Raster overlays and WFS-backed layers are configured in **`map.layers`**, not `featureSources`. Steward publishes in
+GeoServer; integrator wires WMS/WFS URLs — see [OGC_LAYERS](OGC_LAYERS.md).
 
 ---
 
@@ -84,4 +87,4 @@ Raster overlays and WFS-backed layers are configured in **`map.layers`**, not `f
 - [OGC layers](OGC_LAYERS.md)
 - [Ecosystem § data flow](../architecture/ECOSYSTEM.md)
 - [Integration overview](OVERVIEW.md)
-- [ADR 003 — GeoJSON-first](../architecture/decisions/003-geojson-first-data-model.md)
+- [Decision 003 — GeoJSON-first](../architecture/decisions/003-geojson-first-data-model.md)

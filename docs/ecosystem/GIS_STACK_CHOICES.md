@@ -1,8 +1,11 @@
 # GIS stack choices
 
-Choose the right map **product channel** and **technology stack** — municipalities, Stadtmarketing, commercial hosts, clubs, NGOs.
+Choose the right map **product channel** and **technology stack** — municipalities, Stadtmarketing, commercial hosts,
+clubs, NGOs.
 
-For **deployment topology** (CMS, pulp, platform, GeoServer, tile sources), see [Technical ecosystem](../architecture/ECOSYSTEM.md). For **Masterportal vs Mapsight**, see [Positioning](POSITIONING.md).
+For **deployment topology** (CMS, pulp, platform, GeoServer, tile sources),
+see [Technical ecosystem](../architecture/ECOSYSTEM.md). For **Masterportal vs Mapsight**,
+see [Positioning](POSITIONING.md).
 
 ---
 
@@ -21,17 +24,21 @@ For **deployment topology** (CMS, pulp, platform, GeoServer, tile sources), see 
 | **Geoportal / Fachportal** | Planners, contractors, GIS power users              | Masterportal, CIVITAS geoportal slot, Lizmap                 | **Adjacent** — different product                       |
 | **GIS back-office**        | Data stewards, analysts                             | QGIS Desktop, GeoServer admin, ETL                           | **Out of scope** — publishes data Mapsight may consume |
 
-GIS back-office publishes layers → communicative maps and/or geoportals **display** them. A city may run communicative Mapsight embeds **and** a separate geoportal.
+GIS back-office publishes layers → communicative maps and/or geoportals **display** them. A city may run communicative
+Mapsight embeds **and** a separate geoportal.
 
-Production hosts sometimes add **proprietary extensions** (routing, traffic modules, custom presets) on top of the OSS core — those are not part of the public monorepo.
+Production hosts sometimes add **proprietary extensions** (routing, traffic modules, custom presets) on top of the OSS
+core — those are not part of the public monorepo.
 
 ---
 
 ## Mapsight’s lane
 
-**Communicative, embeddable thematic maps** that **blend into the host site** ([host-native theming](../architecture/PRINCIPLES.md)).
+**Communicative, embeddable thematic maps** that **blend into the host site
+** ([host-native theming](../architecture/PRINCIPLES.md)).
 
-Examples: CMS city maps, traffic and roadwork maps, construction routing, campaign microsites, round tours, event locators, count-aggregator dashboards, association trail maps.
+Examples: CMS city maps, traffic and roadwork maps, construction routing, campaign microsites, round tours, event
+locators, count-aggregator dashboards, association trail maps.
 
 Any host with a website or app can integrate the OSS packages — not Kommune-only.
 
@@ -67,7 +74,8 @@ Product comparison: [Positioning](POSITIONING.md).
 
 ## Future feature: regional embed host program
 
-An anchor operator (city, VMZ, regional mobility agency) that **already runs Mapsight** could someday offer **limited embeds or static map exports to third parties** — multi-tenant presets, quotas, snippet builder.
+An anchor operator (city, VMZ, regional mobility agency) that **already runs Mapsight** could someday offer **limited
+embeds or static map exports to third parties** — multi-tenant presets, quotas, snippet builder.
 
 **Not productized today** — [Current vs target](../architecture/CURRENT_VS_TARGET.md).
 
@@ -90,7 +98,8 @@ An anchor operator (city, VMZ, regional mobility agency) that **already runs Map
 
 ## Privacy and basemaps
 
-Communicative maps need a **basemap** under thematic layers. Mapsight does **not** ship one — hosts choose sources in config. See [Ecosystem § basemap patterns](../architecture/ECOSYSTEM.md):
+Communicative maps need a **basemap** under thematic layers. Mapsight does **not** ship one — hosts choose sources in
+config. See [Ecosystem § basemap patterns](../architecture/ECOSYSTEM.md):
 
 | Pattern                   | Summary                                                                                         | Guide                                         |
 | ------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------- |
@@ -99,7 +108,8 @@ Communicative maps need a **basemap** under thematic layers. Mapsight does **not
 | **GeoServer WMS**         | Official municipal raster basemap                                                               | [Ecosystem](../architecture/ECOSYSTEM.md)     |
 | **Municipal tile server** | Geo dept XYZ/WMTS, often fronted by proxy                                                       | [TILE_PROXY.md](../integration/TILE_PROXY.md) |
 
-For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), prefer **same-origin tile proxy** or **self-hosted/municipal** basemaps over browser-direct calls to global SaaS tile APIs.
+For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), prefer **same-origin tile proxy** or \*
+\*self-hosted/municipal\*\* basemaps over browser-direct calls to global SaaS tile APIs.
 
 ---
 
@@ -130,4 +140,4 @@ For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), p
 - [Principles](../architecture/PRINCIPLES.md)
 - [Ecosystem](../architecture/ECOSYSTEM.md)
 - [Integration overview](../integration/OVERVIEW.md)
-- [ADR 010 — Audience scope](../architecture/decisions/010-audience-scope.md)
+- [Decision 010 — Audience scope](../architecture/decisions/010-audience-scope.md)

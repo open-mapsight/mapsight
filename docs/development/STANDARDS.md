@@ -26,7 +26,8 @@ Packages that **emit** from `tsc` split configs:
 | `tsconfig.json`       | Full project — lib + tests, `noEmit: true`; used by IDE, `pnpm typecheck`, CI |
 | `tsconfig.build.json` | Emit only — excludes tests, sets `outDir`                                     |
 
-**Do not** exclude tests from `tsconfig.json` and typecheck them elsewhere — JetBrains IDEs only auto-associate default config names.
+**Do not** exclude tests from `tsconfig.json` and typecheck them elsewhere — JetBrains IDEs only auto-associate default
+config names.
 
 Reference: `packages/core`, `packages/ui`, `packages/count-aggregator-api`.
 
@@ -36,7 +37,8 @@ Reference: `packages/core`, `packages/ui`, `packages/count-aggregator-api`.
 
 - **Zod** at config boundaries — e.g. `@mapsight/ui` embed config schemas
 - Prefer validating external JSON once at load time, not scattered asserts
-- Redux state shape documented in [`packages/core/docs/REDUX_ARCHITECTURE.md`](../../packages/core/docs/REDUX_ARCHITECTURE.md)
+- Redux state shape documented in [
+  `packages/core/docs/REDUX_ARCHITECTURE.md`](../../packages/core/docs/REDUX_ARCHITECTURE.md)
 
 ---
 
@@ -50,7 +52,8 @@ Reference: `packages/core`, `packages/ui`, `packages/count-aggregator-api`.
 
 Run from root: `pnpm test` (turbo). Package-specific: `pnpm --filter @mapsight/core test`, `test:e2e`.
 
-**Quality goal:** Playwright E2E for GIS regressions — called out in ecosystem positioning vs Masterportal (Vitest-only upstream).
+**Quality goal:** Playwright E2E for GIS regressions — called out in ecosystem positioning vs Masterportal (Vitest-only
+upstream).
 
 ---
 
@@ -82,18 +85,20 @@ Run before opening PRs. CI runs the same `check` job.
 
 ## Node scripts (TypeScript)
 
-Run repo scripts with **`node path/to/script.mts`**. Node 24 strips types natively. Do not wrap TS entrypoints with legacy runners.
+Run repo scripts with **`node path/to/script.mts`**. Node 24 strips types natively. Do not wrap TS entrypoints with
+legacy runners.
 
 ---
 
 ## Dependency policy
 
-Aligned with [ADR 005](../architecture/decisions/005-fetch-and-tanstack-query-over-axios.md):
+Aligned with [Decision 005](../architecture/decisions/005-fetch-and-tanstack-query-over-axios.md):
 
 - **HTTP:** native `fetch`; TanStack Query for React async state — not axios
 - **Supply-chain minimalism:** prefer platform APIs and workspace packages over new deps
 - **syncpack:** keep catalog versions consistent across packages
-- Evaluate security and license before adding dependencies — especially while root license is undecided ([LICENSING.md](../LICENSING.md))
+- Evaluate security and license before adding dependencies — especially while root license is
+  undecided ([LICENSING.md](../LICENSING.md))
 
 ---
 
@@ -109,9 +114,9 @@ Details: [`AGENTS.md`](../../AGENTS.md).
 
 ---
 
-## Documentation
+## Project docs
 
-- Architecture docs live in `docs/` — Markdown source of truth
+- Architecture, integration, and contributor docs live in `docs/`
 - Update [CURRENT_VS_TARGET.md](../architecture/CURRENT_VS_TARGET.md) when shipping meaningful status changes
 - Significant choices → [architecture/decisions/](../architecture/decisions/README.md)
 
@@ -121,4 +126,4 @@ Details: [`AGENTS.md`](../../AGENTS.md).
 
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [Action guide](../../packages/core/docs/ACTION_GUIDE.md)
-- [ADR index](../architecture/decisions/README.md)
+- [Decision index](../architecture/decisions/README.md)

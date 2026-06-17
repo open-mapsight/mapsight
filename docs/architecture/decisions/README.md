@@ -1,8 +1,7 @@
 # Architecture decision notes
 
-Lightweight notes for technical and product decisions — framework choices, public API shapes, explicit non-goals, and ecosystem alignment.
-
-This is not a formal governance process yet. The goal is to write down the reasoning we have today so future PRs have context.
+Lightweight notes for technical and product decisions — framework choices, public API shapes, explicit non-goals, and
+ecosystem alignment.
 
 Routine bug fixes, dependency bumps, and internal refactors without an external contract do not need a decision note.
 
@@ -36,11 +35,12 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 
 ## Format
 
-Use [template.md](template.md) as a starting point when it helps. One file per topic is usually enough: `NNN-short-title.md`.
+Use [template.md](template.md) as a starting point when it helps. One file per topic: `NNN-short-title.md`.
 
 Keep the status plain: `Documented`, `Open`, `Deprecated`, or whatever short phrase best describes reality.
 
-When a decision changes, update the existing note in a normal PR. Add a new follow-up note only when the history itself is useful to preserve.
+When a decision changes, update the existing note in a normal PR. Add a new follow-up note only when the history itself
+is useful to preserve.
 
 ---
 

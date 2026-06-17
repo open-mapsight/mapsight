@@ -1,8 +1,10 @@
 # Mapsight ecosystem
 
-Mapsight is an **embed-first GIS frontend framework** published from this monorepo. Production deployments often combine it with a **host CMS**, optional **data services**, and **OGC infrastructure** maintained by the host organization.
+Mapsight is an **embed-first GIS frontend framework** published from this monorepo. Production deployments often combine
+it with a **host CMS**, optional **data services**, and **OGC infrastructure** maintained by the host organization.
 
-For _who_ needs _what kind of map_ (communicative vs geoportal vs GIS back-office), see [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md).
+For _who_ needs _what kind of map_ (communicative vs geoportal vs GIS back-office),
+see [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md).
 
 ---
 
@@ -58,9 +60,13 @@ flowchart TB
   Platform --> Ext
 ```
 
-The **CMS** is both a **delivery channel** and often a **content source**: it hosts Mapsight embeds (HTML snippets or CMS integration packages), drives the UI through **declarative JSON**, and can supply GeoJSON directly or via pulp. That supports **multi-page applications** where Mapsight components transition fluidly between site pages without treating each map as an isolated iframe app.
+The **CMS** is both a **delivery channel** and often a **content source**: it hosts Mapsight embeds (HTML snippets or
+CMS integration packages), drives the UI through **declarative JSON**, and can supply GeoJSON directly or via pulp. That
+supports **multi-page applications** where Mapsight components transition fluidly between site pages without treating
+each map as an isolated iframe app.
 
-**Smaller hosts** (association site, campaign microsite) often use only **embed builds + `@mapsight/*` packages + GeoJSON** and a direct or host-provided basemap URL — no geoportal, no pulp, no platform.
+**Smaller hosts** (association site, campaign microsite) often use only **embed builds + `@mapsight/*` packages +
+GeoJSON** and a direct or host-provided basemap URL — no geoportal, no pulp, no platform.
 
 ---
 
@@ -87,7 +93,8 @@ The **CMS** is both a **delivery channel** and often a **content source**: it ho
 
 ## Basemap and tile sources
 
-Mapsight **does not ship a basemap**. The host configures basemap layers in embed or app config (OpenLayers XYZ, WMS, etc.).
+Mapsight **does not ship a basemap**. The host configures basemap layers in embed or app config (OpenLayers XYZ, WMS,
+etc.).
 
 | Pattern                                                          | Description                                                                                             | When to use                                                                                                                                                                      |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -96,9 +103,11 @@ Mapsight **does not ship a basemap**. The host configures basemap layers in embe
 | **C. GeoServer WMS**                                             | Raster basemap as OGC layer from municipal GeoServer                                                    | When the geo department already publishes an official city basemap                                                                                                               |
 | **D. Municipal tile server**                                     | Internal XYZ/WMTS from GIS infrastructure, often **fronted by A**                                       | Survey-aligned basemap; proxy adds cache and stable public URL                                                                                                                   |
 
-**Basemap vs overlays:** The basemap provides **context** (streets, topography). **Thematic layers** (GeoJSON, WMS overlays, vector features) sit on top. GeoServer often serves both; configure them as separate layer entries.
+**Basemap vs overlays:** The basemap provides **context** (streets, topography). **Thematic layers** (GeoJSON, WMS
+overlays, vector features) sit on top. GeoServer often serves both; configure them as separate layer entries.
 
-**Privacy:** For public-facing municipal sites, prefer **self-hosted or proxied** basemaps over sending every visitor’s tile requests to proprietary map SaaS APIs. See [Principles → UX](PRINCIPLES.md#ux-goals).
+**Privacy:** For public-facing municipal sites, prefer **self-hosted or proxied** basemaps over sending every visitor’s
+tile requests to proprietary map SaaS APIs. See [Principles → UX](PRINCIPLES.md#ux-goals).
 
 ---
 
@@ -111,7 +120,8 @@ Mapsight **does not ship a basemap**. The host configures basemap layers in embe
 | XYZ / WMTS           | Basemap                     | tile-proxy, OSM, basemap.de, municipal tiles                      |
 | Embed config JSON    | Full map/list/filter state  | CMS snippet, SPA bootstrap, SSR hydration; drives MPA transitions |
 
-Mapsight **consumes** published geodata; it does **not** replace GeoServer administration, desktop GIS, or ETL back-office tools.
+Mapsight **consumes** published geodata; it does **not** replace GeoServer administration, desktop GIS, or ETL
+back-office tools.
 
 ---
 
@@ -121,7 +131,8 @@ Mapsight **consumes** published geodata; it does **not** replace GeoServer admin
 - [Current vs target](CURRENT_VS_TARGET.md) — implementation status
 - [@mapsight/core → Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md) — declarative GIS runtime
 - [mapsight-pulp](https://github.com/open-mapsight/pulp) — ETL companion repo
-- [tile-proxy](https://github.com/open-mapsight/tile-proxy) — basemap proxy; [integration guide](../integration/TILE_PROXY.md)
+- [tile-proxy](https://github.com/open-mapsight/tile-proxy) — basemap
+  proxy; [integration guide](../integration/TILE_PROXY.md)
 
 - [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md) — stakeholders and product channels
 - [Positioning](../ecosystem/POSITIONING.md) — Masterportal / CIVITAS summary

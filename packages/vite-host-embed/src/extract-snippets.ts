@@ -87,6 +87,21 @@ export function stripCmsHintsForDevHtml(html: string): string {
 	return result + html.slice(cursor);
 }
 
+function renderScriptSafeCmsHints(code: string): string {
+	return code.replace(
+		/<!--\s*(mapsight:cms:[\s\S]*?)\s*-->/g,
+		(_, hint: string) => `// ${hint.trim()}`,
+	);
+}
+
+export function renderScriptSafeCmsHintsInHtml(html: string): string {
+	return html.replace(
+		/(<script\b[^>]*>)([\s\S]*?)(<\/script\b[^>]*>)/gi,
+		(_, open: string, code: string, close: string) =>
+			`${open}${renderScriptSafeCmsHints(code)}${close}`,
+	);
+}
+
 export function extractSnippetRegion(source: string, filePath: string): string {
 	const start = source.indexOf(SNIPPET_START);
 	const end = source.indexOf(SNIPPET_END);
@@ -95,13 +110,15 @@ export function extractSnippetRegion(source: string, filePath: string): string {
 		throw new Error(`Missing snippet markers in ${filePath}`);
 	}
 
-	return source
-		.slice(start + SNIPPET_START.length, end)
-		.replace(
-			/<!-- mapsight:dev-only -->[\s\S]*?<!-- \/mapsight:dev-only -->/g,
-			"",
-		)
-		.trim();
+	return renderScriptSafeCmsHintsInHtml(
+		source
+			.slice(start + SNIPPET_START.length, end)
+			.replace(
+				/<!-- mapsight:dev-only -->[\s\S]*?<!-- \/mapsight:dev-only -->/g,
+				"",
+			)
+			.trim(),
+	);
 }
 
 export function renderSnippetDocument(

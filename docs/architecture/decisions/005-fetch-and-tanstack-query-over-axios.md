@@ -14,7 +14,8 @@ Mapsight loads GeoJSON, feature detail HTML, count-aggregator APIs, and remote c
 | **`@mapsight/ui`**                   | Hand-rolled `fetch` + Redux request/success/failure actions (e.g. feature detail HTML)      | Same issues; blurs UI async with GIS Redux ([Decision 004](004-redux-in-core-react-state-in-ui.md))  |
 | **Domain React apps**                | TanStack Query in count-aggregator-ui, showcase                                             | Good pattern, not yet adopted in core/ui embed path                                                  |
 
-Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsight does not need to match that for communicative embeds.
+Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsight does not need to match that for
+communicative embeds.
 
 **Best long-term option is not fully decided.** This note records agreed constraints and open choices.
 
@@ -27,7 +28,8 @@ Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsig
 3. **`@mapsight/ui` async resources** → **TanStack Query** (`@tanstack/react-query`), including:
     - HTTP: feature detail HTML, supplementary JSON
     - **Non-HTTP:** geolocation, permissions, and other async browser APIs that need loading/error/cache semantics
-4. **TanStack Query is not the Redux GIS store** — it complements React state in UI; it does not replace path actions or feature-source state in core.
+4. **TanStack Query is not the Redux GIS store** — it complements React state in UI; it does not replace path actions or
+   feature-source state in core.
 
 ### Open — needs spike / note update
 
@@ -36,7 +38,9 @@ Some adjacent ecosystems (e.g. CIVITAS Portal Frontend) use **axios** — Mapsig
 | **Core feature-source loading** | Keep/evolve hand-rolled loaders · **RTK Query** attached to the Redux store · hybrid (RTK Query for remote sources, local loaders for in-memory) |
 | **Migration order**             | Core loaders first vs ui fetch actions first                                                                                                     |
 
-**Working hypothesis:** RTK Query (or RTK async patterns) may fit **core** because feature loads tie directly to Redux feature-source state. **TanStack Query** fits **React UI** because detail HTML and geolocation are view concerns. Validate with a small prototype before marking Accepted.
+**Working hypothesis:** RTK Query (or RTK async patterns) may fit **core** because feature loads tie directly to Redux
+feature-source state. **TanStack Query** fits **React UI** because detail HTML and geolocation are view concerns.
+Validate with a small prototype before marking Accepted.
 
 ## Consequences
 

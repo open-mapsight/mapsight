@@ -26,8 +26,11 @@ export type HostEmbedDevAssetsOptions = Pick<
 	HostEmbedConfig,
 	"assetsBase" | "runtimeEntry" | "appStylesheet" | "embedTypeEntries"
 > & {
-	/** Dev CSS entry resolved for `${assetsBase}/assets/${appStylesheet}`. */
-	appStylesheetEntry?: string;
+	/**
+	 * Dev CSS entry resolved for `${assetsBase}/assets/${appStylesheet}`.
+	 * Set to `false` when the runtime entry imports CSS through Vite's module graph.
+	 */
+	appStylesheetEntry?: string | false;
 	/** Public data directory name for `${assetsBase}/data/` rewrites. Default: `data`. */
 	dataDir?: string;
 };
@@ -41,13 +44,20 @@ export function mapsightHostEmbedDevPlugin(
 	const imgBase = `${options.assetsBase}/img`;
 	const dataBase = `${options.assetsBase}/${options.dataDir ?? "data"}`;
 	const stylesheetEntry =
-		options.appStylesheetEntry ?? "entries/mapsight.entry.css";
+		options.appStylesheetEntry === false
+			? false
+			: (options.appStylesheetEntry ?? "entries/mapsight.entry.css");
+	const stylesheetUrl = `${assetsBase}/${options.appStylesheet}`;
 
 	const aliases = [
-		{
-			find: `${assetsBase}/${options.appStylesheet}`,
-			replacement: path.resolve(appRoot, stylesheetEntry),
-		},
+		...(stylesheetEntry === false
+			? []
+			: [
+					{
+						find: stylesheetUrl,
+						replacement: path.resolve(appRoot, stylesheetEntry),
+					},
+				]),
 		{
 			find: `${assetsBase}/${options.runtimeEntry}.js`,
 			replacement: path.resolve(appRoot, "entries/embed.ts"),
@@ -60,15 +70,18 @@ export function mapsightHostEmbedDevPlugin(
 		),
 	];
 
-	const rewriteDeployPaths: Connect.NextHandleFunction = (
-		req,
-		_res,
-		next,
-	) => {
+	const rewriteDeployPaths: Connect.NextHandleFunction = (req, res, next) => {
 		const pathname = req.url?.split("?")[0] ?? "";
 
-		if (pathname === imgBase || pathname.startsWith(`${imgBase}/`)) {
+		if (stylesheetEntry === false && pathname === stylesheetUrl) {
+			res.statusCode = 200;
+			res.setHeader("Content-Type", "text/css; charset=utf-8");
+			res.end(
+				"/* Styles are injected by the Vite module graph in dev. */\n",
+			);
+		} else if (pathname === imgBase || pathname.startsWith(`${imgBase}/`)) {
 			req.url = pathname.replace(imgBase, "/img");
+			next();
 		} else if (
 			pathname === dataBase ||
 			pathname.startsWith(`${dataBase}/`)
@@ -77,9 +90,10 @@ export function mapsightHostEmbedDevPlugin(
 				dataBase,
 				`/${options.dataDir ?? "data"}`,
 			);
+			next();
+		} else {
+			next();
 		}
-
-		next();
 	};
 
 	const applyDeployPathRewrites = (server: ViteDevServer | PreviewServer) => {

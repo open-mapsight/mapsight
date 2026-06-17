@@ -1,8 +1,7 @@
 # Mapsight documentation
 
-Entry point for architecture, integration, and contributor documentation for the [Mapsight](https://github.com/open-mapsight/mapsight) monorepo.
-
-The open-source tree is **actively evolving (WIP)** — used in controlled production deployments, but not yet a turnkey product for self-service integrators. See [Current vs target](architecture/CURRENT_VS_TARGET.md) and [Licensing](LICENSING.md).
+Mapsight is **actively evolving (WIP)**: used in controlled production deployments, not yet a turnkey product for
+self-service integrators. See [Current vs target](architecture/CURRENT_VS_TARGET.md) and [Licensing](LICENSING.md).
 
 ---
 
@@ -17,24 +16,29 @@ The open-source tree is **actively evolving (WIP)** — used in controlled produ
 | **Pasting** snippets in a CMS (editor)    | [For CMS editors](integration/CMS_EDITORS.md)                                                                                                       |
 | **Contributing** to the monorepo          | [Contributing](development/CONTRIBUTING.md) → [Standards](development/STANDARDS.md)                                                                 |
 
-### Two diagrams — pick your lens
+### Product and deployment maps
 
 - **Diagram A — Product channels** (_who needs what kind of map?_): [GIS stack choices](ecosystem/GIS_STACK_CHOICES.md)
 - **Diagram B — Technical deployment** (_what runs where?_): [Ecosystem](architecture/ECOSYSTEM.md)
 
 Terms like _communicative map_, _Fachportal_, _pulp_: see [Glossary](ecosystem/GIS_STACK_CHOICES.md#glossary).
 
-### Stable integration paths today
+### Stable integration paths
 
-Documented and exercised in maintainer deployments (expect WIP APIs and missing guides in places):
+Maintainer deployments currently exercise:
 
-- CMS snippet embed — [`CMS_PHP`](integration/CMS_PHP.md), reference starter [`starters/mapsight-host-starter`](../starters/mapsight-host-starter), plugin [`@mapsight/vite-host-embed`](../packages/vite-host-embed/README.md)
-- Count-aggregator CMS app shell — [`count-aggregator-ui`](../packages/count-aggregator-ui/README.md#cms-app-shell-embed), plugin [`@mapsight/vite-count-aggregator-embed`](../packages/vite-count-aggregator-embed/README.md)
+- CMS snippet embed — [`CMS_PHP`](integration/CMS_PHP.md), reference starter [
+  `starters/mapsight-host-starter`](../starters/mapsight-host-starter), plugin [
+  `@mapsight/vite-host-embed`](../packages/vite-host-embed/README.md)
+- Count-aggregator CMS app shell — [
+  `count-aggregator-ui`](../packages/count-aggregator-ui/README.md#cms-app-shell-embed), plugin [
+  `@mapsight/vite-count-aggregator-embed`](../packages/vite-count-aggregator-embed/README.md)
 - mapsight-pulp static GeoJSON — [`PULP`](integration/PULP.md)
 - Basemap tile proxy pattern — [`TILE_PROXY`](integration/TILE_PROXY.md)
 - Declarative embed config + Redux runtime — [Redux architecture](../packages/core/docs/REDUX_ARCHITECTURE.md)
 
-**Still evolving:** OSI license, full Infosite Java guide, SSR sidecar standardization, i18n library choice — see [Current vs target](architecture/CURRENT_VS_TARGET.md).
+**Still evolving:** OSI license, full Infosite Java guide, SSR sidecar standardization, i18n library choice —
+see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 
 ---
 
@@ -45,7 +49,7 @@ Documented and exercised in maintainer deployments (expect WIP APIs and missing 
 | [ECOSYSTEM.md](architecture/ECOSYSTEM.md)                 | Technical deployment stack, repos, basemaps |
 | [PRINCIPLES.md](architecture/PRINCIPLES.md)               | Product goals and non-goals                 |
 | [CURRENT_VS_TARGET.md](architecture/CURRENT_VS_TARGET.md) | Implementation status matrix                |
-| [Decisions](architecture/decisions/README.md)             | Architecture decision records               |
+| [Decisions](architecture/decisions/README.md)             | Architecture decision notes                 |
 | [Project history](project/HISTORY.md)                     | Origin timeline (unverified)                |
 
 ## Ecosystem
@@ -58,23 +62,23 @@ Documented and exercised in maintainer deployments (expect WIP APIs and missing 
 
 ## Integration
 
-| Document                                                   | About                                           |
-| ---------------------------------------------------------- | ----------------------------------------------- |
-| [OVERVIEW.md](integration/OVERVIEW.md)                     | Three-layer model, embed lifecycle              |
-| [getting-started.md](getting-started.md)                   | npm library path — install to first map         |
-| [CONFIG_REFERENCE.md](integration/CONFIG_REFERENCE.md)     | Embed JSON anatomy + Zod entry points           |
-| [CMS_PHP.md](integration/CMS_PHP.md)                       | Generic CMS snippet embed                       |
-| [CMS_EDITORS.md](integration/CMS_EDITORS.md)               | Safe vs forbidden snippet edits                 |
-| [CMS_INFOSITE.md](integration/CMS_INFOSITE.md)             | **Stub** — Infosite CMS (pending module review) |
-| [PUBLISHING_DATA.md](integration/PUBLISHING_DATA.md)       | GeoJSON handoff for data stewards               |
-| [OGC_LAYERS.md](integration/OGC_LAYERS.md)                 | WMS/WFS overlay patterns                        |
-| [PRIVACY_DATA_FLOWS.md](integration/PRIVACY_DATA_FLOWS.md) | Visitor data flows for hosts / DPOs             |
-| [PULP.md](integration/PULP.md)                             | mapsight-pulp ETL                               |
-| [TILE_PROXY.md](integration/TILE_PROXY.md)                 | Basemap tile proxy                              |
-| [DATA_BACKEND.md](integration/DATA_BACKEND.md)             | Optional host data platform                     |
-| [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)           | Dehydrated state contract                       |
-| [REACT_SPA.md](integration/REACT_SPA.md)                   | Vite SPA starter + showcase feature demo        |
-| [NEXTJS.md](integration/NEXTJS.md)                         | Next.js starter pattern                         |
+| Document                                                   | About                                          |
+| ---------------------------------------------------------- | ---------------------------------------------- |
+| [OVERVIEW.md](integration/OVERVIEW.md)                     | Three-layer model, embed lifecycle             |
+| [getting-started.md](getting-started.md)                   | npm library path — install to first map        |
+| [CONFIG_REFERENCE.md](integration/CONFIG_REFERENCE.md)     | Embed JSON anatomy + Zod entry points          |
+| [CMS_PHP.md](integration/CMS_PHP.md)                       | Generic CMS snippet embed                      |
+| [CMS_EDITORS.md](integration/CMS_EDITORS.md)               | Safe vs forbidden snippet edits                |
+| [CMS_INFOSITE.md](integration/CMS_INFOSITE.md)             | Infosite CMS (**stub**, pending module review) |
+| [PUBLISHING_DATA.md](integration/PUBLISHING_DATA.md)       | GeoJSON handoff for data stewards              |
+| [OGC_LAYERS.md](integration/OGC_LAYERS.md)                 | WMS/WFS overlay patterns                       |
+| [PRIVACY_DATA_FLOWS.md](integration/PRIVACY_DATA_FLOWS.md) | Visitor data flows for hosts / DPOs            |
+| [PULP.md](integration/PULP.md)                             | mapsight-pulp ETL                              |
+| [TILE_PROXY.md](integration/TILE_PROXY.md)                 | Basemap tile proxy                             |
+| [DATA_BACKEND.md](integration/DATA_BACKEND.md)             | Optional host data platform                    |
+| [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)           | Dehydrated state contract                      |
+| [REACT_SPA.md](integration/REACT_SPA.md)                   | Vite SPA starter + showcase feature demo       |
+| [NEXTJS.md](integration/NEXTJS.md)                         | Next.js starter pattern                        |
 
 **TYPO3:** **Pending** dedicated guide — same mental model as [CMS_PHP.md](integration/CMS_PHP.md).
 
@@ -121,4 +125,5 @@ See the [root README](../README.md#package-overview) for npm packages and one-li
 
 ## Contributing
 
-See [development/CONTRIBUTING.md](development/CONTRIBUTING.md) and [architecture/decisions/README.md](architecture/decisions/README.md).
+See [development/CONTRIBUTING.md](development/CONTRIBUTING.md)
+and [architecture/decisions/README.md](architecture/decisions/README.md).

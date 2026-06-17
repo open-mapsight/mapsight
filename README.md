@@ -31,7 +31,8 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 
 ## Starters
 
-Copy-out host integration templates under [`starters/`](starters/) — semver `@mapsight/*` pins only; not published as a monorepo unit. See [`starters/README.md`](starters/README.md).
+Copy-out host integration templates under [`starters/`](starters/) — semver `@mapsight/*` pins only; not published as a
+monorepo unit. See [`starters/README.md`](starters/README.md).
 
 | Starter                                                               | Status   | Description                                              |
 | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------- |
@@ -41,9 +42,9 @@ Copy-out host integration templates under [`starters/`](starters/) — semver `@
 
 ## Documentation
 
-External integrators can ignore the [private workspace](#private-workspace-paths) section below — it applies to maintainers with a private checkout only.
-
-Start at **[`docs/README.md`](docs/README.md)** — role-based paths, architecture, integration guides, and [getting started](docs/getting-started.md).
+Start at **[`docs/README.md`](docs/README.md)** for role-based paths, architecture, integration guides,
+and [getting started](docs/getting-started.md). The [private workspace](#private-workspace-paths) section applies only
+to maintainers with a private checkout.
 
 | Topic                  | Document                                                                               |
 | ---------------------- | -------------------------------------------------------------------------------------- |
@@ -52,6 +53,7 @@ Start at **[`docs/README.md`](docs/README.md)** — role-based paths, architectu
 | Host embed starter     | [`starters/mapsight-host-starter`](starters/mapsight-host-starter)                     |
 | Ecosystem & deployment | [`docs/architecture/ECOSYSTEM.md`](docs/architecture/ECOSYSTEM.md)                     |
 | Principles & scope     | [`docs/architecture/PRINCIPLES.md`](docs/architecture/PRINCIPLES.md)                   |
+| Decisions              | [`docs/architecture/decisions/README.md`](docs/architecture/decisions/README.md)       |
 | Current vs target      | [`docs/architecture/CURRENT_VS_TARGET.md`](docs/architecture/CURRENT_VS_TARGET.md)     |
 | Redux runtime          | [`packages/core/docs/REDUX_ARCHITECTURE.md`](packages/core/docs/REDUX_ARCHITECTURE.md) |
 | Redux actions          | [`packages/core/docs/ACTION_GUIDE.md`](packages/core/docs/ACTION_GUIDE.md)             |
@@ -59,12 +61,15 @@ Start at **[`docs/README.md`](docs/README.md)** — role-based paths, architectu
 
 ## Private workspace paths
 
-Mapsight is open source, but some development still happens outside this tree. The monorepo reserves workspace paths for that (`private/apps/*`, `private/packages/*` in [`pnpm-workspace.yaml`](pnpm-workspace.yaml)) without publishing anything under `private/` here.
+Mapsight is open source, but some development still happens outside this tree. The monorepo reserves workspace paths for
+that (`private/apps/*`, `private/packages/*` in [`pnpm-workspace.yaml`](pnpm-workspace.yaml)) without publishing
+anything under `private/` here.
 
 To prevent accidental leaks, this repository enforces checks locally and in CI:
 
 - Git hooks: [`.husky/pre-commit`](.husky/pre-commit), [`.husky/pre-push`](.husky/pre-push)
-- Script: [`scripts/check-no-private-leak.mts`](scripts/check-no-private-leak.mts) — `pnpm run check:no-private-leak`, `pnpm run typecheck:scripts`
+- Script: [`scripts/check-no-private-leak.mts`](scripts/check-no-private-leak.mts) — `pnpm run check:no-private-leak`,
+  `pnpm run typecheck:scripts`
 - CI: `no-private-leak` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
 **Please do not open pull requests that remove or weaken these guards.**

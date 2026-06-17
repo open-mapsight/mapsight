@@ -42,10 +42,13 @@ Output:
 dist/
 ├── mapsight-assets/          ← upload this tree to the web root
 │   ├── assets/
-│   │   ├── embed.js          ← re-exports @mapsight/ui/embed/browser (default)
-│   │   ├── simpleMap.js      ← preset factory stub
-│   │   ├── mapsight.css      ← stable stylesheet (+ bundled UI icon assets)
-│   │   └── *-[hash].js       ← shared chunks (long cache)
+│   │   ├── embed.js             ← stable wrapper for browserEmbed
+│   │   ├── embed-*.js           ← browserEmbed entry (long cache)
+│   │   ├── simpleMap.js         ← stable wrapper for preset stub
+│   │   ├── simpleMap-*.js       ← preset stub (long cache)
+│   │   ├── mapsight.css         ← stable wrapper importing the hashed app CSS
+│   │   ├── mapsight-host-*.css  ← app stylesheet (long cache)
+│   │   └── *-[hash].js          ← shared chunks (long cache)
 │   ├── data/demo.geojson
 │   ├── img/                  ← traffic-style runtime icons (mapsight-icons*)
 │   └── .htaccess             ← Apache cache + static passthrough
