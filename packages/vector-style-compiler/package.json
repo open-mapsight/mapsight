@@ -57,6 +57,8 @@
 	},
 	"scripts": {
 		"bench": "node __tests__/performance.engines.bench.ts",
+		"bench:render": "node __tests__/render-backends.bench.ts",
+		"bench:render:samples": "node scripts/run-render-benchmark-samples.mts",
 		"build": "run-s build:setup build:modules generate:ide-metadata copy:templates copy:ide-metadata",
 		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
