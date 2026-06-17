@@ -73,7 +73,7 @@ describe("optimize-icons.ts", () => {
 		return path.join(
 			packageRoot,
 			"tmp",
-			`.optimize-icons-manifest-${hash}.json`,
+			`optimize-icons-manifest-${hash}.json`,
 		);
 	}
 
@@ -219,6 +219,73 @@ describe("optimize-icons.ts", () => {
 		).toBeDefined();
 		await expect(
 			async () => await stat(path.join(destDir, "multi-target.png")),
+		).rejects.toThrow();
+	});
+
+	it("should compact SVG output by default and pretty print when requested", async () => {
+		const svgContent = `<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg"><title>test icon</title><g id="wrapper" class="icon"><rect id="box" class="shape" width="10" height="10" fill="red"/></g></svg>`;
+		await writeFile(path.join(srcDir, "format-test.svg"), svgContent);
+
+		await runScript({
+			src: srcDir,
+			dest: destDir,
+			target: "svg",
+		});
+
+		const compactSvg = await readFile(
+			path.join(destDir, "format-test.svg"),
+			"utf8",
+		);
+		expect(compactSvg).not.toContain("\n\t");
+		expect(compactSvg).not.toContain("<title");
+		expect(compactSvg).not.toContain("class=");
+		expect(compactSvg).not.toContain("id=");
+
+		await runScript({
+			src: srcDir,
+			dest: destDir,
+			target: "svg",
+			pretty: true,
+			force: true,
+		});
+
+		const prettySvg = await readFile(
+			path.join(destDir, "format-test.svg"),
+			"utf8",
+		);
+		expect(prettySvg).toContain("\n\t");
+		expect(prettySvg.endsWith("\n")).toBe(true);
+	});
+
+	it("should fail SVG files that use xlink attributes", async () => {
+		const svgContent = `<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="shape" d="M0 0h10v10H0z"/></defs><use xlink:href="#shape"/></svg>`;
+		await writeFile(path.join(srcDir, "xlink-test.svg"), svgContent);
+
+		await runScript({
+			src: srcDir,
+			dest: destDir,
+			target: "svg",
+		});
+
+		expect(process.exitCode).toBe(1);
+		await expect(
+			async () => await stat(path.join(destDir, "xlink-test.svg")),
+		).rejects.toThrow();
+	});
+
+	it("should fail SVG files that use style elements", async () => {
+		const svgContent = `<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg"><style>.shape{fill:red}</style><rect class="shape" width="10" height="10"/></svg>`;
+		await writeFile(path.join(srcDir, "style-test.svg"), svgContent);
+
+		await runScript({
+			src: srcDir,
+			dest: destDir,
+			target: "svg",
+		});
+
+		expect(process.exitCode).toBe(1);
+		await expect(
+			async () => await stat(path.join(destDir, "style-test.svg")),
 		).rejects.toThrow();
 	});
 

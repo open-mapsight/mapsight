@@ -1,12 +1,11 @@
+@use "../functions/env";
 @use "../variables";
 
 @mixin iconBase {
 	image-type: icon;
 	icon: {
 		scale: variables.$MAPSIGHT_TRAFFIC_STYLE__IMG_BASE_SCALE;
-		src: #{"calc(attr(--env-imagesUrl) + \"" +
-			variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_FILE +
-			"\")"};
+		src: env.imageUrl(variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_FILE);
 		snapToPixel: true;
 	}
 }

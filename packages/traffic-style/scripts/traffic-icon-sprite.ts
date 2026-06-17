@@ -7,11 +7,11 @@ import {watch} from "chokidar";
 import * as fse from "fs-extra";
 import sharp from "sharp";
 
+import {buildIconFileGlobs} from "./lib/icon-asset-filter.ts";
 import {
 	DistMetaDataSchema,
 	type IconGroupName,
 	type IconVariant,
-	type MetaData,
 } from "./lib/meta.ts";
 
 interface Tile {
@@ -44,34 +44,6 @@ interface Options {
 	overridesPath?: string;
 }
 
-const calcGlobs = (
-	groups: IconGroupName[],
-	metaData: MetaData,
-	variants: IconVariant[],
-	fileType: string,
-): string[] => {
-	const globs: string[] = [];
-	metaData.icons.forEach((iconMeta) => {
-		if (iconMeta.render === "composable") {
-			return;
-		}
-
-		groups.forEach((group: IconGroupName) => {
-			if (iconMeta.groups && iconMeta.groups.includes(group)) {
-				variants
-					.map(
-						(variant: string) =>
-							`**/${iconMeta.id}-${variant}.${fileType}`,
-					)
-					.forEach((glob: string) => {
-						globs.push(glob);
-					});
-			}
-		});
-	});
-	return globs;
-};
-
 async function buildIcons(opts: Options): Promise<void> {
 	const {
 		srcDir,
@@ -93,10 +65,12 @@ async function buildIcons(opts: Options): Promise<void> {
 	const metaDataStr = await fs.readFile(absMetaPath, {encoding: "utf-8"});
 	const metaData = DistMetaDataSchema.parse(JSON.parse(metaDataStr));
 
-	let globs = calcGlobs(groups, metaData, variants, filetype);
-	if (groups.length === 0) {
-		globs = variants.map((variant) => `**/*-${variant}.${filetype}`);
-	}
+	const globs = buildIconFileGlobs(metaData.icons, {
+		groups,
+		variants,
+		filetypes: [filetype],
+		includeComposable: false,
+	});
 
 	const srcFiles = [];
 	for (const pattern of globs) {

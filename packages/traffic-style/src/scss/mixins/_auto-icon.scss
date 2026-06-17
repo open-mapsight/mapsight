@@ -1,5 +1,6 @@
 @use "sass:list";
 @use "sass:map";
+@use "../functions/env";
 @use "../functions/ends-with";
 @use "../functions/str-replace";
 @use "../functions/list-to-string";
@@ -9,9 +10,7 @@
 @use "./get-icon-dimensions";
 
 @mixin spriteIconSrc {
-	icon-src: #{"calc(attr(--env-imagesUrl) + \"" +
-		variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_FILE +
-		"\")"};
+	icon-src: env.imageUrl(variables.$MAPSIGHT_TRAFFIC_STYLE__SPRITE_FILE);
 }
 
 @mixin autoIconDefault(

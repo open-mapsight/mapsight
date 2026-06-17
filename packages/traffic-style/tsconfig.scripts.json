@@ -4,6 +4,7 @@
 	"include": [
 		"scripts/traffic-icon-sprite.ts",
 		"scripts/traffic-composable-icons.ts",
+		"scripts/traffic-copy-assets.ts",
 		"scripts/optimize-icons.ts",
 		"scripts/lib/**/*"
 	],
