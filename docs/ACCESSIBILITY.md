@@ -1,14 +1,14 @@
 # Accessibility
 
 Mapsight treats accessibility as a **product goal** ([Principles](../architecture/PRINCIPLES.md)), but the open-source
-tree has **not** completed a formal WCAG audit. This page states the current status for procurement and integrators.
+tree has **not** completed a formal WCAG audit.
 
 ---
 
 ## Status (June 2026)
 
 | Area                                 | Status                                                                                           |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+|--------------------------------------|--------------------------------------------------------------------------------------------------|
 | Formal WCAG 2.x conformance audit    | **Not completed**                                                                                |
 | Keyboard use in map/list UI          | Partial — varies by component                                                                    |
 | Screen reader support for map canvas | **Limited** — OpenLayers canvas model                                                            |
@@ -22,14 +22,15 @@ tree has **not** completed a formal WCAG audit. This page states the current sta
 
 - Map canvas content is not fully exposed as semantic HTML — expect gaps vs document-centric WCAG criteria.
 - Host themes can improve or harm contrast; test it with your brand CSS.
-- i18n and locale strings are host/config responsibility until [ADR 008](../architecture/decisions/008-i18n-approach.md)
+- i18n and locale strings are host/config responsibility
+  until [Decision 008](../architecture/decisions/008-i18n-approach.md)
   resolves.
 
 ---
 
 ## Roadmap
 
-1. Public statement (this document)
+1. Public accessibility status
 2. Inventory of UI components vs WCAG criteria
 3. Playwright + axe (or equivalent) in CI for embed smoke paths
 4. Published conformance target once audit completes
@@ -42,4 +43,4 @@ available.
 ## Related
 
 - [Principles](../architecture/PRINCIPLES.md)
-- [UI styling ADR 007](../architecture/decisions/007-ui-styling-strategy.md)
+- [Decision 007 — UI styling](../architecture/decisions/007-ui-styling-strategy.md)

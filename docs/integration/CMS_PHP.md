@@ -1,8 +1,11 @@
 # CMS and PHP snippet embed
 
-Generic pattern for embedding Mapsight in **PHP-backed CMS pages** or static Apache/nginx hosts. Applies to TYPO3 and similar PHP CMS workflows; Java-based Infosite adds a module layer — see [CMS_INFOSITE.md](CMS_INFOSITE.md).
+Generic pattern for embedding Mapsight in **PHP-backed CMS pages** or static Apache/nginx hosts. Applies to TYPO3 and
+similar PHP CMS workflows; Java-based Infosite adds a module layer — see [CMS_INFOSITE.md](CMS_INFOSITE.md).
 
-> **Example paths:** `/mapsight-assets/`, `simpleMap.js`, and `mapsight-embed-demo` are **host-chosen examples** from [`starters/mapsight-host-starter`](../../starters/mapsight-host-starter). Your deploy prefix, preset names, and container IDs are defined by your host app build.
+> **Example paths:** `/mapsight-assets/`, `simpleMap.js`, and `mapsight-embed-demo` are **host-chosen examples** from [
+`starters/mapsight-host-starter`](../../starters/mapsight-host-starter). Your deploy prefix, preset names, and container
+> IDs are defined by your host app build.
 
 ---
 
@@ -21,23 +24,23 @@ This is Mapsight’s **primary production integration shape** for communicative 
 
 ```mermaid
 flowchart TB
-  subgraph build [Host app build]
-    vite[Vite lib mode multi-entry]
-    snippets[Generated HTML snippets]
-    assets[Stable entry JS + hashed chunks + CSS]
-  end
-  subgraph deploy [Web server]
-    htaccess[Apache rules + cache headers]
-    plan["/plan/assets/ …"]
-  end
-  subgraph cms [CMS page]
-    body[Pasted snippet body]
-  end
-  vite --> assets
-  vite --> snippets
-  snippets --> body
-  body -->|loads| plan
-  htaccess --> plan
+	subgraph build [Host app build]
+		vite[Vite lib mode multi-entry]
+		snippets[Generated HTML snippets]
+		assets[Stable entry JS + hashed chunks + CSS]
+	end
+	subgraph deploy [Web server]
+		htaccess[Apache rules + cache headers]
+		plan["/plan/assets/ …"]
+	end
+	subgraph cms [CMS page]
+		body[Pasted snippet body]
+	end
+	vite --> assets
+	vite --> snippets
+	snippets --> body
+	body -->|loads| plan
+	htaccess --> plan
 ```
 
 ---
@@ -46,10 +49,12 @@ flowchart TB
 
 ### 1. Config lives in the snippet, not in the build
 
-Each CMS placement passes config inline in an ES module `<script>` block. **Do not bake per-config bundles** — one shared build serves all placements.
+Each CMS placement passes config inline in an ES module `<script>` block. **Do not bake per-config bundles** — one
+shared build serves all placements.
 
 ```html
-<link rel="stylesheet" href="/mapsight-assets/assets/mapsight.css" />
+
+<link rel="stylesheet" href="/mapsight-assets/assets/mapsight.css"/>
 
 <div id="mapsight-embed-demo" class="mapsight-embed"></div>
 
@@ -80,7 +85,7 @@ Each CMS placement passes config inline in an ES module `<script>` block. **Do n
 Snippet `<script>` tags import **stable** filenames (revalidated on deploy):
 
 | File           | Purpose                                                    |
-| -------------- | ---------------------------------------------------------- |
+|----------------|------------------------------------------------------------ |
 | `embed.js`     | Stable wrapper for the hashed `browserEmbed` runtime entry |
 | `mapsight.css` | Stable wrapper for the hashed stylesheet                   |
 | `<preset>.js`  | Stable wrappers per embed type (`simpleMap.js`, …)         |
@@ -90,7 +95,8 @@ If a stable wrapper should support default imports, list its basename in `defaul
 
 ### 3. Asset paths are configurable at the call site
 
-Icon and image URLs (`imagesUrl`) must be set in the snippet — not baked at build time — so the same build works across environments.
+Icon and image URLs (`imagesUrl`) must be set in the snippet — not baked at build time — so the same build works across
+environments.
 
 ### 4. One lib build, multiple entry stubs
 
@@ -100,9 +106,11 @@ All embed types share hashed chunks. Avoid separate per-type lib builds that dup
 
 ### 5. HTML markers are the snippet source of truth
 
-Host apps mark paste-ready regions in HTML with `<!-- mapsight:snippet:start/end -->`. The build extracts them to `dist/snippets/*.html` — no parallel TypeScript snippet templates.
+Host apps mark paste-ready regions in HTML with `<!-- mapsight:snippet:start/end -->`. The build extracts them to
+`dist/snippets/*.html` — no parallel TypeScript snippet templates.
 
-Use **production deploy paths** in the marked region (`/mapsight-assets/assets/…`, not dev-only `/img/` shortcuts). During local dev, `@mapsight/vite-host-embed` aliases those URLs to `entries/*.ts` with HMR.
+Use **production deploy paths** in the marked region (`/mapsight-assets/assets/…`, not dev-only `/img/` shortcuts).
+During local dev, `@mapsight/vite-host-embed` aliases those URLs to `entries/*.ts` with HMR.
 
 Optional inline hints for CMS editors (kept in built snippets; stripped in dev so Vite can parse inline scripts):
 
@@ -117,14 +125,19 @@ imagesUrl: "/mapsight-assets/img/",
 
 Typical steps in a host app that ships CMS assets:
 
-1. **Vite lib mode** — multi-entry build (`embed.js`, preset stubs) with `minifyInternalExports: false` so named exports survive minification.
-2. **`@mapsight/vite-host-embed`** — `mapsightHostEmbedPlugin` in embed build mode: copy traffic-style icons/data, hash the JS/CSS entry assets, write stable JS/CSS wrappers, rewrite vector-style CSS `url()` paths, extract `snippetSources` → `dist/snippets/`, write `.htaccess`. UI chrome icons ship in `assets/` via the Vite CSS pipeline.
+1. **Vite lib mode** — multi-entry build (`embed.js`, preset stubs) with `minifyInternalExports: false` so named exports
+   survive minification.
+2. **`@mapsight/vite-host-embed`** — `mapsightHostEmbedPlugin` in embed build mode: copy traffic-style icons/data,
+   hash the JS/CSS entry assets, write stable JS/CSS wrappers, rewrite vector-style CSS `url()` paths, extract `snippetSources` → `dist/snippets/`, write
+   `.htaccess`. UI chrome icons ship in `assets/` via the Vite CSS pipeline.
 3. **Local dev** — `mapsightHostEmbedDevPlugin` so `index.html` uses the same import paths as production snippets.
 4. **Upload** — rsync `dist/mapsight-assets/` to web root (e.g. `/mapsight-assets/`).
 
-Reference implementation: [`starters/mapsight-host-starter`](../../starters/mapsight-host-starter) and [`@mapsight/vite-host-embed`](../../packages/vite-host-embed/README.md).
+Reference implementation: [`starters/mapsight-host-starter`](../../starters/mapsight-host-starter) and [
+`@mapsight/vite-host-embed`](../../packages/vite-host-embed/README.md).
 
-**Production lib mode note:** Vite does not auto-replace `process.env.NODE_ENV` in lib builds. Pin `NODE_ENV` via explicit `define` or you may see `ReferenceError: process is not defined` in the browser.
+**Production lib mode note:** Vite does not auto-replace `process.env.NODE_ENV` in lib builds. Pin `NODE_ENV` via
+explicit `define` or you may see `ReferenceError: process is not defined` in the browser.
 
 ---
 
@@ -148,16 +161,18 @@ After build, a typical tree:
 └── .htaccess                 ← cache + static passthrough
 ```
 
-Paste-ready HTML is written beside the deploy tree at `dist/snippets/` (not uploaded). See `dist/snippets/README.md` after build.
+Paste-ready HTML is written beside the deploy tree at `dist/snippets/` (not uploaded). See `dist/snippets/README.md`
+after build.
 
-**No `index.html` for embed-only routes** — the CMS owns the page shell. Full-page map experiences paste snippet body into the CMS page template.
+**No `index.html` for embed-only routes** — the CMS owns the page shell. Full-page map experiences paste snippet body
+into the CMS page template.
 
 ---
 
 ## Caching strategy
 
 | Files                                    | Cache-Control                 | Rationale                                  |
-| ---------------------------------------- | ----------------------------- | ------------------------------------------ |
+|------------------------------------------|-------------------------------|-------------------------------------------- |
 | `*-hash.js`, `*-hash.css`                | `immutable, max-age=31536000` | Content-addressed                          |
 | `embed.js`, preset stubs, `mapsight.css` | `no-cache`                    | Tiny stable wrappers; revalidate on deploy |
 
@@ -171,7 +186,8 @@ Styles are **not** auto-injected in Vite lib mode:
 
 1. Snippet includes `<link rel="stylesheet" href="/mapsight-assets/assets/mapsight.css">`.
 2. Host may add page-specific `<style>` for min-height, CMS layout, or icon overrides.
-3. For host-native theming, load host theme CSS before or after Mapsight CSS and use CSS variables / scoped wrappers. See [Principles](../architecture/PRINCIPLES.md).
+3. For host-native theming, load host theme CSS before or after Mapsight CSS and use CSS variables / scoped wrappers.
+   See [Principles](../architecture/PRINCIPLES.md).
 
 ---
 
@@ -183,13 +199,16 @@ Embed config references GeoJSON URLs. Sources may be:
 - [mapsight-pulp](PULP.md) static GeoJSON output (scheduled jobs)
 - Optional [platform API](DATA_BACKEND.md) for time-series features
 
-Basemap tiles are configured separately (direct XYZ, municipal tile endpoint, or [tile-proxy](TILE_PROXY.md)). See [Ecosystem § basemaps](../architecture/ECOSYSTEM.md).
+Basemap tiles are configured separately (direct XYZ, municipal tile endpoint, or [tile-proxy](TILE_PROXY.md)).
+See [Ecosystem § basemaps](../architecture/ECOSYSTEM.md).
 
 ---
 
 ## Optional SSR
 
-For faster first paint, a PHP controller can POST embed options to a small Node render service and inject HTML + `data-dehydrated-state`. **Must fall back** to client-only embed when SSR fails. See [SSR_HYDRATION.md](SSR_HYDRATION.md).
+For faster first paint, a PHP controller can POST embed options to a small Node render service and inject HTML +
+`data-dehydrated-state`. **Must fall back** to client-only embed when SSR fails.
+See [SSR_HYDRATION.md](SSR_HYDRATION.md).
 
 ---
 
@@ -227,4 +246,4 @@ See [CMS_EDITORS.md](CMS_EDITORS.md) — safe vs forbidden edits, HTML filters, 
 - [`@mapsight/vite-host-embed`](../../packages/vite-host-embed/README.md)
 - [SSR hydration](SSR_HYDRATION.md)
 - [Pulp](PULP.md)
-- [ADR 006 — SSR goal](../architecture/decisions/006-ssr-state-hydration-goal.md)
+- [Decision 006 — SSR goal](../architecture/decisions/006-ssr-state-hydration-goal.md)

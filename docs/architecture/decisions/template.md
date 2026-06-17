@@ -6,7 +6,7 @@
 
 ## Context
 
-What problem or forces led to this decision? Link issues, docs, or constraints.
+What problem or constraints led to this decision?
 
 ## Decision
 
@@ -25,9 +25,9 @@ What we chose, in one or two short paragraphs.
 ## Alternatives considered
 
 | Option | Why not |
-| ------ | ------- |
+|--------|---------|
 | …      | …       |
 
 ## References
 
-- Links to code, external docs, or related decision notes
+- Code, external references, or related decision notes

@@ -39,7 +39,8 @@ Confirm layer name, workspace, and supported CRS with the GIS team.
 
 ## WFS → GeoJSON
 
-Mapsight’s primary feature model is **GeoJSON** ([ADR 003](../architecture/decisions/003-geojson-first-data-model.md)).
+Mapsight’s primary feature model is **GeoJSON
+** ([Decision 003](../architecture/decisions/003-geojson-first-data-model.md)).
 Common patterns:
 
 1. **GeoServer WFS** → export/schedules to static GeoJSON → `featureSources` URL ([PUBLISHING_DATA](PUBLISHING_DATA.md))
@@ -55,7 +56,7 @@ Prefer static GeoJSON or server-prepared files for communicative embeds.
 Browsers block cross-origin WMS/WFS unless GeoServer sends CORS headers or the layer is **same-origin**.
 
 | Situation                    | Approach                                                         |
-| ---------------------------- | ---------------------------------------------------------------- |
+|------------------------------|------------------------------------------------------------------|
 | GeoServer public with CORS   | Direct layer URL in config                                       |
 | GeoServer internal only      | Reverse proxy on CMS host (`/geoserver/…`)                       |
 | Masterportal-style OGC proxy | Geoportal proxy — different from XYZ [tile-proxy](TILE_PROXY.md) |
