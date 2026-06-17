@@ -4,8 +4,13 @@ import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 import type {FlatStyleLike} from "ol/style/flat";
 
-import {map, mapView, mapViewCenter, mapViewExtent} from "@mapsight/ui/config";
-import {features as featureSourcesConfig} from "@mapsight/ui/config";
+import {
+	features as featureSourcesConfig,
+	map,
+	mapView,
+	mapViewCenter,
+	mapViewExtent,
+} from "@mapsight/ui/config";
 import {
 	FEATURE_SELECTIONS,
 	FEATURE_SOURCES,
@@ -76,7 +81,11 @@ function getRadius(category: ChargingCategory): number {
 }
 
 function parsePowerKw(value: unknown): number {
-	const [raw] = String(value ?? "").match(/\d+(?:[,.]\d+)?/) ?? [];
+	if (typeof value !== "string" && typeof value !== "number") {
+		return 0;
+	}
+
+	const [raw] = String(value).match(/\d+(?:[,.]\d+)?/) ?? [];
 	return raw ? Number(raw.replace(",", ".")) : 0;
 }
 
