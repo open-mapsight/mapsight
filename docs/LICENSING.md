@@ -27,10 +27,10 @@ short rationale.
 
 ## Companion PHP components
 
-| Component                                                         | License (check monorepo) |
-| ----------------------------------------------------------------- | ------------------------ |
-| [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)   | See upstream `LICENSE`   |
-| [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)      | See upstream `LICENSE`   |
+| Component                                                       | License (check monorepo) |
+| --------------------------------------------------------------- | ------------------------ |
+| [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) | See upstream `LICENSE`   |
+| [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)    | See upstream `LICENSE`   |
 
 Packages in this monorepo declare `"license": "UNLICENSED"` in `package.json` until a root license is applied
 consistently.
