@@ -74,11 +74,11 @@ GeoJSON** and a direct or host-provided basemap URL — no geoportal, no pulp, n
 
 ### Public
 
-| Repository                                                                 | Role                                                                                                         | Tech                           |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------ |
-| **[mapsight](https://github.com/open-mapsight/mapsight)** (this monorepo)  | GIS **frontend framework** — `@mapsight/core`, `@mapsight/ui`, styles, count-aggregator packages             | React, Redux, OpenLayers, pnpm |
-| **[mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)**        | **Geo/traffic ETL** — stream-based PHP transforms (Concert, TIC, KML→GeoJSON, etc.)                          | PHP, Composer                  |
-| **[tile-proxy](https://github.com/open-mapsight/mapsight-pulp)**           | **Basemap tile proxy** — cache and transform XYZ tiles in front of OSM, basemap.de, municipal tile endpoints | PHP, Composer                  |
+| Repository                                                                | Role                                                                                                         | Tech                           |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| **[mapsight](https://github.com/open-mapsight/mapsight)** (this monorepo) | GIS **frontend framework** — `@mapsight/core`, `@mapsight/ui`, styles, count-aggregator packages             | React, Redux, OpenLayers, pnpm |
+| **[mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)**       | **Geo/traffic ETL** — stream-based PHP transforms (Concert, TIC, KML→GeoJSON, etc.)                          | PHP, Composer                  |
+| **[tile-proxy](https://github.com/open-mapsight/mapsight-pulp)**          | **Basemap tile proxy** — cache and transform XYZ tiles in front of OSM, basemap.de, municipal tile endpoints | PHP, Composer                  |
 
 ### Host-operated (not in open-mapsight org today)
 
@@ -101,7 +101,7 @@ etc.).
 | **A. [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)** | Service at e.g. `/tiles/{prefix}/{z}/{x}/{y}.png` — caches and optionally transforms upstream XYZ tiles | **Common in production** — same-origin URL, caching, branding/desaturation, reduced direct browser load on third parties. See [integration guide](../integration/TILE_PROXY.md). |
 | **B. Direct XYZ**                                                   | Browser loads tiles from public URL in config                                                           | Development, low traffic; respect [OSM](https://www.openstreetmap.org/copyright) / [basemap.de](https://basemap.de) **terms, attribution, and rate limits**                      |
 | **C. GeoServer WMS**                                                | Raster basemap as OGC layer from municipal GeoServer                                                    | When the geo department already publishes an official city basemap                                                                                                               |
-| **D. Municipal tile server**                                        | Internal XYZ/WMTS from GIS infrastructure, often **fronted by A**                                        | Survey-aligned basemap; proxy adds cache and stable public URL                                                                                                                   |
+| **D. Municipal tile server**                                        | Internal XYZ/WMTS from GIS infrastructure, often **fronted by A**                                       | Survey-aligned basemap; proxy adds cache and stable public URL                                                                                                                   |
 
 **Basemap vs overlays:** The basemap provides **context** (streets, topography). **Thematic layers** (GeoJSON, WMS
 overlays, vector features) sit on top. GeoServer often serves both; configure them as separate layer entries.
