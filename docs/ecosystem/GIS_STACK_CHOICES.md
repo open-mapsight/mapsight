@@ -115,22 +115,22 @@ For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), p
 
 ## Glossary
 
-| Term                    | Meaning                                                                  | Mapsight                                    |
-| ----------------------- | ------------------------------------------------------------------------ | ------------------------------------------- |
-| **Communicative map**   | Thematic map for broad audiences in host content                         | **Primary scope**                           |
-| **Fachportal**          | German term for specialist / geo portal                                  | Often a **geoportal** channel               |
-| **Feature source**      | Config slice loading GeoJSON/API data into the map                       | `featureSources` in embed JSON              |
-| **Geoportal (product)** | Full-page portal: layer tree, metadata, GFI, print, OIDC                 | Adjacent channel — not main product shape   |
-| **Infosite**            | Java CMS product common in German municipalities                         | CMS layer — embed guide **stub**            |
-| **Kommune**             | Municipality / municipal administration                                  | Common host type                            |
-| **Masterportal**        | OSS geoportal reference (CIVITAS v1 default)                             | [Positioning](POSITIONING.md)               |
-| **MPA**                 | Multi-page application (full page loads between URLs)                    | CMS embeds often live in MPA sites          |
-| **PMPC**                | Public Money, Public Code                                                | Licensing / procurement context             |
-| **Preset**              | Host factory function returning `browserEmbed` options                   | e.g. `simpleMap()` in mapsight-host-starter |
+| Term                    | Meaning                                                                           | Mapsight                                    |
+| ----------------------- | --------------------------------------------------------------------------------- | ------------------------------------------- |
+| **Communicative map**   | Thematic map for broad audiences in host content                                  | **Primary scope**                           |
+| **Fachportal**          | German term for specialist / geo portal                                           | Often a **geoportal** channel               |
+| **Feature source**      | Config slice loading GeoJSON/API data into the map                                | `featureSources` in embed JSON              |
+| **Geoportal (product)** | Full-page portal: layer tree, metadata, GFI, print, OIDC                          | Adjacent channel — not main product shape   |
+| **Infosite**            | Java CMS product common in German municipalities                                  | CMS layer — embed guide **stub**            |
+| **Kommune**             | Municipality / municipal administration                                           | Common host type                            |
+| **Masterportal**        | OSS geoportal reference (CIVITAS v1 default)                                      | [Positioning](POSITIONING.md)               |
+| **MPA**                 | Multi-page application (full page loads between URLs)                             | CMS embeds often live in MPA sites          |
+| **PMPC**                | Public Money, Public Code                                                         | Licensing / procurement context             |
+| **Preset**              | Host factory function returning `browserEmbed` options                            | e.g. `simpleMap()` in mapsight-host-starter |
 | **pulp**                | [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) — PHP GeoJSON ETL | Optional data layer                         |
-| **Stadtmarketing**      | City marketing / tourism organisations                                   | Common communicative-map sponsor            |
-| **VMZ**                 | Regional marketing centre (often anchor city)                            | May host embed programs for Vereine         |
-| **GeoServer**           | OGC WMS/WFS server                                                       | **Complement** — Mapsight reads layers      |
+| **Stadtmarketing**      | City marketing / tourism organisations                                            | Common communicative-map sponsor            |
+| **VMZ**                 | Regional marketing centre (often anchor city)                                     | May host embed programs for Vereine         |
+| **GeoServer**           | OGC WMS/WFS server                                                                | **Complement** — Mapsight reads layers      |
 
 ---
 
