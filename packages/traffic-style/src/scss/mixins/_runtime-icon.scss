@@ -2,7 +2,7 @@
 @use "./runtime-icon-dimensions";
 
 @mixin runtimeIconSrc($state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT) {
-	[env|mapsightIconId] {
+	:not([mapsightIconId]) [env|mapsightIconId] {
 		icon-src: calc(
 			mapsightRuntimeIcon(
 				attr(--env-mapsightIconId),
@@ -41,7 +41,7 @@
 }
 
 @mixin runtimeIcon($state: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT) {
-	[env|mapsightIconId] {
+	:not([mapsightIconId]) [env|mapsightIconId] {
 		image-type: icon;
 
 		icon: {

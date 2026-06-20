@@ -52,7 +52,7 @@
 				);
 				$selectors: list.append(
 					$selectors,
-					#{"[env|mapsightIconId = " + $iconId + "]"}
+					#{":not([mapsightIconId]) [env|mapsightIconId = " + $iconId + "]"}
 				);
 			}
 
@@ -73,7 +73,7 @@
 			$iconId: str-replace.str-replace($iconName, $stateSuffix, "");
 
 			[mapsightIconId="#{$iconId}"],
-			[env|mapsightIconId="#{$iconId}"] {
+			:not([mapsightIconId]) [env|mapsightIconId="#{$iconId}"] {
 				@include spriteIconSrc;
 				@include get-icon-dimensions.getIconDimension($dimensions);
 			}
