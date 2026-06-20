@@ -24,6 +24,12 @@ export interface MetricPlaceholderData {
 export interface SmartCityMetricsOptions {
 	apiBaseUrl?: string;
 	showMetricIcons?: boolean;
+	getDataViewHref?: (metric: MetricPlaceholderData) => string | undefined;
+	dataViewLabel?: string;
+	getDownloadWizardHref?: (
+		metric: MetricPlaceholderData,
+	) => string | undefined;
+	downloadWizardLabel?: string;
 }
 
 export interface MetricSeriesPoint {

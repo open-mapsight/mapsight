@@ -1,0 +1,15 @@
+.msp-count-aggregator-event {
+	display: block;
+	margin-bottom: calc(var(--msca-spacing) * 1);
+	padding: calc(var(--msca-spacing) * 1.5) calc(var(--msca-spacing) * 2);
+	border: 1px solid var(--msca-color-border);
+	border-radius: var(--msca-radius);
+	background: var(--msca-color-surface-muted);
+	font-size: var(--msca-text-sm);
+	line-height: var(--msca-text-sm--line-height);
+}
+
+.msp-count-aggregator-event:hover {
+	background: var(--msca-color-surface);
+	border-color: var(--msca-color-primary);
+}

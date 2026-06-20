@@ -1,0 +1,149 @@
+
+/* ── Root shell: isolation + design tokens ─────────────────────────────── */
+
+.msp-count-aggregator {
+	--msca-color-primary: #2563eb;
+	--msca-color-primary-hover: #1d4ed8;
+	--msca-color-border: #e5e7eb;
+	--msca-color-muted-foreground: #6b7280;
+	--msca-color-danger-surface: #fecaca;
+	--msca-color-surface: #ffffff;
+	--msca-color-surface-muted: #f9fafb;
+	--msca-radius: 4px;
+
+	/* Establish 1em = 16px inside the embed, independent of host rem. */
+	font-size: 16px;
+	line-height: 1.5;
+	color: #111827;
+
+	isolation: isolate;
+}
+
+/* ── Scoped preflight (in base layer so utilities can override) ──────── */
+
+@layer base {
+	:where(.msp-count-aggregator) {
+		*,
+		::before,
+		::after {
+			box-sizing: border-box;
+			border-width: 0;
+			border-style: solid;
+			border-color: var(--msca-color-border);
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			font-size: inherit;
+			font-weight: inherit;
+			margin: 0;
+		}
+
+		h4 {
+			font-weight: 600;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: inherit;
+		}
+
+		b,
+		strong {
+			font-weight: bolder;
+		}
+
+		blockquote,
+		dl,
+		dd,
+		hr,
+		figure,
+		p,
+		pre {
+			margin: 0;
+		}
+
+		fieldset {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			min-width: 0;
+		}
+
+		legend {
+			padding: 0;
+		}
+
+		ol,
+		ul,
+		menu {
+			list-style: none;
+			list-style-image: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		li {
+			list-style: none;
+			list-style-image: none;
+		}
+
+		::marker {
+			content: normal;
+		}
+
+		button,
+		input,
+		optgroup,
+		select,
+		textarea {
+			font-family: inherit;
+			font-size: 100%;
+			line-height: inherit;
+			color: inherit;
+			margin: 0;
+			padding: 0;
+		}
+
+		button,
+		select {
+			text-transform: none;
+		}
+
+		button,
+		[type="button"],
+		[type="reset"],
+		[type="submit"] {
+			-webkit-appearance: button;
+			background-color: transparent;
+			background-image: none;
+			cursor: pointer;
+		}
+
+		button:disabled {
+			cursor: default;
+		}
+
+		img,
+		svg,
+		video,
+		canvas {
+			display: block;
+			vertical-align: middle;
+		}
+
+		img,
+		video {
+			max-width: 100%;
+			height: auto;
+		}
+
+		[hidden] {
+			display: none;
+		}
+	}
+}

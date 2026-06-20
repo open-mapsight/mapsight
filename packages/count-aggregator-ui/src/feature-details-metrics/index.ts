@@ -69,6 +69,10 @@ export function mountSmartCityMetrics(
 				...placeholder,
 				apiBaseUrl: options.apiBaseUrl ?? DEFAULT_PUBLIC_API_BASE_URL,
 				showMetricIcons: options.showMetricIcons ?? false,
+				getDataViewHref: options.getDataViewHref,
+				dataViewLabel: options.dataViewLabel,
+				getDownloadWizardHref: options.getDownloadWizardHref,
+				downloadWizardLabel: options.downloadWizardLabel,
 			}),
 		);
 	}

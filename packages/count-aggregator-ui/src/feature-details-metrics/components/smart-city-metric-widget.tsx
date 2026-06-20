@@ -6,6 +6,7 @@ import {
 } from "../../lib/i18n.js";
 import {getDocumentLocale} from "../../lib/utils.js";
 import {resolveMetricWidgetConfig} from "../config/metric-widgets.js";
+import {toCountAggregatorStationId} from "../lib/count-aggregator-station-id.js";
 import {
 	fetchMetricSumValue,
 	fetchMetricTimeSeries,
@@ -46,6 +47,10 @@ export default function SmartCityMetricWidget({
 	mapsightIconId,
 	apiBaseUrl = "/msp/public/count-aggregator",
 	showMetricIcons = false,
+	getDataViewHref,
+	dataViewLabel,
+	getDownloadWizardHref,
+	downloadWizardLabel,
 }: Props) {
 	const fetchKey = `${apiBaseUrl}|${stationType}|${stationId}|${label}`;
 	const [state, setState] = useState<MetricFetchState>({
@@ -56,6 +61,7 @@ export default function SmartCityMetricWidget({
 		resolveCountAggregatorLocale(getDocumentLocale()),
 	);
 	const isLoading = state.key !== fetchKey || state.data === null;
+	const apiStationId = Number(toCountAggregatorStationId(stationId));
 
 	useEffect(() => {
 		let cancelled = false;
@@ -125,6 +131,33 @@ export default function SmartCityMetricWidget({
 		label,
 		mapsightIconId,
 		showMetricIcons,
+		dataViewRequest: {
+			stationType,
+			stationIds: Number.isInteger(apiStationId)
+				? [apiStationId]
+				: undefined,
+			mode: "comparison" as const,
+		},
+		dataViewHref: getDataViewHref?.({
+			stationType,
+			stationId,
+			label,
+			mapsightIconId,
+		}),
+		dataViewLabel,
+		downloadWizardRequest: {
+			stationType,
+			stationIds: Number.isInteger(apiStationId)
+				? [apiStationId]
+				: undefined,
+		},
+		downloadWizardHref: getDownloadWizardHref?.({
+			stationType,
+			stationId,
+			label,
+			mapsightIconId,
+		}),
+		downloadWizardLabel,
 	};
 
 	if (isLoading) {
