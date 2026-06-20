@@ -127,12 +127,12 @@ example is pending maintainer input.
 
 Choose based on complexity — not every deployment needs all three:
 
-| Need                                                                | Option                                                    | Guide                              |
-| ------------------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------- |
-| Static or CMS-published GeoJSON                                     | Direct URL in embed config                                | [CMS_PHP.md](CMS_PHP.md)           |
-| Scheduled transforms → static GeoJSON (feeds, KML, domain handlers) | mapsight-pulp (cron/systemd)                              | [PULP.md](PULP.md)                 |
-| Same-origin basemap tiles (cache, merge, branding)                  | [tile-proxy](https://github.com/open-mapsight/tile-proxy) | [TILE_PROXY.md](TILE_PROXY.md)     |
-| Time-series stations, Count Aggregator API, admin imports           | Host-operated Laravel platform                            | [DATA_BACKEND.md](DATA_BACKEND.md) |
+| Need                                                                | Option                                                       | Guide                              |
+| ------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------- |
+| Static or CMS-published GeoJSON                                     | Direct URL in embed config                                   | [CMS_PHP.md](CMS_PHP.md)           |
+| Scheduled transforms → static GeoJSON (feeds, KML, domain handlers) | mapsight-pulp (cron/systemd)                                 | [PULP.md](PULP.md)                 |
+| Same-origin basemap tiles (cache, merge, branding)                  | [tile-proxy](https://github.com/open-mapsight/mapsight-pulp) | [TILE_PROXY.md](TILE_PROXY.md)     |
+| Time-series stations, Count Aggregator API, admin imports           | Host-operated Laravel platform                               | [DATA_BACKEND.md](DATA_BACKEND.md) |
 
 See [Ecosystem](../architecture/ECOSYSTEM.md) for how these fit in a full municipal stack.
 

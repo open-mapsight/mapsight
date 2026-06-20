@@ -1,6 +1,6 @@
 # tile-proxy integration
 
-[tile-proxy](https://github.com/open-mapsight/tile-proxy) is a **PHP basemap tile proxy** — cache and optionally
+[tile-proxy](https://github.com/open-mapsight/mapsight-pulp) is a **PHP basemap tile proxy** — cache and optionally
 transform XYZ tiles from upstream sources (OSM, basemap.de, municipal tile servers, GeoServer XYZ, etc.). Mapsight
 embeds and SPAs use it as a **same-origin basemap URL** in OpenLayers layer config.
 
@@ -53,8 +53,8 @@ flowchart LR
 
 ## Deployment pattern
 
-1. **Install** from [open-mapsight/tile-proxy](https://github.com/open-mapsight/tile-proxy) (Composer / vendor copy —
-   see upstream repo).
+1. **Install** from the [mapsight-pulp monorepo](https://github.com/open-mapsight/mapsight-pulp) (Composer / vendor copy —
+   see upstream docs).
 2. Add a **web entrypoint** (`index.php`) that loads config and calls `Base::runFromJsonConfigFile()`.
 3. Configure **`config.jsonc`** — pipeline of tile sources and transforms (see upstream `test/` for a working example).
 4. Route **`/tiles/*`** via Apache rewrite or reverse proxy (Caddy/nginx) to the PHP entrypoint.
@@ -92,7 +92,7 @@ Config is **JSONC** with an `ops` array — first op is always a **tile source**
 Each stage can define **server-side** and **browser** cache TTLs, MIME type, and optional `streamContext` for HTTP proxy
 or auth to upstream.
 
-Full option list and examples: [tile-proxy repository](https://github.com/open-mapsight/tile-proxy) (
+Full option list and examples: [mapsight-pulp monorepo](https://github.com/open-mapsight/mapsight-pulp) (
 `test/config.jsonc`, `README.md`).
 
 ---
@@ -124,7 +124,7 @@ No tile-proxy code runs in the browser or in the Mapsight monorepo build.
 
 ## Repository
 
-- **GitHub:** [github.com/open-mapsight/tile-proxy](https://github.com/open-mapsight/tile-proxy)
+- **GitHub:** [github.com/open-mapsight/mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)
 - **License:** See upstream `LICENSE`
 - **Related:** [mapsight-pulp](PULP.md) (GeoJSON ETL), [Ecosystem](../architecture/ECOSYSTEM.md)
 
