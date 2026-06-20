@@ -1,5 +1,4 @@
 import type {CSSProperties, ReactElement, ReactNode} from "react";
-import {useState} from "react";
 
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
@@ -7,6 +6,8 @@ import type {CountAggregatorTheme} from "../lib/theme.js";
 import type {CountAggregatorConfig} from "../types/index.js";
 import {CountAggregatorProvider} from "./count-aggregator-provider.js";
 import {CountAggregatorRoot} from "./count-aggregator-root.js";
+
+const defaultQueryClient = new QueryClient();
 
 export interface CountAggregatorShellProps {
 	config: CountAggregatorConfig;
@@ -25,8 +26,7 @@ export function CountAggregatorShell({
 	style,
 	children,
 }: CountAggregatorShellProps): ReactElement {
-	const [internalQueryClient] = useState(() => new QueryClient());
-	const client = queryClient ?? internalQueryClient;
+	const client = queryClient ?? defaultQueryClient;
 
 	return (
 		<CountAggregatorRoot theme={theme} className={className} style={style}>

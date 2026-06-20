@@ -43,6 +43,29 @@ export function useStationTypes(apiBaseUrl: string) {
 	};
 }
 
+export function useStationTypeCounts(apiBaseUrl: string): {
+	stationCountsByType: Map<string, number> | undefined;
+	isPending: boolean;
+	isError: boolean;
+} {
+	const {stationTypes, isPending, isError} = useStationTypes(apiBaseUrl);
+	const stationCountsByType = useMemo(() => {
+		if (stationTypes === undefined) {
+			return undefined;
+		}
+
+		return new Map(
+			stationTypes.map((entry) => [entry.type, entry.station_count]),
+		);
+	}, [stationTypes]);
+
+	return {
+		stationCountsByType,
+		isPending,
+		isError,
+	};
+}
+
 export function useStations(appId: string): Map<number, Station> | undefined {
 	const appConfig = useAppConfig(appId);
 
@@ -190,7 +213,14 @@ export function useTrafficEvents(
 	const eventsEndpoint = appConfig.endpoints?.events;
 
 	const query = useQuery({
-		queryKey: ["count-aggregator", appId, "events", startDate, endDate],
+		queryKey: [
+			"count-aggregator",
+			appId,
+			"events",
+			eventsEndpoint,
+			startDate,
+			endDate,
+		],
 		queryFn: async () => {
 			if (eventsEndpoint === undefined) {
 				return {manualEvents: []};

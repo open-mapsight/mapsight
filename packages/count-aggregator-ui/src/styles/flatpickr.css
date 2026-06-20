@@ -1,0 +1,14 @@
+@import "flatpickr/dist/flatpickr.min.css" layer(components);
+
+.msp-count-aggregator .flatpickr-calendar {
+	background: var(--msca-color-surface);
+	border-color: var(--msca-color-border);
+	font: inherit;
+}
+
+.msp-count-aggregator .flatpickr-day.selected,
+.msp-count-aggregator .flatpickr-day.startRange,
+.msp-count-aggregator .flatpickr-day.endRange {
+	background: var(--msca-color-primary);
+	border-color: var(--msca-color-primary);
+}

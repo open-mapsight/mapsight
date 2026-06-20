@@ -1,7 +1,11 @@
-import type {ReactNode} from "react";
+import type {MouseEvent, ReactNode} from "react";
 
 import {useMapsightIcon} from "@mapsight/ui/hooks/useMapsightIcon";
 
+import {
+	type CountAggregatorDataViewRequestDetail,
+	dispatchCountAggregatorDataViewRequest,
+} from "../../events/data-view-request.js";
 import {formatMetricDate} from "../lib/format-metric-values.js";
 
 type Props = {
@@ -10,6 +14,12 @@ type Props = {
 	showMetricIcons?: boolean;
 	children: ReactNode;
 	lastUpdatedAt: Date | null;
+	dataViewHref?: string;
+	dataViewRequest?: CountAggregatorDataViewRequestDetail;
+	dataViewLabel?: string;
+	downloadWizardHref?: string;
+	downloadWizardRequest?: CountAggregatorDataViewRequestDetail;
+	downloadWizardLabel?: string;
 };
 
 function MetricIcon({id}: {id: string}) {
@@ -28,7 +38,52 @@ export default function MetricWidgetShell({
 	showMetricIcons = false,
 	children,
 	lastUpdatedAt,
+	dataViewHref,
+	dataViewRequest,
+	dataViewLabel = "Daten vergleichen",
+	downloadWizardHref,
+	downloadWizardRequest,
+	downloadWizardLabel = "Daten herunterladen",
 }: Props) {
+	const handleRequestClick =
+		(request: CountAggregatorDataViewRequestDetail | undefined) =>
+		(event: MouseEvent<HTMLAnchorElement>) => {
+			if (!request) {
+				return;
+			}
+
+			if (
+				dispatchCountAggregatorDataViewRequest(
+					event.currentTarget,
+					request,
+				)
+			) {
+				event.preventDefault();
+			}
+		};
+
+	const hasActions = dataViewHref || downloadWizardHref;
+
+	function renderAction(
+		href: string | undefined,
+		label: string,
+		request: CountAggregatorDataViewRequestDetail | undefined,
+	) {
+		if (!href) {
+			return;
+		}
+
+		return (
+			<a
+				className="ms3-smart-city-metric__data-link"
+				href={href}
+				onClick={handleRequestClick(request)}
+			>
+				{label}
+			</a>
+		);
+	}
+
 	return (
 		<section className="ms3-smart-city-metric">
 			<header className="ms3-smart-city-metric__header">
@@ -44,6 +99,20 @@ export default function MetricWidgetShell({
 				<span className="ms3-smart-city-metric__updated">
 					{formatMetricDate(lastUpdatedAt)}
 				</span>
+				{hasActions ? (
+					<span className="ms3-smart-city-metric__actions">
+						{renderAction(
+							dataViewHref,
+							dataViewLabel,
+							dataViewRequest,
+						)}
+						{renderAction(
+							downloadWizardHref,
+							downloadWizardLabel,
+							downloadWizardRequest,
+						)}
+					</span>
+				) : null}
 			</footer>
 		</section>
 	);

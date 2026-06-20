@@ -5,6 +5,7 @@ import type {
 	CountAggregatorClient,
 	LastValuesRequest,
 	StationListResponse,
+	StationTypeListResponse,
 	TimeSeriesMapResponse,
 } from "@mapsight/count-aggregator-api";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
@@ -13,13 +14,19 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 import {CountAggregatorProvider} from "../context/count-aggregator-provider.js";
 import type {CountAggregatorConfig} from "../types/index.js";
-import {useAggregatedValues, useLastValues, useStations} from "./hooks.js";
+import {
+	useAggregatedValues,
+	useLastValues,
+	useStationTypeCounts,
+	useStations,
+} from "./hooks.js";
 
 const mocks = vi.hoisted(() => {
 	const mockClient = {} as CountAggregatorClient;
 	return {
 		mockClient,
 		createCountAggregatorClient: vi.fn(() => mockClient),
+		listStationTypes: vi.fn(),
 		listStations: vi.fn(),
 		getLastValues: vi.fn(),
 		getValues: vi.fn(),
@@ -33,6 +40,7 @@ vi.mock("@mapsight/count-aggregator-api", async (importActual) => {
 	return {
 		...actual,
 		createCountAggregatorClient: mocks.createCountAggregatorClient,
+		listStationTypes: mocks.listStationTypes,
 		listStations: mocks.listStations,
 		getLastValues: mocks.getLastValues,
 		getValues: mocks.getValues,
@@ -84,6 +92,21 @@ const valuesResponse: TimeSeriesMapResponse = {
 	},
 };
 
+const stationTypeListResponse: StationTypeListResponse = {
+	data: [
+		{
+			type: "bicycleCount",
+			label: "Bicycle counters",
+			station_count: 12,
+		},
+		{
+			type: "peopleCount",
+			label: "People counters",
+			station_count: 4,
+		},
+	],
+};
+
 function createWrapper(): {
 	queryClient: QueryClient;
 	wrapper: ({children}: {children: ReactNode}) => ReactNode;
@@ -112,8 +135,32 @@ describe("count-aggregator hooks", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mocks.listStations.mockResolvedValue(stationListResponse);
+		mocks.listStationTypes.mockResolvedValue(stationTypeListResponse);
 		mocks.getLastValues.mockResolvedValue(valuesResponse);
 		mocks.getValues.mockResolvedValue(valuesResponse);
+	});
+
+	it("useStationTypeCounts maps station type summaries by type", async () => {
+		const {queryClient, wrapper} = createWrapper();
+
+		const {result} = renderHook(() => useStationTypeCounts(apiBaseUrl), {
+			wrapper,
+		});
+
+		await waitFor(() =>
+			expect(
+				result.current.stationCountsByType?.get("bicycleCount"),
+			).toBe(12),
+		);
+
+		expect(mocks.listStationTypes).toHaveBeenCalledWith(mocks.mockClient);
+		expect(
+			queryClient.getQueryData([
+				"count-aggregator",
+				"station-types",
+				apiBaseUrl,
+			]),
+		).toBe(stationTypeListResponse.data);
 	});
 
 	it("useStations loads stations with the typed helper and stores the expected query key", async () => {

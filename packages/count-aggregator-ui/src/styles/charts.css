@@ -1,0 +1,21 @@
+.msp-count-aggregator-chart {
+	--color-border: var(--msca-color-border);
+	--color-muted-foreground: var(--msca-color-muted-foreground);
+}
+
+.msp-count-aggregator-chart .recharts-responsive-container,
+.msp-count-aggregator-chart .recharts-wrapper,
+.msp-count-aggregator-chart .recharts-surface {
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.msp-count-aggregator-chart .recharts-cartesian-grid-horizontal line,
+.msp-count-aggregator-chart .recharts-cartesian-grid-vertical line {
+	stroke: var(--color-border);
+}
+
+.msp-count-aggregator-chart .recharts-text {
+	fill: var(--color-muted-foreground);
+	font-size: var(--msca-text-xs);
+}

@@ -27,7 +27,8 @@
 .ms3-smart-city-metric__header {
 	display: flex;
 	align-items: center;
-	gap: 5px;
+	flex-direction: row;
+	gap: 8px;
 	padding: 8px 12px 0;
 	font-size: 14px;
 	font-weight: 600;
@@ -36,8 +37,18 @@
 }
 
 .ms3-smart-city-metric__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
 	flex: 0 0 auto;
 	color: var(--ms3-metric-muted);
+
+	img {
+		width: 100%;
+		height: auto;
+	}
 }
 
 .ms3-smart-city-metric__label {
@@ -54,10 +65,48 @@
 .ms3-smart-city-metric__footer {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 	padding: 6px 12px 10px;
 	border-top: 1px solid var(--ms3-metric-border);
 	font-size: 11px;
 	color: var(--ms3-metric-muted);
+}
+
+.ms3-smart-city-metric__updated {
+	min-width: 0;
+}
+
+.ms3-smart-city-metric__actions {
+	display: inline-flex;
+	flex: 0 0 auto;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 6px;
+}
+
+.ms3-smart-city-metric__data-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	border: 1px solid #0f766e;
+	border-radius: 999px;
+	background: #ffffff;
+	padding: 4px 9px;
+	color: #0f766e;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.ms3-smart-city-metric__data-link:hover,
+.ms3-smart-city-metric__data-link:focus {
+	background: #ccfbf1;
+	color: #0f766e;
+	text-decoration: none;
 }
 
 .ms3-smart-city-metric__chart {
