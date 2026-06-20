@@ -58,6 +58,10 @@
 			"types": "./dist/config/*.d.ts",
 			"default": "./dist/config/*.js"
 		},
+		"./helpers/i18n": {
+			"types": "./dist/helpers/i18n/index.d.ts",
+			"default": "./dist/helpers/i18n/index.js"
+		},
 		"./config/schema/*": {
 			"types": "./dist/config/schema/*.d.ts",
 			"default": "./dist/config/schema/*.js"
