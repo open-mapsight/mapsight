@@ -10,7 +10,8 @@
 		"ol": "catalog:"
 	},
 	"devDependencies": {
-		"tsc-alias": "^1.8.17"
+		"tsc-alias": "^1.8.17",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		"./*": {
@@ -33,6 +34,7 @@
 		"build": "tsc && tsc-alias",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
+		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",

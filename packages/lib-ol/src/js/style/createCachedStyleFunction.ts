@@ -275,20 +275,40 @@ export default function createCachedStyleFunction({
 			}
 			const collection =
 				geometryOrGeometryCollection as GeometryCollection;
+			const typeIndexes = new Map<GeometryType, number>();
 
 			return collection
 				.getGeometries()
-				.flatMap((geometry: Geometry) =>
-					styleGeometryOrGeometryCollectionCached(
-						env,
+				.flatMap((geometry: Geometry, geometryCollectionIndex) => {
+					const childGeometryType = geometry.getType();
+					const geometryCollectionTypeIndex =
+						typeIndexes.get(childGeometryType) ?? 0;
+					typeIndexes.set(
+						childGeometryType,
+						geometryCollectionTypeIndex + 1,
+					);
+					const childEnv = {
+						...env,
+						geometryCollectionIndex,
+						geometryCollectionTypeIndex,
+					};
+					const childEnvHashStart = metrics ? performance.now() : 0;
+					const childEnvHash = createHash(childEnv);
+					if (metrics) {
+						metrics.envHashMs +=
+							performance.now() - childEnvHashStart;
+					}
+
+					return styleGeometryOrGeometryCollectionCached(
+						childEnv,
 						props,
-						envHash,
+						childEnvHash,
 						propsHash,
 						geometry,
 						metrics,
 						i + 1,
-					),
-				);
+					);
+				});
 		}
 
 		return level1(env, props, envHash, propsHash, geometryType, metrics)
