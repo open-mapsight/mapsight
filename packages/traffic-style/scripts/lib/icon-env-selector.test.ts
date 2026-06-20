@@ -4,7 +4,10 @@ import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
 
 const readScssMixin = (name: string) =>
-	readFileSync(resolve(import.meta.dirname, "../../src/scss/mixins", name), "utf8");
+	readFileSync(
+		resolve(import.meta.dirname, "../../src/scss/mixins", name),
+		"utf8",
+	);
 
 describe("env mapsightIconId selectors", () => {
 	it("guards auto icon env selectors unless force is requested", () => {
