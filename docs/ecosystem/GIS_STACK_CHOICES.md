@@ -127,7 +127,7 @@ For **trust-sensitive** hosts (PMPC, privacy policy, no third-party trackers), p
 | **MPA**                 | Multi-page application (full page loads between URLs)                    | CMS embeds often live in MPA sites          |
 | **PMPC**                | Public Money, Public Code                                                | Licensing / procurement context             |
 | **Preset**              | Host factory function returning `browserEmbed` options                   | e.g. `simpleMap()` in mapsight-host-starter |
-| **pulp**                | [mapsight-pulp](https://github.com/open-mapsight/pulp) — PHP GeoJSON ETL | Optional data layer                         |
+| **pulp**                | [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) — PHP GeoJSON ETL | Optional data layer                         |
 | **Stadtmarketing**      | City marketing / tourism organisations                                   | Common communicative-map sponsor            |
 | **VMZ**                 | Regional marketing centre (often anchor city)                            | May host embed programs for Vereine         |
 | **GeoServer**           | OGC WMS/WFS server                                                       | **Complement** — Mapsight reads layers      |

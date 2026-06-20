@@ -59,14 +59,14 @@ Legend: **Done** · **Partial** · **Planned** · **Out of scope**
 
 ## Ecosystem and integration
 
-| Area                         | Current                                                                                                                               | Target                                |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| mapsight-pulp (public)       | **Done** — separate repo; [integration guide](../integration/PULP.md)                                                                 | —                                     |
-| tile-proxy (public)          | **Done** — [open-mapsight/tile-proxy](https://github.com/open-mapsight/tile-proxy); [integration guide](../integration/TILE_PROXY.md) | —                                     |
-| CMS integration guides       | **Partial** — [CMS_PHP](../integration/CMS_PHP.md) done; Infosite pending review                                                      | Complete Infosite guide               |
-| Data platform docs           | **Partial** — [DATA_BACKEND](../integration/DATA_BACKEND.md); platform host-operated                                                  | Expand when platform is open-sourced  |
-| GIS stack / positioning docs | **Done** — [GIS_STACK_CHOICES](../ecosystem/GIS_STACK_CHOICES.md), [POSITIONING](../ecosystem/POSITIONING.md)                         | —                                     |
-| Decision notes               | **Started** — [decisions/README.md](decisions/README.md)                                                                              | Keep updating as architecture changes |
+| Area                         | Current                                                                                                                                          | Target                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| mapsight-pulp (public)       | **Done** — [open-mapsight/mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp); [integration guide](../integration/PULP.md)           | —                                     |
+| tile-proxy (public)          | **Done** — part of [open-mapsight/mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp); [integration guide](../integration/TILE_PROXY.md) | —                                     |
+| CMS integration guides       | **Partial** — [CMS_PHP](../integration/CMS_PHP.md) done; Infosite pending review                                                                 | Complete Infosite guide               |
+| Data platform docs           | **Partial** — [DATA_BACKEND](../integration/DATA_BACKEND.md); platform host-operated                                                             | Expand when platform is open-sourced  |
+| GIS stack / positioning docs | **Done** — [GIS_STACK_CHOICES](../ecosystem/GIS_STACK_CHOICES.md), [POSITIONING](../ecosystem/POSITIONING.md)                                    | —                                     |
+| Decision notes               | **Started** — [decisions/README.md](decisions/README.md)                                                                                         | Keep updating as architecture changes |
 
 ---
 

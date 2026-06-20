@@ -25,12 +25,12 @@ The project is intended to be **fully open source**. Maintainers are evaluating 
 When a license is chosen, this file will be updated with the SPDX identifier, a link to the full license text, and a
 short rationale.
 
-## Companion repositories
+## Companion PHP components
 
-| Repository                                                | License (check repo)   |
-| --------------------------------------------------------- | ---------------------- |
-| [mapsight-pulp](https://github.com/open-mapsight/pulp)    | See upstream `LICENSE` |
-| [tile-proxy](https://github.com/open-mapsight/tile-proxy) | See upstream `LICENSE` |
+| Component                                                         | License (check monorepo) |
+| ----------------------------------------------------------------- | ------------------------ |
+| [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)   | See upstream `LICENSE`   |
+| [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)      | See upstream `LICENSE`   |
 
 Packages in this monorepo declare `"license": "UNLICENSED"` in `package.json` until a root license is applied
 consistently.

@@ -1,6 +1,6 @@
 # mapsight-pulp integration
 
-[mapsight-pulp](https://github.com/open-mapsight/pulp) is a **lightweight PHP ETL library** for geo and traffic data —
+[mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) is a **lightweight PHP ETL library** for geo and traffic data —
 not a full application backend. Mapsight frontends **fetch GeoJSON** from static files (or CMS URLs) that pulp produces
 on a schedule.
 
@@ -90,13 +90,14 @@ Pulp does **not** run inside the browser or the Node monorepo build.
 ## CIVITAS note
 
 Pulp fits as a **specialized transform job** in a CIVITAS stack — not a replacement for NiFi/Redpanda-style pipeline
-engines. See upstream [civitas-core-pulp-integration](https://github.com/open-mapsight/pulp) in the pulp repo.
+engines. See the upstream [mapsight-pulp monorepo](https://github.com/open-mapsight/mapsight-pulp) for
+`civitas-core-pulp-integration`.
 
 ---
 
 ## Repository and docs
 
-- **GitHub:** [github.com/open-mapsight/pulp](https://github.com/open-mapsight/pulp)
+- **GitHub:** [github.com/open-mapsight/mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)
 - **Package:** Composer `mapsight/pulp`
 - **License:** See upstream `LICENSE`
 

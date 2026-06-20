@@ -7,7 +7,7 @@
 ## Context
 
 Mapsight’s Redux store describes **features, lists, filters, and selection** as serializable state. Hosts supply data
-from CMS, [mapsight-pulp](https://github.com/open-mapsight/pulp), GeoServer, ArcGIS REST, and static files.
+from CMS, [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp), GeoServer, ArcGIS REST, and static files.
 
 We needed a **primary in-memory model** for features that:
 
@@ -48,4 +48,4 @@ APIs) — not as the canonical Redux document shape.
 
 - [Ecosystem → Data flow](../ECOSYSTEM.md#data-flow-summary)
 - [`packages/core/src/js/lib/feature-sources/`](../../../packages/core/src/js/lib/feature-sources/)
-- [mapsight-pulp](https://github.com/open-mapsight/pulp)
+- [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)

@@ -18,12 +18,12 @@ integrated with **CMS-hosted pages**, not standalone geoportals. Early focus:
 
 ## Monorepo evolution
 
-| Era (approx.)   | Milestone                                                                                                                                      |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pre-monorepo    | Per-customer frontends; shared patterns copied between projects                                                                                |
-| Monorepo        | pnpm + Turborepo; packages published under `@mapsight/*`                                                                                       |
-| Open GitHub     | [open-mapsight](https://github.com/open-mapsight) organization; public packages and demos                                                      |
-| Companion repos | **mapsight-pulp** and **[tile-proxy](https://github.com/open-mapsight/tile-proxy)** open-sourced; optional data platform remains host-operated |
+| Era (approx.)          | Milestone                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pre-monorepo           | Per-customer frontends; shared patterns copied between projects                                                                             |
+| Monorepo               | pnpm + Turborepo; packages published under `@mapsight/*`                                                                                    |
+| Open GitHub            | [open-mapsight](https://github.com/open-mapsight) organization; public packages and demos                                                   |
+| Companion PHP monorepo | **[mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)** hosts pulp and tile-proxy; optional data platform remains host-operated |
 
 ---
 
