@@ -15,6 +15,8 @@ function createDeclarationFunction(css: string) {
 	const tree = rulesToTree(rules.rules);
 	const program = treeToProgram(tree, "declaration", 1);
 
+	// The compiler emits executable declaration JS; this test verifies its runtime behavior.
+	// eslint-disable-next-line @typescript-eslint/no-implied-eval
 	return new Function(
 		"env",
 		"props",
