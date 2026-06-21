@@ -80,6 +80,10 @@
 		white-space: pre-line;
 	}
 
+	&__distance {
+		white-space: nowrap;
+	}
+
 	&__info {
 		.ms3-wrapper--mobile &,
 		.ms3-wrapper--fullscreen & {

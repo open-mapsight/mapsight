@@ -8,7 +8,10 @@ import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
 import FeatureListIcon from "./icon";
-import type {FeatureListItemInteractionProps} from "./types";
+import type {
+	FeatureListItemDistanceLabelProps,
+	FeatureListItemInteractionProps,
+} from "./types";
 
 function getMainContentForFeature(feature: MapsightUiFeature): ReactNode {
 	const listName = getFeatureProperty(feature, "listName");
@@ -21,6 +24,7 @@ export type FeatureListItemProps = FeatureListItemInteractionProps & {
 	partAs?: ElementType;
 	headAs?: ComponentType<FeatureListItemHeadProps> | null;
 	contentAs?: ElementType | null;
+	distanceLabelAs?: ComponentType<FeatureListItemDistanceLabelProps> | null;
 	showFeatureListInfo?: boolean;
 	feature: MapsightUiFeature;
 	enableKeyboardControl?: boolean;
@@ -31,6 +35,7 @@ function FeatureListItem({
 	partAs: PartT = "span",
 	headAs: HeadT = FeatureListItemHead,
 	contentAs: ContentT = Fragment,
+	distanceLabelAs: DistanceLabelT = null,
 	showFeatureListInfo,
 	feature,
 	selectFeature,
@@ -128,11 +133,12 @@ function FeatureListItem({
 							selectOnClick || deselectOnClick
 								? " ms3-list__main--selectable"
 								: ""
-						}`}
+						}${DistanceLabelT ? " ms3-list__main--with-distance" : ""}`}
 					>
 						<PartT className="ms3-list__main-title">
 							{getMainContentForFeature(feature)}
 						</PartT>
+						{DistanceLabelT && <DistanceLabelT feature={feature} />}
 					</PartT>
 					{showInfoInHead && info}
 				</Fragment>

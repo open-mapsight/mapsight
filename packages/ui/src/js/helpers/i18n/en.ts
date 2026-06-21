@@ -44,6 +44,7 @@ const en: Record<string, string> = {
 	"ui.feature-list.sorting.choose": "choose your location",
 	"ui.feature-list.sorting.own": "use device location",
 	"ui.feature-list.sorting.announcements": "sort announcements …",
+	"ui.feature-list.distance.fromGeolocation": "Distance from your location",
 	"ui.feature-list.tag-switcher.announcements": "filter by tags …",
 
 	"ui.feature-list.content.noListSelected": "no list selected",
