@@ -1,19 +1,28 @@
-import {memo, useCallback, useState} from "react";
+import {type RefObject, memo, useCallback, useRef, useState} from "react";
+import {mergeProps, usePress} from "react-aria";
 import {useSelector} from "react-redux";
 
 import {FocusTrap} from "focus-trap-react";
 
 import {translate} from "../../helpers/i18n";
+import useOverlayDismiss from "../../hooks/useOverlayDismiss";
 import {isViewMobileOrMapOnlySelector} from "../../store/selectors";
 import LayerSwitcher from "../layer-switcher";
 import Modal from "../modal";
 
+const focusTrapOptions = {
+	clickOutsideDeactivates: false,
+	escapeDeactivates: false,
+} as const;
+
 const LayerSwitcherContent = memo(function LayerSwitcherContent({
 	isExpanded,
 	closeSearch,
+	panelRef,
 }: {
 	isExpanded: boolean;
 	closeSearch: () => void;
+	panelRef: RefObject<HTMLDivElement | null>;
 }) {
 	const isMobileOrMapOnly = useSelector(isViewMobileOrMapOnlySelector);
 
@@ -37,13 +46,8 @@ const LayerSwitcherContent = memo(function LayerSwitcherContent({
 
 	if (isExpanded) {
 		return (
-			<FocusTrap
-				focusTrapOptions={{
-					clickOutsideDeactivates: true,
-					onDeactivate: closeSearch,
-				}}
-			>
-				<div>
+			<FocusTrap focusTrapOptions={focusTrapOptions}>
+				<div ref={panelRef}>
 					<LayerSwitcher onClose={closeSearch} />
 				</div>
 			</FocusTrap>
@@ -55,9 +59,21 @@ const LayerSwitcherContent = memo(function LayerSwitcherContent({
 
 function LayerSwitcherOverlay() {
 	const [isExpanded, setIsExpanded] = useState(false);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const panelRef = useRef<HTMLDivElement>(null);
 
 	const handleOpen = useCallback(() => setIsExpanded(true), []);
 	const handleClose = useCallback(() => setIsExpanded(false), []);
+
+	const {pressProps} = usePress({
+		onPress: handleOpen,
+	});
+
+	useOverlayDismiss({
+		isActive: isExpanded,
+		onDismiss: handleClose,
+		excludeRefs: [triggerRef, panelRef],
+	});
 
 	return (
 		<div
@@ -66,10 +82,13 @@ function LayerSwitcherOverlay() {
 			}`}
 		>
 			<button
-				type="button"
-				className="ms3-map-overlay__button ms3-map-overlay__button--with-icon ms3-map-overlay__button--layers"
-				onClick={handleOpen}
-				aria-expanded={isExpanded}
+				{...mergeProps(pressProps, {
+					type: "button" as const,
+					className:
+						"ms3-map-overlay__button ms3-map-overlay__button--with-icon ms3-map-overlay__button--layers",
+					"aria-expanded": isExpanded,
+				})}
+				ref={triggerRef}
 			>
 				<span className="ms3-map-overlay__button__label">
 					<span aria-hidden="true">
@@ -90,8 +109,9 @@ function LayerSwitcherOverlay() {
 			</button>
 
 			<LayerSwitcherContent
-				isExpanded={isExpanded}
 				closeSearch={handleClose}
+				isExpanded={isExpanded}
+				panelRef={panelRef}
 			/>
 		</div>
 	);

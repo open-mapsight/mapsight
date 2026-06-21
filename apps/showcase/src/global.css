@@ -445,6 +445,10 @@ body {
 	color: #2563eb;
 }
 
+.count-aggregator-demo__status-region .ms3-async-status--placeholder {
+	min-height: 120px;
+}
+
 .count-aggregator-demo {
 	max-width: 64rem;
 }

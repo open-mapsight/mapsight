@@ -46,11 +46,28 @@ const packageSourceRoots = {
  */
 export function createWorkspaceDevAliases(): WorkspaceDevAlias[] {
 	const coreSourceRoot = packageSourceRoots["@mapsight/core"];
+	const uiSourceRoot = packageSourceRoots["@mapsight/ui"];
 
 	return [
 		{
 			find: /^@\/(.*)$/,
 			replacement: path.join(coreSourceRoot, "$1"),
+		},
+		// @mapsight/ui subpath exports (must precede the package root alias)
+		{
+			find: "@mapsight/ui/async-status/components",
+			replacement: path.join(
+				uiSourceRoot,
+				"components/async-status/index.ts",
+			),
+		},
+		{
+			find: "@mapsight/ui/async-status",
+			replacement: path.join(uiSourceRoot, "lib/async-status/index.ts"),
+		},
+		{
+			find: "@mapsight/ui/react-query",
+			replacement: path.join(uiSourceRoot, "react-query/index.ts"),
 		},
 		...workspacePackages.map((name) => ({
 			find: name,
