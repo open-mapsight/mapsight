@@ -182,6 +182,16 @@ export type RegionState = {
 
 export type RegionsState = Record<string, RegionState>;
 
+export type ListDefaultSortingConfig = {
+	place: string;
+	preferGeolocation?: boolean;
+};
+
+export type ListDefaultSortingConfigByFeatureSource = Record<
+	string,
+	ListDefaultSortingConfig
+>;
+
 export type FullUiState = {
 	isFullscreen: boolean;
 
@@ -217,6 +227,7 @@ export type FullUiState = {
 
 	userPreferenceListVisible: boolean;
 	listSorting: string;
+	listDefaultSortingByFeatureSource?: ListDefaultSortingConfigByFeatureSource;
 	listQuery: string;
 	listPage: number;
 	lastListScrollPosition: number;

@@ -54,6 +54,8 @@ import type {
 	FetchTextState,
 	FullUiState,
 	LayerSwitcherConfigState,
+	ListDefaultSortingConfig,
+	ListDefaultSortingConfigByFeatureSource,
 	MainPanelContentType,
 	MainPanelContextOptions,
 	MapsightUiFeature,
@@ -134,6 +136,11 @@ export const lastListScrollPositionSelector = (state: RootStateSlice) =>
 	state.app.lastListScrollPosition;
 export const listSortingSelector = (state: RootStateSlice) =>
 	state.app.listSorting;
+export const listDefaultSortingByFeatureSourceSelector = (
+	state: RootStateSlice,
+): ListDefaultSortingConfigByFeatureSource =>
+	(state.app.listDefaultSortingByFeatureSource ??
+		{}) as ListDefaultSortingConfigByFeatureSource;
 export const listQuerySelector = (state: RootStateSlice) => state.app.listQuery;
 export const listPageSelector = (state: RootStateSlice) =>
 	state.app.listPage || 0;
@@ -161,9 +168,58 @@ const placesWithGeoLocationSelector: Selector<
 				: {},
 );
 
-export const listFilterOptionsSelector = (state: RootStateSlice) => ({
+const userGeolocationSelector = (state: State) =>
+	state[USER_GEOLOCATION] as UserGeolocationState;
+
+function resolveDefaultListSorting(
+	defaultSorting: ListDefaultSortingConfig | undefined,
+	userGeolocation: UserGeolocationState,
+) {
+	if (!defaultSorting || typeof defaultSorting.place !== "string") {
+		return undefined;
+	}
+
+	const hasGeolocationCoordinates =
+		userGeolocation.longitude !== undefined &&
+		userGeolocation.latitude !== undefined;
+
+	if (
+		defaultSorting.preferGeolocation &&
+		userGeolocation.isEnabled &&
+		hasGeolocationCoordinates
+	) {
+		return "geolocation";
+	}
+
+	return defaultSorting.place;
+}
+
+/** User `listSorting` wins; otherwise optional per-feature-source defaults apply. */
+export function effectiveListSortingSelector(
+	state: RootStateSlice,
+	featureSourceId?: string,
+) {
+	const userSorting = listSortingSelector(state);
+	if (userSorting !== undefined) {
+		return userSorting;
+	}
+
+	const defaultSorting = featureSourceId
+		? listDefaultSortingByFeatureSourceSelector(state)[featureSourceId]
+		: undefined;
+
+	return resolveDefaultListSorting(
+		defaultSorting,
+		userGeolocationSelector(state),
+	);
+}
+
+export const listFilterOptionsSelector = (
+	state: RootStateSlice,
+	featureSourceId?: string,
+) => ({
 	query: listQuerySelector(state),
-	sorting: listSortingSelector(state),
+	sorting: effectiveListSortingSelector(state, featureSourceId),
 	places: placesWithGeoLocationSelector(state),
 });
 
