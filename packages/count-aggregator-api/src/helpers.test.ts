@@ -10,6 +10,7 @@ import {
 	getStationLastValues,
 	getStationSums,
 	getValues,
+	getValuesQuery,
 	listStationTypes,
 	listStations,
 } from "./helpers.js";
@@ -48,6 +49,19 @@ describe("typed endpoint helpers", () => {
 						type: "bicycleCount",
 						label: "Bicycle count",
 						station_count: 1,
+						category: {id: "mobility", label: "Mobility"},
+						defaultMetric: "sum",
+						supportedResolutions: ["daily"],
+						metrics: [
+							{
+								id: "count",
+								label: "Bicycle count",
+								unit: null,
+								displayPrecision: 0,
+								defaultMetric: "sum",
+								aggregation: ["sum"],
+							},
+						],
 					},
 				],
 			};
@@ -75,24 +89,44 @@ describe("typed endpoint helpers", () => {
 		expect(result.data[0]?.id).toBe(150);
 	});
 
-	it("gets aggregated values", async () => {
+	it("gets aggregated values with metrics", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/values/2025-06-01/2025-06-07/daily?stationIds=150%2C151`,
+				`${baseUrl}/waterLevelSurface/values/2025-06-01/2025-06-07/hourly?stationIds=140&metrics=mean%2Cmin%2Cmax`,
 			);
 			return valuesMapFixture;
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
 		const result = await getValues(client, {
-			type: "bicycleCount",
+			type: "waterLevelSurface",
 			from: "2025-06-01",
 			to: "2025-06-07",
-			resolution: "daily",
-			stationIds: [150, 151],
+			resolution: "hourly",
+			stationIds: [140],
+			metrics: ["mean", "min", "max"],
 		});
 
 		expect(result["150"]?.id).toBe(150);
+	});
+
+	it("gets datetime query values", async () => {
+		const fetchFn = createMockFetch((url) => {
+			expect(url).toBe(
+				`${baseUrl}/waterLevelSurface/values?stationIds=140&from=2025-06-01+10%3A00%3A00&to=2025-06-01+12%3A00%3A00&resolution=15min&metrics=mean`,
+			);
+			return valuesMapFixture;
+		});
+
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		await getValuesQuery(client, {
+			type: "waterLevelSurface",
+			from: "2025-06-01 10:00:00",
+			to: "2025-06-01 12:00:00",
+			resolution: "15min",
+			stationIds: [140],
+			metrics: ["mean"],
+		});
 	});
 
 	it("gets last values", async () => {

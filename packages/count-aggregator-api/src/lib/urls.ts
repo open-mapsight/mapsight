@@ -1,4 +1,9 @@
-import type {Resolution, ResponseFormat, StationType} from "../types.js";
+import type {
+	BucketMetric,
+	Resolution,
+	ResponseFormat,
+	StationType,
+} from "../types.js";
 
 export interface MultipleValuesRequest {
 	type: StationType;
@@ -7,6 +12,17 @@ export interface MultipleValuesRequest {
 	resolution: Resolution;
 	stationIds: readonly number[];
 	format?: ResponseFormat;
+	metrics?: readonly BucketMetric[];
+}
+
+export interface MultipleValuesQueryRequest {
+	type: StationType;
+	from: string;
+	to: string;
+	resolution: Resolution;
+	stationIds: readonly number[];
+	format?: ResponseFormat;
+	metrics?: readonly BucketMetric[];
 }
 
 export interface MultipleLastValuesRequest {
@@ -17,6 +33,7 @@ export interface MultipleLastValuesRequest {
 	startDate?: string;
 	anchor?: "lastDataAt";
 	format?: ResponseFormat;
+	metrics?: readonly BucketMetric[];
 }
 
 export interface SingleStationValuesRequest {
@@ -25,6 +42,7 @@ export interface SingleStationValuesRequest {
 	from: string;
 	to: string;
 	resolution: Resolution;
+	metrics?: readonly BucketMetric[];
 }
 
 export interface SingleStationLastValuesRequest {
@@ -34,10 +52,19 @@ export interface SingleStationLastValuesRequest {
 	limit?: number;
 	startDate?: string;
 	anchor?: "lastDataAt";
+	metrics?: readonly BucketMetric[];
 }
 
 function trimTrailingSlash(baseUrl: string): string {
 	return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+}
+
+function joinMetrics(
+	metrics: readonly BucketMetric[] | undefined,
+): string | undefined {
+	return metrics !== undefined && metrics.length > 0
+		? metrics.join(",")
+		: undefined;
 }
 
 function appendQueryString(
@@ -65,6 +92,23 @@ export function buildMultipleValuesUrl(
 	return appendQueryString(path, {
 		stationIds: request.stationIds.join(","),
 		format: request.format,
+		metrics: joinMetrics(request.metrics),
+	});
+}
+
+export function buildMultipleValuesQueryUrl(
+	baseUrl: string,
+	request: MultipleValuesQueryRequest,
+): string {
+	const path = `${trimTrailingSlash(baseUrl)}/${request.type}/values`;
+
+	return appendQueryString(path, {
+		stationIds: request.stationIds.join(","),
+		from: request.from,
+		to: request.to,
+		resolution: request.resolution,
+		format: request.format,
+		metrics: joinMetrics(request.metrics),
 	});
 }
 
@@ -80,6 +124,7 @@ export function buildMultipleLastValuesUrl(
 		startDate: request.startDate,
 		anchor: request.anchor,
 		format: request.format,
+		metrics: joinMetrics(request.metrics),
 	});
 }
 
@@ -87,7 +132,11 @@ export function buildSingleStationValuesUrl(
 	baseUrl: string,
 	request: SingleStationValuesRequest,
 ): string {
-	return `${trimTrailingSlash(baseUrl)}/${request.type}/${request.stationId}/values/${request.from}/${request.to}/${request.resolution}`;
+	const path = `${trimTrailingSlash(baseUrl)}/${request.type}/${request.stationId}/values/${request.from}/${request.to}/${request.resolution}`;
+
+	return appendQueryString(path, {
+		metrics: joinMetrics(request.metrics),
+	});
 }
 
 export function buildSingleStationLastValuesUrl(
@@ -100,6 +149,7 @@ export function buildSingleStationLastValuesUrl(
 		limit: request.limit,
 		startDate: request.startDate,
 		anchor: request.anchor,
+		metrics: joinMetrics(request.metrics),
 	});
 }
 
@@ -116,6 +166,13 @@ export function buildCsvExportUrl(
 	request: Omit<MultipleValuesRequest, "format">,
 ): string {
 	return buildMultipleValuesUrl(baseUrl, {...request, format: "csv"});
+}
+
+export function buildValuesQueryCsvExportUrl(
+	baseUrl: string,
+	request: Omit<MultipleValuesQueryRequest, "format">,
+): string {
+	return buildMultipleValuesQueryUrl(baseUrl, {...request, format: "csv"});
 }
 
 export function buildLastValuesCsvExportUrl(

@@ -1,4 +1,8 @@
-import type {Resolution, StationType} from "@mapsight/count-aggregator-api";
+import type {
+	BucketMetric,
+	Resolution,
+	StationType,
+} from "@mapsight/count-aggregator-api";
 
 import type {
 	CountAggregatorLocale,
@@ -23,9 +27,17 @@ export interface StationValue {
 	value: number;
 }
 
+export interface ChartSeries {
+	key: string;
+	stationId: number;
+	metric: BucketMetric;
+	values: StationValue[];
+}
+
 export interface StationData {
 	stationId: number;
 	values: StationValue[];
+	valuesByMetric: Partial<Record<BucketMetric, StationValue[]>>;
 }
 
 export interface AggregatedValuesData {
@@ -37,6 +49,7 @@ export interface ValuesRequest {
 	startDate: Date;
 	endDate: Date;
 	resolution?: Resolution;
+	metrics?: readonly BucketMetric[];
 }
 
 export interface TrafficEvent {
@@ -98,6 +111,7 @@ export type UiVariant = "single-page" | "stepped";
 export interface CountAggregatorFeatures {
 	resolutionSelect?: boolean;
 	chartTypeSelect?: boolean;
+	metricSelect?: boolean;
 	export?: boolean;
 	presets?: boolean;
 	events?: boolean;
@@ -108,6 +122,12 @@ export interface CountAggregatorAppConfig {
 	apiBaseUrl: string;
 	stationType: StationType;
 	uiVariant?: UiVariant;
+	defaultMetric?: BucketMetric;
+	availableMetrics?: readonly BucketMetric[];
+	defaultChartMetrics?: readonly BucketMetric[];
+	primaryMetricLabel?: string;
+	valueUnit?: string | null;
+	displayPrecision?: number;
 	defaultResolution?: Resolution;
 	defaultChartType?: ChartType;
 	resolutions?: readonly Resolution[];
@@ -125,8 +145,10 @@ export interface CountAggregatorConfig {
 
 export interface TimeSeriesChartProps {
 	type: ChartType;
+	appId: string;
 	selectedStationIds: readonly number[];
-	valuesByStationId: Map<number, StationValue[]> | undefined;
+	selectedMetrics?: readonly BucketMetric[];
+	chartSeries: ChartSeries[] | undefined;
 	resolution: DataResolution;
 	startDate: Date;
 	endDate: Date;
@@ -135,4 +157,4 @@ export interface TimeSeriesChartProps {
 	emptyMessage?: string;
 }
 
-export type {Resolution, StationType};
+export type {BucketMetric, Resolution, StationType};

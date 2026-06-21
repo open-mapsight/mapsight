@@ -13,11 +13,13 @@ export {
 	getStationLastValues,
 	getStationSums,
 	getValues,
+	getValuesQuery,
 	listStations,
 	listStationTypes,
 	type LastValuesRequest,
 	type ListStationsOptions,
 	type StationLastValuesRequest,
+	type ValuesQueryRequest,
 	type ValuesRequest,
 } from "./helpers.js";
 export {
@@ -26,6 +28,10 @@ export {
 	parseLocalDateTime,
 } from "./lib/datetime.js";
 export {
+	resolveStationTypeDisplay,
+	type StationTypeDisplay,
+} from "./lib/station-type-display.js";
+export {
 	indexTimeSeriesByStationId,
 	parseTimeSeriesMap,
 } from "./lib/responses.js";
@@ -33,19 +39,23 @@ export {
 	buildCsvExportUrl,
 	buildLastValuesCsvExportUrl,
 	buildMultipleLastValuesUrl,
+	buildMultipleValuesQueryUrl,
 	buildMultipleValuesUrl,
 	buildSingleStationLastValuesUrl,
 	buildSingleStationValuesUrl,
 	buildStationSumsUrl,
 	buildStationsGeoJsonUrl,
 	buildStationsUrl,
+	buildValuesQueryCsvExportUrl,
 	type MultipleLastValuesRequest,
+	type MultipleValuesQueryRequest,
 	type MultipleValuesRequest,
 	type SingleStationLastValuesRequest,
 	type SingleStationValuesRequest,
 } from "./lib/urls.js";
 
 export type {
+	BucketMetric,
 	DataValuePoint,
 	DetectedDataProblem,
 	IsoDate,
@@ -56,8 +66,10 @@ export type {
 	ResponseFormat,
 	StationListResponse,
 	StationOverviewResponse,
+	StationMetric,
 	StationSummary,
 	StationType,
+	StationTypeCategory,
 	StationTypeListResponse,
 	StationTypeSummary,
 	TimeSeriesMapResponse,

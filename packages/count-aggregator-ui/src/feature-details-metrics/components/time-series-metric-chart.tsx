@@ -12,11 +12,18 @@ import {
 } from "recharts";
 
 import {
+	Y_AXIS_UNIT_LABEL_TOP_MARGIN,
+	createYAxisUnitLabel,
+} from "../../lib/chart-axis-label.js";
+import {
 	getCountAggregatorDictionary,
 	resolveCountAggregatorLocale,
 } from "../../lib/i18n.js";
 import {getDocumentLocale} from "../../lib/utils.js";
-import {formatMetricAxisTime} from "../lib/format-metric-values.js";
+import {
+	formatMetricAxisTime,
+	formatMetricAxisValueFromConfig,
+} from "../lib/format-metric-values.js";
 import type {MetricSeriesPoint, MetricWidgetConfig} from "../types.js";
 
 const METRIC_CHART_HEIGHT = 140;
@@ -65,7 +72,12 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 			<ResponsiveContainer width="100%" height={METRIC_CHART_HEIGHT}>
 				<ChartComponent
 					data={chartData}
-					margin={{top: 6, right: 6, left: 0, bottom: 0}}
+					margin={{
+						top: config.unit ? Y_AXIS_UNIT_LABEL_TOP_MARGIN : 6,
+						right: 6,
+						left: 0,
+						bottom: 0,
+					}}
 				>
 					<CartesianGrid
 						stroke={CHART_GRID_COLOR}
@@ -92,9 +104,15 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						axisLine={false}
 						width={34}
 						tickFormatter={(value: number) =>
-							new Intl.NumberFormat(getDocumentLocale("de-DE"), {
-								maximumFractionDigits: config.decimals ?? 1,
-							}).format(value)
+							formatMetricAxisValueFromConfig(value, config)
+						}
+						label={
+							config.unit
+								? createYAxisUnitLabel(config.unit, {
+										fill: CHART_TICK_COLOR,
+										fontSize: CHART_TICK_FONT_SIZE,
+									})
+								: undefined
 						}
 					/>
 					{config.chartType === "line" ? (

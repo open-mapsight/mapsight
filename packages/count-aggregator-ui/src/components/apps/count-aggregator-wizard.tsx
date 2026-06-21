@@ -8,8 +8,15 @@ import {
 } from "../../context/count-aggregator-provider.js";
 import {getFirstDayOfMonth, getLastDayOfMonth} from "../../lib/dates.js";
 import {isFeatureEnabled} from "../../lib/features.js";
-import type {ChartType, DataResolution, PresetData, Station} from "../../types";
+import type {
+	BucketMetric,
+	ChartType,
+	DataResolution,
+	PresetData,
+	Station,
+} from "../../types";
 import {Events} from "../wizard/events.js";
+import {MetricSelect} from "../wizard/metric-select.js";
 import {PresetSelect} from "../wizard/preset-select.js";
 import {ResolutionSelect} from "../wizard/resolution-select.js";
 import {ResultStep} from "../wizard/result-step.js";
@@ -38,6 +45,10 @@ function SelectionPanel({
 	showPresets,
 	showResolutionSelect,
 	showBulkActions,
+	showMetricSelect,
+	availableMetrics,
+	selectedMetrics,
+	onSelectedMetricsChange,
 	resolutions,
 	resolutionLabels,
 }: {
@@ -56,6 +67,10 @@ function SelectionPanel({
 	showPresets: boolean;
 	showResolutionSelect: boolean;
 	showBulkActions?: boolean;
+	showMetricSelect: boolean;
+	availableMetrics: readonly BucketMetric[];
+	selectedMetrics: readonly BucketMetric[];
+	onSelectedMetricsChange: (metrics: readonly BucketMetric[]) => void;
 	resolutions: readonly DataResolution[];
 	resolutionLabels?: Partial<Record<DataResolution, string>>;
 }): ReactElement {
@@ -134,6 +149,14 @@ function SelectionPanel({
 				/>
 			) : null}
 
+			{showMetricSelect ? (
+				<MetricSelect
+					selectedMetrics={selectedMetrics}
+					availableMetrics={availableMetrics}
+					onChange={onSelectedMetricsChange}
+				/>
+			) : null}
+
 			<Section title={t("dateRange.section")}>
 				<TimeRangeSelection
 					startDate={startDate}
@@ -165,7 +188,15 @@ export function CountAggregatorWizard({
 	const showExport = isFeatureEnabled(appConfig, "export");
 	const showChartTypeSelect = isFeatureEnabled(appConfig, "chartTypeSelect");
 
+	const showMetricSelect = isFeatureEnabled(appConfig, "metricSelect");
+
 	const resolutions = appConfig.resolutions ?? (["daily"] as const);
+	const availableMetrics = appConfig.availableMetrics ?? [
+		appConfig.defaultMetric ?? "sum",
+	];
+	const defaultChartMetrics = appConfig.defaultChartMetrics ?? [
+		appConfig.defaultMetric ?? "sum",
+	];
 
 	const [step, setStep] = useState<0 | 1>(0);
 	const [selectedStationIds, setSelectedStationIds] = useState<
@@ -179,6 +210,8 @@ export function CountAggregatorWizard({
 	const [chartType, setChartType] = useState<ChartType>(
 		appConfig.defaultChartType ?? "line",
 	);
+	const [selectedMetrics, setSelectedMetrics] =
+		useState<readonly BucketMetric[]>(defaultChartMetrics);
 
 	const stationsById = useStations(appId);
 	const valuesEnabled = !isStepped || step === 1;
@@ -189,6 +222,7 @@ export function CountAggregatorWizard({
 			startDate,
 			endDate,
 			resolution,
+			metrics: selectedMetrics,
 		},
 		{enabled: valuesEnabled},
 	);
@@ -234,6 +268,7 @@ export function CountAggregatorWizard({
 			stationsById={stationsById}
 			chartType={chartType}
 			resolution={resolution}
+			selectedMetrics={selectedMetrics}
 			showExport={showExport}
 			showChartTypeSelect={showChartTypeSelect}
 			onChartTypeChange={setChartType}
@@ -277,6 +312,10 @@ export function CountAggregatorWizard({
 							onPresetChange={handlePresetChange}
 							showPresets={showPresets}
 							showResolutionSelect={showResolutionSelect}
+							showMetricSelect={showMetricSelect}
+							availableMetrics={availableMetrics}
+							selectedMetrics={selectedMetrics}
+							onSelectedMetricsChange={setSelectedMetrics}
 							showBulkActions={true}
 							resolutions={resolutions}
 							resolutionLabels={appConfig.resolutionLabels}
@@ -318,11 +357,15 @@ export function CountAggregatorWizard({
 				onPresetChange={handlePresetChange}
 				showPresets={showPresets}
 				showResolutionSelect={showResolutionSelect}
+				showMetricSelect={showMetricSelect}
+				availableMetrics={availableMetrics}
+				selectedMetrics={selectedMetrics}
+				onSelectedMetricsChange={setSelectedMetrics}
 				resolutions={resolutions}
 				resolutionLabels={appConfig.resolutionLabels}
 			/>
 
-			<div className="msca:my-3 msca:border-t msca:border-[var(--msca-color-border)]" />
+			<div className="msca:my-3 msca:border-t msca:border-(--msca-color-border)" />
 
 			{resultStep}
 			{eventsSection}

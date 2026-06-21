@@ -4,12 +4,14 @@ import {
 	buildCsvExportUrl,
 	buildLastValuesCsvExportUrl,
 	buildMultipleLastValuesUrl,
+	buildMultipleValuesQueryUrl,
 	buildMultipleValuesUrl,
 	buildSingleStationLastValuesUrl,
 	buildSingleStationValuesUrl,
 	buildStationSumsUrl,
 	buildStationsGeoJsonUrl,
 	buildStationsUrl,
+	buildValuesQueryCsvExportUrl,
 } from "./urls.js";
 
 const baseUrl = "https://example.test/msp/public/count-aggregator";
@@ -22,10 +24,26 @@ describe("count aggregator URL builders", () => {
 			to: "2025-01-07",
 			resolution: "daily",
 			stationIds: [150, 151],
+			metrics: ["sum"],
 		});
 
 		expect(url).toBe(
-			"https://example.test/msp/public/count-aggregator/bicycleCount/values/2025-01-01/2025-01-07/daily?stationIds=150%2C151",
+			"https://example.test/msp/public/count-aggregator/bicycleCount/values/2025-01-01/2025-01-07/daily?stationIds=150%2C151&metrics=sum",
+		);
+	});
+
+	it("builds a datetime query values URL", () => {
+		const url = buildMultipleValuesQueryUrl(baseUrl, {
+			type: "waterLevelSurface",
+			from: "2025-06-01 10:00:00",
+			to: "2025-06-01 12:00:00",
+			resolution: "15min",
+			stationIds: [140],
+			metrics: ["mean", "min", "max"],
+		});
+
+		expect(url).toBe(
+			"https://example.test/msp/public/count-aggregator/waterLevelSurface/values?stationIds=140&from=2025-06-01+10%3A00%3A00&to=2025-06-01+12%3A00%3A00&resolution=15min&metrics=mean%2Cmin%2Cmax",
 		);
 	});
 
@@ -64,12 +82,28 @@ describe("count aggregator URL builders", () => {
 			stationIds: [150],
 			limit: 7,
 			anchor: "lastDataAt",
+			metrics: ["sum"],
 		});
 
 		expect(url).toContain("format=csv");
 		expect(url).toContain("stationIds=150");
 		expect(url).toContain("limit=7");
 		expect(url).toContain("anchor=lastDataAt");
+		expect(url).toContain("metrics=sum");
+	});
+
+	it("builds datetime query CSV export URL", () => {
+		const url = buildValuesQueryCsvExportUrl(baseUrl, {
+			type: "waterLevelSurface",
+			from: "2025-06-01 10:00:00",
+			to: "2025-06-01 12:00:00",
+			resolution: "15min",
+			stationIds: [140],
+			metrics: ["mean"],
+		});
+
+		expect(url).toContain("format=csv");
+		expect(url).toContain("metrics=mean");
 	});
 
 	it("builds single-station URLs", () => {

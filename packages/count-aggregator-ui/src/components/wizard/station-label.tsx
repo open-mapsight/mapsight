@@ -1,6 +1,7 @@
 import {type ReactElement, memo} from "react";
 
 import {formatStationLabel} from "../../lib/stations.js";
+import {cn} from "../../lib/utils.js";
 import type {Station} from "../../types";
 import {ColorDot} from "./color-dot.js";
 
@@ -17,9 +18,10 @@ export const StationLabel = memo(function StationLabel({
 		<>
 			<ColorDot isEnabled={isEnabled} color={color} />
 			<span
-				className={`msca:flex-grow ${
-					isEnabled ? "" : "msca:text-gray-600 msca:line-through"
-				}`}
+				className={cn(
+					"msca:flex-grow",
+					!isEnabled && "msca:text-gray-600 msca:line-through",
+				)}
 			>
 				{station ? (
 					<>
