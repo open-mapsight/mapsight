@@ -27,9 +27,9 @@ catalog:
   "ol": "^10.9.0"
   "pidusage": "^4.0.1"
   "playwright": "^1.60.0"
-  "proj4": "^2.20.8"
-  "react": "^19.2.6"
-  "react-dom": "^19.2.6"
+  "proj4": "^2.20.9"
+  "react": "^19.2.7"
+  "react-dom": "^19.2.7"
   "react-redux": "^9.3.0"
   "redux": "^5.0.1"
   "redux-batched-actions": "^0.5.0"
@@ -37,7 +37,7 @@ catalog:
   "reselect": "^5.1.1"
   "tailwindcss": "^4.3.0"
   "typescript": "^6.0.3"
-  "vitest": "^4.1.6"
+  "vitest": "^4.1.8"
   "zod": "^4.4.3"
 minimumReleaseAgeExclude:
   - postcss@8.5.10
