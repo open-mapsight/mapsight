@@ -5,7 +5,6 @@ import type {
 	CountAggregatorAppConfig,
 	CountAggregatorConfig,
 	Resolution,
-	StationType,
 } from "../types";
 
 export const DEFAULT_PUBLIC_API_BASE_URL = "/msp/public/count-aggregator";
@@ -31,7 +30,7 @@ function createAppConfigForStationType(
 	entry: StationTypeSummary,
 	apiBaseUrl: string,
 ): CountAggregatorAppConfig {
-	const stationType = entry.type as StationType;
+	const stationType = entry.type;
 	const isBicycleCount = stationType === "bicycleCount";
 	const availableMetrics = entry.metrics.flatMap(
 		(metric) => metric.aggregation,

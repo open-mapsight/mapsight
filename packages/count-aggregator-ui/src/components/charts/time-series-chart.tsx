@@ -28,7 +28,6 @@ import {getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
 	ChartSeries,
-	StationValue,
 	TimeSeriesChartProps,
 } from "../../types";
 import {

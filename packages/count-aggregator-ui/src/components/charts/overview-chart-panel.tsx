@@ -1,6 +1,7 @@
 import {type ReactElement, useMemo} from "react";
 
 import {buildLastValuesCsvExportUrl} from "@mapsight/count-aggregator-api";
+import type {BucketMetric} from "@mapsight/count-aggregator-api";
 
 import {useLastValues} from "../../api/hooks.js";
 import {
@@ -17,7 +18,7 @@ export interface OverviewChartConfig {
 	resolution: DataResolution;
 	limit: number;
 	chartType: ChartType;
-	metrics?: readonly import("@mapsight/count-aggregator-api").BucketMetric[];
+	metrics?: readonly BucketMetric[];
 }
 
 function OverviewChart({
@@ -39,8 +40,16 @@ function OverviewChart({
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
-	const selectedMetrics = config.metrics ??
-		appConfig.defaultChartMetrics ?? [appConfig.defaultMetric ?? "sum"];
+	const selectedMetrics = useMemo(
+		() =>
+			config.metrics ??
+			appConfig.defaultChartMetrics ?? [appConfig.defaultMetric ?? "sum"],
+		[
+			appConfig.defaultChartMetrics,
+			appConfig.defaultMetric,
+			config.metrics,
+		],
+	);
 	const data = useLastValues(appId, {
 		stationIds,
 		resolution: config.resolution,
