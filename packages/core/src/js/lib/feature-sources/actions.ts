@@ -4,7 +4,11 @@ import * as local from "@/lib/feature-sources/loaders/local-state-loader";
 import type {LocalStateLoaderOptions} from "@/lib/feature-sources/loaders/local-state-loader";
 import * as noop from "@/lib/feature-sources/loaders/noop-loader";
 import * as xhrJson from "@/lib/feature-sources/loaders/xhr-json-loader";
-import {ERROR_COLD_CACHE, getIsDue} from "@/lib/feature-sources/selectors";
+import {
+	ERROR_COLD_CACHE,
+	getIsDue,
+	hasFeatureSourceLoadError,
+} from "@/lib/feature-sources/selectors";
 import type {
 	FeatureSourceState,
 	FeatureSourceType,
@@ -328,14 +332,14 @@ export const load = (
 	const handleLoad: ThunkAction = (dispatch, getState) => {
 		const state = getState()[controllerName] as FeatureSourcesState;
 		const currentState = state[id] || ({} as FeatureSourceState);
-		const {requestId = 0, isLoading, error} = currentState || {};
+		const {requestId = 0, isLoading} = currentState || {};
 		if (isLoading && !options?.forceRefresh) {
 			return Promise.resolve(); // already loading
 		}
 
 		// Failed loads must not be retried immediately. Refreshing sources retry
 		// via refreshByTimer with forceRefresh; other callers may pass forceRefresh.
-		if (error && !options?.forceRefresh) {
+		if (hasFeatureSourceLoadError(currentState) && !options?.forceRefresh) {
 			return Promise.resolve();
 		}
 
@@ -386,7 +390,7 @@ export const load = (
 						dispatch(
 							load(controllerName, id, {
 								forceRefresh:
-									!!sourceState.error ||
+									hasFeatureSourceLoadError(sourceState) ||
 									getIsDue(sourceState),
 							}),
 						);

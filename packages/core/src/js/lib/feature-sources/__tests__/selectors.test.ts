@@ -1,8 +1,12 @@
 import {describe, expect, it} from "vitest";
 
 import {
+	STATUS_ERROR,
+	STATUS_OK,
 	createFilteredFeatureSourceSelector,
 	findFeatureInFeatureSourcesById,
+	getFeatureSourceStatus,
+	hasFeatureSourceLoadError,
 } from "@/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 import {addFilterFunction} from "@/lib/filter/selectors";
@@ -47,6 +51,21 @@ const featureSources = {
 } satisfies FeatureSourcesState;
 
 describe("feature source selectors", () => {
+	it("treats empty error strings as failed loads", () => {
+		expect(hasFeatureSourceLoadError({error: ""} as never)).toBe(true);
+		expect(
+			getFeatureSourceStatus({
+				error: "",
+				isLoading: false,
+			} as never),
+		).toBe(STATUS_ERROR);
+		expect(
+			getFeatureSourceStatus({
+				isLoading: false,
+			} as never),
+		).toBe(STATUS_OK);
+	});
+
 	it("finds features through the feature source id index", () => {
 		expect(findFeatureInFeatureSourcesById(featureSources, "visible")).toBe(
 			visibleFeature,

@@ -51,9 +51,13 @@ export const canUndo = (source: FeatureSourceState) =>
 export const canRedo = (source: FeatureSourceState) =>
 	!!(source.dataHistory?.future && source.dataHistory.future.length > 0);
 
+export const hasFeatureSourceLoadError = (
+	featureSource: FeatureSourceState | undefined,
+) => featureSource?.error != null;
+
 export const getFeatureSourceStatus = (featureSource: FeatureSourceState) => {
 	if (featureSource) {
-		return featureSource.error
+		return hasFeatureSourceLoadError(featureSource)
 			? STATUS_ERROR
 			: featureSource.isLoading
 				? STATUS_LOADING
