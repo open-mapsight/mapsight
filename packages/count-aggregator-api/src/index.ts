@@ -69,6 +69,7 @@ export type {
 	StationMetric,
 	StationSummary,
 	StationType,
+	StationTypeCategory,
 	StationTypeListResponse,
 	StationTypeSummary,
 	TimeSeriesMapResponse,

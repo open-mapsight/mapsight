@@ -3,7 +3,44 @@
 		{
 			"type": "bicycleCount",
 			"label": "Bicycle counters",
-			"station_count": 9
+			"station_count": 9,
+			"category": {
+				"id": "mobility",
+				"label": "Mobility"
+			},
+			"defaultMetric": "sum",
+			"supportedResolutions": ["daily", "hourly"],
+			"metrics": [
+				{
+					"id": "count",
+					"label": "Bicycle counters",
+					"unit": null,
+					"displayPrecision": 0,
+					"defaultMetric": "sum",
+					"aggregation": ["sum"]
+				}
+			]
+		},
+		{
+			"type": "weatherTemp",
+			"label": "Air temperature",
+			"station_count": 3,
+			"category": {
+				"id": "weather",
+				"label": "Weather"
+			},
+			"defaultMetric": "mean",
+			"supportedResolutions": ["hourly", "daily"],
+			"metrics": [
+				{
+					"id": "temp",
+					"label": "Temperature",
+					"unit": "°C",
+					"displayPrecision": 1,
+					"defaultMetric": "mean",
+					"aggregation": ["mean", "min", "max"]
+				}
+			]
 		}
 	]
 }
