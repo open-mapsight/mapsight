@@ -20,6 +20,7 @@ export type StationOverviewResponse = z.infer<
 	typeof schemas.StationOverviewResponse
 >;
 export type StationTypeSummary = z.infer<typeof schemas.StationTypeSummary>;
+export type StationTypeCategory = z.infer<typeof schemas.StationTypeCategory>;
 export type BucketMetric = NonNullable<StationTypeSummary["defaultMetric"]>;
 export type StationTypeListResponse = z.infer<
 	typeof schemas.StationTypeListResponse
