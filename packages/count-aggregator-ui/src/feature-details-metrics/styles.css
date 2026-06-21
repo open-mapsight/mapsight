@@ -144,12 +144,19 @@
 }
 
 .ms3-smart-city-metric__loading,
-.ms3-smart-city-metric__empty {
+.ms3-smart-city-metric__empty,
+.ms3-smart-city-metric__async-status .ms3-async-status--placeholder {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 140px;
 	padding: 12px;
+	color: var(--ms3-metric-muted);
+	font-size: 12px;
+	text-align: center;
+}
+
+.ms3-smart-city-metric__async-status .ms3-async-status--error {
 	color: var(--ms3-metric-muted);
 	font-size: 12px;
 	text-align: center;

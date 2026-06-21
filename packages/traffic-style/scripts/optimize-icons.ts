@@ -13,9 +13,11 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 
-import sharp, {type Sharp} from "sharp";
+import sharp from "sharp";
 import {type Config, optimize as optimizeSvg} from "svgo";
 import {z} from "zod/v4";
+
+type Sharp = ReturnType<typeof sharp>;
 
 type ResultStatus = "processed" | "skipped" | "failed";
 type SourceKind = "svg" | "png";

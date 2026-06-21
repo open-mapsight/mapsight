@@ -82,7 +82,28 @@ describe("OpenAPI contract shape", () => {
 		const parameterNames =
 			operation?.parameters?.map((parameter) => parameter.name) ?? [];
 		expect(parameterNames).toContain("stationIds");
+		expect(parameterNames).toContain("metrics");
 		expect(parameterNames).not.toContain("originIds");
+	});
+
+	it("documents datetime query values route", () => {
+		const operation = (
+			openApiDocument.paths["/{type}/values"] as
+				| {get?: {parameters?: Array<{name: string}>}}
+				| undefined
+		)?.get;
+
+		const parameterNames =
+			operation?.parameters?.map((parameter) => parameter.name) ?? [];
+		expect(parameterNames).toEqual(
+			expect.arrayContaining([
+				"stationIds",
+				"from",
+				"to",
+				"resolution",
+				"metrics",
+			]),
+		);
 	});
 
 	it("uses stationId path parameter for single-station routes", () => {

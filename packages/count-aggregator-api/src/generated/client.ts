@@ -25,7 +25,7 @@ type StationGeoJsonFeatureProperties = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -48,6 +48,7 @@ type StationGeoJsonFeatureProperties = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   /**
@@ -63,10 +64,110 @@ type StationGeoJsonFeatureProperties = {
    */
   hasData: boolean;
   /**
-   * Grouped filter tags for the frontend, keyed by group name (e.g. `Art`).
+   * Station type identifier. See `GET /station-types` for currently available types.
+   *
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+   */
+  countAggregatorType:
+    | "airQualityCO"
+    | "airQualityNO2"
+    | "airQualityO3"
+    | "airQualityPM10"
+    | "airQualityPM25"
+    | "airQualityStation"
+    | "bicycleCount"
+    | "bicycleSensorTotal"
+    | "peopleCount"
+    | "waterLevelSurface"
+    | "waterTemp"
+    | "weatherAirPressure"
+    | "weatherHumidity"
+    | "weatherLightingDistance"
+    | "weatherLightnings"
+    | "weatherRain"
+    | "weatherStation"
+    | "weatherSun"
+    | "weatherTemp"
+    | "weatherVaporPressure"
+    | "weatherWindDirection"
+    | "weatherWindSpeed"
+    | "weatherWindSpeedMax";
+  /**
+   * Stable numeric count aggregator station id for linking to the time-series/data view. Present when this feature represents one data station.
+   */
+  countAggregatorStationId: number;
+  countAggregatorLinks?: /**
+   * Structured data-view links for grouped multi-metric features. Present when a map feature represents multiple metric/time-series stations.
+   */
+  | Array<{
+        /**
+         * Stable count aggregator metric type identifier.
+         *
+         * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+         */
+        type:
+          | "airQualityCO"
+          | "airQualityNO2"
+          | "airQualityO3"
+          | "airQualityPM10"
+          | "airQualityPM25"
+          | "airQualityStation"
+          | "bicycleCount"
+          | "bicycleSensorTotal"
+          | "peopleCount"
+          | "waterLevelSurface"
+          | "waterTemp"
+          | "weatherAirPressure"
+          | "weatherHumidity"
+          | "weatherLightingDistance"
+          | "weatherLightnings"
+          | "weatherRain"
+          | "weatherStation"
+          | "weatherSun"
+          | "weatherTemp"
+          | "weatherVaporPressure"
+          | "weatherWindDirection"
+          | "weatherWindSpeed"
+          | "weatherWindSpeedMax";
+        /**
+         * Stable numeric count aggregator station id for this metric.
+         */
+        stationId: number;
+      }>
+    | undefined;
+  /**
+   * Grouped filter tags for the frontend, keyed by user-facing group name (e.g. `Wetter`, `Mobilität`, `Gewässer`, `Luftqualität`, `Sonstige`).
    */
   tagGroups: Partial<{
-    Art: {
+    Wetter: {
+      /**
+       * When false, any listed tag matches (OR). When true, all listed tags must match (AND).
+       */
+      andJunction: boolean;
+      tags: Array<string>;
+    };
+    Luftqualität: {
+      /**
+       * When false, any listed tag matches (OR). When true, all listed tags must match (AND).
+       */
+      andJunction: boolean;
+      tags: Array<string>;
+    };
+    Mobilität: {
+      /**
+       * When false, any listed tag matches (OR). When true, all listed tags must match (AND).
+       */
+      andJunction: boolean;
+      tags: Array<string>;
+    };
+    Gewässer: {
+      /**
+       * When false, any listed tag matches (OR). When true, all listed tags must match (AND).
+       */
+      andJunction: boolean;
+      tags: Array<string>;
+    };
+    Sonstige: {
       /**
        * When false, any listed tag matches (OR). When true, all listed tags must match (AND).
        */
@@ -82,92 +183,114 @@ type StationGeoJsonFeatureProperties = {
    * Font Awesome icon identifier from the upstream data source (e.g. fa-water). Omitted when no icon is configured.
    */
   mapsightIconId: string;
-  legacyDashboardId: string;
-  /**
+  legacyDashboardId?: string | undefined;
+  description?: /**
    * Station description from the upstream data source. Omitted when not configured.
    */
-  description: string;
-  /**
+  string | undefined;
+  unit?: /**
+   * Physical unit of the metric values as reported by the data source (e.g. `°C`, `µg/m³`). Omitted for dimensionless counters and container stations.
+   */
+  string | undefined;
+  childStations?: /**
    * Metric child stations grouped under this container (grouped mode only).
    */
-  childStations: Array<{
-    /**
-     * Platform station id (database primary key).
-     */
-    id: string;
-    /**
-     * External origin id from the data source.
-     */
-    originId: string;
-    name?: (string | null) | undefined;
-    /**
-     * Child station type identifier.
-     */
-    type: string;
-    /**
-     * German human-readable child type label.
-     */
-    typeLabel: string;
-    stats?: /**
-     * Precomputed counter stats for this metric child. Only present when `includeStats=true`.
-     */
-    | {
-          /**
-           * Lifetime sum of all counter values (same as `/sums` total).
-           */
-          total: number;
-          /**
-           * Daily totals for the last three days (same as `/sums` lastDays).
-           */
-          lastDays: Array<{
-            /**
-             * Local station datetime in `Y-m-d H:i:s` format (no timezone offset).
-             */
-            datetime: string;
-            value: number;
-          }>;
-          /**
-           * When these stats were precomputed (ISO 8601).
-           */
-          computedAt: string;
-        }
-      | undefined;
-  }>;
-  /**
+  | Array<{
+        /**
+         * Platform station id (database primary key).
+         */
+        id: string;
+        /**
+         * External origin id from the data source.
+         */
+        originId: string;
+        name?: (string | null) | undefined;
+        /**
+         * Child station type identifier.
+         */
+        type: string;
+        /**
+         * Stable child metric type identifier for linking to data views.
+         */
+        countAggregatorType: string;
+        /**
+         * Stable numeric child station id for linking to the time-series/data view.
+         */
+        countAggregatorStationId: number;
+        /**
+         * German human-readable child type label.
+         */
+        typeLabel: string;
+        unit?: /**
+         * Physical unit of the metric values as reported by the data source (e.g. `°C`, `µg/m³`). Omitted for dimensionless counters and container stations.
+         */
+        string | undefined;
+        mapsightIconId?: /**
+         * Font Awesome icon identifier from the upstream data source (e.g. fa-water). Omitted when no icon is configured.
+         */
+        string | undefined;
+        stats?: /**
+         * Precomputed counter stats for this metric child. Only present when `includeStats=true`.
+         */
+        | {
+              /**
+               * Lifetime sum of all counter values (same as `/sums` total).
+               */
+              total: number;
+              /**
+               * Daily totals for the last three days (same as `/sums` lastDays).
+               */
+              lastDays: Array<{
+                /**
+                 * Local station datetime in `Y-m-d H:i:s` format (no timezone offset).
+                 */
+                datetime: string;
+                value: number;
+              }>;
+              /**
+               * When these stats were precomputed (ISO 8601).
+               */
+              computedAt: string;
+            }
+          | undefined;
+      }>
+    | undefined;
+  parentId?: /**
    * Platform station id of the container station (flat mode only).
    */
-  parentId: string;
-  /**
+  string | undefined;
+  parentType?: /**
    * Type of the container station (flat mode only).
    */
-  parentType: string;
-  /**
+  string | undefined;
+  parentTypeLabel?: /**
    * German human-readable label of the container station (flat mode only).
    */
-  parentTypeLabel: string;
-  /**
+  string | undefined;
+  stats?: /**
    * Precomputed counter stats. Only present when `includeStats=true`. Omitted when not yet cached.
    */
-  stats: {
-    /**
-     * Lifetime sum of all counter values (same as `/sums` total).
-     */
-    total: number;
-    /**
-     * Daily totals for the last three days (same as `/sums` lastDays).
-     */
-    lastDays: Array<{
-      /**
-       * Local station datetime in `Y-m-d H:i:s` format (no timezone offset).
-       */
-      datetime: string;
-      value: number;
-    }>;
-    /**
-     * When these stats were precomputed (ISO 8601).
-     */
-    computedAt: string;
-  };
+  | {
+        /**
+         * Lifetime sum of all counter values (same as `/sums` total).
+         */
+        total: number;
+        /**
+         * Daily totals for the last three days (same as `/sums` lastDays).
+         */
+        lastDays: Array<{
+          /**
+           * Local station datetime in `Y-m-d H:i:s` format (no timezone offset).
+           */
+          datetime: string;
+          value: number;
+        }>;
+        /**
+         * When these stats were precomputed (ISO 8601).
+         */
+        computedAt: string;
+      }
+    | undefined;
 };
 type StationGeoJsonFeatureCollection = {
   type: string;
@@ -181,7 +304,7 @@ type StationSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -204,6 +327,7 @@ type StationSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   origin_id: string;
@@ -222,6 +346,24 @@ type StationSummary = {
   label: string;
   hasData: boolean;
   lastDataAt: string | null;
+  defaultMetric?:
+    | /**
+     * Optional per-station override of the type default metric.
+     *
+     * @enum sum, mean, min, max, last
+     */
+    ("sum" | "mean" | "min" | "max" | "last")
+    | undefined;
+  supportedResolutions?: /**
+   * Optional per-station override when available resolutions differ within a type.
+   */
+  | Array<
+        /**
+         * @enum 5min, 15min, hourly, daily, weekly, monthly, yearly
+         */
+        "5min" | "15min" | "hourly" | "daily" | "weekly" | "monthly" | "yearly"
+      >
+    | undefined;
 };
 type StationOverviewResponse = {
   stationId: number;
@@ -236,7 +378,25 @@ type DataValuePoint = {
    * @pattern ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
    */
   datetime: string;
-  value: number;
+  sum?: (number | null) | undefined;
+  mean?: (number | null) | undefined;
+  min?: (number | null) | undefined;
+  max?: (number | null) | undefined;
+  last?: (number | null) | undefined;
+  value?:
+    | /**
+     * Backward-compatible alias for the station type default metric when present in the bucket.
+     */
+    /**
+     * Backward-compatible alias for the station type default metric when present in the bucket.
+     */
+    (| number
+        /**
+         * Backward-compatible alias for the station type default metric when present in the bucket.
+         */
+        | null
+      )
+    | undefined;
 };
 type StationTypeListResponse = {
   data: Array<StationTypeSummary>;
@@ -245,7 +405,7 @@ type StationTypeSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -268,10 +428,48 @@ type StationTypeSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   label: string;
   station_count: number;
+  category: StationTypeCategory;
+  /**
+   * Default bucket statistic returned when the `metrics` query parameter is omitted.
+   *
+   * @enum sum, mean, min, max, last
+   */
+  defaultMetric: "sum" | "mean" | "min" | "max" | "last";
+  /**
+   * Resolutions available for this station type. Drives wizard and comparison resolution pickers.
+   */
+  supportedResolutions: Array<
+    /**
+     * @enum 5min, 15min, hourly, daily, weekly, monthly, yearly
+     */
+    "5min" | "15min" | "hourly" | "daily" | "weekly" | "monthly" | "yearly"
+  >;
+  metrics: Array<StationMetric>;
+};
+type StationTypeCategory = {
+  id: string;
+  label: string;
+};
+type StationMetric = {
+  id: string;
+  label: string;
+  unit: string | null;
+  displayPrecision: number;
+  /**
+   * @enum sum, mean, min, max, last
+   */
+  defaultMetric: "sum" | "mean" | "min" | "max" | "last";
+  aggregation: Array<
+    /**
+     * @enum sum, mean, min, max, last
+     */
+    "sum" | "mean" | "min" | "max" | "last"
+  >;
 };
 type TimeSeriesResponse = {
   id: number;
@@ -294,11 +492,18 @@ type TimeSeriesResponse = {
    */
   lastDateTime: string;
   /**
-   * Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.
+   * Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.
    *
-   * @enum 15min, hourly, daily, weekly, monthly, yearly
+   * @enum 5min, 15min, hourly, daily, weekly, monthly, yearly
    */
-  resolution: "15min" | "hourly" | "daily" | "weekly" | "monthly" | "yearly";
+  resolution:
+    | "5min"
+    | "15min"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly";
   stationId: string;
   values: Array<DataValuePoint>;
 };
@@ -334,15 +539,93 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "weatherSun",
         "weatherTemp",
         "weatherVaporPressure",
+        "weatherWindDirection",
         "weatherWindSpeed",
         "weatherWindSpeedMax",
       ]),
       typeLabel: z.string(),
       tags: z.array(z.string()),
       hasData: z.boolean(),
+      countAggregatorType: z.enum([
+        "airQualityCO",
+        "airQualityNO2",
+        "airQualityO3",
+        "airQualityPM10",
+        "airQualityPM25",
+        "airQualityStation",
+        "bicycleCount",
+        "bicycleSensorTotal",
+        "peopleCount",
+        "waterLevelSurface",
+        "waterTemp",
+        "weatherAirPressure",
+        "weatherHumidity",
+        "weatherLightingDistance",
+        "weatherLightnings",
+        "weatherRain",
+        "weatherStation",
+        "weatherSun",
+        "weatherTemp",
+        "weatherVaporPressure",
+        "weatherWindDirection",
+        "weatherWindSpeed",
+        "weatherWindSpeedMax",
+      ]),
+      countAggregatorStationId: z.number().int(),
+      countAggregatorLinks: z
+        .array(
+          z
+            .object({
+              type: z.enum([
+                "airQualityCO",
+                "airQualityNO2",
+                "airQualityO3",
+                "airQualityPM10",
+                "airQualityPM25",
+                "airQualityStation",
+                "bicycleCount",
+                "bicycleSensorTotal",
+                "peopleCount",
+                "waterLevelSurface",
+                "waterTemp",
+                "weatherAirPressure",
+                "weatherHumidity",
+                "weatherLightingDistance",
+                "weatherLightnings",
+                "weatherRain",
+                "weatherStation",
+                "weatherSun",
+                "weatherTemp",
+                "weatherVaporPressure",
+                "weatherWindDirection",
+                "weatherWindSpeed",
+                "weatherWindSpeedMax",
+              ]),
+              stationId: z.number().int(),
+            })
+            .strict()
+            .passthrough()
+        )
+        .optional(),
       tagGroups: z
         .object({
-          Art: z
+          Wetter: z
+            .object({ andJunction: z.boolean(), tags: z.array(z.string()) })
+            .strict()
+            .passthrough(),
+          Luftqualität: z
+            .object({ andJunction: z.boolean(), tags: z.array(z.string()) })
+            .strict()
+            .passthrough(),
+          Mobilität: z
+            .object({ andJunction: z.boolean(), tags: z.array(z.string()) })
+            .strict()
+            .passthrough(),
+          Gewässer: z
+            .object({ andJunction: z.boolean(), tags: z.array(z.string()) })
+            .strict()
+            .passthrough(),
+          Sonstige: z
             .object({ andJunction: z.boolean(), tags: z.array(z.string()) })
             .strict()
             .passthrough(),
@@ -352,37 +635,44 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         .passthrough(),
       lastDataAt: z.string(),
       mapsightIconId: z.string(),
-      legacyDashboardId: z.string(),
-      description: z.string(),
-      childStations: z.array(
-        z
-          .object({
-            id: z.string(),
-            originId: z.string(),
-            name: z.union([z.string(), z.null()]).optional(),
-            type: z.string(),
-            typeLabel: z.string(),
-            stats: z
-              .object({
-                total: z.number(),
-                lastDays: z.array(
-                  z
-                    .object({ datetime: z.string(), value: z.number() })
-                    .strict()
-                    .passthrough()
-                ),
-                computedAt: z.string(),
-              })
-              .strict()
-              .passthrough()
-              .optional(),
-          })
-          .strict()
-          .passthrough()
-      ),
-      parentId: z.string(),
-      parentType: z.string(),
-      parentTypeLabel: z.string(),
+      legacyDashboardId: z.string().optional(),
+      description: z.string().optional(),
+      unit: z.string().optional(),
+      childStations: z
+        .array(
+          z
+            .object({
+              id: z.string(),
+              originId: z.string(),
+              name: z.union([z.string(), z.null()]).optional(),
+              type: z.string(),
+              countAggregatorType: z.string(),
+              countAggregatorStationId: z.number().int(),
+              typeLabel: z.string(),
+              unit: z.string().optional(),
+              mapsightIconId: z.string().optional(),
+              stats: z
+                .object({
+                  total: z.number(),
+                  lastDays: z.array(
+                    z
+                      .object({ datetime: z.string(), value: z.number() })
+                      .strict()
+                      .passthrough()
+                  ),
+                  computedAt: z.string(),
+                })
+                .strict()
+                .passthrough()
+                .optional(),
+            })
+            .strict()
+            .passthrough()
+        )
+        .optional(),
+      parentId: z.string().optional(),
+      parentType: z.string().optional(),
+      parentTypeLabel: z.string().optional(),
       stats: z
         .object({
           total: z.number(),
@@ -395,7 +685,8 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
           computedAt: z.string(),
         })
         .strict()
-        .passthrough(),
+        .passthrough()
+        .optional(),
     })
     .strict()
     .passthrough();
@@ -412,6 +703,21 @@ const StationGeoJsonFeatureCollection: z.ZodType<StationGeoJsonFeatureCollection
     .object({ type: z.string(), features: z.array(StationGeoJsonFeature) })
     .strict()
     .passthrough();
+const StationTypeCategory: z.ZodType<StationTypeCategory> = z
+  .object({ id: z.string(), label: z.string() })
+  .strict()
+  .passthrough();
+const StationMetric: z.ZodType<StationMetric> = z
+  .object({
+    id: z.string(),
+    label: z.string(),
+    unit: z.union([z.string(), z.null()]),
+    displayPrecision: z.number().int(),
+    defaultMetric: z.enum(["sum", "mean", "min", "max", "last"]),
+    aggregation: z.array(z.enum(["sum", "mean", "min", "max", "last"])),
+  })
+  .strict()
+  .passthrough();
 const StationTypeSummary: z.ZodType<StationTypeSummary> = z
   .object({
     type: z.enum([
@@ -435,11 +741,26 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
+      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
     label: z.string(),
     station_count: z.number().int(),
+    category: StationTypeCategory,
+    defaultMetric: z.enum(["sum", "mean", "min", "max", "last"]),
+    supportedResolutions: z.array(
+      z.enum([
+        "5min",
+        "15min",
+        "hourly",
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly",
+      ])
+    ),
+    metrics: z.array(StationMetric),
   })
   .strict()
   .passthrough();
@@ -471,6 +792,7 @@ const StationSummary: z.ZodType<StationSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
+      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
@@ -480,6 +802,20 @@ const StationSummary: z.ZodType<StationSummary> = z
     label: z.string(),
     hasData: z.boolean(),
     lastDataAt: z.union([z.string(), z.null()]),
+    defaultMetric: z.enum(["sum", "mean", "min", "max", "last"]).optional(),
+    supportedResolutions: z
+      .array(
+        z.enum([
+          "5min",
+          "15min",
+          "hourly",
+          "daily",
+          "weekly",
+          "monthly",
+          "yearly",
+        ])
+      )
+      .optional(),
   })
   .strict()
   .passthrough();
@@ -490,7 +826,12 @@ const StationListResponse: z.ZodType<StationListResponse> = z
 const DataValuePoint: z.ZodType<DataValuePoint> = z
   .object({
     datetime: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
-    value: z.number(),
+    sum: z.union([z.number(), z.null()]).optional(),
+    mean: z.union([z.number(), z.null()]).optional(),
+    min: z.union([z.number(), z.null()]).optional(),
+    max: z.union([z.number(), z.null()]).optional(),
+    last: z.union([z.number(), z.null()]).optional(),
+    value: z.union([z.number(), z.null()]).optional(),
   })
   .strict()
   .passthrough();
@@ -501,6 +842,7 @@ const TimeSeriesResponse: z.ZodType<TimeSeriesResponse> = z
     toDateTime: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
     lastDateTime: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
     resolution: z.enum([
+      "5min",
       "15min",
       "hourly",
       "daily",
@@ -541,6 +883,8 @@ export const schemas = {
   StationGeoJsonFeatureProperties,
   StationGeoJsonFeature,
   StationGeoJsonFeatureCollection,
+  StationTypeCategory,
+  StationMetric,
   StationTypeSummary,
   StationTypeListResponse,
   StationSummary,
@@ -583,6 +927,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -596,6 +941,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -657,6 +1003,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -670,6 +1017,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -695,6 +1043,11 @@ export const endpoints = [
         name: "anchor",
         type: "Query",
         schema: z.literal("lastDataAt").optional(),
+      },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
       },
     ],
     response: TimeSeriesResponse,
@@ -736,6 +1089,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -795,6 +1149,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -806,6 +1161,76 @@ export const endpoints = [
       },
     ],
     response: StationOverviewResponse,
+    errors: [
+      {
+        status: 404,
+        description: `Station not found`,
+        schema: z.null(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/:type/:stationId/values",
+    alias: "count-aggregator.public.type.station.values.query",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "type",
+        type: "Path",
+        schema: z.enum([
+          "airQualityCO",
+          "airQualityNO2",
+          "airQualityO3",
+          "airQualityPM10",
+          "airQualityPM25",
+          "airQualityStation",
+          "bicycleCount",
+          "bicycleSensorTotal",
+          "peopleCount",
+          "waterLevelSurface",
+          "waterTemp",
+          "weatherAirPressure",
+          "weatherHumidity",
+          "weatherLightingDistance",
+          "weatherLightnings",
+          "weatherRain",
+          "weatherStation",
+          "weatherSun",
+          "weatherTemp",
+          "weatherVaporPressure",
+          "weatherWindDirection",
+          "weatherWindSpeed",
+          "weatherWindSpeedMax",
+        ]),
+      },
+      {
+        name: "stationId",
+        type: "Path",
+        schema: z.string(),
+      },
+      {
+        name: "from",
+        type: "Query",
+        schema: z.string().regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/),
+      },
+      {
+        name: "to",
+        type: "Query",
+        schema: z.string().regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/),
+      },
+      {
+        name: "resolution",
+        type: "Query",
+        schema: z.unknown(),
+      },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: TimeSeriesResponse,
     errors: [
       {
         status: 404,
@@ -844,6 +1269,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -867,6 +1293,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -874,6 +1301,11 @@ export const endpoints = [
           "monthly",
           "yearly",
         ]),
+      },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
       },
     ],
     response: TimeSeriesResponse,
@@ -915,6 +1347,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -923,6 +1356,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -982,6 +1416,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -990,6 +1425,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -1026,6 +1462,11 @@ export const endpoints = [
         type: "Query",
         schema: z.enum(["json", "csv"]).optional(),
       },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: z.record(z.string(), TimeSeriesResponse),
   },
@@ -1059,6 +1500,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1111,6 +1553,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1122,6 +1565,74 @@ export const endpoints = [
       },
     ],
     response: StationListResponse,
+  },
+  {
+    method: "get",
+    path: "/:type/values",
+    alias: "count-aggregator.public.type.values.query",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "type",
+        type: "Path",
+        schema: z.enum([
+          "airQualityCO",
+          "airQualityNO2",
+          "airQualityO3",
+          "airQualityPM10",
+          "airQualityPM25",
+          "airQualityStation",
+          "bicycleCount",
+          "bicycleSensorTotal",
+          "peopleCount",
+          "waterLevelSurface",
+          "waterTemp",
+          "weatherAirPressure",
+          "weatherHumidity",
+          "weatherLightingDistance",
+          "weatherLightnings",
+          "weatherRain",
+          "weatherStation",
+          "weatherSun",
+          "weatherTemp",
+          "weatherVaporPressure",
+          "weatherWindDirection",
+          "weatherWindSpeed",
+          "weatherWindSpeedMax",
+        ]),
+      },
+      {
+        name: "stationIds",
+        type: "Query",
+        schema: z.unknown(),
+      },
+      {
+        name: "from",
+        type: "Query",
+        schema: z.string().regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/),
+      },
+      {
+        name: "to",
+        type: "Query",
+        schema: z.string().regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/),
+      },
+      {
+        name: "resolution",
+        type: "Query",
+        schema: z.unknown(),
+      },
+      {
+        name: "format",
+        type: "Query",
+        schema: z.enum(["json", "csv"]).optional(),
+      },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.record(z.string(), TimeSeriesResponse),
   },
   {
     method: "get",
@@ -1153,6 +1664,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1171,6 +1683,7 @@ export const endpoints = [
         name: "resolution",
         type: "Path",
         schema: z.enum([
+          "5min",
           "15min",
           "hourly",
           "daily",
@@ -1188,6 +1701,11 @@ export const endpoints = [
         name: "format",
         type: "Query",
         schema: z.enum(["json", "csv"]).optional(),
+      },
+      {
+        name: "metrics",
+        type: "Query",
+        schema: z.string().optional(),
       },
     ],
     response: z.record(z.string(), TimeSeriesResponse),
@@ -1244,6 +1762,7 @@ export const endpoints = [
             "weatherSun",
             "weatherTemp",
             "weatherVaporPressure",
+            "weatherWindDirection",
             "weatherWindSpeed",
             "weatherWindSpeedMax",
           ])

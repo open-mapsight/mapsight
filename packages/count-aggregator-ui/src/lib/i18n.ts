@@ -1,4 +1,4 @@
-import type {Resolution} from "@mapsight/count-aggregator-api";
+import type {BucketMetric, Resolution} from "@mapsight/count-aggregator-api";
 
 import {getDocumentLocale} from "./utils.js";
 
@@ -34,10 +34,17 @@ export type CountAggregatorTranslationKey =
 	| "metrics.emptySeries"
 	| "metrics.emptyValue"
 	| "metrics.error"
+	| "metric.last"
+	| "metric.max"
+	| "metric.mean"
+	| "metric.min"
+	| "metric.section"
+	| "metric.sum"
 	| "metrics.loading"
 	| "presets.delete"
 	| "presets.empty"
 	| "presets.placeholder"
+	| "resolution.5min"
 	| "resolution.15min"
 	| "resolution.daily"
 	| "resolution.hourly"
@@ -109,9 +116,16 @@ const de: CountAggregatorTranslations = {
 	"metrics.emptyValue": "Kein Messwert verfügbar",
 	"metrics.error": "Messwerte konnten nicht geladen werden",
 	"metrics.loading": "Lade Messwerte …",
+	"metric.last": "Letzter Wert",
+	"metric.max": "Maximum",
+	"metric.mean": "Durchschnitt",
+	"metric.min": "Minimum",
+	"metric.section": "Werte",
+	"metric.sum": "Summe",
 	"presets.delete": "Voreinstellung löschen…",
 	"presets.empty": "Keine Voreinstellungen",
 	"presets.placeholder": "Voreinstellung…",
+	"resolution.5min": "5 Minuten",
 	"resolution.15min": "15 Minuten",
 	"resolution.daily": "Tag",
 	"resolution.hourly": "Stunde",
@@ -181,9 +195,16 @@ const en: CountAggregatorTranslations = {
 	"metrics.emptyValue": "No measurement available",
 	"metrics.error": "Measurements could not be loaded",
 	"metrics.loading": "Loading measurements …",
+	"metric.last": "Last value",
+	"metric.max": "Maximum",
+	"metric.mean": "Average",
+	"metric.min": "Minimum",
+	"metric.section": "Values",
+	"metric.sum": "Sum",
 	"presets.delete": "Delete preset…",
 	"presets.empty": "No presets",
 	"presets.placeholder": "Preset…",
+	"resolution.5min": "5 minutes",
 	"resolution.15min": "15 minutes",
 	"resolution.daily": "Day",
 	"resolution.hourly": "Hour",
@@ -241,11 +262,24 @@ export function getResolutionLabels(
 	translate: (key: CountAggregatorTranslationKey) => string,
 ): Record<Resolution, string> {
 	return {
+		"5min": translate("resolution.5min"),
 		"15min": translate("resolution.15min"),
 		hourly: translate("resolution.hourly"),
 		daily: translate("resolution.daily"),
 		weekly: translate("resolution.weekly"),
 		monthly: translate("resolution.monthly"),
 		yearly: translate("resolution.yearly"),
+	};
+}
+
+export function getMetricLabels(
+	translate: (key: CountAggregatorTranslationKey) => string,
+): Record<BucketMetric, string> {
+	return {
+		sum: translate("metric.sum"),
+		mean: translate("metric.mean"),
+		min: translate("metric.min"),
+		max: translate("metric.max"),
+		last: translate("metric.last"),
 	};
 }

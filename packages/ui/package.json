@@ -13,13 +13,13 @@
 		"@types/react-redux": "catalog:",
 		"breakpoint-sass": "^3.0.0",
 		"flatpickr": "^4.6.13",
-		"focus-trap-react": "^12.0.1",
+		"focus-trap-react": "^12.0.2",
 		"hint.css": "^3.0.0",
 		"jsdom": "catalog:",
 		"lodash": "catalog:",
 		"ol": "catalog:",
 		"proj4": "catalog:",
-		"react-aria": "^3.48.0",
+		"react-aria": "^3.49.0",
 		"react-intersection-observer": "^10.0.3",
 		"react-modal": "^3.16.3",
 		"react-paginate": "^8.3.0",
@@ -29,6 +29,8 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@tanstack/react-query": "^5.90.5",
+		"@testing-library/react": "^16.3.2",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
@@ -54,6 +56,18 @@
 			"types": "./dist/config/index.d.ts",
 			"default": "./dist/config/index.js"
 		},
+		"./async-status": {
+			"types": "./dist/lib/async-status/index.d.ts",
+			"default": "./dist/lib/async-status/index.js"
+		},
+		"./async-status/components": {
+			"types": "./dist/components/async-status/index.d.ts",
+			"default": "./dist/components/async-status/index.js"
+		},
+		"./react-query": {
+			"types": "./dist/react-query/index.d.ts",
+			"default": "./dist/react-query/index.js"
+		},
 		"./config/*": {
 			"types": "./dist/config/*.d.ts",
 			"default": "./dist/config/*.js"
@@ -77,8 +91,14 @@
 	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
+		"@tanstack/react-query": "^5.90.5",
 		"react": "catalog:",
 		"react-dom": "catalog:"
+	},
+	"peerDependenciesMeta": {
+		"@tanstack/react-query": {
+			"optional": true
+		}
 	},
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"

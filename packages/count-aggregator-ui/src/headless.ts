@@ -1,10 +1,13 @@
 export {
 	useStationTypes,
+	useStationTypesQuery,
 	useStations,
+	useStationsQuery,
 	useLastValues,
 	useAggregatedValues,
 	useTrafficEvents,
 	usePresets,
+	usePresetsQuery,
 } from "./api/hooks.js";
 
 export {

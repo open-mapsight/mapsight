@@ -1,4 +1,6 @@
 import {
+	type BucketMetric,
+	type StationType,
 	createCountAggregatorClient,
 	getStationLastValues,
 	getStationSums,
@@ -6,19 +8,34 @@ import {
 } from "@mapsight/count-aggregator-api";
 
 import {mapTimeSeriesToChartPoints} from "../../lib/time-series.js";
-import {resolveMetricWidgetConfig} from "../config/metric-widgets.js";
+import {
+	applyStationTypeDisplay,
+	resolveMetricWidgetConfig,
+} from "../config/metric-widgets.js";
 import type {
 	MetricPlaceholderData,
 	MetricSeriesPoint,
 	MetricWidgetConfig,
 } from "../types.js";
 import {toCountAggregatorStationId} from "./count-aggregator-station-id.js";
+import {getStationTypeDisplay} from "./station-type-display-cache.js";
 
 /** Anchor last-values windows at each station's last_data_at instead of now. */
 export const FEATURE_DETAILS_LAST_VALUES_ANCHOR = "lastDataAt" as const;
 
 function scaleValue(value: number, config: MetricWidgetConfig): number {
 	return config.valueScale ? value * config.valueScale : value;
+}
+
+function defaultChartMetric(stationType: StationType): BucketMetric {
+	switch (stationType) {
+		case "bicycleCount":
+		case "bicycleSensorTotal":
+		case "peopleCount":
+			return "sum";
+		default:
+			return "mean";
+	}
 }
 
 export async function fetchMetricTimeSeries(
@@ -31,7 +48,9 @@ export async function fetchMetricTimeSeries(
 	points: MetricSeriesPoint[];
 	lastUpdatedAt: Date | null;
 }> {
-	const config = resolveMetricWidgetConfig(stationType, stationLabel);
+	const baseConfig = resolveMetricWidgetConfig(stationType, stationLabel);
+	const display = await getStationTypeDisplay(apiBaseUrl, stationType);
+	const config = applyStationTypeDisplay(baseConfig, display);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
 	const response = await getStationLastValues(client, {
@@ -44,8 +63,10 @@ export async function fetchMetricTimeSeries(
 
 	return {
 		config,
-		points: mapTimeSeriesToChartPoints(response, (value) =>
-			scaleValue(value, config),
+		points: mapTimeSeriesToChartPoints(
+			response,
+			defaultChartMetric(stationType),
+			(value) => scaleValue(value, config),
 		) satisfies MetricSeriesPoint[],
 		lastUpdatedAt: response.lastDateTime
 			? parseLocalDateTime(response.lastDateTime)
@@ -64,7 +85,9 @@ export async function fetchMetricSumValue(
 	value: number | null;
 	lastUpdatedAt: Date | null;
 }> {
-	const config = resolveMetricWidgetConfig(stationType, stationLabel);
+	const baseConfig = resolveMetricWidgetConfig(stationType, stationLabel);
+	const display = await getStationTypeDisplay(apiBaseUrl, stationType);
+	const config = applyStationTypeDisplay(baseConfig, display);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
 	const response = await getStationSums(client, stationType, apiStationId);

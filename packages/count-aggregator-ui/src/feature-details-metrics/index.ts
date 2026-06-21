@@ -95,6 +95,7 @@ export function createSmartCityMetricsPartialContentHandler(
 
 export {
 	DEFAULT_METRIC_WIDGETS,
+	applyStationTypeDisplay,
 	resolveMetricWidgetConfig,
 } from "./config/metric-widgets.js";
 export type {

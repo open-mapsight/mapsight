@@ -6,8 +6,9 @@ import {
 	CountAggregatorShell,
 	CountAggregatorWizard,
 	createStationTypeAppsConfig,
-	useStationTypes,
+	useStationTypesQuery,
 } from "@mapsight/count-aggregator-ui";
+import {QueryStatusRegion} from "@mapsight/ui/react-query";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 import {COUNT_AGGREGATOR_MOCK_API_BASE} from "./constants.ts";
@@ -22,16 +23,16 @@ const queryClient = new QueryClient({
 });
 
 function CountAggregatorDemoBootstrap(): ReactElement {
-	const {stationTypes, isPending, isError} = useStationTypes(
+	const stationTypesQuery = useStationTypesQuery(
 		COUNT_AGGREGATOR_MOCK_API_BASE,
 	);
 
 	const config = useMemo(() => {
-		if (stationTypes === undefined) {
+		if (stationTypesQuery.data === undefined) {
 			return null;
 		}
 
-		const next = createStationTypeAppsConfig(stationTypes, {
+		const next = createStationTypeAppsConfig(stationTypesQuery.data, {
 			apiBaseUrl: COUNT_AGGREGATOR_MOCK_API_BASE,
 		});
 
@@ -50,29 +51,33 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 		}
 
 		return next;
-	}, [stationTypes]);
-
-	if (isError) {
-		return (
-			<p className="count-aggregator-demo__status">
-				Mock API unavailable. Run the showcase dev server so the
-				count-aggregator middleware is active.
-			</p>
-		);
-	}
-
-	if (isPending || stationTypes === undefined || config === null) {
-		return <p className="count-aggregator-demo__status">Loading demo…</p>;
-	}
+	}, [stationTypesQuery.data]);
 
 	return (
-		<CountAggregatorShell
-			config={config}
-			queryClient={queryClient}
-			className="count-aggregator-demo__surface"
+		<QueryStatusRegion
+			className="count-aggregator-demo__status-region"
+			errorMessage={
+				<p className="count-aggregator-demo__status">
+					Mock API unavailable. Run the showcase dev server so the
+					count-aggregator middleware is active.
+				</p>
+			}
+			loadingMessage={
+				<p className="count-aggregator-demo__status">Loading demo…</p>
+			}
+			query={stationTypesQuery}
+			variant="placeholder"
 		>
-			<CountAggregatorWizard appId="bicycleCount" />
-		</CountAggregatorShell>
+			{config ? (
+				<CountAggregatorShell
+					config={config}
+					queryClient={queryClient}
+					className="count-aggregator-demo__surface"
+				>
+					<CountAggregatorWizard appId="bicycleCount" />
+				</CountAggregatorShell>
+			) : null}
+		</QueryStatusRegion>
 	);
 }
 

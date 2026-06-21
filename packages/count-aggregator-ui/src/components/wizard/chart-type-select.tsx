@@ -19,11 +19,11 @@ export function ChartTypeSelect({
 	);
 
 	return (
-		<div className="msca:mt-4 msca:border-t msca:border-[var(--msca-color-border)] msca:pt-3 msca:text-right msca:text-sm">
+		<div className="msca:mt-4 msca:border-t msca:border-(--msca-color-border) msca:pt-3 msca:text-right msca:text-sm">
 			<label htmlFor="count-aggregator-chart-type">
 				{t("chartType.select")}{" "}
 				<select
-					className="msca:rounded msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:px-2 msca:py-1"
+					className="msca:rounded msca:border msca:border-(--msca-color-border) msca:bg-(--msca-color-surface) msca:px-2 msca:py-1"
 					id="count-aggregator-chart-type"
 					value={chartType}
 					onChange={handleChange}

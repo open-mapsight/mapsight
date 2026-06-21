@@ -1,5 +1,7 @@
 import {type ReactElement, memo} from "react";
 
+import {QueryStatusRegion} from "@mapsight/ui/react-query";
+
 import {useTrafficEvents} from "../../api/hooks.js";
 import {
 	useCountAggregatorConfig,
@@ -53,20 +55,19 @@ export const Events = memo(function Events({
 }): ReactElement {
 	const {links} = useCountAggregatorConfig();
 	const {locale, t} = useCountAggregatorI18n();
-	const {data, error, isLoading, isSuccess} = useTrafficEvents(
-		appId,
-		startDate,
-		endDate,
-	);
+	const query = useTrafficEvents(appId, startDate, endDate);
 
 	return (
-		<div className="msca:text-sm">
-			{error ? <p>{t("events.error")}</p> : null}
-			{isLoading ? <p>{t("events.loading")}</p> : null}
-			{isSuccess && (data?.manualEvents.length ?? 0) === 0 ? (
-				<p>{t("events.empty")}</p>
-			) : null}
-			{data?.manualEvents.map((event) => (
+		<QueryStatusRegion
+			className="msca:text-sm msca-count-aggregator-events"
+			emptyMessage={t("events.empty")}
+			errorMessage={t("events.error")}
+			isEmpty={(data) => (data?.manualEvents.length ?? 0) === 0}
+			loadingMessage={t("events.loading")}
+			query={query}
+			variant="inline"
+		>
+			{query.data?.manualEvents.map((event) => (
 				<EventEntry
 					key={event.id}
 					event={event}
@@ -75,6 +76,6 @@ export const Events = memo(function Events({
 					allDayLabel={t("events.allDay")}
 				/>
 			))}
-		</div>
+		</QueryStatusRegion>
 	);
 });

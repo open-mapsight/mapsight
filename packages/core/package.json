@@ -16,7 +16,7 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "catalog:",
-		"@redux-devtools/extension": "^3.3.0",
+		"@redux-devtools/extension": "^4.0.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/jsdom": "catalog:",
 		"@types/lodash": "catalog:",
@@ -98,7 +98,7 @@
 	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
-		"@redux-devtools/extension": "^3.3.0",
+		"@redux-devtools/extension": "^4.0.0",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
 		"proj4": "catalog:"
