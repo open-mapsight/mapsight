@@ -1,44 +1,66 @@
+import type {ComponentType, HTMLAttributes, ReactNode} from "react";
+import {useCallback} from "react";
+import {useDispatch} from "react-redux";
+
 import {
 	deselectAll,
 	selectExclusively,
 } from "@mapsight/core/lib/feature-selections/actions";
-import {useCallback} from "react";
-import {useDispatch} from "react-redux";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_HIGHLIGHT} from "../../config/feature/selections";
-
 import getFeatureProperty from "../../helpers/get-feature-property";
+import type {MapsightUiFeature, MapsightUiFeatureId} from "../../types";
+import FeatureSelectButtonUntyped from "../feature-select-button";
+import type {
+	FeatureListItemInteractionProps,
+	ListSelectOnClick,
+	SelectFeatureHandler,
+} from "./types";
 
-import FeatureSelectButton from "../feature-select-button";
+type FeatureSelectButtonProps = {
+	tabIndex?: number;
+	className?: string;
+	featureId: MapsightUiFeatureId;
+	isSelected?: boolean;
+	selectOnClick?: ListSelectOnClick;
+	deselectOnClick?: boolean;
+	onSelect?: SelectFeatureHandler;
+	onDeselect?: SelectFeatureHandler;
+	permanentLink?: string;
+	children?: ReactNode;
+} & Omit<HTMLAttributes<HTMLElement>, "onSelect">;
 
-/**
- * @param {React.PropsWithChildren<object>} props props, see below
- * @param {import('../../types').MapsightUiFeature} props.feature feature
- * @param {boolean} props.isSelected isSelected
- * @param {boolean} props.isHighlighted isHighlighted
- * @param {boolean} props.highlightOnMouse highlightOnMouse
- * @param {boolean} props.selectOnClick selectOnClick
- * @param {boolean} props.deselectOnClick deselectOnClick
- * @param {(featureId: import('../../types').MapsightUiFeatureId, options?: {keyboard: boolean}) => void} props.selectFeature selectFeature
- * @param {(featureId: import('../../types').MapsightUiFeatureId, options?: {keyboard: boolean}) => void} props.deselectFeatures deselectFeatures
- * @param {React.HTMLProps<HTMLButtonElement> | React.HTMLProps<HTMLAnchorElement>} [props.attributes] attributes
- * @returns {React.ReactElement} element
- */
+const FeatureSelectButton =
+	FeatureSelectButtonUntyped as ComponentType<FeatureSelectButtonProps>;
+
+export type FeatureListItemHeadProps = FeatureListItemInteractionProps & {
+	children?: ReactNode;
+	feature: MapsightUiFeature;
+	isSelected?: boolean;
+	isHighlighted?: boolean;
+	highlightOnMouse?: boolean;
+	selectOnClick?: ListSelectOnClick;
+	deselectOnClick?: boolean;
+	className?: string;
+} & HTMLAttributes<HTMLElement>;
+
 function FeatureListItemHead({
 	children,
 	feature,
-	isSelected,
-	isHighlighted,
-	highlightOnMouse,
-	selectOnClick,
-	deselectOnClick,
+	isSelected = false,
+	isHighlighted = false,
+	highlightOnMouse = false,
+	selectOnClick = false,
+	deselectOnClick = false,
 	selectFeature,
 	deselectFeatures,
 	className = "",
 	...attributes
-}) {
-	const permanentLink = getFeatureProperty(feature, "permanentLink");
+}: FeatureListItemHeadProps) {
+	const permanentLink = getFeatureProperty(feature, "permanentLink") as
+		| string
+		| undefined;
 
 	const dispatch = useDispatch();
 	const onFeatureHighlight = useCallback(

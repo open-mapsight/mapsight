@@ -32,30 +32,31 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 		[feature.id, selectSelectionFeatures],
 	);
 	const isPreselected = useMemo(
-		() => getFilteredFeatures(preselectSelection)?.includes(feature.id),
+		() => !!getFilteredFeatures(preselectSelection)?.includes(feature.id),
 		[feature.id, preselectSelection],
 	);
 	const isHighlighted = useMemo(
-		() => getFilteredFeatures(highlightSelection)?.includes(feature.id),
+		() => !!getFilteredFeatures(highlightSelection)?.includes(feature.id),
 		[feature.id, highlightSelection],
 	);
 
 	return useMemo(
 		() => ({
 			selectOnClick: selectOnClick,
-			deselectOnClick: deselectOnClick,
-			highlightOnMouse: highlightOnMouse,
+			deselectOnClick: !!deselectOnClick,
+			highlightOnMouse: !!highlightOnMouse,
 			view: view,
 			isMobile: isMobile,
-			hidden: showSelectedOnly && hasSelection && !isSelected,
+			hidden: !!(showSelectedOnly && hasSelection && !isSelected),
 			hasSelection: hasSelection,
 			isSelected: isSelected,
 			isHighlighted: isHighlighted,
 			isPreselected: isPreselected,
-			showDetails: isSelected && (isMobile || detailsInList),
-			scrollOnSelection:
+			showDetails: !!(isSelected && (isMobile || detailsInList)),
+			scrollOnSelection: !!(
 				selectionBehavior?.[view] === "expandInList" &&
-				!showSelectedOnly,
+				!showSelectedOnly
+			),
 		}),
 		[
 			deselectOnClick,

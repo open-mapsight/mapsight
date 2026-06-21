@@ -1,12 +1,23 @@
+import type {RefObject} from "react";
 import {useEffect} from "react";
 
 import usePrevious from "../../../hooks/usePrevious";
 
+type FeatureListItemScrollAndFocusOptions = {
+	scrollOnSelection?: boolean;
+	scrollOnPreselection?: boolean;
+	enableKeyboardControl?: boolean;
+};
+
 export default function useFeatureListItemScrollAndFocus(
-	ref,
-	showDetails,
-	isPreselectedOnly,
-	{scrollOnSelection, scrollOnPreselection, enableKeyboardControl},
+	ref: RefObject<HTMLElement | null>,
+	showDetails: boolean,
+	isPreselectedOnly: boolean,
+	{
+		scrollOnSelection,
+		scrollOnPreselection,
+		enableKeyboardControl,
+	}: FeatureListItemScrollAndFocusOptions,
 ) {
 	const lastShowDetails = usePrevious(showDetails);
 	const lastIsPreselectedOnly = usePrevious(isPreselectedOnly);

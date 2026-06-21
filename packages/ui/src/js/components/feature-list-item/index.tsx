@@ -1,19 +1,30 @@
+import type {ComponentType, ElementType, ReactNode} from "react";
 import {Fragment, useRef} from "react";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
+import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
-
-import FeatureListItemHead from "./head";
+import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
-
 import FeatureListIcon from "./icon";
+import type {FeatureListItemInteractionProps} from "./types";
 
-function getMainContentForFeature(feature) {
+function getMainContentForFeature(feature: MapsightUiFeature): ReactNode {
 	const listName = getFeatureProperty(feature, "listName");
 	const name = getFeatureProperty(feature, "name");
-	return listName || name;
+	return (listName || name) as ReactNode;
 }
+
+export type FeatureListItemProps = FeatureListItemInteractionProps & {
+	as?: ElementType;
+	partAs?: ElementType;
+	headAs?: ComponentType<FeatureListItemHeadProps> | null;
+	contentAs?: ElementType | null;
+	showFeatureListInfo?: boolean;
+	feature: MapsightUiFeature;
+	enableKeyboardControl?: boolean;
+};
 
 function FeatureListItem({
 	as: T = "div",
@@ -25,7 +36,7 @@ function FeatureListItem({
 	selectFeature,
 	deselectFeatures,
 	enableKeyboardControl,
-}) {
+}: FeatureListItemProps) {
 	const {
 		selectOnClick,
 		deselectOnClick,
@@ -36,11 +47,9 @@ function FeatureListItem({
 		isHighlighted,
 		showDetails,
 		scrollOnSelection,
-		scrollOnPreselection,
 	} = useFeatureListItemState(feature);
 
-	/** @type {React.MutableRefObject<HTMLElement | null>} */
-	const ref = useRef(null);
+	const ref = useRef<HTMLElement | null>(null);
 
 	useFeatureListItemScrollAndFocus(
 		ref,
@@ -48,7 +57,7 @@ function FeatureListItem({
 		isPreselected && !isSelected,
 		{
 			scrollOnSelection: scrollOnSelection,
-			scrollOnPreselection: scrollOnPreselection,
+			scrollOnPreselection: undefined,
 			enableKeyboardControl: enableKeyboardControl,
 		},
 	);
@@ -80,7 +89,7 @@ function FeatureListItem({
 				: ""),
 	};
 
-	let info = null;
+	let info: ReactNode = null;
 	if (showFeatureListInfo) {
 		info = (
 			<PartT
@@ -94,22 +103,25 @@ function FeatureListItem({
 
 	const showInfoInHead = selectOnClick === true;
 
-	let head;
-	let headHtml;
+	let head: ReactNode | undefined;
+	let headHtml: string | undefined;
 	if (HeadT) {
 		// NOTE(PG): Legacy code to support list HTML from the source. Should
 		//            probably be deprecated and replaced by a custom component
-		headHtml = getFeatureProperty(feature, "overrideListHtml");
+		headHtml = getFeatureProperty(feature, "overrideListHtml") as
+			| string
+			| undefined;
 
 		if (!headHtml) {
 			head = (
 				<Fragment>
 					<FeatureListIcon
 						as="span"
-						mapsightIconId={getFeatureProperty(
-							feature,
-							"mapsightIconId",
-						)}
+						mapsightIconId={
+							getFeatureProperty(feature, "mapsightIconId") as
+								| string
+								| undefined
+						}
 					/>
 					<PartT
 						className={`ms3-list__main${
@@ -118,7 +130,9 @@ function FeatureListItem({
 								: ""
 						}`}
 					>
-						{getMainContentForFeature(feature)}
+						<PartT className="ms3-list__main-title">
+							{getMainContentForFeature(feature)}
+						</PartT>
 					</PartT>
 					{showInfoInHead && info}
 				</Fragment>
@@ -126,7 +140,7 @@ function FeatureListItem({
 		}
 	}
 
-	let details = null;
+	let details: ReactNode = null;
 	if (showDetails) {
 		details = (
 			<PartT className="ms3-list__details">
