@@ -1,0 +1,56 @@
+name: Dependabot changeset
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: dependabot-changeset-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  add-changeset:
+    name: Add Dependabot changeset
+    if: |
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      contains(github.event.pull_request.labels.*.name, 'deps:npm')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Point main at the pull request base
+        run: git branch -f main "${{ github.event.pull_request.base.sha }}"
+        shell: bash
+
+      - uses: ./.github/actions/setup/
+
+      - name: Write Dependabot changeset
+        run: node scripts/write-dependabot-changeset.mts
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Commit and push changeset
+        run: |
+          if git diff --quiet -- .changeset; then
+            echo "No changeset updates needed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .changeset
+          git commit -m "chore: add changeset for dependabot update"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+        shell: bash
