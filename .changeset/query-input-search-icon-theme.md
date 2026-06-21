@@ -2,4 +2,4 @@
 "@mapsight/ui": minor
 ---
 
-Add optional search icon styling for `QueryInputWithLabel` via the `$ms3-option-queryInputWithLabelSearchIcon` SCSS variable and the opt-in `themes/query-input-search-icon` partial. Base block styles are unchanged; no JS API.
+Add optional search icon styling for `QueryInputWithLabel` via `$ms3-option-queryInputWithLabelSearchIcon` (default `false`). Styles live in the block partial and are omitted at compile time when the option is off.
