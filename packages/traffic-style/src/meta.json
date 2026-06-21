@@ -409,7 +409,7 @@
 				"de": "Radverkehr",
 				"en": "Bicycle traffic"
 			},
-			"aliases": ["bicycleCount"],
+			"aliases": ["bicycleSensorTotal"],
 			"groups": ["smart-city"],
 			"render": "composable"
 		},

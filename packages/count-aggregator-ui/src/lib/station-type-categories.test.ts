@@ -42,7 +42,7 @@ const airQualityEntry = {
 } as const satisfies StationTypeSummary;
 
 const mobilityEntry = {
-	type: "bicycleCount",
+	type: "bicycleSensorTotal",
 	label: "Radzählstellen",
 	station_count: 9,
 	category: {id: "mobility", label: "Mobilität"},

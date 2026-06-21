@@ -35,11 +35,11 @@ const baseUrl = "https://<tenant>.example.tld/msp/public/count-aggregator";
 const client = createCountAggregatorClient(baseUrl);
 
 // List stations for a type
-const stationList = await listStations(client, "bicycleCount");
+const stationList = await listStations(client, "bicycleSensorTotal");
 
 // Aggregated values for one or more stations
 const valuesMap = await getValues(client, {
-	type: "bicycleCount",
+	type: "bicycleSensorTotal",
 	from: "2025-06-01",
 	to: "2025-06-07",
 	resolution: "daily",
@@ -81,7 +81,7 @@ Advanced endpoint alias example:
 ```ts
 const valuesMap = await client["count-aggregator.public.type.values"]({
 	params: {
-		type: "bicycleCount",
+		type: "bicycleSensorTotal",
 		from: "2025-06-01",
 		to: "2025-06-07",
 		resolution: "daily",
@@ -148,7 +148,7 @@ The fetch client is for **JSON** responses. For CSV downloads, build URLs with t
 import {buildCsvExportUrl} from "@mapsight/count-aggregator-api";
 
 const href = buildCsvExportUrl(baseUrl, {
-	type: "bicycleCount",
+	type: "bicycleSensorTotal",
 	from: "2025-06-01",
 	to: "2025-06-07",
 	resolution: "daily",

@@ -57,7 +57,9 @@ import {
 
 // Station types normally come from GET /station-types on your API.
 // Below: static sample for bootstrap before the network call returns.
-const stationTypes = [{type: "bicycleCount", label: "Radzählstellen"}] as const;
+const stationTypes = [
+	{type: "bicycleSensorTotal", label: "Radzählstellen"},
+] as const;
 
 const config = createStationTypeAppsConfig(stationTypes, {
 	apiBaseUrl: "https://<tenant>.example.tld/msp/public/count-aggregator",
@@ -65,8 +67,8 @@ const config = createStationTypeAppsConfig(stationTypes, {
 });
 
 // Optional: override per-app UI (stepped wizard, chart defaults, features)
-config.apps.bicycleCount = {
-	...config.apps.bicycleCount,
+config.apps.bicycleSensorTotal = {
+	...config.apps.bicycleSensorTotal,
 	uiVariant: "stepped",
 	features: {
 		resolutionSelect: true,
@@ -80,7 +82,7 @@ config.apps.bicycleCount = {
 export function CountAggregatorEmbed() {
 	return (
 		<CountAggregatorShell config={config}>
-			<CountAggregatorWizard appId="bicycleCount" />
+			<CountAggregatorWizard appId="bicycleSensorTotal" />
 		</CountAggregatorShell>
 	);
 }
@@ -117,7 +119,7 @@ return (
 
 Key config fields on each app (`CountAggregatorAppConfig`):
 
-- `stationType` — API path segment (e.g. `bicycleCount`)
+- `stationType` — API path segment (e.g. `bicycleSensorTotal`)
 - `uiVariant` — `"stepped"` (selection → result) or `"single-page"`
 - `defaultResolution`, `resolutions` — `hourly` … `yearly`
 - `features` — toggles for resolution select, chart type, CSV export, presets, events
@@ -156,7 +158,7 @@ Mark the paste-ready region in your HTML entry with `<!-- mapsight:snippet:start
 
 ## Run the demo locally
 
-The [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) app includes a stepped `bicycleCount` wizard backed by a **mock API** — no live tenant or `.env` secrets.
+The [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) app includes a stepped `bicycleSensorTotal` wizard backed by a **mock API** — no live tenant or `.env` secrets.
 
 ```bash
 # from repo root
@@ -208,7 +210,7 @@ const config = createStationTypeAppsConfig(stationTypes, {apiBaseUrl});
 
 return (
 	<CountAggregatorShell config={config}>
-		<CountAggregatorWizard appId="bicycleCount" />
+		<CountAggregatorWizard appId="bicycleSensorTotal" />
 	</CountAggregatorShell>
 );
 ```

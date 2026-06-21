@@ -8,7 +8,7 @@ import {
 	parseTimeSeriesMap,
 } from "./lib/responses.js";
 
-const stationType = "bicycleCount" as const;
+const stationType = "bicycleSensorTotal" as const;
 
 function readLiveSmokeEnv(): {baseUrl: string} | null {
 	if (process.env.SMOKE_COUNT_AGGREGATOR_API !== "1") {
@@ -40,7 +40,7 @@ describe.skipIf(liveSmokeEnv === null)(
 			expect(result.data.length).toBeGreaterThan(0);
 		});
 
-		it("runs stations → values → last-values → sums for bicycleCount", async () => {
+		it("runs stations → values → last-values → sums for bicycleSensorTotal", async () => {
 			const {baseUrl} = liveSmokeEnv!;
 			const client = createCountAggregatorClient(baseUrl);
 			const {data: stations} = schemas.StationListResponse.parse(
@@ -51,7 +51,9 @@ describe.skipIf(liveSmokeEnv === null)(
 			const stationId = stations[0]?.id;
 			expect(stationId).toBeTypeOf("number");
 			if (stationId === undefined) {
-				throw new Error("Expected at least one bicycleCount station.");
+				throw new Error(
+					"Expected at least one bicycleSensorTotal station.",
+				);
 			}
 
 			const values = parseTimeSeriesMap(
@@ -104,7 +106,9 @@ describe.skipIf(liveSmokeEnv === null)(
 			);
 			const stationId = stations[0]?.id;
 			if (stationId === undefined) {
-				throw new Error("Expected at least one bicycleCount station.");
+				throw new Error(
+					"Expected at least one bicycleSensorTotal station.",
+				);
 			}
 
 			const response = await fetch(

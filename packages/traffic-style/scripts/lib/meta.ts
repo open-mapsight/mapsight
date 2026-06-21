@@ -9,7 +9,7 @@ export const IconVariantSchema = z.stringFormat(
 export type IconId = z.infer<typeof IconIdSchema>;
 export const IconIdSchema = z.stringFormat("mapsight-icon-id", /[0-9a-z-]+/);
 
-/** Platform ids and legacy names may use camelCase (e.g. bicycleCount). */
+/** Platform ids and legacy names may use camelCase (e.g. bicycleSensorTotal). */
 export type IconAlias = z.infer<typeof IconAliasSchema>;
 export const IconAliasSchema = z.stringFormat(
 	"mapsight-icon-alias",

@@ -46,7 +46,7 @@ describe("typed endpoint helpers", () => {
 			return {
 				data: [
 					{
-						type: "bicycleCount",
+						type: "bicycleSensorTotal",
 						label: "Bicycle count",
 						station_count: 1,
 						category: {id: "mobility", label: "Mobility"},
@@ -70,19 +70,19 @@ describe("typed endpoint helpers", () => {
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
 		const result = await listStationTypes(client);
 
-		expect(result.data[0]?.type).toBe("bicycleCount");
+		expect(result.data[0]?.type).toBe("bicycleSensorTotal");
 	});
 
 	it("lists stations for a station type", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/stations?includeEmpty=true`,
+				`${baseUrl}/bicycleSensorTotal/stations?includeEmpty=true`,
 			);
 			return stationListFixture;
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
-		const result = await listStations(client, "bicycleCount", {
+		const result = await listStations(client, "bicycleSensorTotal", {
 			includeEmpty: true,
 		});
 
@@ -132,14 +132,14 @@ describe("typed endpoint helpers", () => {
 	it("gets last values", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/last-values/hourly?stationIds=150&limit=3&startDate=2025-06-01&anchor=lastDataAt`,
+				`${baseUrl}/bicycleSensorTotal/last-values/hourly?stationIds=150&limit=3&startDate=2025-06-01&anchor=lastDataAt`,
 			);
 			return lastValuesMapFixture;
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
 		const result = await getLastValues(client, {
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			resolution: "hourly",
 			stationIds: [150],
 			limit: 3,
@@ -153,14 +153,14 @@ describe("typed endpoint helpers", () => {
 	it("gets single-station last values", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/150/last-values/daily?limit=3&anchor=lastDataAt`,
+				`${baseUrl}/bicycleSensorTotal/150/last-values/daily?limit=3&anchor=lastDataAt`,
 			);
 			return lastValuesMapFixture["150"];
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
 		const result = await getStationLastValues(client, {
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			stationId: 150,
 			resolution: "daily",
 			limit: 3,
@@ -172,12 +172,12 @@ describe("typed endpoint helpers", () => {
 
 	it("gets station sums", async () => {
 		const fetchFn = createMockFetch((url) => {
-			expect(url).toBe(`${baseUrl}/bicycleCount/150/sums`);
+			expect(url).toBe(`${baseUrl}/bicycleSensorTotal/150/sums`);
 			return stationSumsFixture;
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
-		const result = await getStationSums(client, "bicycleCount", 150);
+		const result = await getStationSums(client, "bicycleSensorTotal", 150);
 
 		expect(result.stationId).toBe(150);
 	});

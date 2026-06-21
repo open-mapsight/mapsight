@@ -1,10 +1,11 @@
-import type {StationType} from "@mapsight/count-aggregator-api";
-import type {StationTypeDisplay} from "@mapsight/count-aggregator-api";
+import type {
+	StationType,
+	StationTypeDisplay,
+} from "@mapsight/count-aggregator-api";
 
 import type {MetricWidgetConfig} from "../types.js";
 
 const COUNT_STATION_TYPES = new Set<StationType>([
-	"bicycleCount",
 	"bicycleSensorTotal",
 	"peopleCount",
 ]);
@@ -49,7 +50,6 @@ const DEFAULT_WATER_TIME_SERIES: MetricWidgetConfig = {
 export const DEFAULT_METRIC_WIDGETS: Partial<
 	Record<StationType, MetricWidgetConfig>
 > = {
-	bicycleCount: DEFAULT_TIME_SERIES,
 	bicycleSensorTotal: DEFAULT_TIME_SERIES,
 	peopleCount: DEFAULT_TIME_SERIES,
 	waterLevelSurface: DEFAULT_WATER_TIME_SERIES,

@@ -91,7 +91,7 @@ function SelectionPanel({
 		<>
 			<Section
 				title={t(
-					stationType === "bicycleCount"
+					stationType === "bicycleSensorTotal"
 						? "station.sectionBicycle"
 						: "station.section",
 				)}
@@ -105,7 +105,7 @@ function SelectionPanel({
 						isMulti={true}
 						showDescriptionInSelection={false}
 						placeholder={t(
-							stationType === "bicycleCount"
+							stationType === "bicycleSensorTotal"
 								? "station.placeholderBicycle"
 								: "station.placeholder",
 						)}

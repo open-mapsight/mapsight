@@ -31,7 +31,7 @@ test.describe("count-aggregator showcase demo", () => {
 		).toBeVisible();
 		await expect(page.getByRole("link", {name: /csv/i})).toHaveAttribute(
 			"href",
-			/\/mock\/msp\/public\/count-aggregator\/bicycleCount\/values\/.+format=csv/,
+			/\/mock\/msp\/public\/count-aggregator\/bicycleSensorTotal\/values\/.+format=csv/,
 		);
 	});
 });
