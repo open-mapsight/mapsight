@@ -25,6 +25,16 @@ const config: CountAggregatorConfig = {
 			apiBaseUrl: "/mock",
 			stationType: "bicycleCount",
 			defaultMetric: "sum",
+			displayPrecision: 0,
+			valueUnit: null,
+		},
+		waterLevelSurface: {
+			id: "waterLevelSurface",
+			apiBaseUrl: "/mock",
+			stationType: "waterLevelSurface",
+			defaultMetric: "mean",
+			displayPrecision: 2,
+			valueUnit: "mNN",
 		},
 	},
 	links: {
@@ -115,6 +125,7 @@ describe("TimeSeriesChart", () => {
 		render(
 			<CountAggregatorProvider config={config}>
 				{createElement(TimeSeriesChart, {
+					appId: "bicycleCount",
 					type: "column",
 					selectedStationIds: [1],
 					selectedMetrics: ["sum"],

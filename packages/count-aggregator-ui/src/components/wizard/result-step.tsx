@@ -168,6 +168,7 @@ export function ResultStep({
 						) : null}
 
 						<TimeSeriesChart
+							appId={appId}
 							type={chartType}
 							selectedStationIds={selectedStationIds}
 							selectedMetrics={metrics}

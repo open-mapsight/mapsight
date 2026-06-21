@@ -15,13 +15,21 @@ import {
 	YAxis,
 } from "recharts";
 
-import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import {
 	chartSeriesKey,
 	normalizeSelectedMetrics,
 } from "../../lib/bucket-metrics.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
+import {
+	formatMetricAxisValue,
+	formatMetricValue,
+	metricValueFormatFromAppConfig,
+} from "../../lib/format-metric-value.js";
 import {getMetricLabels} from "../../lib/i18n.js";
 import {formatStationLabel} from "../../lib/stations.js";
 import {getDocumentLocale, isDefined} from "../../lib/utils.js";
@@ -140,6 +148,7 @@ function buildSeriesLabel(
 
 export function TimeSeriesChart({
 	type,
+	appId,
 	selectedStationIds,
 	selectedMetrics,
 	chartSeries,
@@ -150,27 +159,28 @@ export function TimeSeriesChart({
 	className = "msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px]",
 	emptyMessage = "No measurements are available for the current selection.",
 }: TimeSeriesChartProps): ReactElement {
+	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
 	const metricLabels = getMetricLabels(t);
+	const valueFormat = metricValueFormatFromAppConfig(appConfig);
+	const locale = getDocumentLocale();
 	const showMetricInLabel =
 		(selectedMetrics?.length ?? chartSeries?.length ?? 0) > 1 ||
 		new Set(chartSeries?.map((entry) => entry.stationId)).size !==
 			(chartSeries?.length ?? 0);
 
 	const tooltipFormatter = useMemo(
-		() =>
-			new Intl.DateTimeFormat(
-				getDocumentLocale(),
-				getTooltipDateFormat(resolution),
-			),
-		[resolution],
+		() => new Intl.DateTimeFormat(locale, getTooltipDateFormat(resolution)),
+		[locale, resolution],
 	);
-	const numberFormatter = useMemo(
-		() =>
-			new Intl.NumberFormat(getDocumentLocale(), {
-				maximumFractionDigits: 2,
-			}),
-		[],
+	const formatAxisValue = useMemo(
+		() => (value: number) =>
+			formatMetricAxisValue(value, valueFormat, locale),
+		[locale, valueFormat],
+	);
+	const formatTooltipValue = useMemo(
+		() => (value: number) => formatMetricValue(value, valueFormat, locale),
+		[locale, valueFormat],
 	);
 
 	const {chartConfig, chartData} = useMemo(() => {
@@ -316,10 +326,21 @@ export function TimeSeriesChart({
 						<YAxis
 							tickLine={false}
 							axisLine={false}
-							allowDecimals={true}
+							allowDecimals={valueFormat.displayPrecision > 0}
 							width={56}
-							tickFormatter={(value: number) =>
-								numberFormatter.format(value)
+							tickFormatter={formatAxisValue}
+							label={
+								valueFormat.unit
+									? {
+											value: valueFormat.unit,
+											angle: -90,
+											position: "insideLeft",
+											style: {
+												fill: "var(--msca-color-muted-foreground)",
+												fontSize: 12,
+											},
+										}
+									: undefined
 							}
 						/>
 						<Tooltip
@@ -328,9 +349,7 @@ export function TimeSeriesChart({
 									labelFormatter={(label) =>
 										tooltipFormatter.format(new Date(label))
 									}
-									valueFormatter={(value) =>
-										numberFormatter.format(value)
-									}
+									valueFormatter={formatTooltipValue}
 								/>
 							}
 						/>

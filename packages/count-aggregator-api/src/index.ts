@@ -28,6 +28,10 @@ export {
 	parseLocalDateTime,
 } from "./lib/datetime.js";
 export {
+	resolveStationTypeDisplay,
+	type StationTypeDisplay,
+} from "./lib/station-type-display.js";
+export {
 	indexTimeSeriesByStationId,
 	parseTimeSeriesMap,
 } from "./lib/responses.js";

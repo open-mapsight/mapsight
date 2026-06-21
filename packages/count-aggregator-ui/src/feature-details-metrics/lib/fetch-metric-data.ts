@@ -8,13 +8,17 @@ import {
 } from "@mapsight/count-aggregator-api";
 
 import {mapTimeSeriesToChartPoints} from "../../lib/time-series.js";
-import {resolveMetricWidgetConfig} from "../config/metric-widgets.js";
+import {
+	applyStationTypeDisplay,
+	resolveMetricWidgetConfig,
+} from "../config/metric-widgets.js";
 import type {
 	MetricPlaceholderData,
 	MetricSeriesPoint,
 	MetricWidgetConfig,
 } from "../types.js";
 import {toCountAggregatorStationId} from "./count-aggregator-station-id.js";
+import {getStationTypeDisplay} from "./station-type-display-cache.js";
 
 /** Anchor last-values windows at each station's last_data_at instead of now. */
 export const FEATURE_DETAILS_LAST_VALUES_ANCHOR = "lastDataAt" as const;
@@ -44,7 +48,9 @@ export async function fetchMetricTimeSeries(
 	points: MetricSeriesPoint[];
 	lastUpdatedAt: Date | null;
 }> {
-	const config = resolveMetricWidgetConfig(stationType, stationLabel);
+	const baseConfig = resolveMetricWidgetConfig(stationType, stationLabel);
+	const display = await getStationTypeDisplay(apiBaseUrl, stationType);
+	const config = applyStationTypeDisplay(baseConfig, display);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
 	const response = await getStationLastValues(client, {
@@ -79,7 +85,9 @@ export async function fetchMetricSumValue(
 	value: number | null;
 	lastUpdatedAt: Date | null;
 }> {
-	const config = resolveMetricWidgetConfig(stationType, stationLabel);
+	const baseConfig = resolveMetricWidgetConfig(stationType, stationLabel);
+	const display = await getStationTypeDisplay(apiBaseUrl, stationType);
+	const config = applyStationTypeDisplay(baseConfig, display);
 	const client = createCountAggregatorClient(apiBaseUrl);
 	const apiStationId = toCountAggregatorStationId(stationId);
 	const response = await getStationSums(client, stationType, apiStationId);

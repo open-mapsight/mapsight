@@ -125,6 +125,9 @@ export interface CountAggregatorAppConfig {
 	defaultMetric?: BucketMetric;
 	availableMetrics?: readonly BucketMetric[];
 	defaultChartMetrics?: readonly BucketMetric[];
+	primaryMetricLabel?: string;
+	valueUnit?: string | null;
+	displayPrecision?: number;
 	defaultResolution?: Resolution;
 	defaultChartType?: ChartType;
 	resolutions?: readonly Resolution[];
@@ -142,6 +145,7 @@ export interface CountAggregatorConfig {
 
 export interface TimeSeriesChartProps {
 	type: ChartType;
+	appId: string;
 	selectedStationIds: readonly number[];
 	selectedMetrics?: readonly BucketMetric[];
 	chartSeries: ChartSeries[] | undefined;

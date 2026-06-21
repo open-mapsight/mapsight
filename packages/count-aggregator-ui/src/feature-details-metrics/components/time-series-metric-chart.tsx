@@ -16,7 +16,10 @@ import {
 	resolveCountAggregatorLocale,
 } from "../../lib/i18n.js";
 import {getDocumentLocale} from "../../lib/utils.js";
-import {formatMetricAxisTime} from "../lib/format-metric-values.js";
+import {
+	formatMetricAxisTime,
+	formatMetricAxisValueFromConfig,
+} from "../lib/format-metric-values.js";
 import type {MetricSeriesPoint, MetricWidgetConfig} from "../types.js";
 
 const METRIC_CHART_HEIGHT = 140;
@@ -90,11 +93,22 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						tick={chartTickStyle}
 						tickLine={false}
 						axisLine={false}
-						width={34}
+						width={config.unit ? 42 : 34}
 						tickFormatter={(value: number) =>
-							new Intl.NumberFormat(getDocumentLocale("de-DE"), {
-								maximumFractionDigits: config.decimals ?? 1,
-							}).format(value)
+							formatMetricAxisValueFromConfig(value, config)
+						}
+						label={
+							config.unit
+								? {
+										value: config.unit,
+										angle: -90,
+										position: "insideLeft",
+										style: {
+											fill: CHART_TICK_COLOR,
+											fontSize: CHART_TICK_FONT_SIZE,
+										},
+									}
+								: undefined
 						}
 					/>
 					{config.chartType === "line" ? (
