@@ -35,7 +35,7 @@ export function resolveAsyncStatusDisplay(
 		phase = "error";
 	} else if (showInitialLoading) {
 		phase = "loading";
-	} else if (isLoading && !showInitialLoading) {
+	} else if (isLoading) {
 		phase = "hidden";
 	} else if (isRefetching && showRefreshIndicator) {
 		phase = "refreshing";
