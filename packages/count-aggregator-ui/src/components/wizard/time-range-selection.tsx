@@ -37,7 +37,7 @@ function DateInput({
 			value,
 			name: "date",
 			className:
-				"msca:border msca:border-[var(--msca-color-border)] msca:rounded msca:p-1 msca:w-28 msca:text-left msca:bg-[var(--msca-color-surface)]",
+				"msca:border msca:border-(--msca-color-border) msca:rounded msca:p-1 msca:w-28 msca:text-left msca:bg-(--msca-color-surface)",
 			options: {
 				appendTo: portalTarget,
 				minDate,
@@ -182,7 +182,7 @@ export const CalendarLinks = memo(function CalendarLinks({
 }): ReactElement {
 	const {t} = useCountAggregatorI18n();
 	const linkClassName =
-		"msca:rounded msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:px-3 msca:py-1";
+		"msca:rounded msca:border msca:border-(--msca-color-border) msca:bg-(--msca-color-surface) msca:px-3 msca:py-1";
 
 	return (
 		<div className="msca:mt-5 msca:flex msca:select-none msca:flex-row msca:gap-5 msca:text-sm">

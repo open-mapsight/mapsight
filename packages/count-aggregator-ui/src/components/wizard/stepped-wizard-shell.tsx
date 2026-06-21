@@ -25,10 +25,10 @@ function WizardStep({
 	const className = cn(
 		"msca:flex msca:w-full msca:items-center msca:px-4 msca:py-2.5 msca:text-sm",
 		isActive
-			? "msca:bg-[var(--msca-color-surface)] msca:font-bold msca:text-gray-900"
+			? "msca:bg-(--msca-color-surface) msca:font-bold msca:text-gray-900"
 			: "msca:bg-gray-100 msca:text-gray-600",
 		isClickable &&
-			"msca:cursor-pointer msca:hover:text-[var(--msca-color-primary)]",
+			"msca:cursor-pointer msca:hover:text-(--msca-color-primary)",
 		isActive && stepChevronClass,
 	);
 
@@ -62,8 +62,8 @@ export function SteppedWizardShell({
 	}, [onStepChange, step]);
 
 	return (
-		<div className="msca:bg-[var(--msca-color-surface)]">
-			<ol className="msca:flex msca:w-full msca:list-none msca:border-b msca:border-[var(--msca-color-border)]">
+		<div className="msca:bg-(--msca-color-surface)">
+			<ol className="msca:flex msca:w-full msca:list-none msca:border-b msca:border-(--msca-color-border)">
 				<li className="msca:flex msca:min-w-0 msca:flex-1">
 					<WizardStep
 						label={t("step.selection")}

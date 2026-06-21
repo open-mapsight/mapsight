@@ -139,7 +139,7 @@ export function ResultStep({
 		<div>
 			<Section title={t("result.chartSection")}>
 				{!isValid ? (
-					<p className="msca:bg-[var(--msca-color-danger-surface)] msca:p-2">
+					<p className="msca:bg-(--msca-color-danger-surface) msca:p-2">
 						{errorMessages.map((errorMessage) => (
 							<Fragment key={errorMessage}>
 								{errorMessage}
@@ -159,7 +159,7 @@ export function ResultStep({
 				) : (
 					<>
 						{tooMuchData ? (
-							<p className="msca:bg-[var(--msca-color-danger-surface)] msca:p-2">
+							<p className="msca:bg-(--msca-color-danger-surface) msca:p-2">
 								{t("result.tooMuchData")}
 								{showExport
 									? ` ${t("result.tooMuchDataWithExport")}`

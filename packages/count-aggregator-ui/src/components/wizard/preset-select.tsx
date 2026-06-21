@@ -37,7 +37,7 @@ function PresetSelectItem({
 			<button
 				type="button"
 				onClick={handleDeleteClick}
-				className="msca:rounded-full msca:border msca:border-gray-100 msca:bg-[var(--msca-color-surface)] msca:px-2 msca:text-gray-300 msca:hover:border-gray-400 msca:hover:text-gray-700"
+				className="msca:rounded-full msca:border msca:border-gray-100 msca:bg-(--msca-color-surface) msca:px-2 msca:text-gray-300 msca:hover:border-gray-400 msca:hover:text-gray-700"
 				style={{
 					visibility: showDeleteButton ? "visible" : "hidden",
 				}}

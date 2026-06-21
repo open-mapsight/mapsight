@@ -22,7 +22,7 @@ export function CsvDownloadLink({
 	return (
 		<p>
 			<a
-				className="msca:underline msca:hover:text-[var(--msca-color-primary)]"
+				className="msca:underline msca:hover:text-(--msca-color-primary)"
 				href={href}
 				target="_blank"
 				rel="download noreferrer"
