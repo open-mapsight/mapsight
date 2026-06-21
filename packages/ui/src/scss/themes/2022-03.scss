@@ -35,6 +35,18 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 }
 
 .ms3-list {
+	&__main--with-distance {
+		display: flex;
+		gap: 0.4em;
+		width: 100%;
+	}
+
+	&__main--with-distance &__distance {
+		margin-left: auto;
+		font-size: 0.875em;
+		opacity: 0.7;
+	}
+
 	&__item {
 		&:not(:first-of-type) {
 			border-top: 1px solid variables.$ms3-borderColor;
