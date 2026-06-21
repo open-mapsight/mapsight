@@ -1,4 +1,7 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
+
+import type {AsyncStatusView} from "@mapsight/ui/async-status";
+import {AsyncStatusRegion} from "@mapsight/ui/async-status/components";
 
 import {
 	getCountAggregatorDictionary,
@@ -40,6 +43,47 @@ type MetricFetchState = {
 	data: MetricData | null;
 };
 
+function metricDataToView(
+	state: MetricFetchState,
+	fetchKey: string,
+): AsyncStatusView<MetricData> {
+	const isLoading = state.key !== fetchKey || state.data === null;
+
+	if (isLoading) {
+		return {
+			status: "pending",
+			fetchStatus: "fetching",
+			data: undefined,
+			error: undefined,
+		};
+	}
+
+	if (state.data === null) {
+		return {
+			status: "pending",
+			fetchStatus: "fetching",
+			data: undefined,
+			error: undefined,
+		};
+	}
+
+	if (state.data.status === "error") {
+		return {
+			status: "error",
+			fetchStatus: "idle",
+			data: undefined,
+			error: true,
+		};
+	}
+
+	return {
+		status: "success",
+		fetchStatus: "idle",
+		data: state.data,
+		error: undefined,
+	};
+}
+
 export default function SmartCityMetricWidget({
 	stationType,
 	stationId,
@@ -60,8 +104,11 @@ export default function SmartCityMetricWidget({
 	const dictionary = getCountAggregatorDictionary(
 		resolveCountAggregatorLocale(getDocumentLocale()),
 	);
-	const isLoading = state.key !== fetchKey || state.data === null;
 	const apiStationId = Number(toCountAggregatorStationId(stationId));
+	const view = useMemo(
+		() => metricDataToView(state, fetchKey),
+		[state, fetchKey],
+	);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -160,42 +207,31 @@ export default function SmartCityMetricWidget({
 		downloadWizardLabel,
 	};
 
-	if (isLoading) {
-		return (
-			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
-				<div className="ms3-smart-city-metric__loading">
-					{dictionary["metrics.loading"]}
-				</div>
-			</MetricWidgetShell>
-		);
-	}
-
-	const data = state.data;
-
-	if (data?.status === "error") {
-		return (
-			<MetricWidgetShell {...shellProps} lastUpdatedAt={null}>
-				<div className="ms3-smart-city-metric__empty">
-					{dictionary["metrics.error"]}
-				</div>
-			</MetricWidgetShell>
-		);
-	}
-
-	if (data?.status !== "ready") {
-		return null;
-	}
+	const readyData = state.data?.status === "ready" ? state.data : null;
+	const lastUpdatedAt = readyData?.lastUpdatedAt ?? null;
 
 	return (
-		<MetricWidgetShell {...shellProps} lastUpdatedAt={data.lastUpdatedAt}>
-			{data.kind === "timeSeries" ? (
-				<TimeSeriesMetricChart
-					points={data.points}
-					config={data.config}
-				/>
-			) : (
-				<ValueMetricDisplay value={data.value} config={data.config} />
-			)}
+		<MetricWidgetShell {...shellProps} lastUpdatedAt={lastUpdatedAt}>
+			<AsyncStatusRegion
+				className="ms3-smart-city-metric__async-status"
+				errorMessage={dictionary["metrics.error"]}
+				loadingMessage={dictionary["metrics.loading"]}
+				variant="placeholder"
+				view={view}
+			>
+				{readyData?.kind === "timeSeries" ? (
+					<TimeSeriesMetricChart
+						config={readyData.config}
+						points={readyData.points}
+					/>
+				) : null}
+				{readyData?.kind === "sum" ? (
+					<ValueMetricDisplay
+						config={readyData.config}
+						value={readyData.value}
+					/>
+				) : null}
+			</AsyncStatusRegion>
 		</MetricWidgetShell>
 	);
 }

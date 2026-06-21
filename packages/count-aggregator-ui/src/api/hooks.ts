@@ -8,6 +8,7 @@ import {
 	listStations,
 } from "@mapsight/count-aggregator-api";
 import type {Resolution} from "@mapsight/count-aggregator-api";
+import type {UseQueryResult} from "@tanstack/react-query";
 import {useQuery} from "@tanstack/react-query";
 
 import {parsePresetsResponse} from "../config/platform.js";
@@ -25,8 +26,8 @@ import {mapStationList, mapTimeSeriesMap} from "./mappers.js";
 
 const STALE_TIME_MS = 5 * 60 * 1000;
 
-export function useStationTypes(apiBaseUrl: string) {
-	const query = useQuery({
+export function useStationTypesQuery(apiBaseUrl: string) {
+	return useQuery({
 		queryKey: ["count-aggregator", "station-types", apiBaseUrl],
 		queryFn: async () => {
 			const client = createCountAggregatorClient(apiBaseUrl);
@@ -35,11 +36,16 @@ export function useStationTypes(apiBaseUrl: string) {
 		},
 		staleTime: STALE_TIME_MS,
 	});
+}
+
+export function useStationTypes(apiBaseUrl: string) {
+	const query = useStationTypesQuery(apiBaseUrl);
 
 	return {
 		stationTypes: query.data,
 		isPending: query.isPending,
 		isError: query.isError,
+		query,
 	};
 }
 
@@ -66,10 +72,10 @@ export function useStationTypeCounts(apiBaseUrl: string): {
 	};
 }
 
-export function useStations(appId: string): Map<number, Station> | undefined {
+export function useStationsQuery(appId: string) {
 	const appConfig = useAppConfig(appId);
 
-	const {data} = useQuery({
+	return useQuery({
 		queryKey: [
 			"count-aggregator",
 			appId,
@@ -84,8 +90,10 @@ export function useStations(appId: string): Map<number, Station> | undefined {
 		},
 		staleTime: STALE_TIME_MS,
 	});
+}
 
-	return data;
+export function useStations(appId: string): Map<number, Station> | undefined {
+	return useStationsQuery(appId).data;
 }
 
 export function useLastValues(
@@ -203,16 +211,11 @@ export function useTrafficEvents(
 	appId: string,
 	startDate: Date | null,
 	endDate: Date | null,
-): {
-	data: TrafficEventsData | undefined;
-	error: unknown;
-	isLoading: boolean;
-	isSuccess: boolean;
-} {
+): UseQueryResult<TrafficEventsData> {
 	const appConfig = useAppConfig(appId);
 	const eventsEndpoint = appConfig.endpoints?.events;
 
-	const query = useQuery({
+	return useQuery({
 		queryKey: [
 			"count-aggregator",
 			appId,
@@ -247,20 +250,13 @@ export function useTrafficEvents(
 			startDate !== null &&
 			endDate !== null,
 	});
-
-	return {
-		data: query.data,
-		error: query.error,
-		isLoading: query.isPending,
-		isSuccess: query.isSuccess,
-	};
 }
 
-export function usePresets(appId: string): PresetData[] | undefined {
+export function usePresetsQuery(appId: string) {
 	const appConfig = useAppConfig(appId);
 	const presetsEndpoint = appConfig.endpoints?.presets;
 
-	const {data} = useQuery({
+	return useQuery({
 		queryKey: ["count-aggregator", appId, "presets", presetsEndpoint],
 		queryFn: async () => {
 			if (presetsEndpoint === undefined) {
@@ -282,6 +278,8 @@ export function usePresets(appId: string): PresetData[] | undefined {
 		staleTime: STALE_TIME_MS,
 		enabled: presetsEndpoint !== undefined,
 	});
+}
 
-	return data;
+export function usePresets(appId: string): PresetData[] | undefined {
+	return usePresetsQuery(appId).data;
 }

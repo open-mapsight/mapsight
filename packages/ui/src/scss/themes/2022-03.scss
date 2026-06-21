@@ -124,3 +124,35 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 		min-width: 0;
 	}
 }
+
+.ms3-async-status {
+	&--placeholder {
+		padding: 1em;
+		color: variables.$ms3-primaryColor;
+	}
+
+	&--empty {
+		color: variables.$ms3-primaryColor;
+	}
+
+	&__retry {
+		border: 0;
+		background: transparent;
+		color: variables.$ms3-themeColorA;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+}
+
+.ms3-async-status-region {
+	&__error-banner {
+		padding: 0.5em 0.75em;
+		border-bottom: 1px solid variables.$ms3-borderColor;
+		background: variables.$ms3-backgroundHighlightColor;
+		color: variables.$ms3-primaryColor;
+	}
+
+	.ms3-search-overlay & .ms3-async-status--placeholder {
+		min-height: 200px;
+	}
+}

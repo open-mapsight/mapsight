@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {readFile, readdir} from "fs/promises";
 
-import table from "markdown-table";
+import {markdownTable} from "markdown-table";
 
 interface Icon {
 	fileName: string;
@@ -105,7 +105,7 @@ async function main() {
 		...iconGroupsToRows(variants, iconGroups, imgPath, metaData),
 	];
 
-	console.log(table(iconTable));
+	console.log(markdownTable(iconTable));
 }
 
 main().catch(console.error);

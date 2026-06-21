@@ -343,6 +343,10 @@ export const searchStatusSelector: Selector<RootStateSlice, SEARCH_STATUS> =
 								? SEARCH_STATUS_FOUND
 								: SEARCH_STATUS_EMPTY
 							: SEARCH_STATUS_INACTIVE;
+					default:
+						return hasQuery
+							? SEARCH_STATUS_LOADING
+							: SEARCH_STATUS_INACTIVE;
 				}
 			},
 		) as Selector<

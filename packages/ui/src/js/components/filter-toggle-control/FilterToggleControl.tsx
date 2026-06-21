@@ -1,9 +1,11 @@
 import type {ReactNode} from "react";
-import {memo, useCallback, useState} from "react";
+import {memo, useCallback, useRef, useState} from "react";
+import {mergeProps, usePress} from "react-aria";
 
 import {FocusTrap} from "focus-trap-react";
 
 import {translate} from "../../helpers/i18n";
+import useOverlayDismiss from "../../hooks/useOverlayDismiss";
 
 export type FilterToggleControlProps = {
 	className?: string;
@@ -13,6 +15,11 @@ export type FilterToggleControlProps = {
 	children: ReactNode;
 };
 
+const focusTrapOptions = {
+	clickOutsideDeactivates: false,
+	escapeDeactivates: false,
+} as const;
+
 function FilterToggleControl({
 	className,
 	buttonClassName,
@@ -21,9 +28,23 @@ function FilterToggleControl({
 	children,
 }: FilterToggleControlProps) {
 	const [isOpen, setIsOpen] = useState(false);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const panelRef = useRef<HTMLDivElement>(null);
 
 	const handleClose = useCallback(() => setIsOpen(false), []);
-	const handleOpen = useCallback(() => setIsOpen(true), []);
+	const handleToggle = useCallback(() => {
+		setIsOpen((open) => !open);
+	}, []);
+
+	const {pressProps} = usePress({
+		onPress: handleToggle,
+	});
+
+	useOverlayDismiss({
+		isActive: isOpen,
+		onDismiss: handleClose,
+		excludeRefs: [triggerRef, panelRef],
+	});
 
 	let rootClassName = `ms3-filter-toggle-control ms3-filter-toggle-control--${
 		isOpen ? "active" : "inactive"
@@ -32,39 +53,32 @@ function FilterToggleControl({
 		rootClassName += ` ${className}`;
 	}
 
-	const button = (open: boolean) => (
-		<button
-			type="button"
-			className={`ms3-filter-button ${
-				open ? buttonActiveClassName : buttonClassName
-			}`}
-			onClick={open ? handleClose : handleOpen}
-			title={title}
-			aria-expanded={open}
-		>
-			<i>{open ? translate("close") : translate("open")}</i>
-		</button>
-	);
-
 	return (
 		<div className={rootClassName}>
+			<button
+				{...mergeProps(pressProps, {
+					type: "button" as const,
+					className: `ms3-filter-button ${
+						isOpen ? buttonActiveClassName : buttonClassName
+					}`,
+					title,
+					"aria-expanded": isOpen,
+				})}
+				ref={triggerRef}
+			>
+				<i>{isOpen ? translate("close") : translate("open")}</i>
+			</button>
+
 			{isOpen ? (
-				<FocusTrap
-					focusTrapOptions={{
-						clickOutsideDeactivates: true,
-						onDeactivate: handleClose,
-					}}
-				>
-					<div className="ms3-filter-toggle-control__content">
-						{button(true)}
-						<div className="ms3-filter-toggle-control__panel">
-							{children}
-						</div>
+				<FocusTrap focusTrapOptions={focusTrapOptions}>
+					<div
+						className="ms3-filter-toggle-control__panel"
+						ref={panelRef}
+					>
+						{children}
 					</div>
 				</FocusTrap>
-			) : (
-				button(false)
-			)}
+			) : null}
 		</div>
 	);
 }
