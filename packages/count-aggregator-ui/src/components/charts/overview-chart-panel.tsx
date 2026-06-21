@@ -111,7 +111,7 @@ function OverviewChart({
 
 	const articleClassName =
 		variant === "card"
-			? "msca:min-w-0 msca:max-w-full msca:border msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)]"
+			? "msca:min-w-0 msca:max-w-full msca:border msca:border-(--msca-color-border) msca:bg-(--msca-color-surface)"
 			: "msca:min-w-0 msca:max-w-full msca:bg-transparent";
 	const bodyClassName =
 		variant === "card" ? "msca:min-w-0 msca:p-6" : "msca:min-w-0";

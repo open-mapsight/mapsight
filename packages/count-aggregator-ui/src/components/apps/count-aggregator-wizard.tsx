@@ -365,7 +365,7 @@ export function CountAggregatorWizard({
 				resolutionLabels={appConfig.resolutionLabels}
 			/>
 
-			<div className="msca:my-3 msca:border-t msca:border-[var(--msca-color-border)]" />
+			<div className="msca:my-3 msca:border-t msca:border-(--msca-color-border)" />
 
 			{resultStep}
 			{eventsSection}
