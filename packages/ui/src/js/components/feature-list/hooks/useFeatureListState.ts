@@ -53,6 +53,7 @@ export default function useFeatureListState(
 
 	const paginatedFilteredFeaturesState = usePaginatedFilteredFeatures(
 		featureSource,
+		featureSourceId,
 		listUiOptions,
 		sort,
 		filter,

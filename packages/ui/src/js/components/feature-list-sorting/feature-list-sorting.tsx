@@ -56,7 +56,7 @@ function FeatureSorter({
 	requestGeolocation,
 }: {
 	places: MapsightUiPlacesData;
-	sorting: string;
+	sorting: string | undefined;
 	geolocationStatus: string;
 	onChange: (value: string) => void;
 	requestGeolocation: () => void;

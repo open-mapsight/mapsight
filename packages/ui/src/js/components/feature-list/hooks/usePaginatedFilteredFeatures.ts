@@ -7,6 +7,7 @@ import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types"
 import getFeatureProperty from "../../../helpers/get-feature-property";
 import sortFeaturesByDistance from "../../../helpers/sort-features-by-distance";
 import {
+	type RootStateSlice,
 	listFilterOptionsSelector,
 	listPageSelector,
 } from "../../../store/selectors";
@@ -67,6 +68,7 @@ function paginateFeatures(
 
 export default function usePaginatedFilteredFeatures(
 	featureSource: FeatureSourceState | undefined,
+	featureSourceId: string | undefined,
 	listUiOptions: Pick<
 		FullUiState["list"],
 		"itemsPerPage" | "paginationControl"
@@ -76,7 +78,9 @@ export default function usePaginatedFilteredFeatures(
 ) {
 	const {itemsPerPage, paginationControl} = listUiOptions;
 	const page = useSelector(listPageSelector);
-	const {query, places, sorting} = useSelector(listFilterOptionsSelector);
+	const {query, places, sorting} = useSelector((state: RootStateSlice) =>
+		listFilterOptionsSelector(state, featureSourceId),
+	);
 
 	return useMemo((): PaginatedFilteredFeaturesState => {
 		if (!featureSource) {
@@ -117,6 +121,7 @@ export default function usePaginatedFilteredFeatures(
 		};
 	}, [
 		featureSource,
+		featureSourceId,
 		filter,
 		query,
 		sort,

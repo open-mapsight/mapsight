@@ -49,6 +49,7 @@ const defaultCreateOptions: CreateOptions = {
 		isFullscreen: false,
 		listQuery: "",
 		listSorting: undefined,
+		listDefaultSortingByFeatureSource: {},
 		listPage: 0, // current page
 		searchQuery: "",
 		searchResult: {},
