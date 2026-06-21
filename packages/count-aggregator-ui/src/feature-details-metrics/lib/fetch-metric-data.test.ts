@@ -4,11 +4,13 @@ import {
 	FEATURE_DETAILS_LAST_VALUES_ANCHOR,
 	fetchMetricTimeSeries,
 } from "./fetch-metric-data.js";
+import {resetStationTypeDisplayCache} from "./station-type-display-cache.js";
 
 const baseUrl = "https://example.test/msp/public/count-aggregator";
 
 describe("fetchMetricTimeSeries", () => {
 	afterEach(() => {
+		resetStationTypeDisplayCache();
 		vi.unstubAllGlobals();
 		vi.restoreAllMocks();
 	});
@@ -21,6 +23,36 @@ describe("fetchMetricTimeSeries", () => {
 					: input instanceof URL
 						? input.toString()
 						: input.url;
+
+			if (url.endsWith("/station-types")) {
+				return {
+					ok: true,
+					status: 200,
+					headers: new Headers({"content-type": "application/json"}),
+					json: async () => ({
+						data: [
+							{
+								type: "peopleCount",
+								label: "Passanten",
+								station_count: 1,
+								category: {id: "mobility", label: "Mobilität"},
+								defaultMetric: "sum",
+								supportedResolutions: ["daily"],
+								metrics: [
+									{
+										id: "count",
+										label: "Passanten",
+										unit: null,
+										displayPrecision: 0,
+										defaultMetric: "sum",
+										aggregation: ["sum"],
+									},
+								],
+							},
+						],
+					}),
+				} as Response;
+			}
 
 			expect(url).toBe(
 				`${baseUrl}/peopleCount/75/last-values/daily?limit=30&anchor=lastDataAt`,
@@ -51,7 +83,7 @@ describe("fetchMetricTimeSeries", () => {
 			"Damm (Anzahl Passanten)",
 		);
 
-		expect(fetchFn).toHaveBeenCalledOnce();
+		expect(fetchFn).toHaveBeenCalledTimes(2);
 		expect(FEATURE_DETAILS_LAST_VALUES_ANCHOR).toBe("lastDataAt");
 	});
 });

@@ -3,7 +3,7 @@ import {
 	resolveCountAggregatorLocale,
 } from "../../lib/i18n.js";
 import {getDocumentLocale} from "../../lib/utils.js";
-import {formatMetricValue} from "../lib/format-metric-values.js";
+import {formatMetricValueFromConfig} from "../lib/format-metric-values.js";
 import type {MetricWidgetConfig} from "../types.js";
 
 type Props = {
@@ -26,7 +26,7 @@ export default function ValueMetricDisplay({value, config}: Props) {
 
 	return (
 		<div className="ms3-smart-city-metric__value">
-			{formatMetricValue(value, config)}
+			{formatMetricValueFromConfig(value, config)}
 		</div>
 	);
 }

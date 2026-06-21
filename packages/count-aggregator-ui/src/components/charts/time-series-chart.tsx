@@ -15,16 +15,28 @@ import {
 	YAxis,
 } from "recharts";
 
-import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
+import {
+	useAppConfig,
+	useCountAggregatorI18n,
+} from "../../context/count-aggregator-provider.js";
 import {
 	chartSeriesKey,
 	normalizeSelectedMetrics,
 } from "../../lib/bucket-metrics.js";
+import {
+	Y_AXIS_UNIT_LABEL_TOP_MARGIN,
+	createYAxisUnitLabel,
+} from "../../lib/chart-axis-label.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
+import {
+	formatMetricAxisValue,
+	formatMetricValue,
+	metricValueFormatFromAppConfig,
+} from "../../lib/format-metric-value.js";
 import {getMetricLabels} from "../../lib/i18n.js";
 import {formatStationLabel} from "../../lib/stations.js";
-import {getDocumentLocale, isDefined} from "../../lib/utils.js";
+import {cn, getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
 	ChartSeries,
@@ -140,6 +152,7 @@ function buildSeriesLabel(
 
 export function TimeSeriesChart({
 	type,
+	appId,
 	selectedStationIds,
 	selectedMetrics,
 	chartSeries,
@@ -150,27 +163,28 @@ export function TimeSeriesChart({
 	className = "msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px]",
 	emptyMessage = "No measurements are available for the current selection.",
 }: TimeSeriesChartProps): ReactElement {
+	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
 	const metricLabels = getMetricLabels(t);
+	const valueFormat = metricValueFormatFromAppConfig(appConfig);
+	const locale = getDocumentLocale();
 	const showMetricInLabel =
 		(selectedMetrics?.length ?? chartSeries?.length ?? 0) > 1 ||
 		new Set(chartSeries?.map((entry) => entry.stationId)).size !==
 			(chartSeries?.length ?? 0);
 
 	const tooltipFormatter = useMemo(
-		() =>
-			new Intl.DateTimeFormat(
-				getDocumentLocale(),
-				getTooltipDateFormat(resolution),
-			),
-		[resolution],
+		() => new Intl.DateTimeFormat(locale, getTooltipDateFormat(resolution)),
+		[locale, resolution],
 	);
-	const numberFormatter = useMemo(
-		() =>
-			new Intl.NumberFormat(getDocumentLocale(), {
-				maximumFractionDigits: 2,
-			}),
-		[],
+	const formatAxisValue = useMemo(
+		() => (value: number) =>
+			formatMetricAxisValue(value, valueFormat, locale),
+		[locale, valueFormat],
+	);
+	const formatTooltipValue = useMemo(
+		() => (value: number) => formatMetricValue(value, valueFormat, locale),
+		[locale, valueFormat],
 	);
 
 	const {chartConfig, chartData} = useMemo(() => {
@@ -282,9 +296,9 @@ export function TimeSeriesChart({
 
 	if (chartSeries !== undefined && chartData.length === 0) {
 		return (
-			<div className={`msca:relative msca:w-full ${className}`}>
+			<div className={cn("msca:relative msca:w-full", className)}>
 				<div
-					className="msca:absolute msca:inset-0 msca:flex msca:items-center msca:justify-center msca:rounded-md msca:border msca:border-dashed msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:p-6 msca:text-center msca:text-sm msca:text-[var(--msca-color-muted-foreground)]"
+					className="msca:absolute msca:inset-0 msca:flex msca:items-center msca:justify-center msca:rounded-md msca:border msca:border-dashed msca:border-(--msca-color-border) msca:bg-(--msca-color-surface) msca:p-6 msca:text-center msca:text-sm msca:text-(--msca-color-muted-foreground)"
 					role="status"
 				>
 					{emptyMessage}
@@ -294,7 +308,7 @@ export function TimeSeriesChart({
 	}
 
 	return (
-		<div className={`msca:relative msca:w-full ${className}`}>
+		<div className={cn("msca:relative msca:w-full", className)}>
 			<ChartContainer
 				config={chartConfig}
 				className="msca:absolute msca:inset-0 msca:h-full msca:w-full"
@@ -302,7 +316,14 @@ export function TimeSeriesChart({
 				<ResponsiveContainer width="100%" height="100%">
 					<ChartComponent
 						data={chartData}
-						margin={{top: 8, right: 12, left: 8, bottom: 0}}
+						margin={{
+							top: valueFormat.unit
+								? Y_AXIS_UNIT_LABEL_TOP_MARGIN
+								: 8,
+							right: 12,
+							left: 8,
+							bottom: 0,
+						}}
 						barCategoryGap="24%"
 						barGap={1}
 					>
@@ -316,10 +337,15 @@ export function TimeSeriesChart({
 						<YAxis
 							tickLine={false}
 							axisLine={false}
-							allowDecimals={true}
+							allowDecimals={valueFormat.displayPrecision > 0}
 							width={56}
-							tickFormatter={(value: number) =>
-								numberFormatter.format(value)
+							tickFormatter={formatAxisValue}
+							label={
+								valueFormat.unit
+									? createYAxisUnitLabel(valueFormat.unit, {
+											fill: "var(--msca-color-muted-foreground)",
+										})
+									: undefined
 							}
 						/>
 						<Tooltip
@@ -328,9 +354,7 @@ export function TimeSeriesChart({
 									labelFormatter={(label) =>
 										tooltipFormatter.format(new Date(label))
 									}
-									valueFormatter={(value) =>
-										numberFormatter.format(value)
-									}
+									valueFormatter={formatTooltipValue}
 								/>
 							}
 						/>

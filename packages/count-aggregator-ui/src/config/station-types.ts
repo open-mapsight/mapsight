@@ -1,4 +1,5 @@
 import type {StationTypeSummary} from "@mapsight/count-aggregator-api";
+import {resolveStationTypeDisplay} from "@mapsight/count-aggregator-api";
 
 import type {
 	BucketMetric,
@@ -45,6 +46,7 @@ function createAppConfigForStationType(
 	const defaultMetric = entry.defaultMetric;
 	const defaultChartMetrics = [defaultMetric];
 	const supportedResolutions = entry.supportedResolutions;
+	const display = resolveStationTypeDisplay(entry);
 
 	return {
 		id: stationType,
@@ -53,6 +55,9 @@ function createAppConfigForStationType(
 		defaultMetric,
 		availableMetrics: uniqueMetrics,
 		defaultChartMetrics,
+		primaryMetricLabel: display.primaryMetricLabel,
+		valueUnit: display.valueUnit,
+		displayPrecision: display.displayPrecision,
 		uiVariant: isBicycleCount ? "stepped" : "single-page",
 		defaultResolution: pickDefaultResolution(supportedResolutions),
 		defaultChartType: isBicycleCount ? "area" : "line",

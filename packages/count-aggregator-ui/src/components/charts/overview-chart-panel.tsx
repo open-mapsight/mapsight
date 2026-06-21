@@ -124,6 +124,7 @@ function OverviewChart({
 					titleClassName={hideTitle ? "msca:sr-only" : undefined}
 				>
 					<TimeSeriesChart
+						appId={appId}
 						type={config.chartType}
 						selectedStationIds={stationIds}
 						selectedMetrics={selectedMetrics}

@@ -1,4 +1,5 @@
 import type {StationType} from "@mapsight/count-aggregator-api";
+import type {StationTypeDisplay} from "@mapsight/count-aggregator-api";
 
 import type {MetricWidgetConfig} from "../types.js";
 
@@ -111,4 +112,19 @@ export function resolveMetricWidgetConfig(
 	}
 
 	return DEFAULT_METRIC_WIDGETS[stationType] ?? DEFAULT_TIME_SERIES;
+}
+
+export function applyStationTypeDisplay(
+	config: MetricWidgetConfig,
+	display: StationTypeDisplay | undefined,
+): MetricWidgetConfig {
+	if (display === undefined) {
+		return config;
+	}
+
+	return {
+		...config,
+		decimals: display.displayPrecision,
+		unit: display.valueUnit ?? undefined,
+	};
 }
