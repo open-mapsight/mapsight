@@ -1,9 +1,31 @@
-import {forwardRef, Fragment, memo, useRef} from "react";
+import {forwardRef, Fragment, memo, useMemo, useRef} from "react";
+import {useDispatch} from "react-redux";
 
+import {async} from "@mapsight/core/lib/base/actions";
+import {load} from "@mapsight/core/lib/feature-sources/actions";
+
+import AsyncStatusRegion from "../async-status/AsyncStatusRegion";
+import {FEATURE_SOURCES} from "../../config/constants/controllers";
+import {translate} from "../../helpers/i18n";
+import {
+	featureSourceToView,
+	useAsyncStatusDisplay,
+} from "../../lib/async-status";
 import FeatureListContent from "./content";
 import {useFeatureListContext} from "./context";
+import FeatureListEmptyMessage from "./empty-message";
 import useFeatureListItemGroups from "./hooks/useFeatureListItemGroups";
 import useKeyboardNavigation from "./hooks/useKeyboardNavigation";
+
+function featureListStatusFromPhase(phase) {
+	if (phase === "loading" || phase === "refreshing") {
+		return "loading";
+	}
+	if (phase === "error") {
+		return "error";
+	}
+	return undefined;
+}
 
 function FeatureListGroupedContent(
 	{as: T = "div", groupAs = null, itemAs, ...listProps},
@@ -11,9 +33,14 @@ function FeatureListGroupedContent(
 ) {
 	const ownRef = useRef();
 	const ref = forwardedRef || ownRef;
+	const dispatch = useDispatch();
 
 	const {
-		state: {filteredFeatures: features = []},
+		state: {
+			filteredFeatures: features = [],
+			featureSourceId,
+			featureSource,
+		},
 		itemProps,
 		enableKeyboardControl,
 	} = useFeatureListContext();
@@ -23,9 +50,32 @@ function FeatureListGroupedContent(
 	};
 
 	listProps.emptyAs = itemProps.as;
+	listProps.featureSourceId = featureSourceId;
 
-	// we have to separate calculation of items from wrapping them,
-	// as the outer tags depend on restProps, and we do not want to recreate list items on changes to restProps.
+	const hasSource =
+		featureSourceId !== null &&
+		featureSourceId !== undefined &&
+		featureSourceId !== "";
+
+	const view = useMemo(
+		() =>
+			featureSourceToView(featureSource, {
+				enabled: hasSource,
+				refetch: hasSource
+					? () =>
+							dispatch(
+								async(load(FEATURE_SOURCES, featureSourceId)),
+							)
+					: undefined,
+			}),
+		[dispatch, featureSource, featureSourceId, hasSource],
+	);
+
+	const display = useAsyncStatusDisplay(view, {
+		isEmpty: () => features.length === 0 && view.status === "success",
+	});
+	const listStatus = featureListStatusFromPhase(display.phase);
+
 	const itemGroups = useFeatureListItemGroups(
 		groupAs,
 		features,
@@ -33,41 +83,62 @@ function FeatureListGroupedContent(
 		itemProps,
 	);
 
-	if (!features.length) {
-		return <FeatureListContent {...listProps} {...rootProps} />;
-	}
+	const emptyMessage = (
+		<FeatureListContent status={listStatus} {...listProps} {...rootProps}>
+			<FeatureListEmptyMessage as={itemProps.as} hasSource={hasSource} />
+		</FeatureListContent>
+	);
 
-	if (itemGroups.groups) {
-		const GroupNameT = groupAs;
+	let listContent = null;
 
-		return (
-			<T className="ms3-list-groups ms3-scroll-target" {...rootProps}>
-				{itemGroups.groups.map(function composeGroup(group, index) {
-					return (
-						<Fragment key={group.name}>
-							{group.name ? (
-								<GroupNameT className="ms3-list__group ms3-list__group--name">
-									{group.name}
-								</GroupNameT>
-							) : null}
+	if (features.length) {
+		if (itemGroups.groups) {
+			const GroupNameT = groupAs;
 
-							<FeatureListContent
-								data-ms3-group-name={group.name}
-								{...listProps}
-							>
-								{itemGroups.items[index]}
-							</FeatureListContent>
-						</Fragment>
-					);
-				})}
-			</T>
-		);
+			listContent = (
+				<T className="ms3-list-groups ms3-scroll-target" {...rootProps}>
+					{itemGroups.groups.map(function composeGroup(group, index) {
+						return (
+							<Fragment key={group.name}>
+								{group.name ? (
+									<GroupNameT className="ms3-list__group ms3-list__group--name">
+										{group.name}
+									</GroupNameT>
+								) : null}
+
+								<FeatureListContent
+									data-ms3-group-name={group.name}
+									status={listStatus}
+									{...listProps}
+								>
+									{itemGroups.items[index]}
+								</FeatureListContent>
+							</Fragment>
+						);
+					})}
+				</T>
+			);
+		} else {
+			listContent = (
+				<FeatureListContent status={listStatus} {...listProps} {...rootProps}>
+					{itemGroups.items[0]}
+				</FeatureListContent>
+			);
+		}
 	}
 
 	return (
-		<FeatureListContent {...listProps} {...rootProps}>
-			{itemGroups.items[0]}
-		</FeatureListContent>
+		<AsyncStatusRegion
+			emptyMessage={emptyMessage}
+			errorMessage={translate("ui.feature-list.error")}
+			isEmpty={() => features.length === 0 && view.status === "success"}
+			loadingMessage={translate("ui.feature-list.loading")}
+			onRetry={view.refetch}
+			variant="placeholder"
+			view={view}
+		>
+			{listContent}
+		</AsyncStatusRegion>
 	);
 }
 

@@ -1,0 +1,105 @@
+@use "../variables";
+
+@keyframes ms3AsyncStatusSpin {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.ms3-async-status {
+	--ms3-async-status-min-height: 120px;
+	--ms3-async-status-spinner-size: 15px;
+
+	&--placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: var(--ms3-async-status-min-height);
+	}
+
+	&--inline,
+	&--icon {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	&--loading {
+		&::before {
+			content: "";
+			display: inline-block;
+			flex-shrink: 0;
+			width: var(--ms3-async-status-spinner-size);
+			height: var(--ms3-async-status-spinner-size);
+			background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
+				no-repeat center center;
+			animation: ms3AsyncStatusSpin 4s linear infinite;
+		}
+
+		&.ms3-async-status--placeholder::before {
+			margin-right: 0.5em;
+		}
+	}
+
+	&--error {
+		&::before {
+			content: "";
+			display: inline-block;
+			flex-shrink: 0;
+			width: 22px;
+			height: 22px;
+			background: transparent url(variables.$ms3-uiIconPath + "error.svg")
+				no-repeat 0 3px;
+		}
+
+		&.ms3-async-status--placeholder::before {
+			margin-right: 0.5em;
+		}
+	}
+
+	&--refreshing {
+		&::before {
+			content: "";
+			display: inline-block;
+			flex-shrink: 0;
+			width: var(--ms3-async-status-spinner-size);
+			height: var(--ms3-async-status-spinner-size);
+			background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
+				no-repeat center center;
+			animation: ms3AsyncStatusSpin 4s linear infinite;
+		}
+	}
+
+	&__message {
+		display: inline;
+	}
+
+	&__retry {
+		display: inline-block;
+		margin-left: 0.5em;
+	}
+}
+
+.ms3-async-status-region {
+	position: relative;
+
+	&--refreshing {
+		&[aria-busy="true"] {
+			pointer-events: auto;
+		}
+	}
+
+	&__error-banner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	&__refresh-indicator {
+		position: absolute;
+		top: 0;
+		right: 0;
+		margin: 10px;
+	}
+}

@@ -29,6 +29,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@testing-library/react": "^16.3.2",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
@@ -53,6 +54,10 @@
 		"./config": {
 			"types": "./dist/config/index.d.ts",
 			"default": "./dist/config/index.js"
+		},
+		"./async-status": {
+			"types": "./dist/lib/async-status/index.d.ts",
+			"default": "./dist/lib/async-status/index.js"
 		},
 		"./config/*": {
 			"types": "./dist/config/*.d.ts",

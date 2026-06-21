@@ -49,6 +49,14 @@ const en: Record<string, string> = {
 
 	"ui.feature-list.content.noListSelected": "no list selected",
 	"ui.feature-list.content.noEntries": "no entries in list",
+	"ui.feature-list.loading": "Loading list…",
+	"ui.feature-list.error": "Could not load list.",
+
+	"ui.async-status.loading": "Loading…",
+	"ui.async-status.error": "Could not load data.",
+	"ui.async-status.retry": "Try again",
+	"ui.async-status.refreshing": "Updating…",
+	"ui.async-status.paused": "Waiting for network…",
 	"ui.feature-details.content.title": "title",
 	"ui.feature-details.content.description": "description",
 

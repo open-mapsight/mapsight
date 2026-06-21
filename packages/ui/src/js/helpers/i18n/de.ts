@@ -51,6 +51,14 @@ const de: Record<string, string> = {
 
 	"ui.feature-list.content.noListSelected": "keine Liste gewählt",
 	"ui.feature-list.content.noEntries": "keine Einträge",
+	"ui.feature-list.loading": "Liste wird geladen …",
+	"ui.feature-list.error": "Liste konnte nicht geladen werden.",
+
+	"ui.async-status.loading": "Wird geladen …",
+	"ui.async-status.error": "Daten konnten nicht geladen werden.",
+	"ui.async-status.retry": "Erneut versuchen",
+	"ui.async-status.refreshing": "Aktualisiere …",
+	"ui.async-status.paused": "Warte auf Netzwerk …",
 	"ui.feature-details.content.title": "Bezeichnung",
 	"ui.feature-details.content.description": "Bemerkung",
 
