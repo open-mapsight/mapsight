@@ -1,5 +1,11 @@
 # @mapsight/vite-host-embed
 
+## 1.1.1
+
+### Patch Changes
+
+- ee02e23: Keep hashed JS/CSS entry assets and write the stable files as small wrappers.
+
 ## 1.1.0
 
 ### Minor Changes

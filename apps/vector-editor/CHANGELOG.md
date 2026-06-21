@@ -1,5 +1,21 @@
 # @mapsight/vector-editor
 
+## 1.2.2
+
+### Patch Changes
+
+- 7d48f25: Bump dependencies from Dependabot ([#96](https://github.com/open-mapsight/mapsight/pull/96)).
+- Updated dependencies [b8b31e2]
+- Updated dependencies [8cf6b58]
+- Updated dependencies [dd17aa3]
+- Updated dependencies [7d48f25]
+- Updated dependencies [7296703]
+- Updated dependencies [9fa5b74]
+- Updated dependencies [38f03ad]
+    - @mapsight/core@14.4.0
+    - @mapsight/lib-ol@4.2.0
+    - @mapsight/traffic-style@5.3.0
+
 ## 1.2.1
 
 ### Patch Changes

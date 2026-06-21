@@ -1,5 +1,21 @@
 # @mapsight/vector-style-compiler
 
+## 12.0.0
+
+### Minor Changes
+
+- 987e0af: Publish generated IDE metadata for Mapsight vector styles and support nested property declaration blocks in style CSS.
+
+### Patch Changes
+
+- 7d48f25: Bump dependencies from Dependabot ([#96](https://github.com/open-mapsight/mapsight/pull/96)).
+- 954e241: Publish the Sass and file-watching dependencies needed by runtime compiler consumers.
+- Updated dependencies [b8b31e2]
+- Updated dependencies [8cf6b58]
+- Updated dependencies [9fa5b74]
+    - @mapsight/core@14.4.0
+    - @mapsight/lib-ol@4.2.0
+
 ## 11.0.0
 
 ### Patch Changes

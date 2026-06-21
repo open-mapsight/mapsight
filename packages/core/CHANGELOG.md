@@ -1,5 +1,17 @@
 # @mapsight/core
 
+## 14.4.0
+
+### Minor Changes
+
+- b8b31e2: Add a WebGL vector layer proxy definition for configuring OpenLayers WebGL vector layers through Mapsight layer options.
+
+### Patch Changes
+
+- Updated dependencies [8cf6b58]
+- Updated dependencies [9fa5b74]
+    - @mapsight/lib-ol@4.2.0
+
 ## 14.3.0
 
 ### Minor Changes

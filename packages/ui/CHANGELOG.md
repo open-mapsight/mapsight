@@ -1,5 +1,33 @@
 # @mapsight/ui
 
+## 7.3.0
+
+### Minor Changes
+
+- 5743b4a: Add async status components and feature list loading/error/empty states. Export `@mapsight/ui/async-status`.
+- 5743b4a: Add TanStack Query adapter subpath, migrate search results and feature details loading UI to shared async status components.
+- b7d0ece: Add optional geolocation distance labels for feature list items. Export `DistanceLabel`, wire via `itemDistanceLabelAs` / `distanceLabelAs` (default off), and style opted-in rows with `ms3-list__main--with-distance` in the 2022-03 theme.
+- 0acda06: Add optional `listDefaultSortingByFeatureSource` UI state and `effectiveListSortingSelector` for per-feature-source default list sorting. Existing apps keep current behavior until they configure defaults; explicit user sorting still wins.
+- b755930: Add optional search icon styling for `QueryInputWithLabel` via `$ms3-option-queryInputWithLabelSearchIcon` (default `false`). Styles live in the block partial and are omitted at compile time when the option is off.
+
+### Patch Changes
+
+- 5743b4a: Export async status components subpath and migrate count-aggregator-ui loading states to shared QueryStatusRegion and AsyncStatusRegion.
+- 7d48f25: Bump dependencies from Dependabot ([#96](https://github.com/open-mapsight/mapsight/pull/96)).
+- f16212e: TypeScript: migrate the feature-list-item cluster (`index`, `head`, scroll hook) and add shared list-item handler types.
+- b919f0b: Skip desktop overlay dismiss handling when the layer switcher is shown in the mobile modal.
+- ee1ed8c: Export the shared i18n helper entrypoint for apps.
+- Updated dependencies [b8b31e2]
+- Updated dependencies [8cf6b58]
+- Updated dependencies [dd17aa3]
+- Updated dependencies [7d48f25]
+- Updated dependencies [7296703]
+- Updated dependencies [9fa5b74]
+- Updated dependencies [38f03ad]
+    - @mapsight/core@14.4.0
+    - @mapsight/lib-ol@4.2.0
+    - @mapsight/traffic-style@5.3.0
+
 ## 7.2.1
 
 ### Patch Changes
