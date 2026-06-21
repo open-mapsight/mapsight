@@ -55,6 +55,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -107,22 +108,25 @@
 													]
 												},
 												"properties": {
-													"id": "140",
-													"originId": "102977",
-													"name": "Im Remenfeld (Pegelmessung ⌀/d)",
+													"id": "8041",
+													"originId": "102977:1777050",
+													"name": "Im Remenfeld (Pegelmessung mNN )",
 													"type": "waterLevelSurface",
 													"typeLabel": "Wasserstand",
 													"tags": [],
 													"hasData": true,
+													"countAggregatorType": "waterLevelSurface",
+													"countAggregatorStationId": 8041,
+													"unit": "m",
 													"tagGroups": {
-														"Art": {
+														"Gewässer": {
 															"andJunction": false,
 															"tags": [
 																"Wasserstand"
 															]
 														}
 													},
-													"lastDataAt": "2026-06-11T22:00:00+02:00",
+													"lastDataAt": "2026-06-21T14:45:00+02:00",
 													"mapsightIconId": "fa-water-lower"
 												}
 											}
@@ -149,19 +153,88 @@
 									"example": {
 										"data": [
 											{
-												"type": "airQualityCO",
-												"label": "Luftqualität (CO)",
-												"station_count": 2
+												"type": "peopleCount",
+												"label": "Passanten",
+												"station_count": 8,
+												"category": {
+													"id": "mobility",
+													"label": "Mobilität"
+												},
+												"defaultMetric": "sum",
+												"supportedResolutions": [
+													"15min",
+													"hourly",
+													"daily",
+													"weekly",
+													"monthly",
+													"yearly"
+												],
+												"metrics": [
+													{
+														"id": "count",
+														"label": "Passanten",
+														"unit": null,
+														"displayPrecision": 0,
+														"defaultMetric": "sum",
+														"aggregation": ["sum"]
+													}
+												]
 											},
 											{
-												"type": "airQualityNO2",
-												"label": "Luftqualität (NO2)",
-												"station_count": 2
+												"type": "bicycleCount",
+												"label": "Radverkehr",
+												"station_count": 8,
+												"category": {
+													"id": "mobility",
+													"label": "Mobilität"
+												},
+												"defaultMetric": "sum",
+												"supportedResolutions": [
+													"15min",
+													"hourly",
+													"daily",
+													"weekly",
+													"monthly",
+													"yearly"
+												],
+												"metrics": [
+													{
+														"id": "count",
+														"label": "Radverkehr",
+														"unit": null,
+														"displayPrecision": 0,
+														"defaultMetric": "sum",
+														"aggregation": ["sum"]
+													}
+												]
 											},
 											{
-												"type": "airQualityO3",
-												"label": "Luftqualität (O3)",
-												"station_count": 2
+												"type": "bicycleSensorTotal",
+												"label": "Radzähler",
+												"station_count": 9,
+												"category": {
+													"id": "mobility",
+													"label": "Mobilität"
+												},
+												"defaultMetric": "sum",
+												"supportedResolutions": [
+													"15min",
+													"hourly",
+													"daily",
+													"weekly",
+													"monthly",
+													"yearly"
+												],
+												"metrics": [
+													{
+														"id": "count",
+														"label": "Radzähler",
+														"unit": null,
+														"displayPrecision": 0,
+														"defaultMetric": "sum",
+														"aggregation": ["sum"]
+													}
+												]
 											}
 										]
 									},
@@ -206,6 +279,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -233,22 +307,22 @@
 											{
 												"id": 75,
 												"type": "peopleCount",
-												"origin_id": "135688",
+												"origin_id": "135688:2302215",
 												"name": "Damm 2 (Anzahl Passanten)",
 												"status": null,
 												"label": "Damm 2 (Anzahl Passanten)",
 												"hasData": true,
-												"lastDataAt": "2026-06-11 22:00:00"
+												"lastDataAt": "2026-06-21 16:45:00"
 											},
 											{
 												"id": 15,
 												"type": "peopleCount",
-												"origin_id": "24433",
+												"origin_id": "24433:838432",
 												"name": "Damm (Anzahl Passanten)",
 												"status": null,
 												"label": "Damm (Anzahl Passanten)",
 												"hasData": true,
-												"lastDataAt": "2026-06-11 22:00:00"
+												"lastDataAt": "2026-06-21 16:45:00"
 											}
 										]
 									},
@@ -293,6 +367,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -303,10 +378,11 @@
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -342,7 +418,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-07"
+						"example": "2026-06-18"
 					},
 					{
 						"name": "anchor",
@@ -363,6 +439,17 @@
 							"enum": ["json", "csv"]
 						},
 						"example": "json"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
 					}
 				],
 				"responses": {
@@ -375,19 +462,170 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-07 00:00:00",
-											"toDateTime": "2026-06-09 23:59:59",
-											"lastDateTime": "2026-06-09 23:59:59",
+											"fromDateTime": "2026-06-18 00:00:00",
+											"toDateTime": "2026-06-20 23:59:59",
+											"lastDateTime": "2026-06-20 23:59:59",
 											"resolution": "daily",
-											"stationId": "135688",
+											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-08 00:00:00",
-													"value": 6627.5
+													"datetime": "2026-06-18 00:00:00",
+													"sum": 6386.000000000006,
+													"value": 6386.000000000006
 												},
 												{
-													"datetime": "2026-06-09 00:00:00",
-													"value": 6130.67
+													"datetime": "2026-06-19 00:00:00",
+													"sum": 10944.666666666677,
+													"value": 10944.666666666677
+												},
+												{
+													"datetime": "2026-06-20 00:00:00",
+													"sum": 9494.000000000036,
+													"value": 9494.000000000036
+												}
+											]
+										}
+									},
+									"additionalProperties": {
+										"$ref": "#/components/schemas/TimeSeriesResponse"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/{type}/values": {
+			"get": {
+				"operationId": "count-aggregator.public.type.values.query",
+				"tags": ["Typed stations"],
+				"parameters": [
+					{
+						"name": "type",
+						"in": "path",
+						"required": true,
+						"description": "Station type identifier. See `GET /station-types` for currently available types.",
+						"schema": {
+							"type": "string",
+							"enum": [
+								"airQualityCO",
+								"airQualityNO2",
+								"airQualityO3",
+								"airQualityPM10",
+								"airQualityPM25",
+								"airQualityStation",
+								"bicycleCount",
+								"bicycleSensorTotal",
+								"peopleCount",
+								"waterLevelSurface",
+								"waterTemp",
+								"weatherAirPressure",
+								"weatherHumidity",
+								"weatherLightingDistance",
+								"weatherLightnings",
+								"weatherRain",
+								"weatherStation",
+								"weatherSun",
+								"weatherTemp",
+								"weatherVaporPressure",
+								"weatherWindDirection",
+								"weatherWindSpeed",
+								"weatherWindSpeedMax"
+							]
+						},
+						"example": "peopleCount"
+					},
+					{
+						"name": "stationIds",
+						"in": "query",
+						"required": true,
+						"description": "Comma-separated MSP station IDs.",
+						"schema": {},
+						"example": "75,15"
+					},
+					{
+						"name": "from",
+						"in": "query",
+						"required": true,
+						"description": "Start of the query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). All datetimes use local station time in `Y-m-d H:i:s` format (no timezone offset).",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T10:00:00"
+					},
+					{
+						"name": "to",
+						"in": "query",
+						"required": true,
+						"description": "End of the query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). All datetimes use local station time in `Y-m-d H:i:s` format (no timezone offset).",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T10:00:00"
+					},
+					{
+						"name": "resolution",
+						"in": "query",
+						"required": true,
+						"description": "Aggregation resolution.",
+						"schema": {},
+						"example": "5min"
+					},
+					{
+						"name": "format",
+						"in": "query",
+						"description": "Response serialization format. Omit this parameter or use `json` for JSON (default). Use `csv` to download multi-station time series as semicolon-separated CSV. CSV is only supported on multi-station `/last-values/{resolution}` and `/values/{from}/{to}/{resolution}` endpoints that require `stationIds`.",
+						"schema": {
+							"type": "string",
+							"enum": ["json", "csv"]
+						},
+						"example": "json"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"example": {
+										"75": {
+											"id": 75,
+											"fromDateTime": "2026-06-18 00:00:00",
+											"toDateTime": "2026-06-20 23:59:59",
+											"lastDateTime": "2026-06-20 23:59:59",
+											"resolution": "daily",
+											"stationId": "135688:2302215",
+											"values": [
+												{
+													"datetime": "2026-06-18 00:00:00",
+													"sum": 6386.000000000006,
+													"value": 6386.000000000006
+												},
+												{
+													"datetime": "2026-06-19 00:00:00",
+													"sum": 10944.666666666677,
+													"value": 10944.666666666677
+												},
+												{
+													"datetime": "2026-06-20 00:00:00",
+													"sum": 9494.000000000036,
+													"value": 9494.000000000036
 												}
 											]
 										}
@@ -435,6 +673,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -449,7 +688,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-07 00:00:00"
+						"example": "2026-06-18 00:00:00"
 					},
 					{
 						"name": "to",
@@ -459,16 +698,17 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-09"
+						"example": "2026-06-20"
 					},
 					{
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -496,6 +736,17 @@
 							"enum": ["json", "csv"]
 						},
 						"example": "json"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
 					}
 				],
 				"responses": {
@@ -508,19 +759,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-07 00:00:00",
-											"toDateTime": "2026-06-09 23:59:59",
-											"lastDateTime": "2026-06-09 23:59:59",
+											"fromDateTime": "2026-06-18 00:00:00",
+											"toDateTime": "2026-06-20 23:59:59",
+											"lastDateTime": "2026-06-20 23:59:59",
 											"resolution": "daily",
-											"stationId": "135688",
+											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-08 00:00:00",
-													"value": 6627.5
+													"datetime": "2026-06-18 00:00:00",
+													"sum": 6386.000000000006,
+													"value": 6386.000000000006
 												},
 												{
-													"datetime": "2026-06-09 00:00:00",
-													"value": 6130.67
+													"datetime": "2026-06-19 00:00:00",
+													"sum": 10944.666666666677,
+													"value": 10944.666666666677
+												},
+												{
+													"datetime": "2026-06-20 00:00:00",
+													"sum": 9494.000000000036,
+													"value": 9494.000000000036
 												}
 											]
 										}
@@ -568,6 +826,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -633,6 +892,147 @@
 				}
 			}
 		},
+		"/{type}/{stationId}/values": {
+			"get": {
+				"operationId": "count-aggregator.public.type.station.values.query",
+				"tags": ["Typed stations"],
+				"parameters": [
+					{
+						"name": "type",
+						"in": "path",
+						"required": true,
+						"description": "Station type identifier. See `GET /station-types` for currently available types.",
+						"schema": {
+							"type": "string",
+							"enum": [
+								"airQualityCO",
+								"airQualityNO2",
+								"airQualityO3",
+								"airQualityPM10",
+								"airQualityPM25",
+								"airQualityStation",
+								"bicycleCount",
+								"bicycleSensorTotal",
+								"peopleCount",
+								"waterLevelSurface",
+								"waterTemp",
+								"weatherAirPressure",
+								"weatherHumidity",
+								"weatherLightingDistance",
+								"weatherLightnings",
+								"weatherRain",
+								"weatherStation",
+								"weatherSun",
+								"weatherTemp",
+								"weatherVaporPressure",
+								"weatherWindDirection",
+								"weatherWindSpeed",
+								"weatherWindSpeedMax"
+							]
+						},
+						"example": "peopleCount"
+					},
+					{
+						"name": "stationId",
+						"in": "path",
+						"required": true,
+						"description": "MSP station ID (canonical identifier from `GET /{type}/stations`).",
+						"schema": {
+							"type": "string"
+						},
+						"example": "75"
+					},
+					{
+						"name": "from",
+						"in": "query",
+						"required": true,
+						"description": "Start of the query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). All datetimes use local station time in `Y-m-d H:i:s` format (no timezone offset).",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T10:00:00"
+					},
+					{
+						"name": "to",
+						"in": "query",
+						"required": true,
+						"description": "End of the query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). All datetimes use local station time in `Y-m-d H:i:s` format (no timezone offset).",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T10:00:00"
+					},
+					{
+						"name": "resolution",
+						"in": "query",
+						"required": true,
+						"description": "Aggregation resolution.",
+						"schema": {},
+						"example": "5min"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "`TimeSeriesResponse`",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"id": 75,
+										"fromDateTime": "2026-06-18 00:00:00",
+										"toDateTime": "2026-06-20 23:59:59",
+										"lastDateTime": "2026-06-20 23:59:59",
+										"resolution": "daily",
+										"stationId": "135688:2302215",
+										"values": [
+											{
+												"datetime": "2026-06-18 00:00:00",
+												"sum": 6386.000000000006,
+												"value": 6386.000000000006
+											},
+											{
+												"datetime": "2026-06-19 00:00:00",
+												"sum": 10944.666666666677,
+												"value": 10944.666666666677
+											},
+											{
+												"datetime": "2026-06-20 00:00:00",
+												"sum": 9494.000000000036,
+												"value": 9494.000000000036
+											}
+										]
+									},
+									"$ref": "#/components/schemas/TimeSeriesResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Station not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "null"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/{type}/{stationId}/last-values/{resolution}": {
 			"get": {
 				"operationId": "count-aggregator.public.type.station.last-values",
@@ -666,6 +1066,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -686,10 +1087,11 @@
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -717,7 +1119,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-07"
+						"example": "2026-06-18"
 					},
 					{
 						"name": "anchor",
@@ -728,6 +1130,17 @@
 							"enum": ["lastDataAt"]
 						},
 						"example": "lastDataAt"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
 					}
 				],
 				"responses": {
@@ -738,19 +1151,26 @@
 								"schema": {
 									"example": {
 										"id": 75,
-										"fromDateTime": "2026-06-07 00:00:00",
-										"toDateTime": "2026-06-09 23:59:59",
-										"lastDateTime": "2026-06-09 23:59:59",
+										"fromDateTime": "2026-06-18 00:00:00",
+										"toDateTime": "2026-06-20 23:59:59",
+										"lastDateTime": "2026-06-20 23:59:59",
 										"resolution": "daily",
-										"stationId": "135688",
+										"stationId": "135688:2302215",
 										"values": [
 											{
-												"datetime": "2026-06-08 00:00:00",
-												"value": 6627.5
+												"datetime": "2026-06-18 00:00:00",
+												"sum": 6386.000000000006,
+												"value": 6386.000000000006
 											},
 											{
-												"datetime": "2026-06-09 00:00:00",
-												"value": 6130.67
+												"datetime": "2026-06-19 00:00:00",
+												"sum": 10944.666666666677,
+												"value": 10944.666666666677
+											},
+											{
+												"datetime": "2026-06-20 00:00:00",
+												"sum": 9494.000000000036,
+												"value": 9494.000000000036
 											}
 										]
 									},
@@ -805,6 +1225,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -845,10 +1266,11 @@
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -858,6 +1280,17 @@
 							]
 						},
 						"example": "daily"
+					},
+					{
+						"name": "metrics",
+						"in": "query",
+						"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: `sum`, `mean`, `min`, `max`, `last`. When omitted, returns the station type default metric only.",
+						"schema": {
+							"type": "string",
+							"description": "Comma-separated bucket statistics to return per timestamp. Allowed values: sum, mean, min, max, last.",
+							"example": "mean,min,max"
+						},
+						"example": "mean,min,max"
 					}
 				],
 				"responses": {
@@ -868,19 +1301,26 @@
 								"schema": {
 									"example": {
 										"id": 75,
-										"fromDateTime": "2026-06-07 00:00:00",
-										"toDateTime": "2026-06-09 23:59:59",
-										"lastDateTime": "2026-06-09 23:59:59",
+										"fromDateTime": "2026-06-18 00:00:00",
+										"toDateTime": "2026-06-20 23:59:59",
+										"lastDateTime": "2026-06-20 23:59:59",
 										"resolution": "daily",
-										"stationId": "135688",
+										"stationId": "135688:2302215",
 										"values": [
 											{
-												"datetime": "2026-06-08 00:00:00",
-												"value": 6627.5
+												"datetime": "2026-06-18 00:00:00",
+												"sum": 6386.000000000006,
+												"value": 6386.000000000006
 											},
 											{
-												"datetime": "2026-06-09 00:00:00",
-												"value": 6130.67
+												"datetime": "2026-06-19 00:00:00",
+												"sum": 10944.666666666677,
+												"value": 10944.666666666677
+											},
+											{
+												"datetime": "2026-06-20 00:00:00",
+												"sum": 9494.000000000036,
+												"value": 9494.000000000036
 											}
 										]
 									},
@@ -935,6 +1375,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -955,10 +1396,11 @@
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -985,7 +1427,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-07"
+						"example": "2026-06-18"
 					}
 				],
 				"responses": {
@@ -997,8 +1439,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-07 00:00:00",
-										"end_datetime": "2026-06-09 23:59:59"
+										"start_datetime": "2026-06-18 00:00:00",
+										"end_datetime": "2026-06-20 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1051,6 +1493,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1061,10 +1504,11 @@
 						"name": "resolution",
 						"in": "path",
 						"required": true,
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"schema": {
 							"type": "string",
 							"enum": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -1099,7 +1543,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-07"
+						"example": "2026-06-18"
 					}
 				],
 				"responses": {
@@ -1111,8 +1555,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-07 00:00:00",
-										"end_datetime": "2026-06-09 23:59:59"
+										"start_datetime": "2026-06-18 00:00:00",
+										"end_datetime": "2026-06-20 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1155,6 +1599,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1179,7 +1624,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-07 00:00:00"
+						"example": "2026-06-18 00:00:00"
 					},
 					{
 						"name": "to",
@@ -1189,7 +1634,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-09"
+						"example": "2026-06-20"
 					}
 				],
 				"responses": {
@@ -1201,8 +1646,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-07 00:00:00",
-										"end_datetime": "2026-06-09 23:59:59"
+										"start_datetime": "2026-06-18 00:00:00",
+										"end_datetime": "2026-06-20 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1255,6 +1700,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1269,7 +1715,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-07 00:00:00"
+						"example": "2026-06-18 00:00:00"
 					},
 					{
 						"name": "to",
@@ -1279,7 +1725,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-09"
+						"example": "2026-06-20"
 					},
 					{
 						"name": "stationIds",
@@ -1299,8 +1745,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-07 00:00:00",
-										"end_datetime": "2026-06-09 23:59:59"
+										"start_datetime": "2026-06-18 00:00:00",
+										"end_datetime": "2026-06-20 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1342,19 +1788,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-07 00:00:00",
-											"toDateTime": "2026-06-09 23:59:59",
-											"lastDateTime": "2026-06-09 23:59:59",
+											"fromDateTime": "2026-06-18 00:00:00",
+											"toDateTime": "2026-06-20 23:59:59",
+											"lastDateTime": "2026-06-20 23:59:59",
 											"resolution": "daily",
-											"stationId": "135688",
+											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-08 00:00:00",
-													"value": 6627.5
+													"datetime": "2026-06-18 00:00:00",
+													"sum": 6386.000000000006,
+													"value": 6386.000000000006
 												},
 												{
-													"datetime": "2026-06-09 00:00:00",
-													"value": 6130.67
+													"datetime": "2026-06-19 00:00:00",
+													"sum": 10944.666666666677,
+													"value": 10944.666666666677
+												},
+												{
+													"datetime": "2026-06-20 00:00:00",
+													"sum": 9494.000000000036,
+													"value": 9494.000000000036
 												}
 											]
 										}
@@ -1376,8 +1829,9 @@
 			"DataValuePoint": {
 				"type": "object",
 				"example": {
-					"datetime": "2026-06-08 00:00:00",
-					"value": 6627.5
+					"datetime": "2026-06-18 00:00:00",
+					"sum": 6386.000000000006,
+					"value": 6386.000000000006
 				},
 				"properties": {
 					"datetime": {
@@ -1385,20 +1839,36 @@
 						"description": "Local station datetime in `Y-m-d H:i:s` format (no timezone offset).",
 						"pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"
 					},
+					"sum": {
+						"type": ["number", "null"]
+					},
+					"mean": {
+						"type": ["number", "null"]
+					},
+					"min": {
+						"type": ["number", "null"]
+					},
+					"max": {
+						"type": ["number", "null"]
+					},
+					"last": {
+						"type": ["number", "null"]
+					},
 					"value": {
-						"type": "number"
+						"type": ["number", "null"],
+						"description": "Backward-compatible alias for the station type default metric when present in the bucket."
 					}
 				},
-				"required": ["datetime", "value"],
-				"title": "DataValuePoint"
+				"title": "DataValuePoint",
+				"required": ["datetime"]
 			},
 			"DetectedDataProblem": {
 				"type": "object",
 				"example": {
 					"type": "gap",
 					"station_id": "75",
-					"start_datetime": "2026-06-07 00:00:00",
-					"end_datetime": "2026-06-09 23:59:59"
+					"start_datetime": "2026-06-18 00:00:00",
+					"end_datetime": "2026-06-20 23:59:59"
 				},
 				"properties": {
 					"type": {
@@ -1464,32 +1934,24 @@
 								"coordinates": [10.587191, 52.286056]
 							},
 							"properties": {
-								"id": "140",
-								"originId": "102977",
-								"name": "Im Remenfeld (Pegelmessung ⌀/d)",
+								"id": "8041",
+								"originId": "102977:1777050",
+								"name": "Im Remenfeld (Pegelmessung mNN )",
 								"type": "waterLevelSurface",
 								"typeLabel": "Wasserstand",
 								"tags": [],
 								"hasData": true,
+								"countAggregatorType": "waterLevelSurface",
+								"countAggregatorStationId": 8041,
+								"unit": "m",
 								"tagGroups": {
-									"Art": {
+									"Gewässer": {
 										"andJunction": false,
 										"tags": ["Wasserstand"]
 									}
 								},
-								"lastDataAt": "2026-06-11T22:00:00+02:00",
-								"mapsightIconId": "fa-water-lower",
-								"legacyDashboardId": "",
-								"description": "",
-								"childStations": [],
-								"parentId": "",
-								"parentType": "",
-								"parentTypeLabel": "",
-								"stats": {
-									"total": 0,
-									"lastDays": [],
-									"computedAt": "2026-06-11T22:00:00+02:00"
-								}
+								"lastDataAt": "2026-06-21T14:45:00+02:00",
+								"mapsightIconId": "fa-water-lower"
 							}
 						}
 					]
@@ -1547,6 +2009,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -1566,11 +2029,151 @@
 						"type": "boolean",
 						"description": "Whether the station has imported time series data."
 					},
+					"countAggregatorType": {
+						"type": "string",
+						"description": "Station type identifier. See `GET /station-types` for currently available types.",
+						"enum": [
+							"airQualityCO",
+							"airQualityNO2",
+							"airQualityO3",
+							"airQualityPM10",
+							"airQualityPM25",
+							"airQualityStation",
+							"bicycleCount",
+							"bicycleSensorTotal",
+							"peopleCount",
+							"waterLevelSurface",
+							"waterTemp",
+							"weatherAirPressure",
+							"weatherHumidity",
+							"weatherLightingDistance",
+							"weatherLightnings",
+							"weatherRain",
+							"weatherStation",
+							"weatherSun",
+							"weatherTemp",
+							"weatherVaporPressure",
+							"weatherWindDirection",
+							"weatherWindSpeed",
+							"weatherWindSpeedMax"
+						]
+					},
+					"countAggregatorStationId": {
+						"type": "integer",
+						"description": "Stable numeric count aggregator station id for linking to the time-series/data view. Present when this feature represents one data station."
+					},
+					"countAggregatorLinks": {
+						"type": "array",
+						"description": "Structured data-view links for grouped multi-metric features. Present when a map feature represents multiple metric/time-series stations.",
+						"items": {
+							"type": "object",
+							"properties": {
+								"type": {
+									"type": "string",
+									"description": "Stable count aggregator metric type identifier.",
+									"enum": [
+										"airQualityCO",
+										"airQualityNO2",
+										"airQualityO3",
+										"airQualityPM10",
+										"airQualityPM25",
+										"airQualityStation",
+										"bicycleCount",
+										"bicycleSensorTotal",
+										"peopleCount",
+										"waterLevelSurface",
+										"waterTemp",
+										"weatherAirPressure",
+										"weatherHumidity",
+										"weatherLightingDistance",
+										"weatherLightnings",
+										"weatherRain",
+										"weatherStation",
+										"weatherSun",
+										"weatherTemp",
+										"weatherVaporPressure",
+										"weatherWindDirection",
+										"weatherWindSpeed",
+										"weatherWindSpeedMax"
+									]
+								},
+								"stationId": {
+									"type": "integer",
+									"description": "Stable numeric count aggregator station id for this metric."
+								}
+							},
+							"required": ["type", "stationId"]
+						}
+					},
 					"tagGroups": {
 						"type": "object",
-						"description": "Grouped filter tags for the frontend, keyed by group name (e.g. `Art`).",
+						"description": "Grouped filter tags for the frontend, keyed by user-facing group name (e.g. `Wetter`, `Mobilität`, `Gewässer`, `Luftqualität`, `Sonstige`).",
 						"properties": {
-							"Art": {
+							"Wetter": {
+								"type": "object",
+								"properties": {
+									"andJunction": {
+										"type": "boolean",
+										"description": "When false, any listed tag matches (OR). When true, all listed tags must match (AND)."
+									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								},
+								"required": ["andJunction", "tags"]
+							},
+							"Luftqualität": {
+								"type": "object",
+								"properties": {
+									"andJunction": {
+										"type": "boolean",
+										"description": "When false, any listed tag matches (OR). When true, all listed tags must match (AND)."
+									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								},
+								"required": ["andJunction", "tags"]
+							},
+							"Mobilität": {
+								"type": "object",
+								"properties": {
+									"andJunction": {
+										"type": "boolean",
+										"description": "When false, any listed tag matches (OR). When true, all listed tags must match (AND)."
+									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								},
+								"required": ["andJunction", "tags"]
+							},
+							"Gewässer": {
+								"type": "object",
+								"properties": {
+									"andJunction": {
+										"type": "boolean",
+										"description": "When false, any listed tag matches (OR). When true, all listed tags must match (AND)."
+									},
+									"tags": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								},
+								"required": ["andJunction", "tags"]
+							},
+							"Sonstige": {
 								"type": "object",
 								"properties": {
 									"andJunction": {
@@ -1603,6 +2206,10 @@
 						"type": "string",
 						"description": "Station description from the upstream data source. Omitted when not configured."
 					},
+					"unit": {
+						"type": "string",
+						"description": "Physical unit of the metric values as reported by the data source (e.g. `°C`, `µg/m³`). Omitted for dimensionless counters and container stations."
+					},
 					"childStations": {
 						"type": "array",
 						"description": "Metric child stations grouped under this container (grouped mode only).",
@@ -1624,9 +2231,25 @@
 									"type": "string",
 									"description": "Child station type identifier."
 								},
+								"countAggregatorType": {
+									"type": "string",
+									"description": "Stable child metric type identifier for linking to data views."
+								},
+								"countAggregatorStationId": {
+									"type": "integer",
+									"description": "Stable numeric child station id for linking to the time-series/data view."
+								},
 								"typeLabel": {
 									"type": "string",
 									"description": "German human-readable child type label."
+								},
+								"unit": {
+									"type": "string",
+									"description": "Physical unit of the metric values as reported by the data source (e.g. `°C`, `µg/m³`). Omitted for dimensionless counters and container stations."
+								},
+								"mapsightIconId": {
+									"type": "string",
+									"description": "Font Awesome icon identifier from the upstream data source (e.g. fa-water). Omitted when no icon is configured."
 								},
 								"stats": {
 									"type": "object",
@@ -1668,7 +2291,14 @@
 									]
 								}
 							},
-							"required": ["id", "originId", "type", "typeLabel"]
+							"required": [
+								"id",
+								"originId",
+								"type",
+								"countAggregatorType",
+								"countAggregatorStationId",
+								"typeLabel"
+							]
 						}
 					},
 					"parentId": {
@@ -1724,16 +2354,11 @@
 					"typeLabel",
 					"tags",
 					"hasData",
+					"countAggregatorType",
+					"countAggregatorStationId",
 					"tagGroups",
 					"lastDataAt",
-					"mapsightIconId",
-					"legacyDashboardId",
-					"description",
-					"childStations",
-					"parentId",
-					"parentType",
-					"parentTypeLabel",
-					"stats"
+					"mapsightIconId"
 				],
 				"title": "StationGeoJsonFeatureProperties"
 			},
@@ -1769,22 +2394,22 @@
 						{
 							"id": 75,
 							"type": "peopleCount",
-							"origin_id": "135688",
+							"origin_id": "135688:2302215",
 							"name": "Damm 2 (Anzahl Passanten)",
 							"status": null,
 							"label": "Damm 2 (Anzahl Passanten)",
 							"hasData": true,
-							"lastDataAt": "2026-06-11 22:00:00"
+							"lastDataAt": "2026-06-21 16:45:00"
 						},
 						{
 							"id": 15,
 							"type": "peopleCount",
-							"origin_id": "24433",
+							"origin_id": "24433:838432",
 							"name": "Damm (Anzahl Passanten)",
 							"status": null,
 							"label": "Damm (Anzahl Passanten)",
 							"hasData": true,
-							"lastDataAt": "2026-06-11 22:00:00"
+							"lastDataAt": "2026-06-21 16:45:00"
 						}
 					]
 				},
@@ -1798,6 +2423,51 @@
 				},
 				"required": ["data"],
 				"title": "StationListResponse"
+			},
+			"StationMetric": {
+				"type": "object",
+				"example": {
+					"id": "count",
+					"label": "Passanten",
+					"unit": null,
+					"displayPrecision": 0,
+					"defaultMetric": "sum",
+					"aggregation": ["sum"]
+				},
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"unit": {
+						"type": ["string", "null"]
+					},
+					"displayPrecision": {
+						"type": "integer"
+					},
+					"defaultMetric": {
+						"type": "string",
+						"enum": ["sum", "mean", "min", "max", "last"]
+					},
+					"aggregation": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"enum": ["sum", "mean", "min", "max", "last"]
+						}
+					}
+				},
+				"required": [
+					"id",
+					"label",
+					"unit",
+					"displayPrecision",
+					"defaultMetric",
+					"aggregation"
+				],
+				"title": "StationMetric"
 			},
 			"StationOverviewResponse": {
 				"type": "object",
@@ -1853,12 +2523,12 @@
 				"example": {
 					"id": 75,
 					"type": "peopleCount",
-					"origin_id": "135688",
+					"origin_id": "135688:2302215",
 					"name": "Damm 2 (Anzahl Passanten)",
 					"status": null,
 					"label": "Damm 2 (Anzahl Passanten)",
 					"hasData": true,
-					"lastDataAt": "2026-06-11 22:00:00"
+					"lastDataAt": "2026-06-21 16:45:00"
 				},
 				"properties": {
 					"id": {
@@ -1888,6 +2558,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -1910,6 +2581,27 @@
 					},
 					"lastDataAt": {
 						"type": ["string", "null"]
+					},
+					"defaultMetric": {
+						"type": "string",
+						"description": "Optional per-station override of the type default metric.",
+						"enum": ["sum", "mean", "min", "max", "last"]
+					},
+					"supportedResolutions": {
+						"type": "array",
+						"description": "Optional per-station override when available resolutions differ within a type.",
+						"items": {
+							"type": "string",
+							"enum": [
+								"5min",
+								"15min",
+								"hourly",
+								"daily",
+								"weekly",
+								"monthly",
+								"yearly"
+							]
+						}
 					}
 				},
 				"required": [
@@ -1924,24 +2616,110 @@
 				],
 				"title": "StationSummary"
 			},
+			"StationTypeCategory": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": ["id", "label"],
+				"title": "StationTypeCategory",
+				"example": {
+					"id": "weather",
+					"label": "Wetter"
+				}
+			},
 			"StationTypeListResponse": {
 				"type": "object",
 				"example": {
 					"data": [
 						{
-							"type": "airQualityCO",
-							"label": "Luftqualität (CO)",
-							"station_count": 2
+							"type": "peopleCount",
+							"label": "Passanten",
+							"station_count": 8,
+							"category": {
+								"id": "mobility",
+								"label": "Mobilität"
+							},
+							"defaultMetric": "sum",
+							"supportedResolutions": [
+								"15min",
+								"hourly",
+								"daily",
+								"weekly",
+								"monthly",
+								"yearly"
+							],
+							"metrics": [
+								{
+									"id": "count",
+									"label": "Passanten",
+									"unit": null,
+									"displayPrecision": 0,
+									"defaultMetric": "sum",
+									"aggregation": ["sum"]
+								}
+							]
 						},
 						{
-							"type": "airQualityNO2",
-							"label": "Luftqualität (NO2)",
-							"station_count": 2
+							"type": "bicycleCount",
+							"label": "Radverkehr",
+							"station_count": 8,
+							"category": {
+								"id": "mobility",
+								"label": "Mobilität"
+							},
+							"defaultMetric": "sum",
+							"supportedResolutions": [
+								"15min",
+								"hourly",
+								"daily",
+								"weekly",
+								"monthly",
+								"yearly"
+							],
+							"metrics": [
+								{
+									"id": "count",
+									"label": "Radverkehr",
+									"unit": null,
+									"displayPrecision": 0,
+									"defaultMetric": "sum",
+									"aggregation": ["sum"]
+								}
+							]
 						},
 						{
-							"type": "airQualityO3",
-							"label": "Luftqualität (O3)",
-							"station_count": 2
+							"type": "bicycleSensorTotal",
+							"label": "Radzähler",
+							"station_count": 9,
+							"category": {
+								"id": "mobility",
+								"label": "Mobilität"
+							},
+							"defaultMetric": "sum",
+							"supportedResolutions": [
+								"15min",
+								"hourly",
+								"daily",
+								"weekly",
+								"monthly",
+								"yearly"
+							],
+							"metrics": [
+								{
+									"id": "count",
+									"label": "Radzähler",
+									"unit": null,
+									"displayPrecision": 0,
+									"defaultMetric": "sum",
+									"aggregation": ["sum"]
+								}
+							]
 						}
 					]
 				},
@@ -1959,9 +2737,32 @@
 			"StationTypeSummary": {
 				"type": "object",
 				"example": {
-					"type": "airQualityCO",
-					"label": "Luftqualität (CO)",
-					"station_count": 2
+					"type": "peopleCount",
+					"label": "Passanten",
+					"station_count": 8,
+					"category": {
+						"id": "mobility",
+						"label": "Mobilität"
+					},
+					"defaultMetric": "sum",
+					"supportedResolutions": [
+						"15min",
+						"hourly",
+						"daily",
+						"weekly",
+						"monthly",
+						"yearly"
+					],
+					"metrics": [
+						{
+							"id": "count",
+							"label": "Passanten",
+							"unit": null,
+							"displayPrecision": 0,
+							"defaultMetric": "sum",
+							"aggregation": ["sum"]
+						}
+					]
 				},
 				"properties": {
 					"type": {
@@ -1988,6 +2789,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -1997,28 +2799,73 @@
 					},
 					"station_count": {
 						"type": "integer"
+					},
+					"category": {
+						"$ref": "#/components/schemas/StationTypeCategory"
+					},
+					"defaultMetric": {
+						"type": "string",
+						"description": "Default bucket statistic returned when the `metrics` query parameter is omitted.",
+						"enum": ["sum", "mean", "min", "max", "last"]
+					},
+					"supportedResolutions": {
+						"type": "array",
+						"description": "Resolutions available for this station type. Drives wizard and comparison resolution pickers.",
+						"items": {
+							"type": "string",
+							"enum": [
+								"5min",
+								"15min",
+								"hourly",
+								"daily",
+								"weekly",
+								"monthly",
+								"yearly"
+							]
+						}
+					},
+					"metrics": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/StationMetric"
+						}
 					}
 				},
-				"required": ["type", "label", "station_count"],
+				"required": [
+					"type",
+					"label",
+					"station_count",
+					"category",
+					"defaultMetric",
+					"supportedResolutions",
+					"metrics"
+				],
 				"title": "StationTypeSummary"
 			},
 			"TimeSeriesResponse": {
 				"type": "object",
 				"example": {
 					"id": 75,
-					"fromDateTime": "2026-06-07 00:00:00",
-					"toDateTime": "2026-06-09 23:59:59",
-					"lastDateTime": "2026-06-09 23:59:59",
+					"fromDateTime": "2026-06-18 00:00:00",
+					"toDateTime": "2026-06-20 23:59:59",
+					"lastDateTime": "2026-06-20 23:59:59",
 					"resolution": "daily",
-					"stationId": "135688",
+					"stationId": "135688:2302215",
 					"values": [
 						{
-							"datetime": "2026-06-08 00:00:00",
-							"value": 6627.5
+							"datetime": "2026-06-18 00:00:00",
+							"sum": 6386.000000000006,
+							"value": 6386.000000000006
 						},
 						{
-							"datetime": "2026-06-09 00:00:00",
-							"value": 6130.67
+							"datetime": "2026-06-19 00:00:00",
+							"sum": 10944.666666666677,
+							"value": 10944.666666666677
+						},
+						{
+							"datetime": "2026-06-20 00:00:00",
+							"sum": 9494.000000000036,
+							"value": 9494.000000000036
 						}
 					]
 				},
@@ -2043,8 +2890,9 @@
 					},
 					"resolution": {
 						"type": "string",
-						"description": "Time bucket used to aggregate count values. Allowed values: `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
+						"description": "Time bucket used to aggregate count values. Allowed values: `5min`, `15min`, `hourly`, `daily`, `weekly`, `monthly`, `yearly`.",
 						"enum": [
+							"5min",
 							"15min",
 							"hourly",
 							"daily",

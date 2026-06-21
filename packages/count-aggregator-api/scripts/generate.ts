@@ -49,4 +49,8 @@ generated = generated.replace(
 	/\]\);\n\nexport const countAggregatorApi = new Zodios\(endpoints\);\n\nexport function createApiClient[\s\S]*$/,
 	"] as const;\n",
 );
+generated = generated.replaceAll(
+	'name: "metrics",\n        type: "Query",\n        schema: z.enum(["sum", "mean", "min", "max", "last"]).optional(),',
+	'name: "metrics",\n        type: "Query",\n        schema: z.string().optional(),',
+);
 writeFileSync(output, generated);

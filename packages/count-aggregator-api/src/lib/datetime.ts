@@ -38,9 +38,14 @@ export function assertLocalDateTimeFields(series: TimeSeriesResponse): void {
 	}
 
 	for (const point of series.values) {
-		if (!LOCAL_DATE_TIME_PATTERN.test(point.datetime)) {
+		const datetime = point.datetime;
+		if (datetime === undefined) {
+			throw new Error("Expected values[].datetime to be present");
+		}
+
+		if (!LOCAL_DATE_TIME_PATTERN.test(datetime)) {
 			throw new Error(
-				`Expected values[].datetime in Y-m-d H:i:s format, got "${point.datetime}"`,
+				`Expected values[].datetime in Y-m-d H:i:s format, got "${datetime}"`,
 			);
 		}
 	}
