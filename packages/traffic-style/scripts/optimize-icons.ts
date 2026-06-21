@@ -13,7 +13,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 
-import sharp, {type Sharp} from "sharp";
+import sharp from "sharp";
 import {type Config, optimize as optimizeSvg} from "svgo";
 import {z} from "zod/v4";
 
@@ -514,7 +514,7 @@ async function processPngJob(job: FileJob, scale: number) {
 }
 
 async function writeRasterVariants(args: {
-	input: Sharp;
+	input: sharp.Sharp;
 	outPng?: string;
 	outWebp?: string;
 	targetWidth?: number;
@@ -577,7 +577,7 @@ function emptyManifest(): Manifest {
 	};
 }
 
-async function atomicToFile(pipeline: Sharp, outPath: string) {
+async function atomicToFile(pipeline: sharp.Sharp, outPath: string) {
 	await ensureDir(path.dirname(outPath));
 
 	const tempPath = makeTempPath(outPath);
