@@ -1,5 +1,5 @@
 import {forwardRef, Fragment, memo, useMemo, useRef} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 import {async} from "@mapsight/core/lib/base/actions";
 import {load} from "@mapsight/core/lib/feature-sources/actions";
@@ -57,10 +57,25 @@ function FeatureListGroupedContent(
 		featureSourceId !== undefined &&
 		featureSourceId !== "";
 
+	const memberSources = useSelector((state) => {
+		if (featureSource?.type !== "combined") {
+			return undefined;
+		}
+
+		const names = featureSource.featureSourceNames ?? [];
+		if (!names.length) {
+			return [];
+		}
+
+		const sources = state[FEATURE_SOURCES];
+		return names.map((name) => sources?.[name]);
+	});
+
 	const view = useMemo(
 		() =>
 			featureSourceToView(featureSource, {
 				enabled: hasSource,
+				memberSources,
 				refetch: hasSource
 					? () =>
 							dispatch(
@@ -68,7 +83,7 @@ function FeatureListGroupedContent(
 							)
 					: undefined,
 			}),
-		[dispatch, featureSource, featureSourceId, hasSource],
+		[dispatch, featureSource, featureSourceId, hasSource, memberSources],
 	);
 
 	const display = useAsyncStatusDisplay(view, {
