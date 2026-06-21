@@ -39,4 +39,13 @@ describe("searchStatusToView", () => {
 			searchStatusToView(SEARCH_STATUS_FOUND, [{id: "1"}]).data,
 		).toEqual([{id: "1"}]);
 	});
+
+	it("maps unknown status to pending fetch", () => {
+		const view = searchStatusToView(
+			"unknown" as typeof SEARCH_STATUS_LOADING,
+			[],
+		);
+		expect(view.status).toBe("pending");
+		expect(view.fetchStatus).toBe("fetching");
+	});
 });

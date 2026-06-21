@@ -53,5 +53,12 @@ export function searchStatusToView<T>(
 				data,
 				error: undefined,
 			};
+		default:
+			return {
+				status: "pending",
+				fetchStatus: "fetching",
+				data,
+				error: undefined,
+			};
 	}
 }
