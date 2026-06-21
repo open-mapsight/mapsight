@@ -1,5 +1,33 @@
 # @mapsight/count-aggregator-ui
 
+## 2.0.0
+
+### Minor Changes
+
+- 0ae0039: Add multi-metric chart series, metric selection in the wizard, and station-type-driven metric defaults from the platform API.
+- 4cc9440: Export station type categories from the API client and add `groupStationTypesByCategory` for hub-style UIs.
+- 98e314f: Add station-type unit and precision display for count-aggregator charts from platform metadata.
+
+### Patch Changes
+
+- 5743b4a: Export async status components subpath and migrate count-aggregator-ui loading states to shared QueryStatusRegion and AsyncStatusRegion.
+- feab8d1: Expose smart city metric action links, data view request events, and station type count summaries.
+- Updated dependencies [5743b4a]
+- Updated dependencies [5743b4a]
+- Updated dependencies [5743b4a]
+- Updated dependencies [0ae0039]
+- Updated dependencies [4cc9440]
+- Updated dependencies [98e314f]
+- Updated dependencies [7d48f25]
+- Updated dependencies [b7d0ece]
+- Updated dependencies [f16212e]
+- Updated dependencies [b919f0b]
+- Updated dependencies [0acda06]
+- Updated dependencies [b755930]
+- Updated dependencies [ee1ed8c]
+    - @mapsight/ui@7.3.0
+    - @mapsight/count-aggregator-api@1.1.0
+
 ## 1.0.1
 
 ### Patch Changes

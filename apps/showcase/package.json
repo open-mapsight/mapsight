@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/showcase",
 	"description": "Mapsight ecosystem showcase — UI demo, icon catalog, and package overview",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"private": true,
 	"type": "module",
 	"dependencies": {

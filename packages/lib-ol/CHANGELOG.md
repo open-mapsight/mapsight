@@ -1,5 +1,15 @@
 # @mapsight/lib-ol
 
+## 4.2.0
+
+### Minor Changes
+
+- 8cf6b58: Expose `geometryCollectionIndex` and `geometryCollectionTypeIndex` in the vector style env while styling `GeometryCollection` children.
+
+### Patch Changes
+
+- 9fa5b74: Apply fill and stroke opacity declarations to paint color alpha.
+
 ## 4.1.0
 
 ### Minor Changes

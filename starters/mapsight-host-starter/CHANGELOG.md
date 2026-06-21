@@ -1,17 +1,13 @@
-# @mapsight/showcase
+# mapsight-host-starter
 
-## 0.1.2
+## 0.1.1
 
 ### Patch Changes
 
+- 7d48f25: Bump dependencies from Dependabot ([#96](https://github.com/open-mapsight/mapsight/pull/96)).
 - Updated dependencies [5743b4a]
 - Updated dependencies [5743b4a]
 - Updated dependencies [5743b4a]
-- Updated dependencies [b8b31e2]
-- Updated dependencies [0ae0039]
-- Updated dependencies [0ae0039]
-- Updated dependencies [4cc9440]
-- Updated dependencies [98e314f]
 - Updated dependencies [8cf6b58]
 - Updated dependencies [dd17aa3]
 - Updated dependencies [7d48f25]
@@ -23,17 +19,9 @@
 - Updated dependencies [0acda06]
 - Updated dependencies [b755930]
 - Updated dependencies [ee1ed8c]
-- Updated dependencies [feab8d1]
+- Updated dependencies [ee02e23]
 - Updated dependencies [38f03ad]
     - @mapsight/ui@7.3.0
-    - @mapsight/count-aggregator-ui@2.0.0
-    - @mapsight/core@14.4.0
-    - @mapsight/count-aggregator-api@1.1.0
     - @mapsight/lib-ol@4.2.0
     - @mapsight/traffic-style@5.3.0
-
-## 0.1.1
-
-### Patch Changes
-
-- Updated internal dependencies.
+    - @mapsight/vite-host-embed@1.1.1

@@ -1,5 +1,20 @@
 # @mapsight/traffic-style
 
+## 5.3.0
+
+### Minor Changes
+
+- 38f03ad: Add icon metadata helpers, fix variant fallback, align composed default pictogram icons with the legacy bitmap footprint, add a `traffic-copy-assets` CLI for filtered deploy copies, and keep the published icon catalog split to PNG/SVG-only directories.
+
+### Patch Changes
+
+- dd17aa3: Bump dependencies from Dependabot ([#3](https://github.com/open-mapsight/mapsight/pull/3)).
+- 7d48f25: Bump dependencies from Dependabot ([#96](https://github.com/open-mapsight/mapsight/pull/96)).
+- 7296703: Preserve a feature's `mapsightIconId` when layer env icon defaults are present, unless `env.mapsightIconUse` is set to `force`.
+- Updated dependencies [8cf6b58]
+- Updated dependencies [9fa5b74]
+    - @mapsight/lib-ol@4.2.0
+
 ## 5.2.0
 
 ### Minor Changes
