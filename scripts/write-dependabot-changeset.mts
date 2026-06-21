@@ -4,6 +4,7 @@ import path from "node:path";
 
 const baseSha = process.env.BASE_SHA;
 const prNumber = process.env.PR_NUMBER;
+const repository = process.env.GITHUB_REPOSITORY ?? "open-mapsight/mapsight";
 
 if (!baseSha || !prNumber) {
 	console.error("BASE_SHA and PR_NUMBER are required.");
@@ -54,30 +55,9 @@ function readPackageName(packageJsonPath: string): string | null {
 	return typeof packageJson.name === "string" ? packageJson.name : null;
 }
 
-function buildSummary(changedPackageJsonPaths: string[]): string {
-	const lines = ["Bump dependencies from Dependabot.", ""];
-
-	for (const packageJsonPath of changedPackageJsonPaths) {
-		const diff = execFileSync(
-			"git",
-			["diff", `${baseSha}...HEAD`, "--", packageJsonPath],
-			{encoding: "utf8"},
-		);
-		const dependencyLines = diff
-			.split("\n")
-			.filter((line) => /^[+-]\s+"[^"]+":\s*"/.test(line))
-			.map((line) => line.replace(/^\+/, "+ ").replace(/^-/, "- "));
-
-		if (dependencyLines.length === 0) {
-			continue;
-		}
-
-		lines.push(`${packageJsonPath}:`);
-		lines.push(...dependencyLines);
-		lines.push("");
-	}
-
-	return lines.join("\n").trimEnd();
+function buildSummaryLine(pullRequestNumber: string, repo: string): string {
+	const url = `https://github.com/${repo}/pull/${pullRequestNumber}`;
+	return `Bump dependencies from Dependabot ([#${pullRequestNumber}](${url})).`;
 }
 
 const changedPackageJsonPaths = gitDiffNameOnly("--", "**/package.json").filter(
@@ -109,7 +89,7 @@ if (packages.size === 0) {
 const frontMatter = [...packages.keys()]
 	.map((name) => `"${name}": patch`)
 	.join("\n");
-const summary = buildSummary(changedPackageJsonPaths);
+const summary = buildSummaryLine(prNumber, repository);
 const contents = `---
 ${frontMatter}
 ---
