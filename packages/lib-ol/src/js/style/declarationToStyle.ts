@@ -1,3 +1,4 @@
+import {asArray} from "ol/color";
 import LRUCache from "ol/structs/LRUCache";
 import type Image from "ol/style/Image";
 import type Style from "ol/style/Style";
@@ -48,6 +49,21 @@ function getDefaultCache() {
 		defaultCache = new LRUCache(DEFAULT_CACHE_SIZE);
 	}
 	return defaultCache;
+}
+
+function applyPaintOpacity(style: StyleLiteral) {
+	const opacity = style.opacity;
+	if (typeof opacity !== "number" && typeof opacity !== "string") {
+		return;
+	}
+
+	delete style.opacity;
+
+	const color = Array.isArray(style.color)
+		? [...style.color]
+		: [...asArray(String(style.color ?? "#000"))];
+	color[3] = (color[3] ?? 1) * numberValue(opacity);
+	style.color = color as [number, number, number, number];
 }
 
 function _declarationToStyle(
@@ -238,6 +254,10 @@ function _declarationToStyle(
 				style[key] = declarationValueValue;
 		}
 	});
+
+	if (type === "fill" || type === "stroke") {
+		applyPaintOpacity(style);
+	}
 
 	const StyleCtor = constructorsMap[type] as
 		| (new (style: StyleLiteral) => Style)
