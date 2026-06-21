@@ -1,5 +1,11 @@
 # @mapsight/traffic-style
 
+## 5.3.1
+
+### Patch Changes
+
+- 1631abc: Replace removed `bicycleCount` station type with `bicycleSensorTotal` across the OpenAPI contract, UI, showcase demo, and smart-city icon aliases.
+
 ## 5.3.0
 
 ### Minor Changes

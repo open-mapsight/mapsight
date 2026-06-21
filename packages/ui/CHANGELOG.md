@@ -1,5 +1,15 @@
 # @mapsight/ui
 
+## 7.3.1
+
+### Patch Changes
+
+- 68d687a: Stop xhr-json feature source autoload loops on HTTP errors with empty status text (for example 404 during partial deploys).
+- Updated dependencies [1631abc]
+- Updated dependencies [68d687a]
+    - @mapsight/traffic-style@5.3.1
+    - @mapsight/core@14.4.1
+
 ## 7.3.0
 
 ### Minor Changes
