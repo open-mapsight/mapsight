@@ -5,6 +5,7 @@ import type {ThunkDispatch} from "redux-thunk";
 
 import {async} from "@mapsight/core/lib/base/actions";
 import {load} from "@mapsight/core/lib/feature-sources/actions";
+import {hasFeatureSourceLoadError} from "@mapsight/core/lib/feature-sources/selectors";
 import type {Action, State} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES} from "../../../config/constants/controllers";
@@ -23,7 +24,7 @@ export default function useAutoloadFeatureSource(
 		return (
 			!featureSource?.data &&
 			!featureSource?.isLoading &&
-			!featureSource?.error
+			!hasFeatureSourceLoadError(featureSource)
 		);
 	});
 

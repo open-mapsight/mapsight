@@ -29,6 +29,29 @@ describe("load", () => {
 		expect(dispatch).not.toHaveBeenCalled();
 	});
 
+	it("does not retry immediately after a failed load with an empty error message", async () => {
+		const dispatch = vi.fn();
+		const getState = () =>
+			({
+				[controllerName]: {
+					hotels: {
+						type: "xhr-json",
+						url: "/missing.geojson",
+						isLoading: false,
+						error: "",
+						data: null,
+						lastUpdate: null,
+						lastActionType: null,
+					},
+				},
+			}) as Record<string, FeatureSourcesState>;
+
+		const thunk = load(controllerName, "hotels");
+		await thunk(dispatch, getState, undefined);
+
+		expect(dispatch).not.toHaveBeenCalled();
+	});
+
 	it("retries a failed load when forceRefresh is set", async () => {
 		const dispatch = vi.fn();
 		const getState = () =>

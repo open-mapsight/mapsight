@@ -11,13 +11,16 @@ const locationBaseUrl = (() => {
 	return window.location.href;
 })();
 
+function createHttpError(status: number, statusText: string) {
+	const detail = statusText.trim();
+	return new Error(detail ? `HTTP ${status} ${detail}` : `HTTP ${status}`);
+}
+
 export async function load(
 	state: XhrJsonLoaderState,
 ): Promise<FeatureSourceData | undefined> {
 	if (!state.url) {
-		await Promise.resolve();
-		await Promise.reject("url missing");
-		return;
+		throw new Error("url missing");
 	}
 
 	const url = new URL(
@@ -31,9 +34,8 @@ export async function load(
 	);
 
 	const response = await fetch(url.href, {redirect: "follow"});
-	if (response.status !== 200) {
-		await Promise.reject(response.statusText);
-		return;
+	if (!response.ok) {
+		throw createHttpError(response.status, response.statusText);
 	}
 	return (await response.json()) as FeatureSourceData | undefined;
 }

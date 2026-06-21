@@ -1,3 +1,4 @@
+import {hasFeatureSourceLoadError} from "@/lib/feature-sources/selectors";
 import type {
 	FeatureSourceData,
 	FeatureSourcesState,
@@ -13,7 +14,7 @@ export function combineFeatureSources(
 
 	for (const id of featureSourceNames) {
 		const source = featureSourcesState?.[id];
-		if (!source?.error && source?.data) {
+		if (!hasFeatureSourceLoadError(source) && source?.data) {
 			combinedFeatures = [
 				...combinedFeatures,
 				...(source.data.features ?? []),
