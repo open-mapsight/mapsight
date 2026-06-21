@@ -35,6 +35,7 @@ const config: CountAggregatorConfig = {
 			id: appId,
 			apiBaseUrl,
 			stationType: "bicycleCount",
+			defaultMetric: "sum",
 			defaultResolution: "daily",
 		},
 	},
@@ -59,7 +60,16 @@ const stationsById = new Map<number, Station>([
 
 function createData(values: StationValue[]): AggregatedValuesData {
 	return {
-		stationsById: new Map([[150, {stationId: 150, values}]]),
+		stationsById: new Map([
+			[
+				150,
+				{
+					stationId: 150,
+					values,
+					valuesByMetric: {sum: values},
+				},
+			],
+		]),
 	};
 }
 
@@ -113,7 +123,7 @@ describe("ResultStep", () => {
 		});
 
 		expect(link.getAttribute("href")).toBe(
-			"/mock/msp/public/count-aggregator/bicycleCount/values/2026-06-01/2026-06-02/daily?stationIds=150&format=csv",
+			"/mock/msp/public/count-aggregator/bicycleCount/values/2026-06-01/2026-06-02/daily?stationIds=150&format=csv&metrics=sum",
 		);
 		expect(screen.getByTestId("time-series-chart")).toBeTruthy();
 	});

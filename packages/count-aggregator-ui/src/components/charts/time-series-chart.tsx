@@ -1,5 +1,6 @@
 import {type ReactElement, useMemo} from "react";
 
+import type {BucketMetric} from "@mapsight/count-aggregator-api";
 import {
 	Area,
 	AreaChart,
@@ -14,13 +15,19 @@ import {
 	YAxis,
 } from "recharts";
 
+import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
+import {
+	chartSeriesKey,
+	normalizeSelectedMetrics,
+} from "../../lib/bucket-metrics.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
+import {getMetricLabels} from "../../lib/i18n.js";
 import {formatStationLabel} from "../../lib/stations.js";
 import {getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
-	StationValue,
+	ChartSeries,
 	TimeSeriesChartProps,
 } from "../../types";
 import {
@@ -30,10 +37,6 @@ import {
 } from "../ui/chart.js";
 
 const DATA_LIMIT = 5_000;
-
-function stationDataKey(stationId: number): string {
-	return `station_${stationId}`;
-}
 
 function getFallbackResolutionMs(resolution: string): number {
 	switch (resolution) {
@@ -79,18 +82,15 @@ function getColumnDomainPadding(
 }
 
 function mergeSeriesData(
-	selectedStationIds: readonly number[],
-	valuesByStationId: Map<number, StationValue[]>,
+	series: readonly ChartSeries[],
 ): Array<Record<string, number>> {
 	const byTimestamp = new Map<number, Record<string, number>>();
 
-	for (const stationId of selectedStationIds) {
-		const values = valuesByStationId.get(stationId) ?? [];
-
-		for (const {date, value} of values) {
+	for (const entry of series) {
+		for (const {date, value} of entry.values) {
 			const ts = date.getTime();
 			const row = byTimestamp.get(ts) ?? {date: ts};
-			row[stationDataKey(stationId)] = value;
+			row[entry.key] = value;
 			byTimestamp.set(ts, row);
 		}
 	}
@@ -100,39 +100,49 @@ function mergeSeriesData(
 	);
 }
 
-function limitValuesByStation(
-	selectedStationIds: readonly number[],
-	valuesByStationId: Map<number, StationValue[]>,
-): {
+function limitChartSeries(series: readonly ChartSeries[]): {
 	tooMuchData: boolean;
-	limitedValues: Map<number, StationValue[]>;
+	limitedSeries: ChartSeries[];
 } {
-	const perStationDataLimit = Math.max(
+	const perSeriesDataLimit = Math.max(
 		1,
-		Math.floor(DATA_LIMIT / selectedStationIds.length),
+		Math.floor(DATA_LIMIT / Math.max(series.length, 1)),
 	);
 
 	let tooMuchData = false;
-	const limitedValues = new Map<number, StationValue[]>();
-
-	for (const stationId of selectedStationIds) {
-		const values = valuesByStationId.get(stationId) ?? [];
-
-		if (values.length > perStationDataLimit) {
+	const limitedSeries = series.map((entry) => {
+		if (entry.values.length > perSeriesDataLimit) {
 			tooMuchData = true;
-			limitedValues.set(stationId, values.slice(0, perStationDataLimit));
-		} else {
-			limitedValues.set(stationId, values);
+			return {
+				...entry,
+				values: entry.values.slice(0, perSeriesDataLimit),
+			};
 		}
+
+		return entry;
+	});
+
+	return {tooMuchData, limitedSeries};
+}
+
+function buildSeriesLabel(
+	stationLabel: string,
+	metric: BucketMetric,
+	metricLabels: Record<BucketMetric, string>,
+	showMetricInLabel: boolean,
+): string {
+	if (!showMetricInLabel) {
+		return stationLabel;
 	}
 
-	return {tooMuchData, limitedValues};
+	return `${stationLabel} (${metricLabels[metric]})`;
 }
 
 export function TimeSeriesChart({
 	type,
 	selectedStationIds,
-	valuesByStationId,
+	selectedMetrics,
+	chartSeries,
 	resolution,
 	startDate,
 	endDate,
@@ -140,6 +150,13 @@ export function TimeSeriesChart({
 	className = "msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px]",
 	emptyMessage = "No measurements are available for the current selection.",
 }: TimeSeriesChartProps): ReactElement {
+	const {t} = useCountAggregatorI18n();
+	const metricLabels = getMetricLabels(t);
+	const showMetricInLabel =
+		(selectedMetrics?.length ?? chartSeries?.length ?? 0) > 1 ||
+		new Set(chartSeries?.map((entry) => entry.stationId)).size !==
+			(chartSeries?.length ?? 0);
+
 	const tooltipFormatter = useMemo(
 		() =>
 			new Intl.DateTimeFormat(
@@ -157,26 +174,42 @@ export function TimeSeriesChart({
 	);
 
 	const {chartConfig, chartData} = useMemo(() => {
-		if (valuesByStationId === undefined) {
+		if (chartSeries === undefined) {
 			return {chartConfig: {}, chartData: []};
 		}
 
 		const config: ChartConfig = {};
-		for (const [index, stationId] of selectedStationIds.entries()) {
-			const station = stationsById?.get(stationId);
-			config[stationDataKey(stationId)] = {
-				label:
-					station === undefined
-						? stationId.toString()
-						: formatStationLabel(station),
-				color: getColorForStationIndex(index),
+		for (const entry of chartSeries) {
+			const station = stationsById?.get(entry.stationId);
+			const stationLabel =
+				station === undefined
+					? entry.stationId.toString()
+					: formatStationLabel(station);
+
+			config[entry.key] = {
+				label: buildSeriesLabel(
+					stationLabel,
+					entry.metric,
+					metricLabels,
+					showMetricInLabel,
+				),
+				color: getColorForStationIndex(
+					selectedStationIds.indexOf(entry.stationId),
+				),
 			};
 		}
 
-		const data = mergeSeriesData(selectedStationIds, valuesByStationId);
-
-		return {chartConfig: config, chartData: data};
-	}, [selectedStationIds, stationsById, valuesByStationId]);
+		return {
+			chartConfig: config,
+			chartData: mergeSeriesData(chartSeries),
+		};
+	}, [
+		chartSeries,
+		metricLabels,
+		selectedStationIds,
+		showMetricInLabel,
+		stationsById,
+	]);
 
 	const xDomain = useMemo(() => {
 		const start = startDate.getTime();
@@ -198,15 +231,16 @@ export function TimeSeriesChart({
 		dataKey: "date",
 	};
 
-	const seriesElements = selectedStationIds.map((stationId, index) => {
-		const color = getColorForStationIndex(index);
-		const key = stationDataKey(stationId);
+	const seriesElements = (chartSeries ?? []).map((entry) => {
+		const color = getColorForStationIndex(
+			selectedStationIds.indexOf(entry.stationId),
+		);
 
 		if (type === "column") {
 			return (
 				<Bar
-					key={key}
-					dataKey={key}
+					key={entry.key}
+					dataKey={entry.key}
 					fill={color}
 					isAnimationActive={false}
 					maxBarSize={18}
@@ -217,9 +251,9 @@ export function TimeSeriesChart({
 		if (type === "area") {
 			return (
 				<Area
-					key={key}
+					key={entry.key}
 					type="monotone"
-					dataKey={key}
+					dataKey={entry.key}
 					stroke={color}
 					fill={color}
 					fillOpacity={0.2}
@@ -232,9 +266,9 @@ export function TimeSeriesChart({
 
 		return (
 			<Line
-				key={key}
+				key={entry.key}
 				type="monotone"
-				dataKey={key}
+				dataKey={entry.key}
 				stroke={color}
 				strokeWidth={2}
 				isAnimationActive={false}
@@ -246,7 +280,7 @@ export function TimeSeriesChart({
 	const ChartComponent =
 		type === "column" ? BarChart : type === "area" ? AreaChart : LineChart;
 
-	if (valuesByStationId !== undefined && chartData.length === 0) {
+	if (chartSeries !== undefined && chartData.length === 0) {
 		return (
 			<div className={`msca:relative msca:w-full ${className}`}>
 				<div
@@ -282,7 +316,7 @@ export function TimeSeriesChart({
 						<YAxis
 							tickLine={false}
 							axisLine={false}
-							allowDecimals={false}
+							allowDecimals={true}
 							width={56}
 							tickFormatter={(value: number) =>
 								numberFormatter.format(value)
@@ -311,32 +345,49 @@ export function TimeSeriesChart({
 export function prepareChartValues(
 	selectedStationIds: readonly number[],
 	data: AggregatedValuesData | undefined,
+	selectedMetrics: readonly BucketMetric[] | undefined,
+	fallbackMetric: BucketMetric,
 ): {
 	tooMuchData: boolean;
-	valuesByStationId: Map<number, StationValue[]> | undefined;
+	chartSeries: ChartSeries[] | undefined;
 } {
 	if (data === undefined || selectedStationIds.length === 0) {
-		return {tooMuchData: false, valuesByStationId: undefined};
+		return {tooMuchData: false, chartSeries: undefined};
 	}
 
+	const metrics = normalizeSelectedMetrics(selectedMetrics, fallbackMetric);
 	const stations = selectedStationIds
 		.map((stationId) => data.stationsById.get(stationId))
 		.filter(isDefined);
 
 	if (stations.length === 0) {
-		return {tooMuchData: false, valuesByStationId: undefined};
+		return {tooMuchData: false, chartSeries: undefined};
 	}
 
-	const valuesByStationId = new Map(
-		stations.map((station) => [station.stationId, station.values]),
-	);
+	const chartSeries: ChartSeries[] = [];
 
-	const {tooMuchData, limitedValues} = limitValuesByStation(
-		selectedStationIds,
-		valuesByStationId,
-	);
+	for (const station of stations) {
+		for (const metric of metrics) {
+			const values =
+				station.valuesByMetric[metric] ??
+				(metric === metrics[0] ? station.values : []);
 
-	return {tooMuchData, valuesByStationId: limitedValues};
+			if (values.length === 0) {
+				continue;
+			}
+
+			chartSeries.push({
+				key: chartSeriesKey(station.stationId, metric),
+				stationId: station.stationId,
+				metric,
+				values,
+			});
+		}
+	}
+
+	const {tooMuchData, limitedSeries} = limitChartSeries(chartSeries);
+
+	return {tooMuchData, chartSeries: limitedSeries};
 }
 
 export {DATA_LIMIT};

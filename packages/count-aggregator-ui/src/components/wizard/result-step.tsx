@@ -1,11 +1,13 @@
 import {Fragment, type ReactElement, useMemo} from "react";
 
 import {buildCsvExportUrl} from "@mapsight/count-aggregator-api";
+import type {BucketMetric} from "@mapsight/count-aggregator-api";
 
 import {
 	useAppConfig,
 	useCountAggregatorI18n,
 } from "../../context/count-aggregator-provider.js";
+import {normalizeSelectedMetrics} from "../../lib/bucket-metrics.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
 import {getResolutionLabels} from "../../lib/i18n.js";
@@ -39,6 +41,7 @@ export function ResultStep({
 	showChartTypeSelect = false,
 	onChartTypeChange,
 	onEditSelection,
+	selectedMetrics = [],
 }: {
 	appId: string;
 	selectedStationIds: readonly number[];
@@ -48,6 +51,7 @@ export function ResultStep({
 	stationsById: Map<number, Station> | undefined;
 	chartType?: ChartType;
 	resolution?: DataResolution;
+	selectedMetrics?: readonly BucketMetric[];
 	showExport?: boolean;
 	showChartTypeSelect?: boolean;
 	onChartTypeChange?: (chartType: ChartType) => void;
@@ -55,6 +59,10 @@ export function ResultStep({
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
+	const metrics = normalizeSelectedMetrics(
+		selectedMetrics,
+		appConfig.defaultMetric ?? "sum",
+	);
 	const errorMessages: string[] = [];
 
 	if (selectedStationIds.length === 0) {
@@ -88,9 +96,15 @@ export function ResultStep({
 			.filter(isDefined);
 	}, [selectedStationIds, stationsById]);
 
-	const {tooMuchData, valuesByStationId} = useMemo(
-		() => prepareChartValues(selectedStationIds, data),
-		[data, selectedStationIds],
+	const {tooMuchData, chartSeries} = useMemo(
+		() =>
+			prepareChartValues(
+				selectedStationIds,
+				data,
+				metrics,
+				appConfig.defaultMetric ?? "sum",
+			),
+		[appConfig.defaultMetric, data, metrics, selectedStationIds],
 	);
 
 	const resolutionLabel =
@@ -108,12 +122,14 @@ export function ResultStep({
 			to: dateToYmd(endDate),
 			resolution,
 			stationIds: [...selectedStationIds],
+			metrics,
 		});
 	}, [
 		appConfig.apiBaseUrl,
 		appConfig.stationType,
 		endDate,
 		isValid,
+		metrics,
 		resolution,
 		selectedStationIds,
 		startDate,
@@ -154,7 +170,8 @@ export function ResultStep({
 						<TimeSeriesChart
 							type={chartType}
 							selectedStationIds={selectedStationIds}
-							valuesByStationId={valuesByStationId}
+							selectedMetrics={metrics}
+							chartSeries={chartSeries}
 							resolution={resolution}
 							startDate={startDate}
 							endDate={endDate}

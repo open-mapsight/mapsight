@@ -1,4 +1,6 @@
 import {
+	type BucketMetric,
+	type StationType,
 	createCountAggregatorClient,
 	getStationLastValues,
 	getStationSums,
@@ -19,6 +21,17 @@ export const FEATURE_DETAILS_LAST_VALUES_ANCHOR = "lastDataAt" as const;
 
 function scaleValue(value: number, config: MetricWidgetConfig): number {
 	return config.valueScale ? value * config.valueScale : value;
+}
+
+function defaultChartMetric(stationType: StationType): BucketMetric {
+	switch (stationType) {
+		case "bicycleCount":
+		case "bicycleSensorTotal":
+		case "peopleCount":
+			return "sum";
+		default:
+			return "mean";
+	}
 }
 
 export async function fetchMetricTimeSeries(
@@ -44,8 +57,10 @@ export async function fetchMetricTimeSeries(
 
 	return {
 		config,
-		points: mapTimeSeriesToChartPoints(response, (value) =>
-			scaleValue(value, config),
+		points: mapTimeSeriesToChartPoints(
+			response,
+			defaultChartMetric(stationType),
+			(value) => scaleValue(value, config),
 		) satisfies MetricSeriesPoint[],
 		lastUpdatedAt: response.lastDateTime
 			? parseLocalDateTime(response.lastDateTime)

@@ -7,12 +7,13 @@ import {
 	listStationTypes,
 	listStations,
 } from "@mapsight/count-aggregator-api";
-import type {Resolution} from "@mapsight/count-aggregator-api";
+import type {BucketMetric, Resolution} from "@mapsight/count-aggregator-api";
 import type {UseQueryResult} from "@tanstack/react-query";
 import {useQuery} from "@tanstack/react-query";
 
 import {parsePresetsResponse} from "../config/platform.js";
 import {useAppConfig} from "../context/count-aggregator-provider.js";
+import {normalizeSelectedMetrics} from "../lib/bucket-metrics.js";
 import {dateToYmd} from "../lib/dates.js";
 import {parseTrafficEventsResponse} from "../lib/utils.js";
 import type {
@@ -103,10 +104,15 @@ export function useLastValues(
 		resolution: Resolution;
 		limit?: number;
 		startDate?: string;
+		metrics?: readonly BucketMetric[];
 	},
 	options?: {enabled?: boolean},
 ): AggregatedValuesData | undefined {
 	const appConfig = useAppConfig(appId);
+	const metrics = normalizeSelectedMetrics(
+		request.metrics,
+		appConfig.defaultMetric ?? "sum",
+	);
 
 	const req = useMemo(() => {
 		if (request.stationIds.length === 0) {
@@ -118,12 +124,14 @@ export function useLastValues(
 			resolution: request.resolution,
 			limit: request.limit,
 			startDate: request.startDate,
+			metrics,
 		};
 	}, [
 		request.stationIds,
 		request.resolution,
 		request.limit,
 		request.startDate,
+		metrics,
 	]);
 
 	const {data} = useQuery({
@@ -143,8 +151,9 @@ export function useLastValues(
 				stationIds: req!.stationIds,
 				limit: req!.limit,
 				startDate: req!.startDate,
+				metrics: req!.metrics,
 			});
-			return mapTimeSeriesMap(response);
+			return mapTimeSeriesMap(response, req!.metrics);
 		},
 		staleTime: STALE_TIME_MS,
 		enabled: (options?.enabled ?? true) && req !== null,
@@ -161,6 +170,10 @@ export function useAggregatedValues(
 	const appConfig = useAppConfig(appId);
 	const resolution =
 		request.resolution ?? appConfig.defaultResolution ?? "daily";
+	const metrics = normalizeSelectedMetrics(
+		request.metrics,
+		appConfig.defaultMetric ?? "sum",
+	);
 
 	const req = useMemo(() => {
 		if (
@@ -174,11 +187,18 @@ export function useAggregatedValues(
 				from: dateToYmd(request.startDate),
 				to: dateToYmd(request.endDate),
 				resolution,
+				metrics,
 			};
 		}
 
 		return null;
-	}, [request.stationIds, request.startDate, request.endDate, resolution]);
+	}, [
+		request.stationIds,
+		request.startDate,
+		request.endDate,
+		resolution,
+		metrics,
+	]);
 
 	const {data} = useQuery({
 		queryKey: [
@@ -197,8 +217,9 @@ export function useAggregatedValues(
 				to: req!.to,
 				resolution: req!.resolution,
 				stationIds: req!.stationIds,
+				metrics: req!.metrics,
 			});
-			return mapTimeSeriesMap(response);
+			return mapTimeSeriesMap(response, req!.metrics);
 		},
 		staleTime: STALE_TIME_MS,
 		enabled: (options?.enabled ?? true) && req !== null,

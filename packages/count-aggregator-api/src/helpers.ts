@@ -1,5 +1,6 @@
 import type {CountAggregatorClient} from "./client.js";
 import type {
+	BucketMetric,
 	Resolution,
 	StationListResponse,
 	StationOverviewResponse,
@@ -19,6 +20,16 @@ export interface ValuesRequest {
 	to: string;
 	resolution: Resolution;
 	stationIds: readonly number[];
+	metrics?: readonly BucketMetric[];
+}
+
+export interface ValuesQueryRequest {
+	type: StationType;
+	from: string;
+	to: string;
+	resolution: Resolution;
+	stationIds: readonly number[];
+	metrics?: readonly BucketMetric[];
 }
 
 export interface LastValuesRequest {
@@ -28,6 +39,7 @@ export interface LastValuesRequest {
 	limit?: number;
 	startDate?: string;
 	anchor?: "lastDataAt";
+	metrics?: readonly BucketMetric[];
 }
 
 export interface StationLastValuesRequest {
@@ -37,10 +49,19 @@ export interface StationLastValuesRequest {
 	limit?: number;
 	startDate?: string;
 	anchor?: "lastDataAt";
+	metrics?: readonly BucketMetric[];
 }
 
 function joinStationIds(stationIds: readonly number[]): string {
 	return stationIds.join(",");
+}
+
+function joinMetrics(
+	metrics: readonly BucketMetric[] | undefined,
+): string | undefined {
+	return metrics !== undefined && metrics.length > 0
+		? metrics.join(",")
+		: undefined;
 }
 
 export function listStationTypes(
@@ -75,6 +96,25 @@ export function getValues(
 		},
 		queries: {
 			stationIds: joinStationIds(request.stationIds),
+			metrics: joinMetrics(request.metrics),
+		},
+	});
+}
+
+export function getValuesQuery(
+	client: CountAggregatorClient,
+	request: ValuesQueryRequest,
+): Promise<TimeSeriesMapResponse> {
+	return client["count-aggregator.public.type.values.query"]({
+		params: {
+			type: request.type,
+		},
+		queries: {
+			stationIds: joinStationIds(request.stationIds),
+			from: request.from,
+			to: request.to,
+			resolution: request.resolution,
+			metrics: joinMetrics(request.metrics),
 		},
 	});
 }
@@ -93,6 +133,7 @@ export function getLastValues(
 			limit: request.limit,
 			startDate: request.startDate,
 			anchor: request.anchor,
+			metrics: joinMetrics(request.metrics),
 		},
 	});
 }
@@ -111,6 +152,7 @@ export function getStationLastValues(
 			limit: request.limit,
 			startDate: request.startDate,
 			anchor: request.anchor,
+			metrics: joinMetrics(request.metrics),
 		},
 	});
 }
