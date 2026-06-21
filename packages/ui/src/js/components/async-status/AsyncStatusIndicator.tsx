@@ -22,12 +22,14 @@ function AsyncStatusIndicator({
 	"aria-live": ariaLive = "polite",
 }: AsyncStatusIndicatorProps) {
 	const resolvedMessage =
-		message ??
-		(phase === "loading"
-			? translate("ui.async-status.loading")
-			: phase === "error"
-				? translate("ui.async-status.error")
-				: translate("ui.async-status.refreshing"));
+		message === null
+			? null
+			: (message ??
+				(phase === "loading"
+					? translate("ui.async-status.loading")
+					: phase === "error"
+						? translate("ui.async-status.error")
+						: translate("ui.async-status.refreshing")));
 
 	return (
 		<div
@@ -37,11 +39,11 @@ function AsyncStatusIndicator({
 		>
 			{phase === "error" && error ? (
 				error
-			) : (
+			) : resolvedMessage ? (
 				<span className="ms3-async-status__message">
 					{resolvedMessage}
 				</span>
-			)}
+			) : null}
 		</div>
 	);
 }

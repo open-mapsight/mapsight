@@ -103,10 +103,14 @@ function AsyncStatusRegion<T = unknown>({
 				<AsyncStatusIndicator
 					error={
 						<>
-							<span className="ms3-async-status__message">
-								{errorMessage ??
-									translate("ui.async-status.error")}
-							</span>
+							{typeof errorMessage === "string" ? (
+								<span className="ms3-async-status__message">
+									{errorMessage ??
+										translate("ui.async-status.error")}
+								</span>
+							) : (
+								errorMessage
+							)}
 							{retryAction}
 						</>
 					}
