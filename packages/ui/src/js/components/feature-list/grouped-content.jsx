@@ -1,16 +1,16 @@
-import {forwardRef, Fragment, memo, useMemo, useRef} from "react";
+import {Fragment, forwardRef, memo, useMemo, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
 import {async} from "@mapsight/core/lib/base/actions";
 import {load} from "@mapsight/core/lib/feature-sources/actions";
 
-import AsyncStatusRegion from "../async-status/AsyncStatusRegion";
 import {FEATURE_SOURCES} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
 import {
 	featureSourceToView,
 	useAsyncStatusDisplay,
 } from "../../lib/async-status";
+import AsyncStatusRegion from "../async-status/AsyncStatusRegion";
 import FeatureListContent from "./content";
 import {useFeatureListContext} from "./context";
 import FeatureListEmptyMessage from "./empty-message";
@@ -135,7 +135,11 @@ function FeatureListGroupedContent(
 			);
 		} else {
 			listContent = (
-				<FeatureListContent status={listStatus} {...listProps} {...rootProps}>
+				<FeatureListContent
+					status={listStatus}
+					{...listProps}
+					{...rootProps}
+				>
 					{itemGroups.items[0]}
 				</FeatureListContent>
 			);
