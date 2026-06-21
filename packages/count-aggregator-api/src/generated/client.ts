@@ -25,7 +25,7 @@ type StationGeoJsonFeatureProperties = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -34,7 +34,6 @@ type StationGeoJsonFeatureProperties = {
     | "airQualityPM10"
     | "airQualityPM25"
     | "airQualityStation"
-    | "bicycleCount"
     | "bicycleSensorTotal"
     | "peopleCount"
     | "waterLevelSurface"
@@ -48,7 +47,6 @@ type StationGeoJsonFeatureProperties = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
-    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   /**
@@ -66,7 +64,7 @@ type StationGeoJsonFeatureProperties = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
    */
   countAggregatorType:
     | "airQualityCO"
@@ -75,7 +73,6 @@ type StationGeoJsonFeatureProperties = {
     | "airQualityPM10"
     | "airQualityPM25"
     | "airQualityStation"
-    | "bicycleCount"
     | "bicycleSensorTotal"
     | "peopleCount"
     | "waterLevelSurface"
@@ -89,7 +86,6 @@ type StationGeoJsonFeatureProperties = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
-    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   /**
@@ -103,7 +99,7 @@ type StationGeoJsonFeatureProperties = {
         /**
          * Stable count aggregator metric type identifier.
          *
-         * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+         * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
          */
         type:
           | "airQualityCO"
@@ -112,7 +108,6 @@ type StationGeoJsonFeatureProperties = {
           | "airQualityPM10"
           | "airQualityPM25"
           | "airQualityStation"
-          | "bicycleCount"
           | "bicycleSensorTotal"
           | "peopleCount"
           | "waterLevelSurface"
@@ -126,7 +121,6 @@ type StationGeoJsonFeatureProperties = {
           | "weatherSun"
           | "weatherTemp"
           | "weatherVaporPressure"
-          | "weatherWindDirection"
           | "weatherWindSpeed"
           | "weatherWindSpeedMax";
         /**
@@ -304,7 +298,7 @@ type StationSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -313,7 +307,6 @@ type StationSummary = {
     | "airQualityPM10"
     | "airQualityPM25"
     | "airQualityStation"
-    | "bicycleCount"
     | "bicycleSensorTotal"
     | "peopleCount"
     | "waterLevelSurface"
@@ -327,7 +320,6 @@ type StationSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
-    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   origin_id: string;
@@ -405,7 +397,7 @@ type StationTypeSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleCount, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
@@ -414,7 +406,6 @@ type StationTypeSummary = {
     | "airQualityPM10"
     | "airQualityPM25"
     | "airQualityStation"
-    | "bicycleCount"
     | "bicycleSensorTotal"
     | "peopleCount"
     | "waterLevelSurface"
@@ -428,7 +419,6 @@ type StationTypeSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
-    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   label: string;
@@ -525,7 +515,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "airQualityPM10",
         "airQualityPM25",
         "airQualityStation",
-        "bicycleCount",
         "bicycleSensorTotal",
         "peopleCount",
         "waterLevelSurface",
@@ -539,7 +528,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "weatherSun",
         "weatherTemp",
         "weatherVaporPressure",
-        "weatherWindDirection",
         "weatherWindSpeed",
         "weatherWindSpeedMax",
       ]),
@@ -553,7 +541,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "airQualityPM10",
         "airQualityPM25",
         "airQualityStation",
-        "bicycleCount",
         "bicycleSensorTotal",
         "peopleCount",
         "waterLevelSurface",
@@ -567,7 +554,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "weatherSun",
         "weatherTemp",
         "weatherVaporPressure",
-        "weatherWindDirection",
         "weatherWindSpeed",
         "weatherWindSpeedMax",
       ]),
@@ -583,7 +569,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
                 "airQualityPM10",
                 "airQualityPM25",
                 "airQualityStation",
-                "bicycleCount",
                 "bicycleSensorTotal",
                 "peopleCount",
                 "waterLevelSurface",
@@ -597,7 +582,6 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
                 "weatherSun",
                 "weatherTemp",
                 "weatherVaporPressure",
-                "weatherWindDirection",
                 "weatherWindSpeed",
                 "weatherWindSpeedMax",
               ]),
@@ -727,7 +711,6 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
       "airQualityPM10",
       "airQualityPM25",
       "airQualityStation",
-      "bicycleCount",
       "bicycleSensorTotal",
       "peopleCount",
       "waterLevelSurface",
@@ -741,7 +724,6 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
-      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
@@ -778,7 +760,6 @@ const StationSummary: z.ZodType<StationSummary> = z
       "airQualityPM10",
       "airQualityPM25",
       "airQualityStation",
-      "bicycleCount",
       "bicycleSensorTotal",
       "peopleCount",
       "waterLevelSurface",
@@ -792,7 +773,6 @@ const StationSummary: z.ZodType<StationSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
-      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
@@ -913,7 +893,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -927,7 +906,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -989,7 +967,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1003,7 +980,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1075,7 +1051,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1089,7 +1064,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1135,7 +1109,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1149,7 +1122,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1185,7 +1157,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1199,7 +1170,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1255,7 +1225,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1269,7 +1238,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1333,7 +1301,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1347,7 +1314,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1402,7 +1368,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1416,7 +1381,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1486,7 +1450,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1500,7 +1463,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1539,7 +1501,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1553,7 +1514,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1582,7 +1542,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1596,7 +1555,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1650,7 +1608,6 @@ export const endpoints = [
           "airQualityPM10",
           "airQualityPM25",
           "airQualityStation",
-          "bicycleCount",
           "bicycleSensorTotal",
           "peopleCount",
           "waterLevelSurface",
@@ -1664,7 +1621,6 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
-          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1748,7 +1704,6 @@ export const endpoints = [
             "airQualityPM10",
             "airQualityPM25",
             "airQualityStation",
-            "bicycleCount",
             "bicycleSensorTotal",
             "peopleCount",
             "waterLevelSurface",
@@ -1762,7 +1717,6 @@ export const endpoints = [
             "weatherSun",
             "weatherTemp",
             "weatherVaporPressure",
-            "weatherWindDirection",
             "weatherWindSpeed",
             "weatherWindSpeedMax",
           ])

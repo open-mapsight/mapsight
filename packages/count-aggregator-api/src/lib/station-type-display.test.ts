@@ -34,7 +34,7 @@ describe("resolveStationTypeDisplay", () => {
 	it("returns dimensionless defaults when metrics are absent", () => {
 		expect(
 			resolveStationTypeDisplay({
-				type: "bicycleCount",
+				type: "bicycleSensorTotal",
 				label: "Radverkehr",
 				station_count: 1,
 				category: {id: "mobility", label: "Mobilität"},

@@ -13,7 +13,7 @@ describe("mapStationList", () => {
 			data: [
 				{
 					id: 150,
-					type: "bicycleCount",
+					type: "bicycleSensorTotal",
 					origin_id: "138969",
 					name: "Example Counter A",
 					status: null,
@@ -28,7 +28,7 @@ describe("mapStationList", () => {
 
 		expect(result.get(150)).toEqual({
 			id: 150,
-			typeName: "bicycleCount",
+			typeName: "bicycleSensorTotal",
 			status: null,
 			label: "Example Counter A",
 			originId: "138969",

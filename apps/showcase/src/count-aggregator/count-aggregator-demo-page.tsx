@@ -36,9 +36,9 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 			apiBaseUrl: COUNT_AGGREGATOR_MOCK_API_BASE,
 		});
 
-		if (next.apps.bicycleCount !== undefined) {
-			next.apps.bicycleCount = {
-				...next.apps.bicycleCount,
+		if (next.apps.bicycleSensorTotal !== undefined) {
+			next.apps.bicycleSensorTotal = {
+				...next.apps.bicycleSensorTotal,
 				uiVariant: "stepped",
 				features: {
 					resolutionSelect: true,
@@ -74,7 +74,7 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 					queryClient={queryClient}
 					className="count-aggregator-demo__surface"
 				>
-					<CountAggregatorWizard appId="bicycleCount" />
+					<CountAggregatorWizard appId="bicycleSensorTotal" />
 				</CountAggregatorShell>
 			) : null}
 		</QueryStatusRegion>

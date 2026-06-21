@@ -25,7 +25,7 @@ vi.mock("../charts/time-series-chart.js", async (importActual) => {
 });
 
 const apiBaseUrl = "/mock/msp/public/count-aggregator";
-const appId = "bicycleCount";
+const appId = "bicycleSensorTotal";
 const startDate = new Date(2026, 5, 1);
 const endDate = new Date(2026, 5, 2);
 
@@ -34,7 +34,7 @@ const config: CountAggregatorConfig = {
 		[appId]: {
 			id: appId,
 			apiBaseUrl,
-			stationType: "bicycleCount",
+			stationType: "bicycleSensorTotal",
 			defaultMetric: "sum",
 			defaultResolution: "daily",
 		},
@@ -50,7 +50,7 @@ const stationsById = new Map<number, Station>([
 		150,
 		{
 			id: 150,
-			typeName: "bicycleCount",
+			typeName: "bicycleSensorTotal",
 			status: null,
 			label: "Example Counter A",
 			originId: "138969",
@@ -123,7 +123,7 @@ describe("ResultStep", () => {
 		});
 
 		expect(link.getAttribute("href")).toBe(
-			"/mock/msp/public/count-aggregator/bicycleCount/values/2026-06-01/2026-06-02/daily?stationIds=150&format=csv&metrics=sum",
+			"/mock/msp/public/count-aggregator/bicycleSensorTotal/values/2026-06-01/2026-06-02/daily?stationIds=150&format=csv&metrics=sum",
 		);
 		expect(screen.getByTestId("time-series-chart")).toBeTruthy();
 	});

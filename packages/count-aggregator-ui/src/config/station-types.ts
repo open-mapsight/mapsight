@@ -32,7 +32,7 @@ function createAppConfigForStationType(
 	apiBaseUrl: string,
 ): CountAggregatorAppConfig {
 	const stationType = entry.type;
-	const isBicycleCount = stationType === "bicycleCount";
+	const isBicycleSensorTotal = stationType === "bicycleSensorTotal";
 	const availableMetrics = entry.metrics.flatMap(
 		(metric) => metric.aggregation,
 	);
@@ -58,13 +58,13 @@ function createAppConfigForStationType(
 		primaryMetricLabel: display.primaryMetricLabel,
 		valueUnit: display.valueUnit,
 		displayPrecision: display.displayPrecision,
-		uiVariant: isBicycleCount ? "stepped" : "single-page",
+		uiVariant: isBicycleSensorTotal ? "stepped" : "single-page",
 		defaultResolution: pickDefaultResolution(supportedResolutions),
-		defaultChartType: isBicycleCount ? "area" : "line",
+		defaultChartType: isBicycleSensorTotal ? "area" : "line",
 		resolutions: supportedResolutions,
 		features: {
 			resolutionSelect: true,
-			chartTypeSelect: isBicycleCount,
+			chartTypeSelect: isBicycleSensorTotal,
 			metricSelect: uniqueMetrics.length > 1,
 			export: true,
 			presets: false,

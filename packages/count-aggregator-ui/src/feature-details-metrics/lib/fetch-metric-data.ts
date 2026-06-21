@@ -29,7 +29,6 @@ function scaleValue(value: number, config: MetricWidgetConfig): number {
 
 function defaultChartMetric(stationType: StationType): BucketMetric {
 	switch (stationType) {
-		case "bicycleCount":
 		case "bicycleSensorTotal":
 		case "peopleCount":
 			return "sum";

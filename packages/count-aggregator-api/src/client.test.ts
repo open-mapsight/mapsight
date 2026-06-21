@@ -33,14 +33,14 @@ describe("createCountAggregatorClient", () => {
 
 	it("fetches and validates station list", async () => {
 		const fetchFn = createMockFetch((url) => {
-			expect(url).toBe(`${baseUrl}/bicycleCount/stations`);
+			expect(url).toBe(`${baseUrl}/bicycleSensorTotal/stations`);
 			return stationListFixture;
 		});
 
 		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
 		const result = schemas.StationListResponse.parse(
 			await client["count-aggregator.public.type.stations"]({
-				params: {type: "bicycleCount"},
+				params: {type: "bicycleSensorTotal"},
 			}),
 		);
 
@@ -50,7 +50,7 @@ describe("createCountAggregatorClient", () => {
 	it("fetches and validates multi-station values", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(
-				`${baseUrl}/bicycleCount/values/2025-06-01/2025-06-07/daily?stationIds=150`,
+				`${baseUrl}/bicycleSensorTotal/values/2025-06-01/2025-06-07/daily?stationIds=150`,
 			);
 			return valuesMapFixture;
 		});
@@ -59,7 +59,7 @@ describe("createCountAggregatorClient", () => {
 		const result = parseTimeSeriesMap(
 			await client["count-aggregator.public.type.values"]({
 				params: {
-					type: "bicycleCount",
+					type: "bicycleSensorTotal",
 					from: "2025-06-01",
 					to: "2025-06-07",
 					resolution: "daily",
@@ -85,7 +85,7 @@ describe("createCountAggregatorClient", () => {
 
 		await expect(
 			client["count-aggregator.public.type.stations"]({
-				params: {type: "bicycleCount"},
+				params: {type: "bicycleSensorTotal"},
 			}),
 		).rejects.toMatchObject({status: 404});
 	});

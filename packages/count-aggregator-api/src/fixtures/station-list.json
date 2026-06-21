@@ -2,7 +2,7 @@
 	"data": [
 		{
 			"id": 150,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "138969",
 			"name": "Example Counter A",
 			"status": null,
@@ -12,7 +12,7 @@
 		},
 		{
 			"id": 151,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "138970",
 			"name": "Example Counter B",
 			"status": null,
@@ -22,7 +22,7 @@
 		},
 		{
 			"id": 101,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29921",
 			"name": "Example Counter C",
 			"status": null,
@@ -32,7 +32,7 @@
 		},
 		{
 			"id": 100,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29922",
 			"name": "Example Counter D",
 			"status": null,
@@ -42,7 +42,7 @@
 		},
 		{
 			"id": 102,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29923",
 			"name": "Example Counter E",
 			"status": null,
@@ -52,7 +52,7 @@
 		},
 		{
 			"id": 103,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29924",
 			"name": "Example Counter F",
 			"status": null,
@@ -62,7 +62,7 @@
 		},
 		{
 			"id": 104,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29925",
 			"name": "Example Counter G",
 			"status": null,
@@ -72,7 +72,7 @@
 		},
 		{
 			"id": 105,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29926",
 			"name": "Example Counter H",
 			"status": null,
@@ -82,7 +82,7 @@
 		},
 		{
 			"id": 106,
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"origin_id": "29927",
 			"name": "Example Counter I",
 			"status": null,

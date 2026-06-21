@@ -20,10 +20,10 @@ function createValues(count: number): StationValue[] {
 
 const config: CountAggregatorConfig = {
 	apps: {
-		bicycleCount: {
-			id: "bicycleCount",
+		bicycleSensorTotal: {
+			id: "bicycleSensorTotal",
 			apiBaseUrl: "/mock",
-			stationType: "bicycleCount",
+			stationType: "bicycleSensorTotal",
 			defaultMetric: "sum",
 			displayPrecision: 0,
 			valueUnit: null,
@@ -125,7 +125,7 @@ describe("TimeSeriesChart", () => {
 		render(
 			<CountAggregatorProvider config={config}>
 				{createElement(TimeSeriesChart, {
-					appId: "bicycleCount",
+					appId: "bicycleSensorTotal",
 					type: "column",
 					selectedStationIds: [1],
 					selectedMetrics: ["sum"],

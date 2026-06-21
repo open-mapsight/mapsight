@@ -48,14 +48,14 @@ vi.mock("@mapsight/count-aggregator-api", async (importActual) => {
 });
 
 const apiBaseUrl = "/mock/msp/public/count-aggregator";
-const appId = "bicycleCount";
+const appId = "bicycleSensorTotal";
 
 const config: CountAggregatorConfig = {
 	apps: {
 		[appId]: {
 			id: appId,
 			apiBaseUrl,
-			stationType: "bicycleCount",
+			stationType: "bicycleSensorTotal",
 			defaultMetric: "sum",
 			defaultResolution: "daily",
 		},
@@ -70,7 +70,7 @@ const stationListResponse: StationListResponse = {
 	data: [
 		{
 			id: 150,
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			origin_id: "138969",
 			name: "Example Counter A",
 			status: null,
@@ -96,7 +96,7 @@ const valuesResponse: TimeSeriesMapResponse = {
 const stationTypeListResponse: StationTypeListResponse = {
 	data: [
 		{
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			label: "Bicycle counters",
 			station_count: 12,
 			category: {id: "traffic", label: "Traffic"},
@@ -176,7 +176,7 @@ describe("count-aggregator hooks", () => {
 
 		await waitFor(() =>
 			expect(
-				result.current.stationCountsByType?.get("bicycleCount"),
+				result.current.stationCountsByType?.get("bicycleSensorTotal"),
 			).toBe(12),
 		);
 
@@ -202,7 +202,7 @@ describe("count-aggregator hooks", () => {
 		);
 		expect(mocks.listStations).toHaveBeenCalledWith(
 			mocks.mockClient,
-			"bicycleCount",
+			"bicycleSensorTotal",
 		);
 		expect(
 			queryClient.getQueryData([
@@ -210,7 +210,7 @@ describe("count-aggregator hooks", () => {
 				appId,
 				"stations",
 				apiBaseUrl,
-				"bicycleCount",
+				"bicycleSensorTotal",
 			]),
 		).toBe(result.current);
 	});
@@ -233,7 +233,7 @@ describe("count-aggregator hooks", () => {
 		);
 
 		expect(mocks.getLastValues).toHaveBeenCalledWith(mocks.mockClient, {
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			...request,
 			metrics: ["sum"],
 		} satisfies LastValuesRequest);
@@ -243,7 +243,7 @@ describe("count-aggregator hooks", () => {
 				appId,
 				"last-values",
 				apiBaseUrl,
-				"bicycleCount",
+				"bicycleSensorTotal",
 				{...request, metrics: ["sum"]},
 			]),
 		).toBe(result.current);
@@ -273,7 +273,7 @@ describe("count-aggregator hooks", () => {
 			expect(result.current?.stationsById.get(150)).toBeDefined(),
 		);
 		expect(mocks.getValues).toHaveBeenCalledWith(mocks.mockClient, {
-			type: "bicycleCount",
+			type: "bicycleSensorTotal",
 			from: "2026-06-01",
 			to: "2026-06-02",
 			resolution: "daily",

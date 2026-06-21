@@ -1,7 +1,7 @@
 {
 	"data": [
 		{
-			"type": "bicycleCount",
+			"type": "bicycleSensorTotal",
 			"label": "Bicycle counters",
 			"station_count": 9,
 			"category": {
