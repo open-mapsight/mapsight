@@ -60,6 +60,10 @@
 			"types": "./dist/lib/async-status/index.d.ts",
 			"default": "./dist/lib/async-status/index.js"
 		},
+		"./async-status/components": {
+			"types": "./dist/components/async-status/index.d.ts",
+			"default": "./dist/components/async-status/index.js"
+		},
 		"./react-query": {
 			"types": "./dist/react-query/index.d.ts",
 			"default": "./dist/react-query/index.js"

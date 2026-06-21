@@ -40,9 +40,13 @@ function AsyncStatusIndicator({
 			{phase === "error" && error ? (
 				error
 			) : resolvedMessage ? (
-				<span className="ms3-async-status__message">
-					{resolvedMessage}
-				</span>
+				typeof resolvedMessage === "string" ? (
+					<span className="ms3-async-status__message">
+						{resolvedMessage}
+					</span>
+				) : (
+					resolvedMessage
+				)
 			) : null}
 		</div>
 	);
