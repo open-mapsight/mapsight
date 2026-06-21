@@ -56,6 +56,7 @@ const config: CountAggregatorConfig = {
 			id: appId,
 			apiBaseUrl,
 			stationType: "bicycleCount",
+			defaultMetric: "sum",
 			defaultResolution: "daily",
 		},
 	},
@@ -98,11 +99,37 @@ const stationTypeListResponse: StationTypeListResponse = {
 			type: "bicycleCount",
 			label: "Bicycle counters",
 			station_count: 12,
+			category: {id: "traffic", label: "Traffic"},
+			defaultMetric: "sum",
+			supportedResolutions: ["daily", "hourly"],
+			metrics: [
+				{
+					id: "sum",
+					label: "Sum",
+					unit: null,
+					displayPrecision: 0,
+					defaultMetric: "sum",
+					aggregation: ["sum"],
+				},
+			],
 		},
 		{
 			type: "peopleCount",
 			label: "People counters",
 			station_count: 4,
+			category: {id: "traffic", label: "Traffic"},
+			defaultMetric: "sum",
+			supportedResolutions: ["daily", "hourly"],
+			metrics: [
+				{
+					id: "sum",
+					label: "Sum",
+					unit: null,
+					displayPrecision: 0,
+					defaultMetric: "sum",
+					aggregation: ["sum"],
+				},
+			],
 		},
 	],
 };
@@ -208,6 +235,7 @@ describe("count-aggregator hooks", () => {
 		expect(mocks.getLastValues).toHaveBeenCalledWith(mocks.mockClient, {
 			type: "bicycleCount",
 			...request,
+			metrics: ["sum"],
 		} satisfies LastValuesRequest);
 		expect(
 			queryClient.getQueryData([
@@ -216,7 +244,7 @@ describe("count-aggregator hooks", () => {
 				"last-values",
 				apiBaseUrl,
 				"bicycleCount",
-				request,
+				{...request, metrics: ["sum"]},
 			]),
 		).toBe(result.current);
 	});
@@ -250,6 +278,7 @@ describe("count-aggregator hooks", () => {
 			to: "2026-06-02",
 			resolution: "daily",
 			stationIds: [150],
+			metrics: ["sum"],
 		} satisfies ApiValuesRequest);
 	});
 });

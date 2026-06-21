@@ -17,6 +17,7 @@ export interface OverviewChartConfig {
 	resolution: DataResolution;
 	limit: number;
 	chartType: ChartType;
+	metrics?: readonly import("@mapsight/count-aggregator-api").BucketMetric[];
 }
 
 function OverviewChart({
@@ -38,24 +39,33 @@ function OverviewChart({
 }): ReactElement {
 	const appConfig = useAppConfig(appId);
 	const {t} = useCountAggregatorI18n();
+	const selectedMetrics = config.metrics ??
+		appConfig.defaultChartMetrics ?? [appConfig.defaultMetric ?? "sum"];
 	const data = useLastValues(appId, {
 		stationIds,
 		resolution: config.resolution,
 		limit: config.limit,
+		metrics: selectedMetrics,
 	});
 
-	const {valuesByStationId} = useMemo(
-		() => prepareChartValues(stationIds, data),
-		[data, stationIds],
+	const {chartSeries} = useMemo(
+		() =>
+			prepareChartValues(
+				stationIds,
+				data,
+				selectedMetrics,
+				appConfig.defaultMetric ?? "sum",
+			),
+		[appConfig.defaultMetric, data, selectedMetrics, stationIds],
 	);
 
 	const {startDate, endDate} = useMemo(() => {
 		let min = Number.POSITIVE_INFINITY;
 		let max = Number.NEGATIVE_INFINITY;
 
-		if (valuesByStationId !== undefined) {
-			for (const values of valuesByStationId.values()) {
-				for (const {date} of values) {
+		if (chartSeries !== undefined) {
+			for (const series of chartSeries) {
+				for (const {date} of series.values) {
 					const ts = date.getTime();
 					if (ts < min) min = ts;
 					if (ts > max) max = ts;
@@ -69,7 +79,7 @@ function OverviewChart({
 		}
 
 		return {startDate: new Date(min), endDate: new Date(max)};
-	}, [valuesByStationId]);
+	}, [chartSeries]);
 
 	const csvHref = useMemo(
 		() =>
@@ -78,12 +88,14 @@ function OverviewChart({
 				resolution: config.resolution,
 				stationIds: [...stationIds],
 				limit: config.limit,
+				metrics: selectedMetrics,
 			}),
 		[
 			appConfig.apiBaseUrl,
 			appConfig.stationType,
 			config.limit,
 			config.resolution,
+			selectedMetrics,
 			stationIds,
 		],
 	);
@@ -105,7 +117,8 @@ function OverviewChart({
 					<TimeSeriesChart
 						type={config.chartType}
 						selectedStationIds={stationIds}
-						valuesByStationId={valuesByStationId}
+						selectedMetrics={selectedMetrics}
+						chartSeries={chartSeries}
 						resolution={config.resolution}
 						startDate={startDate}
 						endDate={endDate}

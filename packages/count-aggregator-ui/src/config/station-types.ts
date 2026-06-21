@@ -1,8 +1,10 @@
 import type {StationTypeSummary} from "@mapsight/count-aggregator-api";
 
 import type {
+	BucketMetric,
 	CountAggregatorAppConfig,
 	CountAggregatorConfig,
+	Resolution,
 	StationType,
 } from "../types";
 
@@ -15,23 +17,51 @@ export interface StationTypeAppsConfigOptions {
 	translations?: CountAggregatorConfig["translations"];
 }
 
+function pickDefaultResolution(
+	supportedResolutions: readonly Resolution[],
+): Resolution {
+	if (supportedResolutions.includes("daily")) {
+		return "daily";
+	}
+
+	return supportedResolutions[0] ?? "daily";
+}
+
 function createAppConfigForStationType(
-	stationType: StationType,
+	entry: StationTypeSummary,
 	apiBaseUrl: string,
 ): CountAggregatorAppConfig {
+	const stationType = entry.type as StationType;
 	const isBicycleCount = stationType === "bicycleCount";
+	const availableMetrics = entry.metrics.flatMap(
+		(metric) => metric.aggregation,
+	);
+	const uniqueMetrics = [
+		...new Set(
+			availableMetrics.length > 0
+				? availableMetrics
+				: [entry.defaultMetric],
+		),
+	] as BucketMetric[];
+	const defaultMetric = entry.defaultMetric;
+	const defaultChartMetrics = [defaultMetric];
+	const supportedResolutions = entry.supportedResolutions;
 
 	return {
 		id: stationType,
 		apiBaseUrl,
 		stationType,
+		defaultMetric,
+		availableMetrics: uniqueMetrics,
+		defaultChartMetrics,
 		uiVariant: isBicycleCount ? "stepped" : "single-page",
-		defaultResolution: "daily",
+		defaultResolution: pickDefaultResolution(supportedResolutions),
 		defaultChartType: isBicycleCount ? "area" : "line",
-		resolutions: ["hourly", "daily", "weekly", "monthly", "yearly"],
+		resolutions: supportedResolutions,
 		features: {
 			resolutionSelect: true,
 			chartTypeSelect: isBicycleCount,
+			metricSelect: uniqueMetrics.length > 1,
 			export: true,
 			presets: false,
 			events: false,
@@ -47,10 +77,7 @@ export function createStationTypeAppsConfig(
 	const apps: Record<string, CountAggregatorAppConfig> = {};
 
 	for (const entry of stationTypes) {
-		apps[entry.type] = createAppConfigForStationType(
-			entry.type,
-			apiBaseUrl,
-		);
+		apps[entry.type] = createAppConfigForStationType(entry, apiBaseUrl);
 	}
 
 	return {
