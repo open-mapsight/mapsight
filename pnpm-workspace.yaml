@@ -42,8 +42,11 @@ catalog:
 minimumReleaseAgeExclude:
   - postcss@8.5.10
 overrides:
+  js-yaml@>=4.0.0 <4.2.0: ^4.2.0
   postcss@<8.5.10: ^8.5.10
+  read-yaml-file@<2.1.0: ^2.1.0
   shell-quote@<1.8.4: ^1.8.4
+  undici@<7.28.0: ^7.28.0
   "@mapsight/core": "workspace:*"
   "@mapsight/lib-js": "workspace:*"
   "@mapsight/lib-ol": "workspace:*"
