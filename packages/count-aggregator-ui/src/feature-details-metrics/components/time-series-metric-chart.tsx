@@ -12,6 +12,10 @@ import {
 } from "recharts";
 
 import {
+	Y_AXIS_UNIT_LABEL_TOP_MARGIN,
+	createYAxisUnitLabel,
+} from "../../lib/chart-axis-label.js";
+import {
 	getCountAggregatorDictionary,
 	resolveCountAggregatorLocale,
 } from "../../lib/i18n.js";
@@ -68,7 +72,12 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 			<ResponsiveContainer width="100%" height={METRIC_CHART_HEIGHT}>
 				<ChartComponent
 					data={chartData}
-					margin={{top: 6, right: 6, left: 0, bottom: 0}}
+					margin={{
+						top: config.unit ? Y_AXIS_UNIT_LABEL_TOP_MARGIN : 6,
+						right: 6,
+						left: 0,
+						bottom: 0,
+					}}
 				>
 					<CartesianGrid
 						stroke={CHART_GRID_COLOR}
@@ -93,21 +102,16 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 						tick={chartTickStyle}
 						tickLine={false}
 						axisLine={false}
-						width={config.unit ? 42 : 34}
+						width={34}
 						tickFormatter={(value: number) =>
 							formatMetricAxisValueFromConfig(value, config)
 						}
 						label={
 							config.unit
-								? {
-										value: config.unit,
-										angle: -90,
-										position: "insideLeft",
-										style: {
-											fill: CHART_TICK_COLOR,
-											fontSize: CHART_TICK_FONT_SIZE,
-										},
-									}
+								? createYAxisUnitLabel(config.unit, {
+										fill: CHART_TICK_COLOR,
+										fontSize: CHART_TICK_FONT_SIZE,
+									})
 								: undefined
 						}
 					/>

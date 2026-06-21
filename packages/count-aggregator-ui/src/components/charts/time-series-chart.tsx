@@ -23,6 +23,10 @@ import {
 	chartSeriesKey,
 	normalizeSelectedMetrics,
 } from "../../lib/bucket-metrics.js";
+import {
+	Y_AXIS_UNIT_LABEL_TOP_MARGIN,
+	createYAxisUnitLabel,
+} from "../../lib/chart-axis-label.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
 import {
@@ -32,7 +36,7 @@ import {
 } from "../../lib/format-metric-value.js";
 import {getMetricLabels} from "../../lib/i18n.js";
 import {formatStationLabel} from "../../lib/stations.js";
-import {getDocumentLocale, isDefined} from "../../lib/utils.js";
+import {cn, getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
 	ChartSeries,
@@ -292,9 +296,9 @@ export function TimeSeriesChart({
 
 	if (chartSeries !== undefined && chartData.length === 0) {
 		return (
-			<div className={`msca:relative msca:w-full ${className}`}>
+			<div className={cn("msca:relative msca:w-full", className)}>
 				<div
-					className="msca:absolute msca:inset-0 msca:flex msca:items-center msca:justify-center msca:rounded-md msca:border msca:border-dashed msca:border-[var(--msca-color-border)] msca:bg-[var(--msca-color-surface)] msca:p-6 msca:text-center msca:text-sm msca:text-[var(--msca-color-muted-foreground)]"
+					className="msca:absolute msca:inset-0 msca:flex msca:items-center msca:justify-center msca:rounded-md msca:border msca:border-dashed msca:border-(--msca-color-border) msca:bg-(--msca-color-surface) msca:p-6 msca:text-center msca:text-sm msca:text-(--msca-color-muted-foreground)"
 					role="status"
 				>
 					{emptyMessage}
@@ -304,7 +308,7 @@ export function TimeSeriesChart({
 	}
 
 	return (
-		<div className={`msca:relative msca:w-full ${className}`}>
+		<div className={cn("msca:relative msca:w-full", className)}>
 			<ChartContainer
 				config={chartConfig}
 				className="msca:absolute msca:inset-0 msca:h-full msca:w-full"
@@ -312,7 +316,14 @@ export function TimeSeriesChart({
 				<ResponsiveContainer width="100%" height="100%">
 					<ChartComponent
 						data={chartData}
-						margin={{top: 8, right: 12, left: 8, bottom: 0}}
+						margin={{
+							top: valueFormat.unit
+								? Y_AXIS_UNIT_LABEL_TOP_MARGIN
+								: 8,
+							right: 12,
+							left: 8,
+							bottom: 0,
+						}}
 						barCategoryGap="24%"
 						barGap={1}
 					>
@@ -331,15 +342,9 @@ export function TimeSeriesChart({
 							tickFormatter={formatAxisValue}
 							label={
 								valueFormat.unit
-									? {
-											value: valueFormat.unit,
-											angle: -90,
-											position: "insideLeft",
-											style: {
-												fill: "var(--msca-color-muted-foreground)",
-												fontSize: 12,
-											},
-										}
+									? createYAxisUnitLabel(valueFormat.unit, {
+											fill: "var(--msca-color-muted-foreground)",
+										})
 									: undefined
 							}
 						/>
