@@ -14,10 +14,10 @@
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^5.0.0",
 		"fs-extra": "^11.3.5",
-		"lru-cache": "^11.2.2",
+		"lru-cache": "^11.5.1",
 		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
-		"sharp": "^0.34.5",
+		"sharp": "^0.35.1",
 		"svgo": "^4.0.1",
 		"vinyl": "^3.0.1",
 		"zod": "catalog:"
