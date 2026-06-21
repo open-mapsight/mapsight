@@ -61,6 +61,7 @@ function LayerSwitcherOverlay() {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
+	const isMobileOrMapOnly = useSelector(isViewMobileOrMapOnlySelector);
 
 	const handleOpen = useCallback(() => setIsExpanded(true), []);
 	const handleClose = useCallback(() => setIsExpanded(false), []);
@@ -69,8 +70,9 @@ function LayerSwitcherOverlay() {
 		onPress: handleOpen,
 	});
 
+	// Mobile uses a portaled Modal (backdrop / close / Esc); panelRef is desktop-only.
 	useOverlayDismiss({
-		isActive: isExpanded,
+		isActive: isExpanded && !isMobileOrMapOnly,
 		onDismiss: handleClose,
 		excludeRefs: [triggerRef, panelRef],
 	});
