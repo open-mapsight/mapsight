@@ -5,6 +5,7 @@ import {ComponentsContext} from "../../helpers/components";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
+import AsyncStatusIndicator from "../async-status/AsyncStatusIndicator";
 
 export type Props = PropsWithChildren<{
 	feature: MapsightUiFeature;
@@ -69,13 +70,18 @@ function FeatureDetailsContentInner({
 				</div>
 			);
 		} else {
-			// loading
 			content = (
 				<div
 					className="ms3-feature-details-content ms3-feature-details-content--loading"
 					ref={containerRefSetter}
 				>
-					{translate("ui.feature-details.content-inner.loading")}
+					<AsyncStatusIndicator
+						message={translate(
+							"ui.feature-details.content-inner.loading",
+						)}
+						phase="loading"
+						variant="inline"
+					/>
 				</div>
 			);
 		}

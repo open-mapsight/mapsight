@@ -29,6 +29,8 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@tanstack/react-query": "^5.90.5",
+		"@testing-library/react": "^16.3.2",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
@@ -54,6 +56,18 @@
 			"types": "./dist/config/index.d.ts",
 			"default": "./dist/config/index.js"
 		},
+		"./async-status": {
+			"types": "./dist/lib/async-status/index.d.ts",
+			"default": "./dist/lib/async-status/index.js"
+		},
+		"./async-status/components": {
+			"types": "./dist/components/async-status/index.d.ts",
+			"default": "./dist/components/async-status/index.js"
+		},
+		"./react-query": {
+			"types": "./dist/react-query/index.d.ts",
+			"default": "./dist/react-query/index.js"
+		},
 		"./config/*": {
 			"types": "./dist/config/*.d.ts",
 			"default": "./dist/config/*.js"
@@ -77,8 +91,14 @@
 	],
 	"license": "UNLICENSED",
 	"peerDependencies": {
+		"@tanstack/react-query": "^5.90.5",
 		"react": "catalog:",
 		"react-dom": "catalog:"
+	},
+	"peerDependenciesMeta": {
+		"@tanstack/react-query": {
+			"optional": true
+		}
 	},
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"

@@ -6,6 +6,7 @@ import {
 	getFeatureSourceError,
 	getFeatureSourceStatus,
 } from "@mapsight/core/lib/feature-sources/selectors";
+import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
 
 import {FEATURE_LIST} from "../../../config/constants/controllers";
 import {
@@ -27,6 +28,7 @@ export type FeatureListStateProps = PaginatedFilteredFeaturesState & {
 	status: string | null;
 	error: string | null;
 	featureSourceId?: string;
+	featureSource?: FeatureSourceState;
 	scrollPosition: number | null;
 	selectSelection: undefined | FeatureSelectionState;
 	preselectSelection: undefined | FeatureSelectionState;
@@ -77,6 +79,7 @@ export default function useFeatureListState(
 			tagSwitcherShow: !!tagSwitcherShow,
 			layerSwitcherShowExternal: !!layerSwitcherShowExternal,
 			featureSourceId,
+			featureSource,
 			scrollPosition:
 				(enableScrollPosition ? scrollPosition : null) ?? null,
 			selectSelection,
@@ -89,6 +92,7 @@ export default function useFeatureListState(
 			tagSwitcherShow,
 			layerSwitcherShowExternal,
 			featureSourceId,
+			featureSource,
 			enableScrollPosition,
 			scrollPosition,
 			selectSelection,

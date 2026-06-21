@@ -1,12 +1,7 @@
 @use "sass:color";
 
 @use "../variables";
-
-@keyframes spin {
-	100% {
-		transform: rotate(360deg);
-	}
-}
+@use "async-status";
 
 .ms3-layer-switcher {
 	position: relative;
@@ -101,7 +96,7 @@
 				height: 15px;
 				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
 					no-repeat 0 0;
-				animation: spin 4s linear infinite;
+				animation: ms3AsyncStatusSpin 4s linear infinite;
 			}
 		}
 	}
