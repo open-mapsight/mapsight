@@ -1,0 +1,5 @@
+rules:
+  dangerous-triggers:
+    ignore:
+      # Actor-gated to dependabot[bot] with deps:npm label; workflow runs from base branch.
+      - dependabot-changeset.yml
