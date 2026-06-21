@@ -592,8 +592,8 @@ importers:
         version: 4.18.1
     devDependencies:
       cpx2:
-        specifier: ^8.0.2
-        version: 8.0.2
+        specifier: ^9.0.0
+        version: 9.0.0
 
   packages/traffic-style:
     dependencies:
@@ -2997,9 +2997,9 @@ packages:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
     engines: {node: '>=10'}
 
-  cpx2@8.0.2:
-    resolution: {integrity: sha512-exLFEIh8XgWthEtrEq8hs+S6jxM5ZHpjQnRH6D7VU+2uAYS3amLSVOUSuirfx3HeN7WBCq+xFygHpt7l+gQtUA==}
-    engines: {node: ^20.0.0 || >=22.0.0, npm: '>=10'}
+  cpx2@9.0.0:
+    resolution: {integrity: sha512-KRZGQCmHrM10xfLjrCBTQHpEIJgKtZyOOO5fygu9KE00IjQOL76FHjeON62R5PWS/W2J5ofgRJKF8rpUlEuLPQ==}
+    engines: {node: ^22.0.0 || >=24.0.0, npm: '>=10'}
     hasBin: true
 
   cross-spawn@6.0.6:
@@ -7465,7 +7465,7 @@ snapshots:
       path-type: 4.0.0
       yaml: 1.10.3
 
-  cpx2@8.0.2:
+  cpx2@9.0.0:
     dependencies:
       debounce: 3.0.0
       glob: 13.0.6
@@ -7473,7 +7473,6 @@ snapshots:
       ignore: 7.0.5
       minimatch: 10.2.5
       p-map: 7.0.4
-      resolve: 1.22.12
       shell-quote: 1.8.4
       subarg: 1.0.0
 
