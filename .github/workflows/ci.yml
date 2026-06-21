@@ -383,40 +383,12 @@ jobs:
       - uses: ./.github/actions/setup/
 
       - name: Check changeset
+        run: node scripts/check-changeset-ci.mts
+        shell: bash
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_USER: ${{ github.event.pull_request.user.login }}
-        run: |
-          set -euo pipefail
-
-          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
-            pnpm changeset status --since=main
-            exit 0
-          fi
-
-          mapfile -t changed_files < <(git diff --name-only "$PR_BASE_SHA"...HEAD)
-          dep_only=true
-          dep_pattern='^(package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|.+/package\.json)$'
-
-          for file in "${changed_files[@]}"; do
-            if ! [[ "$file" =~ $dep_pattern ]]; then
-              dep_only=false
-              break
-            fi
-          done
-
-          if [[ "$PR_USER" == "dependabot[bot]" && "$dep_only" == "true" ]]; then
-            if [[ -f ".changeset/dependabot-${PR_NUMBER}.md" ]]; then
-              pnpm changeset status --since=main
-            else
-              echo "::notice::Dependabot dependency update — waiting for auto-changeset workflow."
-            fi
-            exit 0
-          fi
-
-          pnpm changeset status --since=main
-        shell: bash
 
   ci-pass:
     name: CI status
