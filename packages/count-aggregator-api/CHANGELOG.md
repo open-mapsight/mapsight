@@ -1,5 +1,11 @@
 # @mapsight/count-aggregator-api
 
+## 1.2.0
+
+### Minor Changes
+
+- 1631abc: Replace removed `bicycleCount` station type with `bicycleSensorTotal` across the OpenAPI contract, UI, showcase demo, and smart-city icon aliases.
+
 ## 1.1.0
 
 ### Minor Changes
