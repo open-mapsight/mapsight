@@ -58,6 +58,7 @@ to maintainers with a private checkout.
 | Redux runtime          | [`packages/core/docs/REDUX_ARCHITECTURE.md`](packages/core/docs/REDUX_ARCHITECTURE.md) |
 | Redux actions          | [`packages/core/docs/ACTION_GUIDE.md`](packages/core/docs/ACTION_GUIDE.md)             |
 | Licensing              | [`docs/LICENSING.md`](docs/LICENSING.md), [`docs/TRADEMARK.md`](docs/TRADEMARK.md)     |
+| Code of conduct        | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)                                             |
 
 ## Private workspace paths
 
@@ -104,6 +105,11 @@ The public framework is **[MIT](LICENSE)**. See [`docs/LICENSING.md`](docs/LICEN
 For licensing or trademark questions, contact
 [contact@open-mapsight.org](mailto:contact@open-mapsight.org). For code, docs, and integration questions, use
 [GitHub issues](https://github.com/open-mapsight/mapsight/issues).
+
+## Community
+
+Participation in Mapsight community spaces is governed by our
+[Code of Conduct](CODE_OF_CONDUCT.md) (Contributor Covenant 3.0).
 
 ## Security
 
