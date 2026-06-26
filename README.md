@@ -14,7 +14,7 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 </colgroup>
 <thead>
 <tr>
-<th align="left">Package</th>
+<th align="left" width="290">Package</th>
 <th align="left">Description</th>
 </tr>
 </thead>
@@ -74,17 +74,17 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 </colgroup>
 <thead>
 <tr>
-<th align="left">Application</th>
+<th align="left" width="290">Application</th>
 <th align="left">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><nobr>🧑‍🎨 <strong><code>vector-editor</code></strong></nobr><br><nobr><a href="apps/vector-editor">App</a></nobr></td>
+<td><nobr>🧑‍🎨 <strong><code>vector-editor</code></strong></nobr><br><nobr><a href="apps/vector-editor">README</a></nobr></td>
 <td>Vector editor for creating and editing vector features exported as GeoJSON.</td>
 </tr>
 <tr>
-<td><nobr>💡 <strong><code>showcase</code></strong></nobr><br><nobr><a href="apps/showcase">App</a></nobr></td>
+<td><nobr>💡 <strong><code>showcase</code></strong></nobr><br><nobr><a href="apps/showcase">README</a></nobr></td>
 <td>Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons.</td>
 </tr>
 </tbody>
@@ -92,8 +92,7 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 
 ## Starters
 
-Copy-out host integration templates under [`starters/`](starters/) — semver `@mapsight/*` pins only; not published as a
-monorepo unit. See [`starters/README.md`](starters/README.md).
+Copy-out host integration templates. See [`starters/README.md`](starters/README.md).
 
 <table>
 <colgroup>
@@ -101,7 +100,7 @@ monorepo unit. See [`starters/README.md`](starters/README.md).
 </colgroup>
 <thead>
 <tr>
-<th align="left">Starter</th>
+<th align="left" width="290">Starter</th>
 <th align="left">Status</th>
 <th align="left">Description</th>
 </tr>
