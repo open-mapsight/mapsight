@@ -57,5 +57,4 @@ Until this note is updated with a library choice:
 ## References
 
 - [Principles → UX goals](../PRINCIPLES.md#ux-goals)
-- [Current vs target](../CURRENT_VS_TARGET.md#runtime-and-state)
 - Planned: [POSITIONING.md](../../ecosystem/POSITIONING.md) — Masterportal i18next as reference

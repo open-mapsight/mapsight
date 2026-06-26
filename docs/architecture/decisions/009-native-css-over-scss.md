@@ -81,4 +81,3 @@ vector-style-compiler internals.
   styleFunction out
 - [`packages/vector-style-compiler/src/js/cli.ts`](../../../packages/vector-style-compiler/src/js/cli.ts) — optional
   Sass pre-step only
-- [Current vs target](../CURRENT_VS_TARGET.md)

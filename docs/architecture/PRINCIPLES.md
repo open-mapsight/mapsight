@@ -1,7 +1,7 @@
 # Architecture principles
 
 North-star goals for Mapsight as a **communicative, embed-first** GIS frontend. For deployment topology
-see [Ecosystem](ECOSYSTEM.md); for implementation status see [Current vs target](CURRENT_VS_TARGET.md).
+see [Ecosystem](ECOSYSTEM.md).
 
 ---
 
@@ -94,6 +94,5 @@ map product shape that fits the content — not a shared GIS portal skin.
 ## Related
 
 - [Ecosystem](ECOSYSTEM.md)
-- [Current vs target](CURRENT_VS_TARGET.md)
 - [Decisions](decisions/README.md)
 - [Licensing](../LICENSING.md)

@@ -77,7 +77,7 @@ Product comparison: [Positioning](POSITIONING.md).
 An anchor operator (city, VMZ, regional mobility agency) that **already runs Mapsight** could someday offer **limited
 embeds or static map exports to third parties** — multi-tenant presets, quotas, snippet builder.
 
-**Not productized today** — [Current vs target](../architecture/CURRENT_VS_TARGET.md).
+**Not productized today.**
 
 ---
 

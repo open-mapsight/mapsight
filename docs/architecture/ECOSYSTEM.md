@@ -14,50 +14,50 @@ Typical **municipal or regional** deployment (many components are optional):
 
 ```mermaid
 flowchart TB
-  subgraph ingress [Ingress]
-    Proxy["Caddy / Apache reverse proxy"]
-  end
-  subgraph content [Content and delivery]
-    CMS["CMS e.g. Infosite TYPO3"]
-  end
-  subgraph frontend [Mapsight frontend - this monorepo]
-    Apps["SPAs and embed builds"]
-    Packages["@mapsight/core + @mapsight/ui"]
-  end
-  subgraph backend [Companion services - mapsight-pulp monorepo]
-    Pulp["mapsight-pulp PHP ETL"]
-    Platform["Host data platform optional"]
-  end
-  subgraph optional [Optional pro frontend]
-    GP["Geoportal e.g. Masterportal CIVITAS"]
-  end
-  subgraph data [Data infrastructure]
-    GS["GeoServer WMS WFS"]
-    Ext["External HTTP feeds"]
-  end
-  subgraph basemap [Basemap tiles]
-    TileProxy["tile-proxy optional"]
-    Upstream["OSM basemap.de geo dept XYZ"]
-  end
-  Proxy --> CMS
-  Proxy --> Apps
-  Proxy --> Pulp
-  Proxy --> Platform
-  Proxy --> GP
-  Proxy --> TileProxy
-  CMS -->|"pages embeds declarative JSON"| Apps
-  CMS -->|"GeoJSON content APIs"| Pulp
-  CMS -->|"GeoJSON content APIs"| Apps
-  Apps --> Packages
-  Apps -->|"fetch GeoJSON"| Pulp
-  Apps -->|"HTTP API"| Platform
-  Apps -->|"basemap XYZ"| TileProxy
-  Apps -->|"WMS raster basemap"| GS
-  TileProxy --> Upstream
-  TileProxy --> GS
-  GP --> GS
-  Pulp --> Ext
-  Platform --> Ext
+	subgraph ingress [Ingress]
+		Proxy["Caddy / Apache reverse proxy"]
+	end
+	subgraph content [Content and delivery]
+		CMS["CMS e.g. Infosite TYPO3"]
+	end
+	subgraph frontend [Mapsight frontend - this monorepo]
+		Apps["SPAs and embed builds"]
+		Packages["@mapsight/core + @mapsight/ui"]
+	end
+	subgraph backend [Companion services - mapsight-pulp monorepo]
+		Pulp["mapsight-pulp PHP ETL"]
+		Platform["Host data platform optional"]
+	end
+	subgraph optional [Optional pro frontend]
+		GP["Geoportal e.g. Masterportal CIVITAS"]
+	end
+	subgraph data [Data infrastructure]
+		GS["GeoServer WMS WFS"]
+		Ext["External HTTP feeds"]
+	end
+	subgraph basemap [Basemap tiles]
+		TileProxy["tile-proxy optional"]
+		Upstream["OSM basemap.de geo dept XYZ"]
+	end
+	Proxy --> CMS
+	Proxy --> Apps
+	Proxy --> Pulp
+	Proxy --> Platform
+	Proxy --> GP
+	Proxy --> TileProxy
+	CMS -->|" pages embeds declarative JSON "| Apps
+	CMS -->|" GeoJSON content APIs "| Pulp
+	CMS -->|" GeoJSON content APIs "| Apps
+	Apps --> Packages
+	Apps -->|" fetch GeoJSON "| Pulp
+	Apps -->|" HTTP API "| Platform
+	Apps -->|" basemap XYZ "| TileProxy
+	Apps -->|" WMS raster basemap "| GS
+	TileProxy --> Upstream
+	TileProxy --> GS
+	GP --> GS
+	Pulp --> Ext
+	Platform --> Ext
 ```
 
 The **CMS** is both a **delivery channel** and often a **content source**: it hosts Mapsight embeds (HTML snippets or
@@ -128,7 +128,6 @@ back-office tools.
 ## Related docs
 
 - [Principles](PRINCIPLES.md) — scope, composable UI, non-goals
-- [Current vs target](CURRENT_VS_TARGET.md) — implementation status
 - [@mapsight/core → Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md) — declarative GIS runtime
 - [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) — PHP companion monorepo
 - [tile-proxy](https://github.com/open-mapsight/mapsight-pulp) — basemap

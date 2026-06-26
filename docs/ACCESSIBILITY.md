@@ -7,14 +7,14 @@ tree has **not** completed a formal WCAG audit.
 
 ## Status (June 2026)
 
-| Area                                 | Status                                                                                           |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| Formal WCAG 2.x conformance audit    | **Not completed**                                                                                |
-| Keyboard use in map/list UI          | Partial — varies by component                                                                    |
-| Screen reader support for map canvas | **Limited** — OpenLayers canvas model                                                            |
-| Focus management in modals/overlays  | Partial (e.g. focus-trap in some UI)                                                             |
-| Colour contrast                      | **Host-dependent** — theming via CSS                                                             |
-| Automated a11y tests in CI           | Planned (Playwright a11y checks — see [Current vs target](../architecture/CURRENT_VS_TARGET.md)) |
+| Area                                 | Status                                |
+| ------------------------------------ | ------------------------------------- |
+| Formal WCAG 2.x conformance audit    | **Not completed**                     |
+| Keyboard use in map/list UI          | Partial — varies by component         |
+| Screen reader support for map canvas | **Limited** — OpenLayers canvas model |
+| Focus management in modals/overlays  | Partial (e.g. focus-trap in some UI)  |
+| Colour contrast                      | **Host-dependent** — theming via CSS  |
+| Automated a11y tests in CI           | Planned (Playwright a11y checks)      |
 
 ---
 
