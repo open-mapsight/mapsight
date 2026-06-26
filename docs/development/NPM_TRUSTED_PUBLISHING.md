@@ -33,7 +33,7 @@ Create a temporary directory with a minimal `package.json`:
 	"name": "@mapsight/new-package",
 	"version": "0.0.0",
 	"description": "Bootstrap package record for npm trusted publishing.",
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/open-mapsight/mapsight.git"

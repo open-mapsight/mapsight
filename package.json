@@ -35,7 +35,7 @@
 		"node": "^24.15.0",
 		"pnpm": "^11.1.2"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"packageManager": "pnpm@11.1.2",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"

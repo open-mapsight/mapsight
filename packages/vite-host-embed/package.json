@@ -19,7 +19,7 @@
 	"files": [
 		"dist"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"peerDependencies": {
 		"vite": "^8.0.14"
 	},

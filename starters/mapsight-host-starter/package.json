@@ -29,7 +29,7 @@
 		"typescript": "^6.0.3",
 		"vite": "^8.0.14"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"scripts": {
 		"build": "npm-run-all prebuild copy build:mapsightStyle --sequential build:app",
 		"build:app": "vite build --mode embed",

@@ -63,7 +63,7 @@
 	"imports": {
 		"#icon/*": "./dist/lib/icon/*"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"main": "default.js",
 	"peerDependencies": {
 		"ol": "catalog:",

@@ -22,7 +22,7 @@
 	"files": [
 		"dist"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"main": "index.js",
 	"peerDependencies": {
 		"ol": "catalog:"

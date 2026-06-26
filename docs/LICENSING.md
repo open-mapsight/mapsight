@@ -3,64 +3,83 @@
 Mapsight is published on [GitHub](https://github.com/open-mapsight/mapsight)
 and [npm](https://www.npmjs.com/org/mapsight) under the `@mapsight/*` scope.
 
-## Current status
+The public monorepo is licensed under the **MIT License** (`MIT`).
+See [Decision 011](architecture/decisions/011-license-and-brand-strategy.md).
 
-This repository **does not yet include an OSI-approved `LICENSE` file** at the root. Until one is added:
+---
 
-- **Do not assume** MIT, Apache-2.0, EUPL, or any other license.
-- Treat the code as **source-available** for inspection and contribution discussion, not as freely licensed for all
-  uses.
-- **Contact the maintainers** before redistribution, proprietary embedding, or production deployment if license terms
-  matter to your organization.
+## Public framework (MIT)
 
-## Intent
+The public monorepo — `packages/*`, `apps/*`, `starters/*`, and `docs/` — is under the **MIT License** (`MIT`).
 
-The project is intended to be **fully open source**. Maintainers are evaluating license options aligned with:
+Includes:
 
-- npm and global integrator use
-- German public-sector **Public Money – Public Code** practice
-- Optional alignment with ecosystems such as [CIVITAS CORE](https://www.civitasconnect.digital/civitas-core/)
-  and [opencode.de](https://opencode.de)
+- `@mapsight/core`, `@mapsight/ui`, `@mapsight/traffic-style`, and other public npm packages
+- `@mapsight/vite-host-embed`, `@mapsight/vite-count-aggregator-embed`, count-aggregator packages
+- Demo apps (`apps/showcase`, `apps/vector-editor`), copy-out starters, and public documentation
 
-When a license is chosen, this file will be updated with the SPDX identifier, a link to the full license text, and a
-short rationale.
+Full text: [LICENSE](../LICENSE) at repository root.
 
-## Companion PHP components
+**Trademark:** MIT does not grant use of the **Mapsight** name or logo — [TRADEMARK.md](TRADEMARK.md).
 
-| Component                                                       | License (check monorepo) |
-| --------------------------------------------------------------- | ------------------------ |
-| [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) | See upstream `LICENSE`   |
-| [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)    | See upstream `LICENSE`   |
+---
 
-Packages in this monorepo declare `"license": "UNLICENSED"` in `package.json` until a root license is applied
-consistently.
+## Other products and services
+
+Maintainers may publish **separate products or services** that build on these libraries under **different licenses**.
+Those artifacts are governed by their own license terms and are not part of this repository unless explicitly linked
+here.
+
+This document is engineering guidance, not legal advice.
+
+---
+
+## Companion repositories
+
+| Component                    | Repository                                                      | License                |
+| ---------------------------- | --------------------------------------------------------------- | ---------------------- |
+| mapsight-pulp, tile-proxy    | [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) | See upstream `LICENSE` |
+| Public framework (this repo) | [mapsight](https://github.com/open-mapsight/mapsight)           | **MIT**                |
+
+---
 
 ## FAQ
 
-### Can we evaluate Mapsight in development?
+### Can we embed Mapsight in a proprietary municipal website?
 
-Yes for **inspection and internal evaluation** in this repository. Do not assume production redistribution rights until
-an OSI license is published.
+**Yes** — static or module embeds (CMS snippets, SPAs) without copyleft obligations on the host site.
+**Trademark:** follow [TRADEMARK.md](TRADEMARK.md); white-labeling the visitor UI is normal.
 
-### Can we contribute docs or code before the license is final?
+### Does Mapsight “taint” our project with copyleft?
 
-Yes — open a [GitHub issue](https://github.com/open-mapsight/mapsight/issues) or pull request. Copyright and license
-grant will be clarified when the project-wide license is chosen.
+**No** — MIT does not impose copyleft (GPL etc.) on your host site or proprietary code that uses the libraries. Other
+Mapsight
+products or services, if published separately, may use different terms.
 
-### Does the undecided license block CIVITAS / opencode.de listing?
+### Can we fork `@mapsight/core` and sell support?
 
-Formal ecosystem listing typically requires a **clear SPDX license**. Maintainers are evaluating options aligned with
-PMPC practice — see Intent above. Timeline is **not yet committed**.
+Yes under MIT, under a **different product name** — not as “Mapsight” without permission.
+
+### Can we contribute?
+
+Yes. Contributions are accepted under **MIT**. No CLA is planned — see Decision 011.
+
+### What about documentation?
+
+Public `docs/` is **MIT** (same as the public framework) unless a page explicitly states otherwise.
+
+---
 
 ## Contact
 
-Until a root `LICENSE` file exists:
+- **Licensing and trademark:** [contact@open-mapsight.org](mailto:contact@open-mapsight.org)
+- **Code, docs, and integration questions:** [GitHub issues](https://github.com/open-mapsight/mapsight/issues)
 
-- **GitHub:** [open an issue](https://github.com/open-mapsight/mapsight/issues) — describe your use case for licensing
-  questions
-- **Production / redistribution:** same channel; maintainers respond on a best-effort basis
+---
 
-## Documentation
+## Related
 
-Documentation in `docs/` follows the same status unless otherwise noted. Contribution of docs does not transfer
-copyright; a project-wide license and contributor policy will be published with the code license decision.
+- [Trademark policy](TRADEMARK.md)
+- [Decision 011 — License and brand strategy](architecture/decisions/011-license-and-brand-strategy.md)
+- [Contributing](development/CONTRIBUTING.md)
+- [Positioning — Masterportal comparison](ecosystem/POSITIONING.md)

@@ -33,7 +33,7 @@
 		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.3"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"scripts": {
 		"build": "npm-run-all prebuild copy build:mapsightStyle --sequential build:app",
 		"build:app": "next build --webpack",

@@ -37,8 +37,8 @@ Maintainer deployments currently exercise:
 - Basemap tile proxy pattern — [`TILE_PROXY`](integration/TILE_PROXY.md)
 - Declarative embed config + Redux runtime — [Redux architecture](../packages/core/docs/REDUX_ARCHITECTURE.md)
 
-**Still evolving:** OSI license, full Infosite Java guide, SSR sidecar standardization, i18n library choice —
-see [Current vs target](architecture/CURRENT_VS_TARGET.md).
+**Still evolving:** full Infosite Java guide, SSR sidecar standardization, i18n library choice — see
+[Current vs target](architecture/CURRENT_VS_TARGET.md).
 
 ---
 
@@ -84,10 +84,11 @@ see [Current vs target](architecture/CURRENT_VS_TARGET.md).
 
 ## Compliance
 
-| Document                             | About                            |
-| ------------------------------------ | -------------------------------- |
-| [LICENSING.md](LICENSING.md)         | License status + FAQ             |
-| [ACCESSIBILITY.md](ACCESSIBILITY.md) | Accessibility status (pre-audit) |
+| Document                             | About                                      |
+| ------------------------------------ | ------------------------------------------ |
+| [LICENSING.md](LICENSING.md)         | Public framework license (MIT)             |
+| [TRADEMARK.md](TRADEMARK.md)         | Mapsight name, logo, and official channels |
+| [ACCESSIBILITY.md](ACCESSIBILITY.md) | Accessibility status (pre-audit)           |
 
 ## Development
 

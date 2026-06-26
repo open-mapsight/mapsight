@@ -19,7 +19,7 @@
 	"files": [
 		"dist"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
