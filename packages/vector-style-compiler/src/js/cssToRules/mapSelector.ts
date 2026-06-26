@@ -1,22 +1,13 @@
 import unique from "@mapsight/lib-js/array/unique";
 import {isTruthy} from "@mapsight/lib-js/boolean";
-import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 
+import tokenizeSelector from "../helpers/tokenizeSelector.ts";
 import mapSelectorPart from "./mapSelectorPart.ts";
-
-/**
- * Finds
- * A) Words incl. whitespace enclosed by matching single quotes ('), square brackets ([,]), not (:not(,)) or matching double quotes (") and
- * B) Words (groups of non-whitespace characters)
- *
- * @type {RegExp}
- */
-const REGEX_SELECTOR_PART: RegExp = /('.*?'|\[.*?]|:not\(.*?\)|".*?"|\S+)/g;
 
 export type Selector = ReturnType<typeof mapSelector>;
 
 export default function mapSelector(selector: string) {
-	const selectorParts = ensureNonNullable(selector.match(REGEX_SELECTOR_PART))
+	const selectorParts = tokenizeSelector(selector)
 		.map((part) => mapSelectorPart(part))
 		.filter(isTruthy);
 	const checks = unique(

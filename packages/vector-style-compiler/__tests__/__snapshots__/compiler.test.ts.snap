@@ -119,30 +119,39 @@ style: __vectorStyle_style,},
 		h('@' + createHash($b));
 		if ($d) {
 				h(2);
+				h('@' + createHash($c));
 		}
 		if ($e) {
 				h(3);
+				h('@' + createHash($c));
 		}
 		if ($g) {
 				h(4);
+				h('@' + createHash($f));
 		}
 		if (!$g) {
 				h(5);
+				h('@' + createHash($f));
 		}
 		if ($i) {
 				h(6);
+				h('@' + createHash($h));
 		}
 		if ($j) {
 				h(7);
+				h('@' + createHash($f));
 		}
 		if ($k) {
 				h(8);
+				h('@' + createHash($f));
 		}
 		if (!$k) {
 				h(9);
+				h('@' + createHash($f));
 		}
 		if ($m) {
 				h(10);
+				h('@' + createHash($l));
 		}
 		if ($o) {
 				h(11);
@@ -176,6 +185,7 @@ style: __vectorStyle_style,},
 		}
 		if (!$u) {
 				h(21);
+				h('@' + createHash($f));
 		}
 		}
 		switch (state) {
@@ -201,6 +211,7 @@ style: __vectorStyle_style,},
 				h(26);
 				if ($b) {
 						h(27);
+						h('@' + createHash($a));
 				}
 				}
 				break;
@@ -666,30 +677,39 @@ h('@' + createHash($a));
 h('@' + createHash($b));
 if ($d) {
 		h(2);
+		h('@' + createHash($c));
 }
 if ($e) {
 		h(3);
+		h('@' + createHash($c));
 }
 if ($g) {
 		h(4);
+		h('@' + createHash($f));
 }
 if (!$g) {
 		h(5);
+		h('@' + createHash($f));
 }
 if ($i) {
 		h(6);
+		h('@' + createHash($h));
 }
 if ($j) {
 		h(7);
+		h('@' + createHash($f));
 }
 if ($k) {
 		h(8);
+		h('@' + createHash($f));
 }
 if (!$k) {
 		h(9);
+		h('@' + createHash($f));
 }
 if ($m) {
 		h(10);
+		h('@' + createHash($l));
 }
 if ($o) {
 		h(11);
@@ -723,6 +743,7 @@ if ($q) {
 }
 if (!$u) {
 		h(21);
+		h('@' + createHash($f));
 }
 }
 switch (state) {
@@ -748,6 +769,7 @@ switch (style) {
 		h(26);
 		if ($b) {
 				h(27);
+				h('@' + createHash($a));
 		}
 		}
 		break;
@@ -808,6 +830,10 @@ exports[`parses full css to rules correctly 1`] = `
     "stylePropExpressions": [
       "props['test']",
       "get(props, ['path', 'to', 'test'])",
+      "props['state']",
+      "props['attr']",
+      "props['hasAttrTest']",
+      "get(props, ['parking', 'capacity'])",
     ],
     "styleProps": [
       "test",
@@ -1016,7 +1042,9 @@ exports[`parses full css to rules correctly 1`] = `
           "someState",
         ],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['state']",
+        ],
         "styleProps": [
           "state",
         ],
@@ -1028,7 +1056,9 @@ exports[`parses full css to rules correctly 1`] = `
             "stateNames": [
               "someState",
             ],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['state']",
+            ],
             "styleProps": [
               "state",
             ],
@@ -1069,7 +1099,9 @@ exports[`parses full css to rules correctly 1`] = `
           "anotherState",
         ],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['state']",
+        ],
         "styleProps": [
           "state",
         ],
@@ -1081,7 +1113,9 @@ exports[`parses full css to rules correctly 1`] = `
             "stateNames": [
               "anotherState",
             ],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['state']",
+            ],
             "styleProps": [
               "state",
             ],
@@ -1291,7 +1325,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1301,7 +1337,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -1338,7 +1376,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1348,7 +1388,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -1385,7 +1427,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['hasAttrTest']",
+        ],
         "styleProps": [
           "hasAttrTest",
         ],
@@ -1395,7 +1439,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['hasAttrTest']",
+            ],
             "styleProps": [
               "hasAttrTest",
             ],
@@ -1431,7 +1477,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1441,7 +1489,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -1478,7 +1528,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1488,7 +1540,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -1525,7 +1579,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1535,7 +1591,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -1572,7 +1630,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "get(props, ['parking', 'capacity'])",
+        ],
         "styleProps": [
           "parking",
         ],
@@ -1582,7 +1642,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "get(props, ['parking', 'capacity'])",
+            ],
             "styleProps": [
               "parking",
             ],
@@ -1879,7 +1941,9 @@ exports[`parses full css to rules correctly 1`] = `
         "styleNames": [
           "features",
         ],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -1889,7 +1953,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -2143,7 +2209,9 @@ exports[`parses full css to rules correctly 1`] = `
         ],
         "stateNames": [],
         "styleNames": [],
-        "stylePropExpressions": [],
+        "stylePropExpressions": [
+          "props['attr']",
+        ],
         "styleProps": [
           "attr",
         ],
@@ -2153,7 +2221,9 @@ exports[`parses full css to rules correctly 1`] = `
         {
           "__meta": {
             "stateNames": [],
-            "stylePropExpressions": [],
+            "stylePropExpressions": [
+              "props['attr']",
+            ],
             "styleProps": [
               "attr",
             ],
@@ -2211,7 +2281,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['state']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2237,7 +2309,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['state']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2261,7 +2335,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2285,7 +2361,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2308,7 +2386,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['hasAttrTest']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2332,7 +2412,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2356,7 +2438,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2380,7 +2464,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2405,7 +2491,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "get(props, ['parking', 'capacity'])",
+          ],
           "volatileCalcExpressions": [],
         },
         {
@@ -2643,7 +2731,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
       ],
@@ -2779,7 +2869,9 @@ exports[`parses full css to tree correctly 1`] = `
               },
             },
           },
-          "stylePropExpressions": [],
+          "stylePropExpressions": [
+            "props['attr']",
+          ],
           "volatileCalcExpressions": [],
         },
       ],

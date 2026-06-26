@@ -6,6 +6,7 @@ import isNumberLike from "@mapsight/lib-js/types/isNumberLike";
 
 import type {ReplacerFn} from "../helpers/Replacer.ts";
 import Replacer from "../helpers/Replacer.ts";
+import parseAttrParameter from "../helpers/parseAttrParameter.ts";
 import pathToExpression from "../helpers/pathToExpression.ts";
 import {containsVolatileCalcHelper} from "../helpers/volatileCalcHelpers.ts";
 
@@ -57,17 +58,14 @@ export default function mapValue(
 		[
 			"attr",
 			(_match, parameter) => {
-				const isEnv = parameter.startsWith("--env-");
-				const parameters = parameter.split("-");
+				const {target, path} = parseAttrParameter(parameter);
+				const expression = pathToExpression(target, path);
 
-				if (isEnv) {
-					const restParameters = parameters.slice(3);
-					return `' + ${pathToExpression("env", restParameters)} + '`;
+				if (target === "props") {
+					meta.styleProps.push(ensureNonNullable(path[0]));
+					meta.stylePropExpressions.push(expression);
 				}
 
-				const expression = pathToExpression("props", parameters);
-				meta.styleProps.push(ensureNonNullable(parameters[0]));
-				meta.stylePropExpressions.push(expression);
 				return `' + ${expression} + '`;
 			},
 		],
