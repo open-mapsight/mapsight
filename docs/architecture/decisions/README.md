@@ -21,6 +21,7 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 | [008](008-i18n-approach.md)                       | Internationalization approach                    | Open notes; library TBD                  |
 | [009](009-native-css-over-scss.md)                | Native CSS over Sass/SCSS                        | Open notes; feasibility TBD              |
 | [010](010-audience-scope.md)                      | Communicative embed-first audience scope         | Documented                               |
+| [011](011-license-and-brand-strategy.md)          | License and brand strategy                       | Documented                               |
 
 ---
 
@@ -29,7 +30,7 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 - Choosing a framework, protocol, or deployment pattern that is hard to reverse
 - Explicit **non-goals** (e.g. not building a geoportal)
 - Public API or config shape that external hosts depend on
-- Licensing or ecosystem alignment (CIVITAS, PMPC)
+- Licensing or trademark policy
 
 ---
 
