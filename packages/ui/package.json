@@ -89,7 +89,7 @@
 		"dist",
 		"src/scss"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"peerDependencies": {
 		"@tanstack/react-query": "^5.90.5",
 		"react": "catalog:",

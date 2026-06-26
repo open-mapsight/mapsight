@@ -33,7 +33,7 @@
 	"files": [
 		"dist"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"main": "index.js",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"

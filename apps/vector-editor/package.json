@@ -37,7 +37,7 @@
 		"postcss-nested": "^7.0.2",
 		"vite": "^8.0.14"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
 	},

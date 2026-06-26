@@ -3,5 +3,5 @@
 	"description": "Mapsight JS Library",
 	"version": "1.7.4",
 	"type": "module",
-	"license": "UNLICENSED"
+	"license": "MIT"
 }

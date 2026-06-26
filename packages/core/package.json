@@ -96,7 +96,7 @@
 	"files": [
 		"dist"
 	],
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"peerDependencies": {
 		"@redux-devtools/extension": "^4.0.0",
 		"jsdom": "catalog:",
