@@ -14,7 +14,7 @@ self-service integrators. See [Current vs target](architecture/CURRENT_VS_TARGET
 | **Integrating** a React SPA or Next app   | [Getting started](getting-started.md) → [REACT_SPA](integration/REACT_SPA.md) or [NEXTJS](integration/NEXTJS.md)                                    |
 | **Publishing** GeoJSON or OGC layers      | [Publishing data](integration/PUBLISHING_DATA.md) → [OGC layers](integration/OGC_LAYERS.md)                                                         |
 | **Pasting** snippets in a CMS (editor)    | [For CMS editors](integration/CMS_EDITORS.md)                                                                                                       |
-| **Contributing** to the monorepo          | [Contributing](development/CONTRIBUTING.md) → [Standards](development/STANDARDS.md)                                                                 |
+| **Contributing** to the monorepo          | [Contributing](development/CONTRIBUTING.md) → [Code of Conduct](../CODE_OF_CONDUCT.md) → [Standards](development/STANDARDS.md)                      |
 
 ### Product and deployment maps
 
@@ -84,11 +84,12 @@ Maintainer deployments currently exercise:
 
 ## Compliance
 
-| Document                             | About                                      |
-| ------------------------------------ | ------------------------------------------ |
-| [LICENSING.md](LICENSING.md)         | Public framework license (MIT)             |
-| [TRADEMARK.md](TRADEMARK.md)         | Mapsight name, logo, and official channels |
-| [ACCESSIBILITY.md](ACCESSIBILITY.md) | Accessibility status (pre-audit)           |
+| Document                                 | About                                          |
+| ---------------------------------------- | ---------------------------------------------- |
+| [LICENSING.md](LICENSING.md)             | Public framework license (MIT)                 |
+| [TRADEMARK.md](TRADEMARK.md)             | Mapsight name, logo, and official channels     |
+| [ACCESSIBILITY.md](ACCESSIBILITY.md)     | Accessibility status (pre-audit)               |
+| [Code of Conduct](../CODE_OF_CONDUCT.md) | Community standards (Contributor Covenant 3.0) |
 
 ## Development
 
@@ -126,5 +127,5 @@ See the [root README](../README.md#package-overview) for npm packages and one-li
 
 ## Contributing
 
-See [development/CONTRIBUTING.md](development/CONTRIBUTING.md)
+See [development/CONTRIBUTING.md](development/CONTRIBUTING.md), [Code of Conduct](../CODE_OF_CONDUCT.md),
 and [architecture/decisions/README.md](architecture/decisions/README.md).

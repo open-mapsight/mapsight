@@ -8,8 +8,9 @@ How to propose changes to the Mapsight monorepo.
 
 1. Read [Licensing](../LICENSING.md) — **MIT** for the public tree.
 2. Read [Trademark policy](../TRADEMARK.md) — code license does not grant use of the **Mapsight** name or logo.
-3. Read [Standards](STANDARDS.md) — toolchain, checks, testing expectations.
-4. For map runtime changes, skim [Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
+3. Read the [Code of Conduct](../../CODE_OF_CONDUCT.md) — expected behavior in community spaces.
+4. Read [Standards](STANDARDS.md) — toolchain, checks, testing expectations.
+5. For map runtime changes, skim [Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
    and [Action guide](../../packages/core/docs/ACTION_GUIDE.md).
 
 Contributions to the **public tree** are accepted under **MIT**. See
@@ -130,6 +131,7 @@ For licensing and trademark questions, email [contact@open-mapsight.org](mailto:
 
 ## Related
 
+- [Code of Conduct](../../CODE_OF_CONDUCT.md)
 - [Standards](STANDARDS.md)
 - [Decision index](../architecture/decisions/README.md)
 - [Docs hub](../README.md)
