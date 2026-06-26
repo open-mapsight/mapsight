@@ -48,4 +48,3 @@ is useful to preserve.
 ## Related
 
 - [Principles](../PRINCIPLES.md)
-- [Current vs target](../CURRENT_VS_TARGET.md)

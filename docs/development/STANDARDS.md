@@ -115,13 +115,15 @@ On checkouts that include a private workspace:
 - `pnpm run check:no-private-leak` enforces on public branches; `pnpm-lock.yaml` must not list importers under
   `private/` on public branches
 - On **`private/*` branches**, these checks are skipped
-- Merge direction: integrate **open source into private**, not the reverse — see [`private/README.md`](../../private/README.md)
+- Merge direction: integrate **open source into private**, not the reverse — see [
+  `private/README.md`](../../private/README.md)
   when present
 
 To prevent accidental leaks, this repository enforces checks locally and in CI:
 
 - Git hooks: [`.husky/pre-commit`](../../.husky/pre-commit), [`.husky/pre-push`](../../.husky/pre-push)
-- Script: [`scripts/check-no-private-leak.mts`](../../scripts/check-no-private-leak.mts) — `pnpm run check:no-private-leak`
+- Script: [`scripts/check-no-private-leak.mts`](../../scripts/check-no-private-leak.mts) —
+  `pnpm run check:no-private-leak`
 - CI: `no-private-leak` job in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
 
 **Please do not open pull requests that remove or weaken these guards.**
@@ -131,7 +133,6 @@ To prevent accidental leaks, this repository enforces checks locally and in CI:
 ## Project docs
 
 - Architecture, integration, and contributor docs live in `docs/`
-- Update [CURRENT_VS_TARGET.md](../architecture/CURRENT_VS_TARGET.md) when shipping meaningful status changes
 - Significant choices → [architecture/decisions/](../architecture/decisions/README.md)
 
 ---

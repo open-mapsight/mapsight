@@ -1,7 +1,7 @@
 # Mapsight documentation
 
 Mapsight is **actively evolving (WIP)**: used in controlled production deployments, not yet a turnkey product for
-self-service integrators. See [Current vs target](architecture/CURRENT_VS_TARGET.md) and [Licensing](LICENSING.md).
+self-service integrators. See [Licensing](LICENSING.md).
 
 ---
 
@@ -37,20 +37,19 @@ Maintainer deployments currently exercise:
 - Basemap tile proxy pattern — [`TILE_PROXY`](integration/TILE_PROXY.md)
 - Declarative embed config + Redux runtime — [Redux architecture](../packages/core/docs/REDUX_ARCHITECTURE.md)
 
-**Still evolving:** full Infosite Java guide, SSR sidecar standardization, i18n library choice — see
-[Current vs target](architecture/CURRENT_VS_TARGET.md).
+**Still evolving:** full Infosite Java guide, SSR sidecar standardization, i18n library choice — track in
+[GitHub issues](https://github.com/open-mapsight/mapsight/issues).
 
 ---
 
 ## Architecture
 
-| Document                                                  | About                                       |
-| --------------------------------------------------------- | ------------------------------------------- |
-| [ECOSYSTEM.md](architecture/ECOSYSTEM.md)                 | Technical deployment stack, repos, basemaps |
-| [PRINCIPLES.md](architecture/PRINCIPLES.md)               | Product goals and non-goals                 |
-| [CURRENT_VS_TARGET.md](architecture/CURRENT_VS_TARGET.md) | Implementation status matrix                |
-| [Decisions](architecture/decisions/README.md)             | Architecture decision notes                 |
-| [Project history](project/HISTORY.md)                     | Origin timeline (unverified)                |
+| Document                                      | About                                       |
+| --------------------------------------------- | ------------------------------------------- |
+| [ECOSYSTEM.md](architecture/ECOSYSTEM.md)     | Technical deployment stack, repos, basemaps |
+| [PRINCIPLES.md](architecture/PRINCIPLES.md)   | Product goals and non-goals                 |
+| [Decisions](architecture/decisions/README.md) | Architecture decision notes                 |
+| [Project history](project/HISTORY.md)         | Origin timeline (unverified)                |
 
 ## Ecosystem
 

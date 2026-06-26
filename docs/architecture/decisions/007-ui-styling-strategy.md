@@ -38,8 +38,7 @@ Option **C** explicitly allows a municipal site on SCSS overrides while a domain
 migration ([Decision 009](009-native-css-over-scss.md)) would shift Option A toward custom properties without changing
 the composable goal.
 
-Do **not** document “Mapsight uses shadcn globally” until a migration is real. Track progress
-in [Current vs target](../CURRENT_VS_TARGET.md).
+Do **not** document “Mapsight uses shadcn globally” until a migration is real.
 
 ## Consequences
 

@@ -61,4 +61,3 @@ cache.
 - [`packages/ui/src/js/store/actions.ts`](../../../packages/ui/src/js/store/actions.ts) — legacy hand-rolled fetch
   actions (to replace)
 - [Decision 005](005-fetch-and-tanstack-query-over-axios.md)
-- [Current vs target](../CURRENT_VS_TARGET.md#runtime-and-state)

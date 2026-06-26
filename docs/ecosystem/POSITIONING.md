@@ -143,7 +143,7 @@ common library, different products and integration models.
 ## Regional embed host (future)
 
 Some anchor operators may someday offer **limited embeds to third-party local orgs** — **not productized today.
-** [GIS stack choices § future feature](GIS_STACK_CHOICES.md#future-feature-regional-embed-host-program) · [Current vs target](../architecture/CURRENT_VS_TARGET.md).
+** [GIS stack choices § future feature](GIS_STACK_CHOICES.md#future-feature-regional-embed-host-program).
 
 ---
 
