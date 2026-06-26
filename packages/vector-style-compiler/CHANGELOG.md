@@ -1,5 +1,11 @@
 # @mapsight/vector-style-compiler
 
+## 12.1.0
+
+### Minor Changes
+
+- 2126ff4: Add `prop|` and `env-prop|` prefixes for literal feature and env property keys in selectors and `attr()`, fix string-aware selector tokenization for `|js` expressions, and register selector paths in `allowedProps`.
+
 ## 12.0.0
 
 ### Minor Changes
