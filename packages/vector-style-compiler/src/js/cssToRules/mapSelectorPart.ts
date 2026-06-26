@@ -40,9 +40,8 @@ function mapAttributeSelectorPart(
 		stateNames?: string[];
 	};
 } {
-	const [leftHandOperand, rawRightHandOperand] = splitAttributeSelectorContent(
-		part.slice(1, -1),
-	);
+	const [leftHandOperand, rawRightHandOperand] =
+		splitAttributeSelectorContent(part.slice(1, -1));
 	const rightHandOperand =
 		rawRightHandOperand !== undefined
 			? trimQuotes(rawRightHandOperand)
