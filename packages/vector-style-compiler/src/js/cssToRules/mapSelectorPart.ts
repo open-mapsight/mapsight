@@ -1,5 +1,10 @@
 import trimQuotes from "@mapsight/lib-js/string/trimQuotes";
 
+import {
+	featurePropPathMeta,
+	parseFeaturePropPath,
+} from "../helpers/parseFeaturePropPath.ts";
+import {splitAttributeSelectorContent} from "../helpers/tokenizeSelector.ts";
 import mapValue from "./mapValue.ts";
 
 type JsCheck = {
@@ -35,13 +40,13 @@ function mapAttributeSelectorPart(
 		stateNames?: string[];
 	};
 } {
-	const operands = part
-		.slice(1, -1) // remove square brackets
-		.split("="); // split by first equal sign
-	let leftHandOperand = operands?.shift()?.trim() || "";
-	const rightHandOperand = operands.length
-		? trimQuotes(operands.join("=").trim())
-		: undefined;
+	const [leftHandOperand, rawRightHandOperand] = splitAttributeSelectorContent(
+		part.slice(1, -1),
+	);
+	const rightHandOperand =
+		rawRightHandOperand !== undefined
+			? trimQuotes(rawRightHandOperand)
+			: undefined;
 
 	// special case: js expression
 	if (leftHandOperand.startsWith("|js")) {
@@ -69,28 +74,11 @@ function mapAttributeSelectorPart(
 		};
 	}
 
-	let target: "props" | "env" = "props";
-
-	// env target
-	if (leftHandOperand.startsWith("env|")) {
-		target = "env";
-		leftHandOperand = leftHandOperand.slice(4);
-	} else if (leftHandOperand.startsWith("props|")) {
-		// trim optional prefix
-		leftHandOperand = leftHandOperand.slice(6);
-	}
-
-	// kebab case to dot separated string
-	const path = leftHandOperand.split("-");
+	const {target, path} = parseFeaturePropPath(leftHandOperand, "selector");
 
 	// keep track of props used for styling
 	let stateNames: string[] = [];
-	let styleProps: string[] = [];
-	let stylePropExpressions: string[] = [];
-
-	if (target === "props") {
-		styleProps.push(path[0]!);
-	}
+	let {styleProps, stylePropExpressions} = featurePropPathMeta(target, path);
 
 	let value = undefined;
 	if (rightHandOperand !== undefined) {
@@ -101,7 +89,7 @@ function mapAttributeSelectorPart(
 			mappedValue.__meta.stylePropExpressions,
 		);
 
-		if (leftHandOperand === "state") {
+		if (path.length === 1 && path[0] === "state") {
 			stateNames = [rightHandOperand];
 		}
 	}

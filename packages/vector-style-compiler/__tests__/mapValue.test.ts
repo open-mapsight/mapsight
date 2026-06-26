@@ -35,6 +35,22 @@ it("mapValue", () => {
 		},
 		value: "'' + get(props, ['path', 'to', 'test']) + ''",
 	});
+	expect(mapValue("attr(prop|stroke-width)")).toStrictEqual({
+		__meta: {
+			stylePropExpressions: ["props['stroke-width']"],
+			styleProps: ["stroke-width"],
+			volatileCalcExpressions: [],
+		},
+		value: "'' + props['stroke-width'] + ''",
+	});
+	expect(mapValue("attr(env-prop|stroke-width)")).toStrictEqual({
+		__meta: {
+			stylePropExpressions: [],
+			styleProps: [],
+			volatileCalcExpressions: [],
+		},
+		value: "'' + env['stroke-width'] + ''",
+	});
 	expect(mapValue("calc(10 + 50)")).toStrictEqual({
 		__meta: {
 			stylePropExpressions: [],

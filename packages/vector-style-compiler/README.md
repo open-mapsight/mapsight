@@ -1,15 +1,21 @@
 # Mapsight vector styles
 
-> **Package:** `@mapsight/vector-style-compiler` · **Hub:** [Documentation index](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)
+> **Package:** `@mapsight/vector-style-compiler` · **Hub:
+> ** [Documentation index](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)
 
 Creates JavaScript code that can be used as a `styleFunction` in Mapsight by
 transforming a subset of CSS.
 
-**Deep dive:** [ARCHITECTURE_DEEP_DIVE.md](https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md) · **Consumer:** [`@mapsight/traffic-style`](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md), [`@mapsight/core`](https://github.com/open-mapsight/mapsight/blob/main/packages/core/README.md)
+**Deep dive:
+** [ARCHITECTURE_DEEP_DIVE.md](https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/docs/ARCHITECTURE_DEEP_DIVE.md) ·
+**Consumer:** [
+`@mapsight/traffic-style`](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md), [
+`@mapsight/core`](https://github.com/open-mapsight/mapsight/blob/main/packages/core/README.md)
 
 ## How it Works
 
-The package compiles a CSS subset into a JavaScript module providing an efficient OpenLayers `styleFunction` with built-in caching.
+The package compiles a CSS subset into a JavaScript module providing an efficient OpenLayers `styleFunction` with
+built-in caching.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -75,6 +81,7 @@ The package compiles a CSS subset into a JavaScript module providing an efficien
 ### Supported Selector Types
 
 ```css
+/* @formatter:off */
 /* Universal selector (any feature) */
 * { ... }
 
@@ -82,39 +89,110 @@ The package compiles a CSS subset into a JavaScript module providing an efficien
 #myStyleName { ... }
 
 /* State selector (pseudo-class) */
-::selected { ... }
-::highlighted { ... }
+:selected { ... }
+:highlighted { ... }
 
 /* Props selector (attribute) */
-[state="hover"] { ... }                   /* Simple equality */
-[props|name="Road"] { ... }               /* Access nested props */
-[geometry|type="Point"] { ... }           /* Check geometry type */
-[env|zoom="5"] { ... }                    /* Access environment */
-[|js="props['id'] > 100"] { ... }         /* JavaScript expression */
+[state="hover"] { ... }                      /* simple equality */
+[props|name="Road"] { ... }                  /* nested props path */
+[prop|stroke-width="2"] { ... }              /* literal props key */
+[env|zoom="5"] { ... }                       /* nested env path */
+[env-prop|primaryColor="1"] { ... }          /* literal env key */
+[geometry|type="Point"] { ... }              /* geometry type */
+[|js="props['id'] > 100"] { ... }            /* JavaScript expression */
 
 /* Negation */
 :not([state="hover"]) { ... }
 :not([geometry|type="LineString"]) { ... }
 
 /* Combinations (space = AND) */
-#myStyle [state="hover"] { ... }          /* myStyle AND state==hover */
-[geometry|type="Point"] .icon { ... }     /* Geometry AND group */
+#myStyle [state="hover"] { ... }
+[geometry|type="Point"] .icon { ... }
+/* @formatter:on */
+```
+
+### Feature property paths
+
+Mapsight resolves **feature properties** (`props`) and **style environment** (`env`) separately from
+**style declaration names** (custom CSS properties such as `stroke-width:` on the left-hand side of
+a rule).
+
+Unquoted kebab-case in selectors and `attr()` arguments is split on `-` into **nested paths**
+(accessed with optional chaining in generated code):
+
+| Syntax               | Reads                      |
+| -------------------- | -------------------------- |
+| `attr(stroke-width)` | `props.stroke?.width`      |
+| `[stroke-width="2"]` | `props.stroke?.width == 2` |
+| `attr(path-to-test)` | `props.path?.to?.test`     |
+
+That differs from GeoJSON keys such as Simplestyle's flat `"stroke-width"` property. Use a **literal
+key** form when the feature property name contains hyphens but is not nested:
+
+- **Nested props path** — selector: `[stroke-width="2"]`, value: `attr(stroke-width)` →
+  `props.stroke?.width`
+- **Literal props key** — selector: `[prop|stroke-width="2"]`, value: `attr("prop|stroke-width")` or
+  `attr('stroke-width')` → `props['stroke-width']`
+- **Nested env path** — selector: `[env|zoom="10"]`, value: `attr(--env-zoom)` → `env.zoom`
+- **Literal env key** — selector: `[env-prop|stroke-width="2"]`, value:
+  `attr("env-prop|stroke-width")` or `attr(--env-'stroke-width')` → `env['stroke-width']`
+
+Literal selector prefixes register the key in `allowedProps` and style-cache hashing. Prefer
+`prop|` / `env-prop|` over `|js` for property checks.
+
+**Style declaration names** (left-hand side) always use hyphen nesting for the OpenLayers style
+object — `stroke-width: 2` compiles to `{ stroke: { width: 2 } }` regardless of how feature props
+are read on the right-hand side.
+
+#### SCSS / Sass notes
+
+The CLI compiles `.scss` before the style compiler. Keep these constraints in mind:
+
+- **Quote `attr()` arguments that contain `|`** — Sass treats `|` specially inside function calls:
+  `attr("prop|stroke-width")`, not `attr(prop|stroke-width)`.
+- **Use `env-prop|`, not `env|prop|`** — only one `|` is valid in Sass attribute selectors; chained
+  pipes fail SCSS compilation.
+- **Selector prefixes work unquoted in SCSS** — `[prop|stroke-width]` and `[env-prop|zoom]` are fine.
+- **Quoted selector attribute names** (`['stroke-width']`) are not valid Sass; use `[prop|stroke-width]`
+  instead.
+
+Example (Simplestyle-style flat keys):
+
+```scss
+/* @formatter:off */
+#features {
+	[prop|stroke-width] {
+		stroke-width: attr("prop|stroke-width");
+	}
+
+	[prop|stroke-opacity] {
+		stroke-opacity: attr("prop|stroke-opacity");
+	}
+}
+/* @formatter:on */
 ```
 
 ### Property Examples
 
+<!-- markdownlint-disable MD013 -->
+
 ```css
+/* @formatter:off */
 /* MapBox-like custom properties */
 fill-color: red;
-fill-color: attr(color); /* From props['color'] */
-fill-color: attr(--env-primaryColor); /* From env['primaryColor'] */
+fill-color: attr(color); /* props['color'] */
+fill-color: attr(--env-primaryColor); /* env['primaryColor'] */
+stroke-width: attr(
+	"prop|stroke-width"
+); /* props['stroke-width'] — quote in SCSS */
 
 circle-radius: 5;
 circle-radius: calc(zoom * 2 + 3); /* JavaScript expression */
 
-stroke-color: replace("pattern", "X", "attr(id)"); /* String replace */
+stroke-color: replace("pattern", "X", "attr(id)"); /* string replace */
 
-text-text: attr(--env-title); /* Dynamic text */
+text-text: attr(--env-title); /* dynamic text */
+text-text: attr("env-prop|title"); /* literal env key — quote in SCSS */
 
 /* Complex nested properties */
 icon-src: "path/to/icon.png";
@@ -124,7 +202,10 @@ icon-offsetx: attr(offsetX);
 
 /* Runtime icons (async-loaded, cache-aware) */
 icon-src: calc(mapsightRuntimeIcon(attr(mapsightIconId), "default"));
+/* @formatter:on */
 ```
+
+<!-- markdownlint-enable MD013 -->
 
 See full list of supported properties in [Custom CSS properties](#custom-css-properties).
 
@@ -213,8 +294,10 @@ circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-col
 ## Benchmarking
 
 - `pnpm bench`
-    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless Playwright.
-    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright browser process using `pidusage`).
+    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless
+      Playwright.
+    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright
+      browser process using `pidusage`).
     - Browser RSS is process-level memory (not JS-heap-only), so use it for trend/comparison signals.
     - For stronger GC signal in Node, run with exposed GC:
         - `NODE_OPTIONS=--expose-gc pnpm bench`
@@ -427,7 +510,8 @@ Since version: v0.0.0
 
 #### Adding the custom properties to WebStorm/PHPStorm/IntelliJ
 
-Go to `Settings -> Editor -> Inspections` and search for `Unknown CSS property`. Then add the following string under `Options -> Custom CSS Properties`:
+Go to `Settings -> Editor -> Inspections` and search for `Unknown CSS property`. Then add the following string under
+`Options -> Custom CSS Properties`:
 
 <code>
 
@@ -439,8 +523,10 @@ circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-col
 ## Benchmarking
 
 - `pnpm bench`
-    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless Playwright.
-    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright browser process using `pidusage`).
+    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless
+      Playwright.
+    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright
+      browser process using `pidusage`).
     - Browser RSS is process-level memory (not JS-heap-only), so use it for trend/comparison signals.
     - For stronger GC signal in Node, run with exposed GC:
         - `NODE_OPTIONS=--expose-gc pnpm bench`
