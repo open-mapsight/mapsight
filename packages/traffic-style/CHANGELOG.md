@@ -1,5 +1,13 @@
 # @mapsight/traffic-style
 
+## 5.3.2
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+- Updated dependencies [01bb11d]
+    - @mapsight/lib-ol@4.2.1
+
 ## 5.3.1
 
 ### Patch Changes

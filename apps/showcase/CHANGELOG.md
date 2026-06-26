@@ -1,5 +1,20 @@
 # @mapsight/showcase
 
+## 0.1.3
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+- Updated dependencies [01bb11d]
+    - @mapsight/core@14.4.2
+    - @mapsight/count-aggregator-api@1.2.1
+    - @mapsight/count-aggregator-ui@2.0.2
+    - @mapsight/lib-js@3.0.5
+    - @mapsight/lib-ol@4.2.1
+    - @mapsight/lib-redux@2.2.2
+    - @mapsight/traffic-style@5.3.2
+    - @mapsight/ui@7.3.2
+
 ## 0.1.2
 
 ### Patch Changes

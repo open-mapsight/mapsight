@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/count-aggregator-api",
 	"description": "OpenAPI contract, Zod schemas, and typed client for Mapsight count aggregator",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"type": "module",
 	"dependencies": {
 		"zod": "catalog:"

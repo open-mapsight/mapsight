@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/count-aggregator-ui",
 	"description": "React chart and wizard UI for Mapsight count aggregator applications",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/count-aggregator-api": "workspace:^",

@@ -1,5 +1,13 @@
 # @mapsight/lib-ol
 
+## 4.2.1
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+- Updated dependencies [01bb11d]
+    - @mapsight/lib-js@3.0.5
+
 ## 4.2.0
 
 ### Minor Changes
