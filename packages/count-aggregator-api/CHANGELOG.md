@@ -1,5 +1,11 @@
 # @mapsight/count-aggregator-api
 
+## 1.2.1
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+
 ## 1.2.0
 
 ### Minor Changes

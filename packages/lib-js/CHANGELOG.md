@@ -1,5 +1,11 @@
 # @mapsight/lib-js
 
+## 3.0.5
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+
 ## 3.0.4
 
 ### Patch Changes

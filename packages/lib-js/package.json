@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/lib-js",
 	"description": "Mapsight JS Library",
-	"version": "3.0.4",
+	"version": "3.0.5",
 	"type": "module",
 	"devDependencies": {
 		"@changesets/cli": "^2.31.0",

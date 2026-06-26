@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/lib-redux",
 	"description": "Mapsight Redux Library",
-	"version": "2.2.1",
+	"version": "2.2.2",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",

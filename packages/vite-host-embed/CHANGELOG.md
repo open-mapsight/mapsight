@@ -1,5 +1,11 @@
 # @mapsight/vite-host-embed
 
+## 1.1.2
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+
 ## 1.1.1
 
 ### Patch Changes

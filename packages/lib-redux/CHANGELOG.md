@@ -1,5 +1,13 @@
 # @mapsight/lib-redux
 
+## 2.2.2
+
+### Patch Changes
+
+- 01bb11d: Declare MIT license in package manifests.
+- Updated dependencies [01bb11d]
+    - @mapsight/lib-js@3.0.5
+
 ## 2.2.1
 
 ### Patch Changes
