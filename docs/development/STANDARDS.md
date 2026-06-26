@@ -1,6 +1,6 @@
 # Development standards
 
-Conventions for contributing to the Mapsight monorepo. AI agents: see also [`AGENTS.md`](../../AGENTS.md).
+Conventions for contributing to the Mapsight monorepo.
 
 ---
 
@@ -104,13 +104,27 @@ Aligned with [Decision 005](../architecture/decisions/005-fetch-and-tanstack-que
 
 ## Private workspace
 
+Mapsight is open source, but some development still happens outside this tree. The monorepo reserves workspace paths for
+that (`private/apps/*`, `private/packages/*` in [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml)) without publishing
+anything under `private/` here.
+
 On checkouts that include a private workspace:
 
-- Never leak customer-specific deployment details into public paths
-- `pnpm run check:no-private-leak` enforces on public branches
-- Merge direction: integrate **open source into private**, not the reverse
+- Never leak customer-specific deployment details into public paths (`apps/`, `packages/`, `docs/`, root config, CI,
+  hooks, etc.)
+- `pnpm run check:no-private-leak` enforces on public branches; `pnpm-lock.yaml` must not list importers under
+  `private/` on public branches
+- On **`private/*` branches**, these checks are skipped
+- Merge direction: integrate **open source into private**, not the reverse — see [`private/README.md`](../../private/README.md)
+  when present
 
-Details: [`AGENTS.md`](../../AGENTS.md).
+To prevent accidental leaks, this repository enforces checks locally and in CI:
+
+- Git hooks: [`.husky/pre-commit`](../../.husky/pre-commit), [`.husky/pre-push`](../../.husky/pre-push)
+- Script: [`scripts/check-no-private-leak.mts`](../../scripts/check-no-private-leak.mts) — `pnpm run check:no-private-leak`
+- CI: `no-private-leak` job in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
+
+**Please do not open pull requests that remove or weaken these guards.**
 
 ---
 
