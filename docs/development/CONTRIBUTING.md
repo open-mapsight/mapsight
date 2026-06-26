@@ -6,12 +6,14 @@ How to propose changes to the Mapsight monorepo.
 
 ## Before you start
 
-1. Read [Licensing](../LICENSING.md) — no OSI license is declared yet; understand implications for redistribution.
-2. Read [Standards](STANDARDS.md) — toolchain, checks, testing expectations.
-3. For map runtime changes, skim [Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
+1. Read [Licensing](../LICENSING.md) — **MIT** for the public tree.
+2. Read [Trademark policy](../TRADEMARK.md) — code license does not grant use of the **Mapsight** name or logo.
+3. Read [Standards](STANDARDS.md) — toolchain, checks, testing expectations.
+4. For map runtime changes, skim [Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
    and [Action guide](../../packages/core/docs/ACTION_GUIDE.md).
 
-Contributions from **public-sector funded work** should align with the future license choice once selected.
+Contributions to the **public tree** are accepted under **MIT**. See
+[Decision 011](../architecture/decisions/011-license-and-brand-strategy.md).
 
 ---
 
@@ -118,8 +120,11 @@ npm package record and trusted publisher first; see
 
 ## Questions
 
-Open a GitHub discussion or issue on [open-mapsight/mapsight](https://github.com/open-mapsight/mapsight). For
-license-sensitive deployment questions, contact maintainers directly (see [LICENSING.md](../LICENSING.md)).
+Open a [GitHub issue](https://github.com/open-mapsight/mapsight/issues) for code, documentation, and integration
+questions.
+
+For licensing and trademark questions, email [contact@open-mapsight.org](mailto:contact@open-mapsight.org) — see
+[LICENSING.md](../LICENSING.md) and [TRADEMARK.md](../TRADEMARK.md).
 
 ---
 

@@ -42,8 +42,8 @@ snippet story in upstream docs.
 
 ## Mapsight
 
-**Shape:** npm packages (`@mapsight/core`, `@mapsight/ui`, …) + **embed API** for host apps and CMS. **License:
-** [undecided](../LICENSING.md). **Stack:** React + Redux (core GIS runtime), OpenLayers, TypeScript + Zod, Vitest +
+**Shape:** npm packages (`@mapsight/core`, `@mapsight/ui`, …) + **embed API** for host apps and CMS. **License:**
+[MIT](../LICENSING.md). **Stack:** React + Redux (core GIS runtime), OpenLayers, TypeScript + Zod, Vitest +
 Playwright E2E goal.
 
 **Configuration:** single serializable Redux tree per embed; GeoJSON-first feature sources; OGC layers as map layers.
@@ -76,7 +76,7 @@ goal.
 | HTTP             | axios                                      | fetch + TanStack Query (target)                                                                |
 | Testing          | Vitest; no E2E                             | Vitest + Playwright                                                                            |
 | Typing           | JavaScript                                 | TypeScript + Zod                                                                               |
-| License          | MIT                                        | Undecided                                                                                      |
+| License          | MIT                                        | MIT — [LICENSING.md](../LICENSING.md)                                                          |
 | Community        | opencode.de, Bitbucket                     | GitHub ([open-mapsight](https://github.com/open-mapsight))                                     |
 
 ---
@@ -122,11 +122,10 @@ Stakeholder and stack nuance: [GIS stack choices](GIS_STACK_CHOICES.md).
 
 ## CIVITAS CORE
 
-|              | CIVITAS/CORE        | Masterportal | Mapsight                                                            |
-| ------------ | ------------------- | ------------ | ------------------------------------------------------------------- |
-| Code license | EUPL-1.2            | MIT          | Undecided ([blocker](../LICENSING.md) for formal ecosystem listing) |
-| Docs license | CC-BY-SA 4.0        | —            | —                                                                   |
-| PMPC stance  | Explicit on website | —            | TBD                                                                 |
+|              | CIVITAS/CORE | Masterportal | Mapsight                              |
+| ------------ | ------------ | ------------ | ------------------------------------- |
+| Code license | EUPL-1.2     | MIT          | MIT — [LICENSING.md](../LICENSING.md) |
+| Docs license | CC-BY-SA 4.0 | —            | —                                     |
 
 **Geoportal (V1 and V2):** CIVITAS uses **Masterportal** in the geoportal presentation
 layer — [CIVITAS ADR 019 (2025-11-06, Reviewed)](https://docs.core.civitasconnect.digital/docs_v2/Architecture/Architecture_Decisions/Architecture_Decisions/019-select-geoportal-component/).

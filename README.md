@@ -57,7 +57,7 @@ to maintainers with a private checkout.
 | Current vs target      | [`docs/architecture/CURRENT_VS_TARGET.md`](docs/architecture/CURRENT_VS_TARGET.md)     |
 | Redux runtime          | [`packages/core/docs/REDUX_ARCHITECTURE.md`](packages/core/docs/REDUX_ARCHITECTURE.md) |
 | Redux actions          | [`packages/core/docs/ACTION_GUIDE.md`](packages/core/docs/ACTION_GUIDE.md)             |
-| Licensing              | [`docs/LICENSING.md`](docs/LICENSING.md)                                               |
+| Licensing              | [`docs/LICENSING.md`](docs/LICENSING.md), [`docs/TRADEMARK.md`](docs/TRADEMARK.md)     |
 
 ## Private workspace paths
 
@@ -98,12 +98,12 @@ pnpm --filter @mapsight/vector-style-compiler build
 
 ## License
 
-Mapsight is published as source-available software while OSI license approval is
-pending. npm packages are marked `UNLICENSED` until an approved open-source
-license is in place.
+The public framework is **[MIT](LICENSE)**. See [`docs/LICENSING.md`](docs/LICENSING.md) and
+[`docs/TRADEMARK.md`](docs/TRADEMARK.md) for code and brand terms.
 
-To discuss use, redistribution, or licensing, contact
-[contact@open-mapsight.org](mailto:contact@open-mapsight.org).
+For licensing or trademark questions, contact
+[contact@open-mapsight.org](mailto:contact@open-mapsight.org). For code, docs, and integration questions, use
+[GitHub issues](https://github.com/open-mapsight/mapsight/issues).
 
 ## Security
 
