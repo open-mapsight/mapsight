@@ -19,7 +19,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^12.0.0",
+		"@mapsight/vector-style-compiler": "^12.1.0",
 		"@types/node": "^24.13.2",
 		"@types/react": "^19.2.15",
 		"@types/react-dom": "^19.2.3",
