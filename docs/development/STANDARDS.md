@@ -1,6 +1,6 @@
 # Development standards
 
-Conventions for contributing to the Mapsight monorepo. AI agents: see also [`AGENTS.md`](../../AGENTS.md).
+Conventions for contributing to the Mapsight monorepo.
 
 ---
 
@@ -125,8 +125,6 @@ To prevent accidental leaks, this repository enforces checks locally and in CI:
 - CI: `no-private-leak` job in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
 
 **Please do not open pull requests that remove or weaken these guards.**
-
-Maintainer agent workflow: [`AGENTS.md`](../../AGENTS.md).
 
 ---
 
