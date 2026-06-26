@@ -88,6 +88,8 @@ export default {
 	"*.{js,mjs,cjs,ts,mts,cts,tsx}": [
 		"pnpx prettier --write",
 		runInPackage("lint --fix"),
+		// ESLint --fix can reformat outside Prettier; align with CI format:check.
+		"pnpx prettier --write",
 		runInPackage("typecheck", {passFiles: false}),
 	],
 	"*.{json,md}": "pnpx prettier --write",
