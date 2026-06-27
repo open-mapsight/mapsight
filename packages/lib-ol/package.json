@@ -34,6 +34,7 @@
 		"build": "tsc && tsc-alias",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
+		"lint": "eslint",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build watch:build",

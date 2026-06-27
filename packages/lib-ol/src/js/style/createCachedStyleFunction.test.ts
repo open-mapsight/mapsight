@@ -21,8 +21,8 @@ it("exposes geometry collection child indexes to style env and cache keys", () =
 			[
 				envHash,
 				geometryType,
-				env.geometryCollectionIndex,
-				env.geometryCollectionTypeIndex,
+				Number(env.geometryCollectionIndex),
+				Number(env.geometryCollectionTypeIndex),
 			].join("|"),
 		declarationFunction: (env, _props, geometryType) => {
 			if (geometryType === "Point") {
@@ -30,7 +30,7 @@ it("exposes geometry collection child indexes to style env and cache keys", () =
 					default: {
 						text: {
 							text: {
-								value: `${env.geometryCollectionIndex}:${env.geometryCollectionTypeIndex}`,
+								value: `${Number(env.geometryCollectionIndex)}:${Number(env.geometryCollectionTypeIndex)}`,
 							},
 						},
 					},

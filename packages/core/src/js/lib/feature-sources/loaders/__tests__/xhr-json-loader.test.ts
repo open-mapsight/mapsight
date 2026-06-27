@@ -10,7 +10,7 @@ describe("xhr-json loader", () => {
 	it("rejects with an HTTP status when statusText is empty", async () => {
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(async () => ({
+			vi.fn(() => ({
 				ok: false,
 				status: 404,
 				statusText: "",
@@ -25,7 +25,7 @@ describe("xhr-json loader", () => {
 	it("includes statusText in the rejection message when present", async () => {
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(async () => ({
+			vi.fn(() => ({
 				ok: false,
 				status: 404,
 				statusText: "Not Found",

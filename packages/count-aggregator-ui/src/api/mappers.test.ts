@@ -1,5 +1,4 @@
 import type {
-	BucketMetric,
 	StationListResponse,
 	TimeSeriesMapResponse,
 } from "@mapsight/count-aggregator-api";

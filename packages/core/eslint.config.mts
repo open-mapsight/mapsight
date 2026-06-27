@@ -1,16 +1,13 @@
 import {defineConfig} from "eslint/config";
 
-import baseConfig from "../../configs/eslint-config-base.mts";
+import baseConfig, {
+	testFilesEslintConfig,
+} from "../../configs/eslint-config-base.mts";
 
 export default defineConfig([
 	baseConfig,
 	{
-		ignores: [
-			"e2e/**",
-			"playwright.config.ts",
-			"**/*.test.ts",
-			"src/js/test/**",
-		],
+		ignores: ["playwright.config.ts", "src/js/test/**"],
 	},
 	{
 		name: "todos",
@@ -24,4 +21,5 @@ export default defineConfig([
 			"@typescript-eslint/prefer-promise-reject-errors": "warn",
 		},
 	},
+	testFilesEslintConfig,
 ]);

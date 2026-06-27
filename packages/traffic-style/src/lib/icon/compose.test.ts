@@ -1,6 +1,7 @@
 import {readFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 
+// eslint-disable-next-line import-x/no-named-as-default -- sharp CJS default interop
 import sharp from "sharp";
 import {describe, expect, it} from "vitest";
 
@@ -13,7 +14,7 @@ import {resolveSpec} from "./resolve.ts";
 
 type RasterImage = {
 	data: Buffer;
-	info: sharp.OutputInfo & {width: number; height: number; channels: number};
+	info: {width: number; height: number; channels: number};
 };
 
 async function rasterizeImage(input: Buffer | string): Promise<RasterImage> {
@@ -31,7 +32,14 @@ async function rasterizeImage(input: Buffer | string): Promise<RasterImage> {
 		throw new Error("Rasterized image is missing dimensions or channels.");
 	}
 
-	return image as RasterImage;
+	return {
+		data: image.data,
+		info: {
+			width: image.info.width,
+			height: image.info.height,
+			channels: image.info.channels,
+		},
+	};
 }
 
 function byteAt(buffer: Buffer, index: number): number {

@@ -115,7 +115,8 @@ export default function deriveGeometriesFromBase(
 	}
 
 	console.error(
-		"Could not derive " + derivation + " from base geometry " + base,
+		"Could not derive " + derivation + " from base geometry ",
+		base,
 	);
 
 	return [[base, {}]];
