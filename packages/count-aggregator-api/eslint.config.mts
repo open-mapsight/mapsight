@@ -7,7 +7,6 @@ export default defineConfig([
 	{
 		ignores: [
 			"src/generated/**/*",
-			"**/*.test.ts",
 			"scripts/**/*",
 			"vitest.smoke.config.ts",
 		],

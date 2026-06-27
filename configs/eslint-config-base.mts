@@ -2,6 +2,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import js from "@eslint/js";
+import type {Linter} from "eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import {importX} from "eslint-plugin-import-x";
 import node from "eslint-plugin-n";
@@ -10,6 +11,63 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 const REPO_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+
+export const TEST_FILE_GLOBS = [
+	"**/*.{test,spec}.{ts,tsx,mts}",
+	"**/__tests__/**/*.{ts,tsx,mts}",
+];
+
+/** Re-append after package-level rule overrides (e.g. core/ui todos). */
+export const testFilesEslintConfig: Linter.Config = {
+	files: TEST_FILE_GLOBS,
+	rules: {
+		// expect(vi.fn().method) in Vitest mock assertions.
+		"@typescript-eslint/unbound-method": "off",
+	},
+};
+
+const TEST_RUNNER_SAFE_CALLS = [
+	{
+		from: "package" as const,
+		name: [
+			"describe",
+			"it",
+			"test",
+			"suite",
+			"beforeAll",
+			"afterAll",
+			"beforeEach",
+			"afterEach",
+		],
+		package: "vitest",
+	},
+	{
+		from: "package" as const,
+		name: [
+			"test",
+			"describe",
+			"beforeAll",
+			"afterAll",
+			"beforeEach",
+			"afterEach",
+		],
+		package: "@playwright/test",
+	},
+	{
+		from: "package" as const,
+		name: [
+			"describe",
+			"it",
+			"test",
+			"suite",
+			"before",
+			"after",
+			"beforeEach",
+			"afterEach",
+		],
+		package: "node:test",
+	},
+];
 
 export default defineConfig([
 	{
@@ -99,6 +157,17 @@ export default defineConfig([
 		},
 	},
 	tseslint.configs.recommendedTypeChecked,
+	{
+		rules: {
+			"@typescript-eslint/no-floating-promises": [
+				"error",
+				{
+					allowForKnownSafeCalls: TEST_RUNNER_SAFE_CALLS,
+				},
+			],
+		},
+	},
+	testFilesEslintConfig,
 	// FIXME:
 	//tseslint.configs.strictTypeChecked,
 	//tseslint.configs.stylisticTypeChecked,

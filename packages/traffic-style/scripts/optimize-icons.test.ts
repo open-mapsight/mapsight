@@ -8,6 +8,14 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import {main} from "./optimize-icons";
 
+type OptimizeManifest = {
+	files: Record<string, {outputs: string[]}>;
+};
+
+function parseManifest(raw: string): OptimizeManifest {
+	return JSON.parse(raw) as OptimizeManifest;
+}
+
 describe("optimize-icons.ts", () => {
 	let tmpDir: string;
 	let srcDir: string;
@@ -92,10 +100,7 @@ describe("optimize-icons.ts", () => {
 
 		const manifestPath = getManifestPath(srcDir, destDir);
 		const manifestRaw = await readFile(manifestPath, "utf8");
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		const outputs = JSON.parse(manifestRaw).files["test.svg"].outputs as
-			| string[]
-			| undefined;
+		const outputs = parseManifest(manifestRaw).files["test.svg"]?.outputs;
 		expect(outputs).toBeDefined();
 		expect(outputs).toContain("test.svg");
 		expect(outputs).toContain("test.png");
@@ -195,9 +200,8 @@ describe("optimize-icons.ts", () => {
 
 		const manifestPath = getManifestPath(srcDir, destDir);
 		const manifestRaw = await readFile(manifestPath, "utf8");
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		const outputs = JSON.parse(manifestRaw).files["target-test.svg"]
-			.outputs as string[];
+		const outputs =
+			parseManifest(manifestRaw).files["target-test.svg"].outputs;
 		expect(outputs).toEqual(["target-test.png"]);
 	});
 

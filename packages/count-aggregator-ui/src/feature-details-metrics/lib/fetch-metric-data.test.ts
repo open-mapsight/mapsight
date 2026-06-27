@@ -16,7 +16,7 @@ describe("fetchMetricTimeSeries", () => {
 	});
 
 	it("requests last values anchored at lastDataAt", async () => {
-		const fetchFn = vi.fn(async (input: string | URL | Request) => {
+		const fetchFn = vi.fn((input: string | URL | Request) => {
 			const url =
 				typeof input === "string"
 					? input
@@ -25,11 +25,11 @@ describe("fetchMetricTimeSeries", () => {
 						: input.url;
 
 			if (url.endsWith("/station-types")) {
-				return {
+				return Promise.resolve({
 					ok: true,
 					status: 200,
 					headers: new Headers({"content-type": "application/json"}),
-					json: async () => ({
+					json: () => ({
 						data: [
 							{
 								type: "peopleCount",
@@ -51,18 +51,18 @@ describe("fetchMetricTimeSeries", () => {
 							},
 						],
 					}),
-				} as Response;
+				} as unknown as Response);
 			}
 
 			expect(url).toBe(
 				`${baseUrl}/peopleCount/75/last-values/daily?limit=30&anchor=lastDataAt`,
 			);
 
-			return {
+			return Promise.resolve({
 				ok: true,
 				status: 200,
 				headers: new Headers({"content-type": "application/json"}),
-				json: async () => ({
+				json: () => ({
 					id: 75,
 					fromDateTime: "2026-06-01 00:00:00",
 					toDateTime: "2026-06-10 23:59:59",
@@ -71,7 +71,7 @@ describe("fetchMetricTimeSeries", () => {
 					stationId: "135688",
 					values: [],
 				}),
-			} as Response;
+			} as unknown as Response);
 		});
 
 		vi.stubGlobal("fetch", fetchFn);

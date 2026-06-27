@@ -7,6 +7,8 @@ type PackageInfo = {
 	relativePath: string;
 };
 
+export const PRETTIER_WRITE = "pnpx prettier --write";
+
 const toRepoRelativePath = (filePath: string): string => {
 	const parts = path.normalize(filePath).split(path.sep).filter(Boolean);
 
@@ -32,7 +34,7 @@ const toRepoRelativePath = (filePath: string): string => {
 	return filePath;
 };
 
-const getPackageInfo = (filePath: string): PackageInfo | null => {
+export const getPackageInfo = (filePath: string): PackageInfo | null => {
 	const parts = toRepoRelativePath(filePath).split(path.sep);
 
 	if (
@@ -60,7 +62,7 @@ const getPackageInfo = (filePath: string): PackageInfo | null => {
 	return null;
 };
 
-const runInPackage =
+export const runInPackage =
 	(scriptName: string, {passFiles = true}: {passFiles?: boolean} = {}) =>
 	(filenames: readonly string[]) => {
 		const packages = new Map<string, string[]>();
@@ -71,11 +73,13 @@ const runInPackage =
 				return;
 			}
 
-			if (!packages.has(pkg.filter)) {
-				packages.set(pkg.filter, []);
+			let files = packages.get(pkg.filter);
+			if (!files) {
+				files = [];
+				packages.set(pkg.filter, files);
 			}
 
-			packages.get(pkg.filter)!.push(pkg.relativePath);
+			files.push(pkg.relativePath);
 		});
 
 		return Array.from(packages.entries()).map(([filter, files]) => {
@@ -86,12 +90,12 @@ const runInPackage =
 
 export default {
 	"*.{js,mjs,cjs,ts,mts,cts,tsx}": [
-		"pnpx prettier --write",
+		PRETTIER_WRITE,
 		runInPackage("lint --fix"),
 		// ESLint --fix can reformat outside Prettier; align with CI format:check.
-		"pnpx prettier --write",
+		PRETTIER_WRITE,
 		runInPackage("typecheck", {passFiles: false}),
 	],
-	"*.{json,md}": "pnpx prettier --write",
+	"*.{json,md}": PRETTIER_WRITE,
 	"**/package.json": () => "pnpm run syncpack:fix-and-format",
 } as const satisfies Configuration;

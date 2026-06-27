@@ -4,7 +4,12 @@ import pluginReact from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import {defineConfig} from "eslint/config";
 
-import baseConfig from "./eslint-config-base.mts";
+import baseConfig, {
+	TEST_FILE_GLOBS,
+	testFilesEslintConfig,
+} from "./eslint-config-base.mts";
+
+export {TEST_FILE_GLOBS, testFilesEslintConfig} from "./eslint-config-base.mts";
 
 export default defineConfig([
 	baseConfig,
@@ -18,6 +23,13 @@ export default defineConfig([
 			react: {
 				version: "18",
 			},
+		},
+	},
+	testFilesEslintConfig,
+	{
+		files: TEST_FILE_GLOBS,
+		rules: {
+			"react/prop-types": "off",
 		},
 	},
 ]);

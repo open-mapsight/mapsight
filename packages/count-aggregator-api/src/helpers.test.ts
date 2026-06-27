@@ -18,7 +18,7 @@ import {
 const baseUrl = "https://example.test/msp/public/count-aggregator";
 
 function createMockFetch(handler: (url: string) => unknown): typeof fetch {
-	return vi.fn(async (input: string | URL | Request) => {
+	return vi.fn((input: string | URL | Request) => {
 		const url =
 			typeof input === "string"
 				? input
@@ -26,13 +26,13 @@ function createMockFetch(handler: (url: string) => unknown): typeof fetch {
 					? input.toString()
 					: input.url;
 
-		return {
+		return Promise.resolve({
 			ok: true,
 			status: 200,
 			headers: new Headers({"content-type": "application/json"}),
-			json: async () => handler(url),
-		} as Response;
-	}) as unknown as typeof fetch;
+			json: () => handler(url),
+		} as Response);
+	});
 }
 
 describe("typed endpoint helpers", () => {

@@ -26,10 +26,20 @@ type MockIconCache = {
 function createPendingCache(): MockIconCache & IconCache {
 	return {
 		getCached: vi.fn(() => undefined),
-		get: vi.fn(async () => ({
-			dataUrl: "data:image/png;base64,generated",
-		})),
+		get: vi.fn(() =>
+			Promise.resolve({
+				dataUrl: "data:image/png;base64,generated",
+			}),
+		),
 	} as MockIconCache & IconCache;
+}
+
+async function flushPendingGetResults(get: Mock) {
+	await Promise.all(
+		get.mock.results.map(
+			(result: {value: Promise<unknown>}) => result.value,
+		),
+	);
 }
 
 async function flushDeferredRender(count = 4) {
@@ -226,7 +236,7 @@ describe("multiple style functions", () => {
 		mapsightRuntimeIcon("stau", "default", cache);
 		scope.exit();
 
-		await Promise.all(cache.get.mock.results.map((result) => result.value));
+		await flushPendingGetResults(cache.get);
 
 		expect(changedA).toHaveBeenCalledTimes(1);
 		expect(changedB).toHaveBeenCalledTimes(1);
@@ -275,7 +285,7 @@ describe("multiple style functions", () => {
 
 		expect(cache.get).toHaveBeenCalledWith("museum", "default");
 		expect(cache.get).toHaveBeenCalledWith("museum", "small");
-		await Promise.all(cache.get.mock.results.map((result) => result.value));
+		await flushPendingGetResults(cache.get);
 		expect(changed).toHaveBeenCalledTimes(2);
 	});
 });
