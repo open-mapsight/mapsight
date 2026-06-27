@@ -1,5 +1,11 @@
 # @mapsight/vector-style-compiler
 
+## 12.1.2
+
+### Patch Changes
+
+- e59928e: Fix selector tokenization when quoted values contain consecutive backslashes.
+
 ## 12.1.1
 
 ### Patch Changes
