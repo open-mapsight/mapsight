@@ -1,7 +1,15 @@
+function isCharacterEscaped(source: string, index: number): boolean {
+	let backslashCount = 0;
+	for (let j = index - 1; j >= 0 && source[j] === "\\"; j--) {
+		backslashCount += 1;
+	}
+	return backslashCount % 2 === 1;
+}
+
 function findClosingQuote(source: string, openIndex: number): number {
 	const stringChar = source[openIndex]!;
 	for (let i = openIndex + 1; i < source.length; i++) {
-		if (source[i] === stringChar && source[i - 1] !== "\\") {
+		if (source[i] === stringChar && !isCharacterEscaped(source, i)) {
 			return i;
 		}
 	}
@@ -22,7 +30,7 @@ function scanWithStringAwareness(
 		const char = source[i]!;
 
 		if (inString) {
-			if (char === stringChar && source[i - 1] !== "\\") {
+			if (char === stringChar && !isCharacterEscaped(source, i)) {
 				inString = false;
 			}
 			continue;
@@ -71,7 +79,7 @@ export function splitAttributeSelectorContent(
 		const char = content[i]!;
 
 		if (inString) {
-			if (char === stringChar && content[i - 1] !== "\\") {
+			if (char === stringChar && !isCharacterEscaped(content, i)) {
 				inString = false;
 			}
 			continue;

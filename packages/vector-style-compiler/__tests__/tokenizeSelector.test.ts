@@ -34,6 +34,25 @@ describe("tokenizeSelector", () => {
 			[':not( [attr   =  "test"]   )', ".group"],
 		);
 	});
+
+	it("tokenizes attribute values ending with an escaped backslash", () => {
+		expect(tokenizeSelector('[attr="test\\\\"]')).toEqual([
+			'[attr="test\\\\"]',
+		]);
+	});
+
+	it("tokenizes attribute values containing escaped quotes", () => {
+		expect(tokenizeSelector('[attr="say \\"hello\\""]')).toEqual([
+			'[attr="say \\"hello\\""]',
+		]);
+	});
+
+	it("tokenizes :not() with attribute values ending in an escaped backslash", () => {
+		expect(tokenizeSelector(':not([attr="path\\\\"]) .group')).toEqual([
+			':not([attr="path\\\\"])',
+			".group",
+		]);
+	});
 });
 
 describe("splitAttributeSelectorContent", () => {
@@ -41,5 +60,18 @@ describe("splitAttributeSelectorContent", () => {
 		expect(
 			splitAttributeSelectorContent("|js=\"props['stroke-width'] == 3\""),
 		).toEqual(["|js", "\"props['stroke-width'] == 3\""]);
+	});
+
+	it("splits when the value ends with an escaped backslash", () => {
+		expect(splitAttributeSelectorContent('attr="test\\\\"')).toEqual([
+			"attr",
+			'"test\\\\"',
+		]);
+	});
+
+	it("splits when the value contains escaped quotes", () => {
+		expect(splitAttributeSelectorContent('attr="say \\"hello\\""')).toEqual(
+			["attr", '"say \\"hello\\""'],
+		);
 	});
 });
