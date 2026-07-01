@@ -19,7 +19,7 @@
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "^12.1.2",
-		"@tailwindcss/postcss": "^4.3.0",
+		"@tailwindcss/postcss": "^4.3.1",
 		"@types/node": "^24.13.2",
 		"@types/react": "^19.2.15",
 		"@types/react-dom": "^19.2.3",
