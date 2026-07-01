@@ -22,7 +22,7 @@
 		"fs-extra": "^11.3.6",
 		"json": "^11.0.0",
 		"mkdirp": "^3.0.1",
-		"pidtree": "^0.6.0",
+		"pidtree": "^1.0.0",
 		"pidusage": "catalog:",
 		"playwright": "catalog:",
 		"replace-in-file": "^8.4.0",
