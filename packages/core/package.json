@@ -28,7 +28,7 @@
 		"proj4": "catalog:",
 		"tsc-alias": "^1.8.17",
 		"typescript": "catalog:",
-		"vite": "^8.0.14",
+		"vite": "^8.1.2",
 		"vitest": "catalog:"
 	},
 	"exports": {
