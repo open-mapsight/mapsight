@@ -3,10 +3,15 @@
 	--color-muted-foreground: var(--msca-color-muted-foreground);
 }
 
-.msp-count-aggregator-chart .recharts-responsive-container,
+.msp-count-aggregator-chart .recharts-responsive-container {
+	max-width: 100%;
+	overflow: hidden;
+}
+
+/* Wrapper/surface sit inside Recharts' zero-width measurement div; max-width: 100%
+   there clamps the chart to 0px even when Recharts sets an explicit width. */
 .msp-count-aggregator-chart .recharts-wrapper,
 .msp-count-aggregator-chart .recharts-surface {
-	max-width: 100%;
 	overflow: hidden;
 }
 
