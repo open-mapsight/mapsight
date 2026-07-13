@@ -2,4 +2,4 @@
 "@mapsight/count-aggregator-ui": patch
 ---
 
-Bump recharts to v3 and fix chart width collapsing to zero inside ResponsiveContainer.
+Bump dependencies from Dependabot ([#139](https://github.com/open-mapsight/mapsight/pull/139)).
