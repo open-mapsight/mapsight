@@ -28,7 +28,7 @@
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@playwright/test": "catalog:",
-		"@tailwindcss/vite": "^4.3.1",
+		"@tailwindcss/vite": "^4.3.2",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
