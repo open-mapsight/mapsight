@@ -72,7 +72,7 @@ export function ChartContainer({
 			<div
 				data-chart={chartId}
 				className={cn(
-					"msp-count-aggregator-chart msca:flex msca:min-w-0 msca:max-w-full msca:aspect-auto msca:justify-center msca:overflow-hidden msca:text-xs",
+					"msp-count-aggregator-chart msca:relative msca:h-full msca:w-full msca:min-w-0 msca:overflow-hidden msca:text-xs",
 					className,
 				)}
 				style={{...cssVars, ...style}}

@@ -10,7 +10,9 @@ test.describe("count-aggregator showcase demo", () => {
 			page.getByRole("heading", {name: "Count aggregator"}),
 		).toBeVisible();
 		await expect(
-			page.getByText("Stepped wizard wired to a mock API"),
+			page.getByText(
+				/embeddable reporting flow for public time series data/i,
+			),
 		).toBeVisible();
 
 		const stationSelect = page.getByRole("combobox");
