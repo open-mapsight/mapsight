@@ -13,7 +13,7 @@
 		"@types/react-redux": "catalog:",
 		"breakpoint-sass": "^3.0.0",
 		"flatpickr": "^4.6.13",
-		"focus-trap-react": "^12.0.2",
+		"focus-trap-react": "^12.0.3",
 		"hint.css": "^3.0.0",
 		"jsdom": "catalog:",
 		"lodash": "catalog:",
@@ -29,7 +29,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@tanstack/react-query": "^5.90.5",
+		"@tanstack/react-query": "^5.101.2",
 		"@testing-library/react": "^16.3.2",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
@@ -91,7 +91,7 @@
 	],
 	"license": "MIT",
 	"peerDependencies": {
-		"@tanstack/react-query": "^5.90.5",
+		"@tanstack/react-query": "^5.101.2",
 		"react": "catalog:",
 		"react-dom": "catalog:"
 	},
