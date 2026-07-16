@@ -88,10 +88,7 @@ export type PluginFunction = (
 Promise<unknown> | void;
 
 export type PluginPhase =
-	| "afterInit"
-	| "afterCreate"
-	| "beforeRender"
-	| "afterRender";
+	"afterInit" | "afterCreate" | "beforeRender" | "afterRender";
 
 /**
  * plugin instance
@@ -327,10 +324,7 @@ export type MapsightCoreAction = AnyAction &
  * `@mapsight/ui/schema` for config ingress. Kept for legacy app reducer typing.
  */
 export type MapsightCoreState =
-	| string
-	| number
-	| Array<MapsightCoreState | null | undefined>
-	| object;
+	string | number | Array<MapsightCoreState | null | undefined> | object;
 /** @deprecated Prefer `Reducer<T, MapsightCoreAction>` with a concrete slice type. */
 export type MapsightCoreReducer<
 	T extends MapsightCoreState = MapsightCoreState,

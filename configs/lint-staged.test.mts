@@ -12,13 +12,18 @@ describe("getPackageInfo", () => {
 		assert.deepEqual(getPackageInfo("/repo/packages/core/src/index.ts"), {
 			filter: "core",
 			relativePath: "src/index.ts",
+			workspaceDir: "packages",
 		});
 	});
 
 	it("resolves private package paths", () => {
 		assert.deepEqual(
 			getPackageInfo("/repo/private/packages/foo/src/index.ts"),
-			{filter: "foo", relativePath: "src/index.ts"},
+			{
+				filter: "foo",
+				relativePath: "src/index.ts",
+				workspaceDir: "private/packages",
+			},
 		);
 	});
 
@@ -47,6 +52,17 @@ describe("runInPackage", () => {
 		]);
 
 		assert.deepEqual(commands, ["pnpm --filter core run typecheck"]);
+	});
+
+	it("skips packages that do not define the requested script", () => {
+		const commands = runInPackage("lint --fix")([
+			"/repo/packages/lib-redux/src/js/createSelectorUsingOwnProps.ts",
+			"/repo/packages/core/src/index.ts",
+		]);
+
+		assert.deepEqual(commands, [
+			"pnpm --filter core run lint --fix -- src/index.ts",
+		]);
 	});
 });
 

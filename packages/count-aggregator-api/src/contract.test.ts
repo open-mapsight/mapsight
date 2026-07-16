@@ -75,8 +75,7 @@ describe("OpenAPI contract shape", () => {
 	it("uses stationIds query parameter for multi-station values", () => {
 		const operation = (
 			openApiDocument.paths["/{type}/values/{from}/{to}/{resolution}"] as
-				| {get?: {parameters?: Array<{name: string}>}}
-				| undefined
+				{get?: {parameters?: Array<{name: string}>}} | undefined
 		)?.get;
 
 		const parameterNames =
@@ -89,8 +88,7 @@ describe("OpenAPI contract shape", () => {
 	it("documents datetime query values route", () => {
 		const operation = (
 			openApiDocument.paths["/{type}/values"] as
-				| {get?: {parameters?: Array<{name: string}>}}
-				| undefined
+				{get?: {parameters?: Array<{name: string}>}} | undefined
 		)?.get;
 
 		const parameterNames =

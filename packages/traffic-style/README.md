@@ -30,9 +30,7 @@ object, merged with map state (zoom, etc.) on every render:
 import styleFunction from "@mapsight/traffic-style/default";
 import {create} from "@mapsight/ui";
 
-create(container, styleFunction, {
-	/* layers, controllers, … */
-});
+create(container, styleFunction, {/* layers, controllers, … */});
 
 // Style name → matches #features in the compiled style
 features("hotels", true, true, meta, "features");

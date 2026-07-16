@@ -15,18 +15,20 @@ const deriveLSVertexGeometries = (
 	v?: VERTICES_FILTER,
 	i?: INTERMEDIATE_FILTER,
 ) =>
-	getLSSegmentVertices(b, v, i).map(
-		([c, r]): GeometryWithMeta => [new Point(c), {rotation: r}],
-	);
+	getLSSegmentVertices(b, v, i).map(([c, r]): GeometryWithMeta => [
+		new Point(c),
+		{rotation: r},
+	]);
 const derivePolygonVertexGeometries = (
 	b: Polygon,
 	v?: VERTICES_FILTER,
 	i?: INTERMEDIATE_FILTER,
 	j?: RING_FILTER,
 ) =>
-	getPolygonSegmentVertices(b, v, i, j).map(
-		([c, r]): GeometryWithMeta => [new Point(c), {rotation: r}],
-	);
+	getPolygonSegmentVertices(b, v, i, j).map(([c, r]): GeometryWithMeta => [
+		new Point(c),
+		{rotation: r},
+	]);
 
 export type Derivation =
 	| "vertex"

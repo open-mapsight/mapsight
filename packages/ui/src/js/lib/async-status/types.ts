@@ -22,12 +22,7 @@ export type AsyncStatusDisplayOptions = {
 };
 
 export type AsyncStatusDisplayPhase =
-	| "hidden"
-	| "loading"
-	| "error"
-	| "empty"
-	| "refreshing"
-	| "content";
+	"hidden" | "loading" | "error" | "empty" | "refreshing" | "content";
 
 export type AsyncStatusDisplayResult = {
 	phase: AsyncStatusDisplayPhase;

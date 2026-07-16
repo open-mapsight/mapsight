@@ -18,8 +18,7 @@ export function load(
 ): Promise<FeatureSourceData> {
 	const controllerName = options.controllerName ?? "featureSources";
 	const featureSourcesState = (getState() as State)[controllerName] as
-		| FeatureSourcesState
-		| undefined;
+		FeatureSourcesState | undefined;
 	const featureSourceNames = state.featureSourceNames ?? [];
 
 	return Promise.resolve(

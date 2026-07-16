@@ -16,9 +16,7 @@ export default function getLayer(map: OlMap, feature: Feature) {
 
 		if (layer instanceof Layer) {
 			const source = layer.getSource() as
-				| VectorFeatureSource
-				| Source
-				| null;
+				VectorFeatureSource | Source | null;
 
 			if (
 				source &&

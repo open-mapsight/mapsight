@@ -76,11 +76,7 @@ function FeatureListItem({
 	const isWrapperComponent = typeof T !== "string";
 
 	const wrapperProps = {
-		...(isWrapperComponent
-			? {
-					/* TODO: Which props? */
-				}
-			: null),
+		...(isWrapperComponent ? {/* TODO: Which props? */} : null),
 		ref: ref,
 		className:
 			"ms3-list__item " +
@@ -114,8 +110,7 @@ function FeatureListItem({
 		// NOTE(PG): Legacy code to support list HTML from the source. Should
 		//            probably be deprecated and replaced by a custom component
 		headHtml = getFeatureProperty(feature, "overrideListHtml") as
-			| string
-			| undefined;
+			string | undefined;
 
 		if (!headHtml) {
 			head = (
@@ -124,8 +119,7 @@ function FeatureListItem({
 						as="span"
 						mapsightIconId={
 							getFeatureProperty(feature, "mapsightIconId") as
-								| string
-								| undefined
+								string | undefined
 						}
 					/>
 					<PartT

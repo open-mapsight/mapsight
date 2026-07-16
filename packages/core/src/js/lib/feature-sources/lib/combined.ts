@@ -34,8 +34,7 @@ export function createCombinedFeatureSourceSelector(
 ) {
 	return function combinedFeatureSourceSelector(state: State) {
 		const featureSourcesState = state[featureSourcesControllerName] as
-			| FeatureSourcesState
-			| undefined;
+			FeatureSourcesState | undefined;
 
 		return {
 			error: null,

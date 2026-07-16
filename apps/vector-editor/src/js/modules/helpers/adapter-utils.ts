@@ -37,8 +37,7 @@ export function readRemoteDataGeoJson(
 			attributeName,
 		);
 		let json = (jsonString ? JSON.parse(jsonString) : undefined) as
-			| Data
-			| undefined;
+			Data | undefined;
 
 		// normalize type to feature collection
 		json = json || {type: "FeatureCollection", features: []};
@@ -63,14 +62,12 @@ export function readRemoteDataGeoJson(
 					return feature.geometry;
 				}
 			})
-			.map(
-				(geometry): Feature => ({
-					type: "Feature",
-					id: String(i++),
-					geometry,
-					properties: [],
-				}),
-			);
+			.map((geometry): Feature => ({
+				type: "Feature",
+				id: String(i++),
+				geometry,
+				properties: [],
+			}));
 
 		return {features};
 	} catch (_e) {

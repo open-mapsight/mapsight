@@ -44,8 +44,7 @@ export const updateMapSize = (
 export const animate = (
 	controllerName: string,
 	options:
-		| AnimationOptions
-		| ({bounds: SimpleGeometry | Extent} & FitOptions),
+		AnimationOptions | ({bounds: SimpleGeometry | Extent} & FitOptions),
 ) =>
 	withPath(
 		{

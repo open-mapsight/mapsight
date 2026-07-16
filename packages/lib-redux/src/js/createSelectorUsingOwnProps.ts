@@ -40,8 +40,7 @@ export default function createSelectorUsingOwnProps<
 	OwnProps extends Array<unknown> = Array<unknown>,
 >(
 	ownPropsSelectorOrSelectors:
-		| OwnPropsSelector<OwnProps>
-		| Array<OwnPropsSelector<OwnProps>>,
+		OwnPropsSelector<OwnProps> | Array<OwnPropsSelector<OwnProps>>,
 	selectorFactory: SelectorFactory<OwnProps, State, Value>,
 	options: SelectorUsingPropsOptions = {},
 ) {

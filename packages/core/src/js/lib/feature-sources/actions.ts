@@ -66,14 +66,11 @@ export const USE_CACHE_YES = true;
 type SharedLoadOptions = {
 	forceRefresh?: boolean;
 	useCache?:
-		| typeof USE_CACHE_YES
-		| typeof USE_CACHE_NO
-		| typeof USE_CACHE_ONLY;
+		typeof USE_CACHE_YES | typeof USE_CACHE_NO | typeof USE_CACHE_ONLY;
 };
 
 export type LoadOptions =
-	| SharedLoadOptions
-	| (LocalStateLoaderOptions & SharedLoadOptions);
+	SharedLoadOptions | (LocalStateLoaderOptions & SharedLoadOptions);
 
 type FeatureSourceMutationOptions = unknown;
 
