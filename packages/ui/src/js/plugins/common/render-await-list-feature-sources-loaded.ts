@@ -103,7 +103,6 @@ function getFeatureSourcesToBeLoadedFromConfig(
 ) {
 	return [
 		get(baseMapsightConfig, [listControllerName, "featureSource"]) as
-			| string
-			| undefined,
+			string | undefined,
 	].filter((a): a is string => typeof a === "string");
 }

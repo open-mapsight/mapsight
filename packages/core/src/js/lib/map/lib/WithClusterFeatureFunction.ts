@@ -4,8 +4,7 @@ import type {MapState} from "@/lib/map/types";
 
 export default class WithClusterFeatureFunction extends BaseController<MapState> {
 	_clusterFeaturePropertiesFunction:
-		| FeatureClusterPropertiesFunction
-		| undefined;
+		FeatureClusterPropertiesFunction | undefined;
 
 	setClusterFeaturePropertiesFunction(
 		clusterFeaturePropertiesFunction: FeatureClusterPropertiesFunction,

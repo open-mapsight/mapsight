@@ -260,8 +260,7 @@ function _declarationToStyle(
 	}
 
 	const StyleCtor = constructorsMap[type] as
-		| (new (style: StyleLiteral) => Style)
-		| undefined;
+		(new (style: StyleLiteral) => Style) | undefined;
 	return StyleCtor ? new StyleCtor(style) : null;
 }
 

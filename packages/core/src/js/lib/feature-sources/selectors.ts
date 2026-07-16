@@ -12,9 +12,7 @@ import {applyFilters} from "@/lib/filter/selectors";
 import type {Feature, FeatureId, State} from "@/types";
 
 export type FeatureSourceStatus =
-	| typeof STATUS_OK
-	| typeof STATUS_LOADING
-	| typeof STATUS_ERROR;
+	typeof STATUS_OK | typeof STATUS_LOADING | typeof STATUS_ERROR;
 
 export const STATUS_OK = "ok";
 export const STATUS_LOADING = "loading";
@@ -107,8 +105,7 @@ function createUnfilteredFeatureSourceSelector(
 	return (state: State) =>
 		(
 			state[featureSourcesControllerName] as
-				| undefined
-				| FeatureSourcesState
+				undefined | FeatureSourcesState
 		)?.[featureSourceId];
 }
 
@@ -119,8 +116,7 @@ function createUnfilteredFeaturesSelector(
 	return (state: State) =>
 		(
 			state[featureSourcesControllerName] as
-				| undefined
-				| FeatureSourcesState
+				undefined | FeatureSourcesState
 		)?.[featureSourceId]?.data?.features || [];
 }
 
@@ -284,8 +280,7 @@ export function getGroupedTagsWithCountFromFeatures(features: Array<Feature>) {
 	if (features) {
 		features.forEach((entry) => {
 			const featureTagGroups = entry.properties?.tagGroups as
-				| Record<"tags", {tags?: Array<string>}>
-				| undefined;
+				Record<"tags", {tags?: Array<string>}> | undefined;
 			if (!featureTagGroups) {
 				return;
 			}

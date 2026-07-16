@@ -59,8 +59,7 @@ function FeatureListItemHead({
 	...attributes
 }: FeatureListItemHeadProps) {
 	const permanentLink = getFeatureProperty(feature, "permanentLink") as
-		| string
-		| undefined;
+		string | undefined;
 
 	const dispatch = useDispatch();
 	const onFeatureHighlight = useCallback(

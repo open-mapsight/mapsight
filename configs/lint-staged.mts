@@ -1,3 +1,4 @@
+import {existsSync, readFileSync} from "node:fs";
 import path from "node:path";
 
 import type {Configuration} from "lint-staged";
@@ -5,6 +6,7 @@ import type {Configuration} from "lint-staged";
 type PackageInfo = {
 	filter: string;
 	relativePath: string;
+	workspaceDir: "packages" | "apps" | "private/packages" | "private/apps";
 };
 
 export const PRETTIER_WRITE = "pnpx prettier --write";
@@ -47,7 +49,12 @@ export const getPackageInfo = (filePath: string): PackageInfo | null => {
 			return null;
 		}
 
-		return {filter: parts[2], relativePath};
+		return {
+			filter: parts[2],
+			relativePath,
+			workspaceDir: `${parts[0]}/${parts[1]}` as
+				"private/packages" | "private/apps",
+		};
 	}
 
 	if ((parts[0] === "packages" || parts[0] === "apps") && parts[1]) {
@@ -56,16 +63,52 @@ export const getPackageInfo = (filePath: string): PackageInfo | null => {
 			return null;
 		}
 
-		return {filter: parts[1], relativePath};
+		return {
+			filter: parts[1],
+			relativePath,
+			workspaceDir: parts[0],
+		};
 	}
 
 	return null;
 };
 
+const packageHasScript = (
+	workspaceDir: PackageInfo["workspaceDir"],
+	filter: string,
+	scriptName: string,
+): boolean => {
+	const baseScript = scriptName.split(/\s+/)[0];
+	if (!baseScript) {
+		return false;
+	}
+
+	const packageJsonPath = path.join(workspaceDir, filter, "package.json");
+	if (!existsSync(packageJsonPath)) {
+		return false;
+	}
+
+	try {
+		const packageJson = JSON.parse(
+			readFileSync(packageJsonPath, "utf8"),
+		) as {scripts?: Record<string, string>};
+		return Boolean(packageJson.scripts?.[baseScript]);
+	} catch {
+		return false;
+	}
+};
+
 export const runInPackage =
 	(scriptName: string, {passFiles = true}: {passFiles?: boolean} = {}) =>
 	(filenames: readonly string[]) => {
-		const packages = new Map<string, string[]>();
+		const packages = new Map<
+			string,
+			{
+				filter: string;
+				workspaceDir: PackageInfo["workspaceDir"];
+				files: string[];
+			}
+		>();
 
 		filenames.forEach((filename) => {
 			const pkg = getPackageInfo(filename);
@@ -73,19 +116,28 @@ export const runInPackage =
 				return;
 			}
 
-			let files = packages.get(pkg.filter);
-			if (!files) {
-				files = [];
-				packages.set(pkg.filter, files);
+			const key = `${pkg.workspaceDir}/${pkg.filter}`;
+			let entry = packages.get(key);
+			if (!entry) {
+				entry = {
+					filter: pkg.filter,
+					workspaceDir: pkg.workspaceDir,
+					files: [],
+				};
+				packages.set(key, entry);
 			}
 
-			files.push(pkg.relativePath);
+			entry.files.push(pkg.relativePath);
 		});
 
-		return Array.from(packages.entries()).map(([filter, files]) => {
-			const fileArgs = passFiles ? ` -- ${files.join(" ")}` : "";
-			return `pnpm --filter ${filter} run ${scriptName}${fileArgs}`;
-		});
+		return Array.from(packages.values())
+			.filter((pkg) =>
+				packageHasScript(pkg.workspaceDir, pkg.filter, scriptName),
+			)
+			.map((pkg) => {
+				const fileArgs = passFiles ? ` -- ${pkg.files.join(" ")}` : "";
+				return `pnpm --filter ${pkg.filter} run ${scriptName}${fileArgs}`;
+			});
 	};
 
 export default {

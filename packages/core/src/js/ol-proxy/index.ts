@@ -338,8 +338,7 @@ function createOrReplaceObject<
 	oldObject: TObject | undefined,
 	args: ConstructorParameters<C>,
 	remover:
-		| null
-		| ((oldObject: TObject, parentObject?: TParent) => void) = null,
+		null | ((oldObject: TObject, parentObject?: TParent) => void) = null,
 	adder: null | ((object: TObject, parentObject?: TParent) => void) = null,
 	parentObject?: TParent,
 ): null | TObject {

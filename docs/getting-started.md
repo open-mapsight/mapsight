@@ -87,12 +87,7 @@ import browserEmbed from "@mapsight/ui/embed/browser";
 
 import {simpleMap} from "./presets/simpleMap";
 
-browserEmbed(
-	containerElement,
-	simpleMap({
-		/* inline options */
-	}),
-);
+browserEmbed(containerElement, simpleMap({/* inline options */}));
 ```
 
 Full build + snippet pattern: [CMS_PHP](integration/CMS_PHP.md), the reference starter [

@@ -19,14 +19,7 @@ export type StyleLiteral = {
 
 export type UnitStyleValue = `${string}px` | `${string}%` | null;
 export type BoolishStyleValue =
-	| boolean
-	| 1
-	| 0
-	| "1"
-	| "0"
-	| "true"
-	| "false"
-	| null;
+	boolean | 1 | 0 | "1" | "0" | "true" | "false" | null;
 
 export type NumberArrayStyleValue = Array<string | number> | string;
 export type NoneAble<T> = "unset" | "none" | T;
@@ -37,8 +30,7 @@ export type StyleValues = Record<string, {value: string | number}>;
 export type NoneAbleStyleValues = {value?: "none" | "unset"} | StyleValues;
 
 export type StyleDeclaration =
-	| NoneAbleStyleValues
-	| Partial<Record<StyleType, NoneAbleStyleValues>>;
+	NoneAbleStyleValues | Partial<Record<StyleType, NoneAbleStyleValues>>;
 
 export type RootStyleDeclaration = {
 	display?: {value: "none"};

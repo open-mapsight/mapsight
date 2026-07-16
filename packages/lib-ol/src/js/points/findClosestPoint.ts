@@ -35,12 +35,10 @@ export default function findClosestPoint(
 	pointsMap: PointsMap,
 ): string | null {
 	const keys = Object.keys(pointsMap);
-	const keyDistances = keys.map(
-		(key): PointDistance => [
-			key,
-			getDistance(basePoint, ensureNonNullable(pointsMap[key])),
-		],
-	);
+	const keyDistances = keys.map((key): PointDistance => [
+		key,
+		getDistance(basePoint, ensureNonNullable(pointsMap[key])),
+	]);
 	const reduceToSmallestDistance = (
 		a: PointDistance | null,
 		b: PointDistance,

@@ -27,15 +27,13 @@ export function getFilteredFeatures(featureSelection?: FeatureSelectionState) {
 export const createFeatureSelectionSelector =
 	(controllerName: string, selectionId: string) => (state: State) => {
 		const selections = state[controllerName] as
-			| undefined
-			| FeatureSelectionsState;
+			undefined | FeatureSelectionsState;
 		return selections?.[selectionId];
 	};
 
 export const createAllFeatureIdsSelector =
 	(controllerName: string, selectionId: string) => (state: State) => {
 		const selections = state[controllerName] as
-			| undefined
-			| FeatureSelectionsState;
+			undefined | FeatureSelectionsState;
 		return selections?.[selectionId]?.features ?? [];
 	};
