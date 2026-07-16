@@ -2,4 +2,4 @@
 "@mapsight/vector-style-compiler": patch
 ---
 
-Update the benchmark process-tree helper to pidtree 1.x.
+Bump dependencies from Dependabot ([#140](https://github.com/open-mapsight/mapsight/pull/140)).
