@@ -809,8 +809,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       pidtree:
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^1.0.0
+        version: 1.0.0
       pidusage:
         specifier: 'catalog:'
         version: 4.0.1
@@ -4643,9 +4643,9 @@ packages:
     engines: {node: '>=0.10'}
     hasBin: true
 
-  pidtree@0.6.0:
-    resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
-    engines: {node: '>=0.10'}
+  pidtree@1.0.0:
+    resolution: {integrity: sha512-avfAvjB9Dd0wdj3rjJX//yS+G79OO0KrS5pJHFJENjYGX6N4SMgEDBBI/yFy0lloOYSaC6XQxzpOAMPfSYFV/Q==}
+    engines: {node: '>=18'}
     hasBin: true
 
   pidusage@4.0.1:
@@ -9354,7 +9354,7 @@ snapshots:
 
   pidtree@0.3.1: {}
 
-  pidtree@0.6.0: {}
+  pidtree@1.0.0: {}
 
   pidusage@4.0.1:
     dependencies:
