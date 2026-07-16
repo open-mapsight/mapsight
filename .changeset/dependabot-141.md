@@ -2,4 +2,4 @@
 "@mapsight/traffic-style": patch
 ---
 
-Update Font Awesome pictogram definitions to Font Awesome 7.2.
+Bump dependencies from Dependabot ([#141](https://github.com/open-mapsight/mapsight/pull/141)).
