@@ -20,7 +20,7 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-redux": "catalog:",
-		"react-router-dom": "^7.18.0",
+		"react-router-dom": "^7.18.1",
 		"react-select": "^5.10.2",
 		"reselect": "catalog:",
 		"tailwindcss": "catalog:"
