@@ -540,8 +540,12 @@ export const createFeatureSourceSelector = (
 		FEATURE_SOURCES,
 	);
 
-	return (state) => ({
-		featureSourceId: listFeatureSourceIdSelector(state),
-		featureSource: listFeatureSourceSelector(state),
-	});
+	return createSelector(
+		listFeatureSourceIdSelector,
+		listFeatureSourceSelector,
+		(featureSourceId, featureSource) => ({
+			featureSourceId,
+			featureSource,
+		}),
+	);
 };

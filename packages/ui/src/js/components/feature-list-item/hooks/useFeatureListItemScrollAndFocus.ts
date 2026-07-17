@@ -50,13 +50,20 @@ export default function useFeatureListItemScrollAndFocus(
 		}
 
 		if (shouldScroll) {
-			console.log("list item scroll");
 			ref.current.scrollIntoView({block: "start", behavior: "smooth"});
 
 			if (enableKeyboardControl) {
-				console.log("list item focus");
 				ref.current.focus({preventScroll: true});
 			}
 		}
-	});
+	}, [
+		enableKeyboardControl,
+		isPreselectedOnly,
+		lastIsPreselectedOnly,
+		lastShowDetails,
+		ref,
+		scrollOnPreselection,
+		scrollOnSelection,
+		showDetails,
+	]);
 }

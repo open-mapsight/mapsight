@@ -1,11 +1,15 @@
 import {useMemo} from "react";
 import {useSelector} from "react-redux";
 
-import {getFilteredFeatures} from "@mapsight/core/lib/feature-selections/selectors";
-
 import {isViewMobile, viewSelector} from "../../../store/selectors";
 import type {MapsightUiFeature} from "../../../types";
 import {useFeatureListContext} from "../../feature-list/context";
+import {
+	createIsHighlightedSelector,
+	createIsPreselectedSelector,
+	createIsSelectedSelector,
+	hasSelectSelectionSelector,
+} from "./feature-list-item-selection-selectors";
 
 export default function useFeatureListItemState(feature: MapsightUiFeature) {
 	const view = useSelector(viewSelector);
@@ -19,26 +23,12 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 			deselectOnClick,
 			highlightOnMouse,
 		},
-		state: {selectSelection, preselectSelection, highlightSelection},
 	} = useFeatureListContext();
 
-	const selectSelectionFeatures = useMemo(
-		() => getFilteredFeatures(selectSelection) || [],
-		[selectSelection],
-	);
-	const hasSelection = selectSelectionFeatures?.length > 0;
-	const isSelected = useMemo(
-		() => selectSelectionFeatures.includes(feature.id),
-		[feature.id, selectSelectionFeatures],
-	);
-	const isPreselected = useMemo(
-		() => !!getFilteredFeatures(preselectSelection)?.includes(feature.id),
-		[feature.id, preselectSelection],
-	);
-	const isHighlighted = useMemo(
-		() => !!getFilteredFeatures(highlightSelection)?.includes(feature.id),
-		[feature.id, highlightSelection],
-	);
+	const isSelected = useSelector(createIsSelectedSelector(feature.id));
+	const isPreselected = useSelector(createIsPreselectedSelector(feature.id));
+	const isHighlighted = useSelector(createIsHighlightedSelector(feature.id));
+	const hasSelection = useSelector(hasSelectSelectionSelector);
 
 	return useMemo(
 		() => ({
