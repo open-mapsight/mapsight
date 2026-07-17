@@ -1,10 +1,10 @@
 # Icon integration without `@mapsight/ui`
 
-How to use traffic-style icons when you are **not** on the Mapsight UI stack
-(custom OpenLayers app, another framework, or minimal bundle).
+How to use traffic-style icons when you are **not** on the Mapsight UI stack (custom OpenLayers app, another framework,
+or minimal bundle).
 
-With `@mapsight/ui`, runtime icons and feature-list rendering are wired
-automatically — see the [README](../README.md#icons-with-mapsightui).
+With `@mapsight/ui`, runtime icons and feature-list rendering are wired automatically — see
+the [README](../README.md#icons-with-mapsightui).
 
 For catalog concepts (sprite vs composable, `meta.json`, pictogram packs), see
 [ICON_CATALOG.md](ICON_CATALOG.md). For architecture and caching, see
@@ -17,24 +17,29 @@ For catalog concepts (sprite vs composable, `meta.json`, pictogram packs), see
 Features reference icons with a compact `mapsightIconId` string:
 
 ```json
-{ "mapsightIconId": "museum" }
-{ "mapsightIconId": "museum/#be123c" }
-{ "mapsightIconId": "museum/#be123c/#ffffff" }
+{
+	"mapsightIconId": "museum"
+}
+{
+	"mapsightIconId": "museum/#be123c"
+}
+{
+	"mapsightIconId": "museum/#be123c/#ffffff"
+}
 ```
 
-Format: `pictogramOrLabel[/background[/foreground]]`. Variant
-(`default` / `small` / `xsmall` / `plain`) comes from zoom rules in SCSS, not
-from the id string.
+Format: `pictogramOrLabel[/background[/foreground]]`. Variant (`default` / `small` / `xsmall` / `plain`) comes from zoom
+rules in SCSS, not from the id string.
 
 ---
 
 ## Map style (OpenLayers)
 
-Compile SCSS that includes `features/_base` (or `base` / `full`) with runtime
-icons enabled — see [CUSTOMIZING_SCSS.md](CUSTOMIZING_SCSS.md).
+Compile SCSS that includes `features/_base` (or `base` / `full`) with runtime icons enabled —
+see [CUSTOMIZING_SCSS.md](CUSTOMIZING_SCSS.md).
 
-The compiled style calls `mapsightRuntimeIcon` for `icon-src`. Import the runtime
-module so the compiler-emitted import resolves:
+The compiled style calls `mapsightRuntimeIcon` for `icon-src`. Import the runtime module so the compiler-emitted import
+resolves:
 
 ```ts
 import "@mapsight/traffic-style/runtime";
@@ -43,13 +48,12 @@ import "@mapsight/traffic-style/runtime";
 import styleFunction from "./generated/my-style";
 ```
 
-`@mapsight/traffic-style/runtime` loads the default **traffic-style** pictogram
-pack (~36 glyphs).
+`@mapsight/traffic-style/runtime` loads the default **traffic-style** pictogram pack (~36 glyphs).
 
 ### Map re-render wiring (required)
 
-`mapsightRuntimeIcon` returns a placeholder on first paint and resolves
-asynchronously. Without a map re-render hook, icons stay invisible.
+`mapsightRuntimeIcon` returns a placeholder on first paint and resolves asynchronously. Without a map re-render hook,
+icons stay invisible.
 
 **Mapsight UI** does this via `createRuntimeIconStylePlugin` in browser defaults.
 
@@ -96,8 +100,7 @@ const bitmap = await loadIcon("museum/#be123c", "plain");
 | **traffic-style** (default) | via `@mapsight/traffic-style/runtime`                     | `museum`, `apotheke`, …       |
 | **fontawesome** (opt-in)    | `import "@mapsight/traffic-style/pictograms-fontawesome"` | `fa-school`, `fa-hospital`, … |
 
-Import Font Awesome once at app startup. Without it, `fa-*` ids fall back to the
-default marker at runtime.
+Import Font Awesome once at app startup. Without it, `fa-*` ids fall back to the default marker at runtime.
 
 ---
 
@@ -111,17 +114,16 @@ import {
 } from "@mapsight/traffic-style/runtime-dev";
 ```
 
-`runtime-dev` adds parsing, formatting, cache stats, and catalog prewarm — not
-needed in production map bundles.
+`runtime-dev` adds parsing, formatting, cache stats, and catalog prewarm — not needed in production map bundles.
 
 ---
 
 ## Direct API reference
 
-| Import path                           | Use                                                               |
-| ------------------------------------- | ----------------------------------------------------------------- |
-| `@mapsight/traffic-style/runtime`     | `mapsightRuntimeIcon`, `loadIcon`, `getCachedIcon`, map callbacks |
-| `@mapsight/traffic-style/runtime-dev` | Parse/format ids, prewarm, cache stats                            |
-| `@mapsight/traffic-style/icon`        | Icon formation pipeline only (no map wiring)                      |
-| `@mapsight/traffic-style/icon-style`  | Direct `mapsightRuntimeIcon` (compiler alias)                     |
-| `@mapsight/traffic-style/icon-meta`   | `isComposableIcon`, sprite metadata                               |
+| Import path                           | Use                                                                          |
+| ------------------------------------- | ---------------------------------------------------------------------------- |
+| `@mapsight/traffic-style/runtime`     | `mapsightRuntimeIcon`, `loadIcon`, `getCachedIcon`, map callbacks            |
+| `@mapsight/traffic-style/runtime-dev` | Parse/format ids, prewarm, cache stats                                       |
+| `@mapsight/traffic-style/icon`        | Icon formation pipeline only (no map wiring)                                 |
+| `@mapsight/traffic-style/icon-style`  | Direct `mapsightRuntimeIcon` (compiler alias)                                |
+| `@mapsight/traffic-style/icon-meta`   | `isComposableIcon`, `listComposableIconIds`, `getIconLabel`, sprite metadata |

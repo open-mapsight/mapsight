@@ -8,6 +8,10 @@ type SourceMetaIcon = {
 	groups?: string[];
 	render?: IconRenderMode;
 	variants?: string[];
+	label?: {
+		de?: string;
+		en?: string;
+	};
 };
 
 type SourceMeta = {
@@ -27,14 +31,26 @@ const sourceIcons = new Map(
 		: Object.entries(sourceMeta.icons ?? {}),
 );
 
+function baseIconId(id: string): string {
+	return id.split("/")[0]!;
+}
+
+export function hasIcon(id: string): boolean {
+	return sourceIcons.has(baseIconId(id));
+}
+
 export function getIconRenderMode(id: string): IconRenderMode {
-	const baseId = id.split("/")[0]!;
-	const icon = sourceIcons.get(baseId);
+	const icon = sourceIcons.get(baseIconId(id));
 	return icon?.render ?? "sprite";
 }
 
 export function isComposableIcon(id: string): boolean {
 	return getIconRenderMode(id) === "composable";
+}
+
+/** All icon ids from `meta.json`, sorted. */
+export function listIconIds(): string[] {
+	return [...sourceIcons.keys()].sort();
 }
 
 export function listSpriteIconIds(): string[] {
@@ -43,23 +59,36 @@ export function listSpriteIconIds(): string[] {
 		.sort();
 }
 
+/** Composable pictogram / letter ids (suitable for module glyphs with tint). */
+export function listComposableIconIds(): string[] {
+	return [...sourceIcons.keys()]
+		.filter((id) => getIconRenderMode(id) === "composable")
+		.sort();
+}
+
+export function getIconLabel(
+	id: string,
+	language: "de" | "en" = "de",
+): string | null {
+	const icon = sourceIcons.get(baseIconId(id));
+	const label = icon?.label?.[language] ?? icon?.label?.de ?? icon?.label?.en;
+	return label ?? null;
+}
+
 export function getIconGroups(id: string): string[] {
-	const baseId = id.split("/")[0]!;
-	return [...(sourceIcons.get(baseId)?.groups ?? [])].sort();
+	return [...(sourceIcons.get(baseIconId(id))?.groups ?? [])].sort();
 }
 
 export function getIconFallback(id: string): string | null {
-	const baseId = id.split("/")[0]!;
-	return sourceIcons.get(baseId)?.fallback ?? null;
+	return sourceIcons.get(baseIconId(id))?.fallback ?? null;
 }
 
 export function getIconVariants(id: string): string[] {
-	const baseId = id.split("/")[0]!;
-	return [...(sourceIcons.get(baseId)?.variants ?? [])].sort();
+	return [...(sourceIcons.get(baseIconId(id))?.variants ?? [])].sort();
 }
 
 export function resolveIconVariantId(id: string, variant: string): string {
-	let current = id.split("/")[0]!;
+	let current = baseIconId(id);
 	const visited = new Set<string>();
 
 	while (!visited.has(current)) {
@@ -77,5 +106,5 @@ export function resolveIconVariantId(id: string, variant: string): string {
 		current = fallback;
 	}
 
-	return id.split("/")[0]!;
+	return baseIconId(id);
 }
