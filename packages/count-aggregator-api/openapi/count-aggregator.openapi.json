@@ -36,14 +36,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -54,6 +61,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -124,7 +132,7 @@
 															]
 														}
 													},
-													"lastDataAt": "2026-06-21T14:50:00+02:00",
+													"lastDataAt": "2026-07-17T09:55:00+02:00",
 													"mapsightIconId": "fa-water-lower"
 												}
 											}
@@ -151,15 +159,16 @@
 									"example": {
 										"data": [
 											{
-												"type": "bicycleSensorTotal",
-												"label": "Radzähler",
-												"station_count": 9,
+												"type": "airQualityPM10Index",
+												"label": "Luftqualitätsindex (PM10)",
+												"station_count": 3,
 												"category": {
-													"id": "mobility",
-													"label": "Mobilität"
+													"id": "airQuality",
+													"label": "Luftqualität"
 												},
-												"defaultMetric": "sum",
+												"defaultMetric": "mean",
 												"supportedResolutions": [
+													"5min",
 													"15min",
 													"hourly",
 													"daily",
@@ -169,25 +178,31 @@
 												],
 												"metrics": [
 													{
-														"id": "count",
-														"label": "Radzähler",
-														"unit": null,
+														"id": "air_quality_p_m10_index",
+														"label": "Luftqualitätsindex (PM10)",
+														"unit": "index",
 														"displayPrecision": 0,
-														"defaultMetric": "sum",
-														"aggregation": ["sum"]
+														"defaultMetric": "mean",
+														"aggregation": [
+															"mean",
+															"min",
+															"max",
+															"last"
+														]
 													}
 												]
 											},
 											{
-												"type": "peopleCount",
-												"label": "Passanten",
-												"station_count": 8,
+												"type": "weatherAirPressure",
+												"label": "Luftdruck",
+												"station_count": 10,
 												"category": {
-													"id": "mobility",
-													"label": "Mobilität"
+													"id": "weather",
+													"label": "Wetter"
 												},
-												"defaultMetric": "sum",
+												"defaultMetric": "mean",
 												"supportedResolutions": [
+													"5min",
 													"15min",
 													"hourly",
 													"daily",
@@ -197,18 +212,23 @@
 												],
 												"metrics": [
 													{
-														"id": "count",
-														"label": "Passanten",
-														"unit": null,
-														"displayPrecision": 0,
-														"defaultMetric": "sum",
-														"aggregation": ["sum"]
+														"id": "weather_air_pressure",
+														"label": "Luftdruck",
+														"unit": "kPa",
+														"displayPrecision": 1,
+														"defaultMetric": "mean",
+														"aggregation": [
+															"mean",
+															"min",
+															"max",
+															"last"
+														]
 													}
 												]
 											},
 											{
-												"type": "airQualityPM25",
-												"label": "Luftqualität (PM2.5)",
+												"type": "airQualityO3Index",
+												"label": "Luftqualitätsindex (O3)",
 												"station_count": 2,
 												"category": {
 													"id": "airQuality",
@@ -226,9 +246,9 @@
 												],
 												"metrics": [
 													{
-														"id": "air_quality_p_m25",
-														"label": "Luftqualität (PM2.5)",
-														"unit": "µg/m³",
+														"id": "air_quality_o3_index",
+														"label": "Luftqualitätsindex (O3)",
+														"unit": "index",
 														"displayPrecision": 0,
 														"defaultMetric": "mean",
 														"aggregation": [
@@ -264,14 +284,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -282,6 +309,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -314,7 +342,7 @@
 												"status": null,
 												"label": "Damm 2 (Anzahl Passanten)",
 												"hasData": true,
-												"lastDataAt": "2026-06-21 18:15:00"
+												"lastDataAt": "2026-07-17 12:45:00"
 											},
 											{
 												"id": 15,
@@ -324,7 +352,7 @@
 												"status": null,
 												"label": "Damm (Anzahl Passanten)",
 												"hasData": true,
-												"lastDataAt": "2026-06-21 18:15:00"
+												"lastDataAt": "2026-07-17 12:45:00"
 											}
 										]
 									},
@@ -350,14 +378,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -368,6 +403,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -418,7 +454,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-19"
+						"example": "2026-07-14"
 					},
 					{
 						"name": "anchor",
@@ -462,26 +498,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-19 00:00:00",
-											"toDateTime": "2026-06-21 23:59:59",
-											"lastDateTime": "2026-06-21 23:59:59",
+											"fromDateTime": "2026-07-14 00:00:00",
+											"toDateTime": "2026-07-16 23:59:59",
+											"lastDateTime": "2026-07-16 23:59:59",
 											"resolution": "daily",
 											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-19 00:00:00",
-													"sum": 32604,
-													"value": 32604
+													"datetime": "2026-07-14 00:00:00",
+													"sum": 18317,
+													"value": 18317
 												},
 												{
-													"datetime": "2026-06-20 00:00:00",
-													"sum": 28484,
-													"value": 28484
+													"datetime": "2026-07-15 00:00:00",
+													"sum": 20826,
+													"value": 20826
 												},
 												{
-													"datetime": "2026-06-21 00:00:00",
-													"sum": 3751,
-													"value": 3751
+													"datetime": "2026-07-16 00:00:00",
+													"sum": 18557,
+													"value": 18557
 												}
 											]
 										}
@@ -510,14 +546,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -528,6 +571,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -604,26 +648,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-19 00:00:00",
-											"toDateTime": "2026-06-21 23:59:59",
-											"lastDateTime": "2026-06-21 23:59:59",
+											"fromDateTime": "2026-07-14 00:00:00",
+											"toDateTime": "2026-07-16 23:59:59",
+											"lastDateTime": "2026-07-16 23:59:59",
 											"resolution": "daily",
 											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-19 00:00:00",
-													"sum": 32604,
-													"value": 32604
+													"datetime": "2026-07-14 00:00:00",
+													"sum": 18317,
+													"value": 18317
 												},
 												{
-													"datetime": "2026-06-20 00:00:00",
-													"sum": 28484,
-													"value": 28484
+													"datetime": "2026-07-15 00:00:00",
+													"sum": 20826,
+													"value": 20826
 												},
 												{
-													"datetime": "2026-06-21 00:00:00",
-													"sum": 3751,
-													"value": 3751
+													"datetime": "2026-07-16 00:00:00",
+													"sum": 18557,
+													"value": 18557
 												}
 											]
 										}
@@ -652,14 +696,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -670,6 +721,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -684,7 +736,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-19 00:00:00"
+						"example": "2026-07-14 00:00:00"
 					},
 					{
 						"name": "to",
@@ -694,7 +746,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-21"
+						"example": "2026-07-16"
 					},
 					{
 						"name": "resolution",
@@ -755,26 +807,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-19 00:00:00",
-											"toDateTime": "2026-06-21 23:59:59",
-											"lastDateTime": "2026-06-21 23:59:59",
+											"fromDateTime": "2026-07-14 00:00:00",
+											"toDateTime": "2026-07-16 23:59:59",
+											"lastDateTime": "2026-07-16 23:59:59",
 											"resolution": "daily",
 											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-19 00:00:00",
-													"sum": 32604,
-													"value": 32604
+													"datetime": "2026-07-14 00:00:00",
+													"sum": 18317,
+													"value": 18317
 												},
 												{
-													"datetime": "2026-06-20 00:00:00",
-													"sum": 28484,
-													"value": 28484
+													"datetime": "2026-07-15 00:00:00",
+													"sum": 20826,
+													"value": 20826
 												},
 												{
-													"datetime": "2026-06-21 00:00:00",
-													"sum": 3751,
-													"value": 3751
+													"datetime": "2026-07-16 00:00:00",
+													"sum": 18557,
+													"value": 18557
 												}
 											]
 										}
@@ -803,14 +855,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -821,6 +880,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -900,14 +960,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -918,6 +985,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -984,26 +1052,26 @@
 								"schema": {
 									"example": {
 										"id": 75,
-										"fromDateTime": "2026-06-19 00:00:00",
-										"toDateTime": "2026-06-21 23:59:59",
-										"lastDateTime": "2026-06-21 23:59:59",
+										"fromDateTime": "2026-07-14 00:00:00",
+										"toDateTime": "2026-07-16 23:59:59",
+										"lastDateTime": "2026-07-16 23:59:59",
 										"resolution": "daily",
 										"stationId": "135688:2302215",
 										"values": [
 											{
-												"datetime": "2026-06-19 00:00:00",
-												"sum": 32604,
-												"value": 32604
+												"datetime": "2026-07-14 00:00:00",
+												"sum": 18317,
+												"value": 18317
 											},
 											{
-												"datetime": "2026-06-20 00:00:00",
-												"sum": 28484,
-												"value": 28484
+												"datetime": "2026-07-15 00:00:00",
+												"sum": 20826,
+												"value": 20826
 											},
 											{
-												"datetime": "2026-06-21 00:00:00",
-												"sum": 3751,
-												"value": 3751
+												"datetime": "2026-07-16 00:00:00",
+												"sum": 18557,
+												"value": 18557
 											}
 										]
 									},
@@ -1039,14 +1107,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1057,6 +1132,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1109,7 +1185,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-19"
+						"example": "2026-07-14"
 					},
 					{
 						"name": "anchor",
@@ -1141,26 +1217,26 @@
 								"schema": {
 									"example": {
 										"id": 75,
-										"fromDateTime": "2026-06-19 00:00:00",
-										"toDateTime": "2026-06-21 23:59:59",
-										"lastDateTime": "2026-06-21 23:59:59",
+										"fromDateTime": "2026-07-14 00:00:00",
+										"toDateTime": "2026-07-16 23:59:59",
+										"lastDateTime": "2026-07-16 23:59:59",
 										"resolution": "daily",
 										"stationId": "135688:2302215",
 										"values": [
 											{
-												"datetime": "2026-06-19 00:00:00",
-												"sum": 32604,
-												"value": 32604
+												"datetime": "2026-07-14 00:00:00",
+												"sum": 18317,
+												"value": 18317
 											},
 											{
-												"datetime": "2026-06-20 00:00:00",
-												"sum": 28484,
-												"value": 28484
+												"datetime": "2026-07-15 00:00:00",
+												"sum": 20826,
+												"value": 20826
 											},
 											{
-												"datetime": "2026-06-21 00:00:00",
-												"sum": 3751,
-												"value": 3751
+												"datetime": "2026-07-16 00:00:00",
+												"sum": 18557,
+												"value": 18557
 											}
 										]
 									},
@@ -1196,14 +1272,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1214,6 +1297,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1289,26 +1373,26 @@
 								"schema": {
 									"example": {
 										"id": 75,
-										"fromDateTime": "2026-06-19 00:00:00",
-										"toDateTime": "2026-06-21 23:59:59",
-										"lastDateTime": "2026-06-21 23:59:59",
+										"fromDateTime": "2026-07-14 00:00:00",
+										"toDateTime": "2026-07-16 23:59:59",
+										"lastDateTime": "2026-07-16 23:59:59",
 										"resolution": "daily",
 										"stationId": "135688:2302215",
 										"values": [
 											{
-												"datetime": "2026-06-19 00:00:00",
-												"sum": 32604,
-												"value": 32604
+												"datetime": "2026-07-14 00:00:00",
+												"sum": 18317,
+												"value": 18317
 											},
 											{
-												"datetime": "2026-06-20 00:00:00",
-												"sum": 28484,
-												"value": 28484
+												"datetime": "2026-07-15 00:00:00",
+												"sum": 20826,
+												"value": 20826
 											},
 											{
-												"datetime": "2026-06-21 00:00:00",
-												"sum": 3751,
-												"value": 3751
+												"datetime": "2026-07-16 00:00:00",
+												"sum": 18557,
+												"value": 18557
 											}
 										]
 									},
@@ -1344,14 +1428,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1362,6 +1453,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1413,7 +1505,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-19"
+						"example": "2026-07-14"
 					}
 				],
 				"responses": {
@@ -1425,8 +1517,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-19 00:00:00",
-										"end_datetime": "2026-06-21 23:59:59"
+										"start_datetime": "2026-07-14 00:00:00",
+										"end_datetime": "2026-07-16 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1460,14 +1552,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1478,6 +1577,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1527,7 +1627,7 @@
 							"type": "string",
 							"pattern": "^\\d{4}-\\d{2}-\\d{2}$"
 						},
-						"example": "2026-06-19"
+						"example": "2026-07-14"
 					}
 				],
 				"responses": {
@@ -1539,8 +1639,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-19 00:00:00",
-										"end_datetime": "2026-06-21 23:59:59"
+										"start_datetime": "2026-07-14 00:00:00",
+										"end_datetime": "2026-07-16 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1564,14 +1664,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1582,6 +1689,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1606,7 +1714,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-19 00:00:00"
+						"example": "2026-07-14 00:00:00"
 					},
 					{
 						"name": "to",
@@ -1616,7 +1724,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-21"
+						"example": "2026-07-16"
 					}
 				],
 				"responses": {
@@ -1628,8 +1736,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-19 00:00:00",
-										"end_datetime": "2026-06-21 23:59:59"
+										"start_datetime": "2026-07-14 00:00:00",
+										"end_datetime": "2026-07-16 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1663,14 +1771,21 @@
 							"type": "string",
 							"enum": [
 								"airQualityCO",
+								"airQualityIndex",
 								"airQualityNO2",
+								"airQualityNO2Index",
 								"airQualityO3",
+								"airQualityO3Index",
 								"airQualityPM10",
+								"airQualityPM10Index",
 								"airQualityPM25",
+								"airQualitySO2",
 								"airQualityStation",
 								"bicycleSensorTotal",
 								"peopleCount",
+								"waterLevelStation",
 								"waterLevelSurface",
+								"waterLevelUnderground",
 								"waterTemp",
 								"weatherAirPressure",
 								"weatherHumidity",
@@ -1681,6 +1796,7 @@
 								"weatherSun",
 								"weatherTemp",
 								"weatherVaporPressure",
+								"weatherWindDirection",
 								"weatherWindSpeed",
 								"weatherWindSpeedMax"
 							]
@@ -1695,7 +1811,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-19 00:00:00"
+						"example": "2026-07-14 00:00:00"
 					},
 					{
 						"name": "to",
@@ -1705,7 +1821,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": "2026-06-21"
+						"example": "2026-07-16"
 					},
 					{
 						"name": "stationIds",
@@ -1725,8 +1841,8 @@
 									"example": {
 										"type": "gap",
 										"station_id": "75",
-										"start_datetime": "2026-06-19 00:00:00",
-										"end_datetime": "2026-06-21 23:59:59"
+										"start_datetime": "2026-07-14 00:00:00",
+										"end_datetime": "2026-07-16 23:59:59"
 									},
 									"$ref": "#/components/schemas/DetectedDataProblem"
 								}
@@ -1768,26 +1884,26 @@
 									"example": {
 										"75": {
 											"id": 75,
-											"fromDateTime": "2026-06-19 00:00:00",
-											"toDateTime": "2026-06-21 23:59:59",
-											"lastDateTime": "2026-06-21 23:59:59",
+											"fromDateTime": "2026-07-14 00:00:00",
+											"toDateTime": "2026-07-16 23:59:59",
+											"lastDateTime": "2026-07-16 23:59:59",
 											"resolution": "daily",
 											"stationId": "135688:2302215",
 											"values": [
 												{
-													"datetime": "2026-06-19 00:00:00",
-													"sum": 32604,
-													"value": 32604
+													"datetime": "2026-07-14 00:00:00",
+													"sum": 18317,
+													"value": 18317
 												},
 												{
-													"datetime": "2026-06-20 00:00:00",
-													"sum": 28484,
-													"value": 28484
+													"datetime": "2026-07-15 00:00:00",
+													"sum": 20826,
+													"value": 20826
 												},
 												{
-													"datetime": "2026-06-21 00:00:00",
-													"sum": 3751,
-													"value": 3751
+													"datetime": "2026-07-16 00:00:00",
+													"sum": 18557,
+													"value": 18557
 												}
 											]
 										}
@@ -1809,9 +1925,9 @@
 			"DataValuePoint": {
 				"type": "object",
 				"example": {
-					"datetime": "2026-06-19 00:00:00",
-					"sum": 32604,
-					"value": 32604
+					"datetime": "2026-07-14 00:00:00",
+					"sum": 18317,
+					"value": 18317
 				},
 				"properties": {
 					"datetime": {
@@ -1847,8 +1963,8 @@
 				"example": {
 					"type": "gap",
 					"station_id": "75",
-					"start_datetime": "2026-06-19 00:00:00",
-					"end_datetime": "2026-06-21 23:59:59"
+					"start_datetime": "2026-07-14 00:00:00",
+					"end_datetime": "2026-07-16 23:59:59"
 				},
 				"properties": {
 					"type": {
@@ -1930,7 +2046,7 @@
 										"tags": ["Wasserstand"]
 									}
 								},
-								"lastDataAt": "2026-06-21T14:50:00+02:00",
+								"lastDataAt": "2026-07-17T09:55:00+02:00",
 								"mapsightIconId": "fa-water-lower"
 							}
 						}
@@ -1970,14 +2086,21 @@
 						"description": "Station type identifier. See `GET /station-types` for currently available types.",
 						"enum": [
 							"airQualityCO",
+							"airQualityIndex",
 							"airQualityNO2",
+							"airQualityNO2Index",
 							"airQualityO3",
+							"airQualityO3Index",
 							"airQualityPM10",
+							"airQualityPM10Index",
 							"airQualityPM25",
+							"airQualitySO2",
 							"airQualityStation",
 							"bicycleSensorTotal",
 							"peopleCount",
+							"waterLevelStation",
 							"waterLevelSurface",
+							"waterLevelUnderground",
 							"waterTemp",
 							"weatherAirPressure",
 							"weatherHumidity",
@@ -1988,6 +2111,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -2012,14 +2136,21 @@
 						"description": "Station type identifier. See `GET /station-types` for currently available types.",
 						"enum": [
 							"airQualityCO",
+							"airQualityIndex",
 							"airQualityNO2",
+							"airQualityNO2Index",
 							"airQualityO3",
+							"airQualityO3Index",
 							"airQualityPM10",
+							"airQualityPM10Index",
 							"airQualityPM25",
+							"airQualitySO2",
 							"airQualityStation",
 							"bicycleSensorTotal",
 							"peopleCount",
+							"waterLevelStation",
 							"waterLevelSurface",
+							"waterLevelUnderground",
 							"waterTemp",
 							"weatherAirPressure",
 							"weatherHumidity",
@@ -2030,6 +2161,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -2049,14 +2181,21 @@
 									"description": "Stable count aggregator metric type identifier.",
 									"enum": [
 										"airQualityCO",
+										"airQualityIndex",
 										"airQualityNO2",
+										"airQualityNO2Index",
 										"airQualityO3",
+										"airQualityO3Index",
 										"airQualityPM10",
+										"airQualityPM10Index",
 										"airQualityPM25",
+										"airQualitySO2",
 										"airQualityStation",
 										"bicycleSensorTotal",
 										"peopleCount",
+										"waterLevelStation",
 										"waterLevelSurface",
+										"waterLevelUnderground",
 										"waterTemp",
 										"weatherAirPressure",
 										"weatherHumidity",
@@ -2067,6 +2206,7 @@
 										"weatherSun",
 										"weatherTemp",
 										"weatherVaporPressure",
+										"weatherWindDirection",
 										"weatherWindSpeed",
 										"weatherWindSpeedMax"
 									]
@@ -2373,7 +2513,7 @@
 							"status": null,
 							"label": "Damm 2 (Anzahl Passanten)",
 							"hasData": true,
-							"lastDataAt": "2026-06-21 18:15:00"
+							"lastDataAt": "2026-07-17 12:45:00"
 						},
 						{
 							"id": 15,
@@ -2383,7 +2523,7 @@
 							"status": null,
 							"label": "Damm (Anzahl Passanten)",
 							"hasData": true,
-							"lastDataAt": "2026-06-21 18:15:00"
+							"lastDataAt": "2026-07-17 12:45:00"
 						}
 					]
 				},
@@ -2502,7 +2642,7 @@
 					"status": null,
 					"label": "Damm 2 (Anzahl Passanten)",
 					"hasData": true,
-					"lastDataAt": "2026-06-21 18:15:00"
+					"lastDataAt": "2026-07-17 12:45:00"
 				},
 				"properties": {
 					"id": {
@@ -2513,14 +2653,21 @@
 						"description": "Station type identifier. See `GET /station-types` for currently available types.",
 						"enum": [
 							"airQualityCO",
+							"airQualityIndex",
 							"airQualityNO2",
+							"airQualityNO2Index",
 							"airQualityO3",
+							"airQualityO3Index",
 							"airQualityPM10",
+							"airQualityPM10Index",
 							"airQualityPM25",
+							"airQualitySO2",
 							"airQualityStation",
 							"bicycleSensorTotal",
 							"peopleCount",
+							"waterLevelStation",
 							"waterLevelSurface",
+							"waterLevelUnderground",
 							"waterTemp",
 							"weatherAirPressure",
 							"weatherHumidity",
@@ -2531,6 +2678,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -2610,15 +2758,16 @@
 				"example": {
 					"data": [
 						{
-							"type": "bicycleSensorTotal",
-							"label": "Radzähler",
-							"station_count": 9,
+							"type": "airQualityPM10Index",
+							"label": "Luftqualitätsindex (PM10)",
+							"station_count": 3,
 							"category": {
-								"id": "mobility",
-								"label": "Mobilität"
+								"id": "airQuality",
+								"label": "Luftqualität"
 							},
-							"defaultMetric": "sum",
+							"defaultMetric": "mean",
 							"supportedResolutions": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -2628,25 +2777,31 @@
 							],
 							"metrics": [
 								{
-									"id": "count",
-									"label": "Radzähler",
-									"unit": null,
+									"id": "air_quality_p_m10_index",
+									"label": "Luftqualitätsindex (PM10)",
+									"unit": "index",
 									"displayPrecision": 0,
-									"defaultMetric": "sum",
-									"aggregation": ["sum"]
+									"defaultMetric": "mean",
+									"aggregation": [
+										"mean",
+										"min",
+										"max",
+										"last"
+									]
 								}
 							]
 						},
 						{
-							"type": "peopleCount",
-							"label": "Passanten",
-							"station_count": 8,
+							"type": "weatherAirPressure",
+							"label": "Luftdruck",
+							"station_count": 10,
 							"category": {
-								"id": "mobility",
-								"label": "Mobilität"
+								"id": "weather",
+								"label": "Wetter"
 							},
-							"defaultMetric": "sum",
+							"defaultMetric": "mean",
 							"supportedResolutions": [
+								"5min",
 								"15min",
 								"hourly",
 								"daily",
@@ -2656,18 +2811,23 @@
 							],
 							"metrics": [
 								{
-									"id": "count",
-									"label": "Passanten",
-									"unit": null,
-									"displayPrecision": 0,
-									"defaultMetric": "sum",
-									"aggregation": ["sum"]
+									"id": "weather_air_pressure",
+									"label": "Luftdruck",
+									"unit": "kPa",
+									"displayPrecision": 1,
+									"defaultMetric": "mean",
+									"aggregation": [
+										"mean",
+										"min",
+										"max",
+										"last"
+									]
 								}
 							]
 						},
 						{
-							"type": "airQualityPM25",
-							"label": "Luftqualität (PM2.5)",
+							"type": "airQualityO3Index",
+							"label": "Luftqualitätsindex (O3)",
 							"station_count": 2,
 							"category": {
 								"id": "airQuality",
@@ -2685,9 +2845,9 @@
 							],
 							"metrics": [
 								{
-									"id": "air_quality_p_m25",
-									"label": "Luftqualität (PM2.5)",
-									"unit": "µg/m³",
+									"id": "air_quality_o3_index",
+									"label": "Luftqualitätsindex (O3)",
+									"unit": "index",
 									"displayPrecision": 0,
 									"defaultMetric": "mean",
 									"aggregation": [
@@ -2715,15 +2875,16 @@
 			"StationTypeSummary": {
 				"type": "object",
 				"example": {
-					"type": "bicycleSensorTotal",
-					"label": "Radzähler",
-					"station_count": 9,
+					"type": "airQualityPM10Index",
+					"label": "Luftqualitätsindex (PM10)",
+					"station_count": 3,
 					"category": {
-						"id": "mobility",
-						"label": "Mobilität"
+						"id": "airQuality",
+						"label": "Luftqualität"
 					},
-					"defaultMetric": "sum",
+					"defaultMetric": "mean",
 					"supportedResolutions": [
+						"5min",
 						"15min",
 						"hourly",
 						"daily",
@@ -2733,12 +2894,12 @@
 					],
 					"metrics": [
 						{
-							"id": "count",
-							"label": "Radzähler",
-							"unit": null,
+							"id": "air_quality_p_m10_index",
+							"label": "Luftqualitätsindex (PM10)",
+							"unit": "index",
 							"displayPrecision": 0,
-							"defaultMetric": "sum",
-							"aggregation": ["sum"]
+							"defaultMetric": "mean",
+							"aggregation": ["mean", "min", "max", "last"]
 						}
 					]
 				},
@@ -2748,14 +2909,21 @@
 						"description": "Station type identifier. See `GET /station-types` for currently available types.",
 						"enum": [
 							"airQualityCO",
+							"airQualityIndex",
 							"airQualityNO2",
+							"airQualityNO2Index",
 							"airQualityO3",
+							"airQualityO3Index",
 							"airQualityPM10",
+							"airQualityPM10Index",
 							"airQualityPM25",
+							"airQualitySO2",
 							"airQualityStation",
 							"bicycleSensorTotal",
 							"peopleCount",
+							"waterLevelStation",
 							"waterLevelSurface",
+							"waterLevelUnderground",
 							"waterTemp",
 							"weatherAirPressure",
 							"weatherHumidity",
@@ -2766,6 +2934,7 @@
 							"weatherSun",
 							"weatherTemp",
 							"weatherVaporPressure",
+							"weatherWindDirection",
 							"weatherWindSpeed",
 							"weatherWindSpeedMax"
 						]
@@ -2822,26 +2991,26 @@
 				"type": "object",
 				"example": {
 					"id": 75,
-					"fromDateTime": "2026-06-19 00:00:00",
-					"toDateTime": "2026-06-21 23:59:59",
-					"lastDateTime": "2026-06-21 23:59:59",
+					"fromDateTime": "2026-07-14 00:00:00",
+					"toDateTime": "2026-07-16 23:59:59",
+					"lastDateTime": "2026-07-16 23:59:59",
 					"resolution": "daily",
 					"stationId": "135688:2302215",
 					"values": [
 						{
-							"datetime": "2026-06-19 00:00:00",
-							"sum": 32604,
-							"value": 32604
+							"datetime": "2026-07-14 00:00:00",
+							"sum": 18317,
+							"value": 18317
 						},
 						{
-							"datetime": "2026-06-20 00:00:00",
-							"sum": 28484,
-							"value": 28484
+							"datetime": "2026-07-15 00:00:00",
+							"sum": 20826,
+							"value": 20826
 						},
 						{
-							"datetime": "2026-06-21 00:00:00",
-							"sum": 3751,
-							"value": 3751
+							"datetime": "2026-07-16 00:00:00",
+							"sum": 18557,
+							"value": 18557
 						}
 					]
 				},

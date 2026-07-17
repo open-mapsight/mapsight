@@ -3,7 +3,7 @@ import type {z} from "zod";
 export interface EndpointParameter {
 	name: string;
 	type: "Path" | "Query" | "Body" | "Header";
-	schema: z.ZodTypeAny;
+	schema: z.ZodType;
 }
 
 export interface EndpointDefinition {
@@ -11,7 +11,7 @@ export interface EndpointDefinition {
 	path: string;
 	alias: string;
 	parameters?: readonly EndpointParameter[];
-	response: z.ZodTypeAny;
+	response: z.ZodType;
 }
 
 export interface FetchClientOptions {

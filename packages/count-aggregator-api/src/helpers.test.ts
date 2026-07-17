@@ -73,6 +73,61 @@ describe("typed endpoint helpers", () => {
 		expect(result.data[0]?.type).toBe("bicycleSensorTotal");
 	});
 
+	it("ignores unknown station types instead of failing the list", async () => {
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		const fetchFn = createMockFetch(() => ({
+			data: [
+				{
+					type: "bicycleSensorTotal",
+					label: "Bicycle count",
+					station_count: 1,
+					category: {id: "mobility", label: "Mobility"},
+					defaultMetric: "sum",
+					supportedResolutions: ["daily"],
+					metrics: [
+						{
+							id: "count",
+							label: "Bicycle count",
+							unit: null,
+							displayPrecision: 0,
+							defaultMetric: "sum",
+							aggregation: ["sum"],
+						},
+					],
+				},
+				{
+					type: "brandNewSensorType",
+					label: "Brand new",
+					station_count: 2,
+					category: {id: "other", label: "Other"},
+					defaultMetric: "mean",
+					supportedResolutions: ["hourly"],
+					metrics: [
+						{
+							id: "value",
+							label: "Value",
+							unit: null,
+							displayPrecision: 0,
+							defaultMetric: "mean",
+							aggregation: ["mean"],
+						},
+					],
+				},
+			],
+		}));
+
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		const result = await listStationTypes(client);
+
+		expect(result.data.map((entry) => entry.type)).toEqual([
+			"bicycleSensorTotal",
+		]);
+		expect(warn).toHaveBeenCalledTimes(1);
+		expect(String(warn.mock.calls[0]?.[0])).toContain(
+			'Ignoring unknown or invalid station type "brandNewSensorType"',
+		);
+	});
+
 	it("lists stations for a station type", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(

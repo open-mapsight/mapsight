@@ -30,8 +30,16 @@ execFileSync(
 
 let generated = readFileSync(output, "utf8");
 generated = generated.replace(
+	/^import \{ z \} from "zod";\n/m,
+	'import { z } from "zod";\nimport { createLenientStationTypeListResponseSchema } from "../lib/lenient-station-type-list.js";\n',
+);
+generated = generated.replace(
 	/z\.record\((?!z\.string\(\), )/g,
 	"z.record(z.string(), ",
+);
+generated = generated.replace(
+	/const StationTypeListResponse: z\.ZodType<StationTypeListResponse> = z\n  \.object\(\{ data: z\.array\(StationTypeSummary\) \}\)\n  \.strict\(\)\n  \.passthrough\(\);/,
+	"const StationTypeListResponse: z.ZodType<StationTypeListResponse> =\n  createLenientStationTypeListResponseSchema(StationTypeSummary);",
 );
 generated = generated.replaceAll(
 	'alias: "count-aggregator.public.",',
