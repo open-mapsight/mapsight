@@ -1,5 +1,5 @@
 import type {ComponentType, ElementType, ReactNode} from "react";
-import {Fragment, useRef} from "react";
+import {Fragment, memo, useRef} from "react";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../types";
@@ -179,4 +179,4 @@ function FeatureListItem({
 	);
 }
 
-export default FeatureListItem;
+export default memo(FeatureListItem);

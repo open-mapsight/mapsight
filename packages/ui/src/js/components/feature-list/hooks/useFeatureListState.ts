@@ -1,7 +1,6 @@
 import {useMemo} from "react";
 import {useSelector} from "react-redux";
 
-import type {FeatureSelectionState} from "@mapsight/core/lib/feature-selections/selectors";
 import {
 	getFeatureSourceError,
 	getFeatureSourceStatus,
@@ -10,11 +9,8 @@ import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types"
 
 import {FEATURE_LIST} from "../../../config/constants/controllers";
 import {
-	highlightSelectionSelector,
 	lastListScrollPositionSelector,
 	layerSwitcherShowExternalSelector,
-	preselectSelectionSelector,
-	selectSelectionSelector,
 	tagSwitcherShowSelector,
 } from "../../../store/selectors";
 import type {FullUiState} from "../../../types";
@@ -30,9 +26,6 @@ export type FeatureListStateProps = PaginatedFilteredFeaturesState & {
 	featureSourceId?: string;
 	featureSource?: FeatureSourceState;
 	scrollPosition: number | null;
-	selectSelection: undefined | FeatureSelectionState;
-	preselectSelection: undefined | FeatureSelectionState;
-	highlightSelection: undefined | FeatureSelectionState;
 };
 
 export default function useFeatureListState(
@@ -49,9 +42,6 @@ export default function useFeatureListState(
 		layerSwitcherShowExternalSelector,
 	);
 	const scrollPosition = useSelector(lastListScrollPositionSelector);
-	const selectSelection = useSelector(selectSelectionSelector);
-	const preselectSelection = useSelector(preselectSelectionSelector);
-	const highlightSelection = useSelector(highlightSelectionSelector);
 
 	const paginatedFilteredFeaturesState = usePaginatedFilteredFeatures(
 		featureSource,
@@ -82,9 +72,6 @@ export default function useFeatureListState(
 			featureSource,
 			scrollPosition:
 				(enableScrollPosition ? scrollPosition : null) ?? null,
-			selectSelection,
-			preselectSelection,
-			highlightSelection,
 		}),
 		[
 			paginatedFilteredFeaturesState,
@@ -95,9 +82,6 @@ export default function useFeatureListState(
 			featureSource,
 			enableScrollPosition,
 			scrollPosition,
-			selectSelection,
-			preselectSelection,
-			highlightSelection,
 		],
 	);
 }
