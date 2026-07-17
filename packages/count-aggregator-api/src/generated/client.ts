@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createLenientStationTypeListResponseSchema } from "../lib/lenient-station-type-list.js";
 
 type StationGeoJsonFeature = {
   type: string;
@@ -25,18 +26,25 @@ type StationGeoJsonFeatureProperties = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityIndex, airQualityNO2, airQualityNO2Index, airQualityO3, airQualityO3Index, airQualityPM10, airQualityPM10Index, airQualityPM25, airQualitySO2, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelStation, waterLevelSurface, waterLevelUnderground, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
+    | "airQualityIndex"
     | "airQualityNO2"
+    | "airQualityNO2Index"
     | "airQualityO3"
+    | "airQualityO3Index"
     | "airQualityPM10"
+    | "airQualityPM10Index"
     | "airQualityPM25"
+    | "airQualitySO2"
     | "airQualityStation"
     | "bicycleSensorTotal"
     | "peopleCount"
+    | "waterLevelStation"
     | "waterLevelSurface"
+    | "waterLevelUnderground"
     | "waterTemp"
     | "weatherAirPressure"
     | "weatherHumidity"
@@ -47,6 +55,7 @@ type StationGeoJsonFeatureProperties = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   /**
@@ -64,18 +73,25 @@ type StationGeoJsonFeatureProperties = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityIndex, airQualityNO2, airQualityNO2Index, airQualityO3, airQualityO3Index, airQualityPM10, airQualityPM10Index, airQualityPM25, airQualitySO2, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelStation, waterLevelSurface, waterLevelUnderground, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   countAggregatorType:
     | "airQualityCO"
+    | "airQualityIndex"
     | "airQualityNO2"
+    | "airQualityNO2Index"
     | "airQualityO3"
+    | "airQualityO3Index"
     | "airQualityPM10"
+    | "airQualityPM10Index"
     | "airQualityPM25"
+    | "airQualitySO2"
     | "airQualityStation"
     | "bicycleSensorTotal"
     | "peopleCount"
+    | "waterLevelStation"
     | "waterLevelSurface"
+    | "waterLevelUnderground"
     | "waterTemp"
     | "weatherAirPressure"
     | "weatherHumidity"
@@ -86,6 +102,7 @@ type StationGeoJsonFeatureProperties = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   /**
@@ -99,18 +116,25 @@ type StationGeoJsonFeatureProperties = {
         /**
          * Stable count aggregator metric type identifier.
          *
-         * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+         * @enum airQualityCO, airQualityIndex, airQualityNO2, airQualityNO2Index, airQualityO3, airQualityO3Index, airQualityPM10, airQualityPM10Index, airQualityPM25, airQualitySO2, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelStation, waterLevelSurface, waterLevelUnderground, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
          */
         type:
           | "airQualityCO"
+          | "airQualityIndex"
           | "airQualityNO2"
+          | "airQualityNO2Index"
           | "airQualityO3"
+          | "airQualityO3Index"
           | "airQualityPM10"
+          | "airQualityPM10Index"
           | "airQualityPM25"
+          | "airQualitySO2"
           | "airQualityStation"
           | "bicycleSensorTotal"
           | "peopleCount"
+          | "waterLevelStation"
           | "waterLevelSurface"
+          | "waterLevelUnderground"
           | "waterTemp"
           | "weatherAirPressure"
           | "weatherHumidity"
@@ -121,6 +145,7 @@ type StationGeoJsonFeatureProperties = {
           | "weatherSun"
           | "weatherTemp"
           | "weatherVaporPressure"
+          | "weatherWindDirection"
           | "weatherWindSpeed"
           | "weatherWindSpeedMax";
         /**
@@ -298,18 +323,25 @@ type StationSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityIndex, airQualityNO2, airQualityNO2Index, airQualityO3, airQualityO3Index, airQualityPM10, airQualityPM10Index, airQualityPM25, airQualitySO2, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelStation, waterLevelSurface, waterLevelUnderground, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
+    | "airQualityIndex"
     | "airQualityNO2"
+    | "airQualityNO2Index"
     | "airQualityO3"
+    | "airQualityO3Index"
     | "airQualityPM10"
+    | "airQualityPM10Index"
     | "airQualityPM25"
+    | "airQualitySO2"
     | "airQualityStation"
     | "bicycleSensorTotal"
     | "peopleCount"
+    | "waterLevelStation"
     | "waterLevelSurface"
+    | "waterLevelUnderground"
     | "waterTemp"
     | "weatherAirPressure"
     | "weatherHumidity"
@@ -320,6 +352,7 @@ type StationSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   origin_id: string;
@@ -397,18 +430,25 @@ type StationTypeSummary = {
   /**
    * Station type identifier. See `GET /station-types` for currently available types.
    *
-   * @enum airQualityCO, airQualityNO2, airQualityO3, airQualityPM10, airQualityPM25, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelSurface, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindSpeed, weatherWindSpeedMax
+   * @enum airQualityCO, airQualityIndex, airQualityNO2, airQualityNO2Index, airQualityO3, airQualityO3Index, airQualityPM10, airQualityPM10Index, airQualityPM25, airQualitySO2, airQualityStation, bicycleSensorTotal, peopleCount, waterLevelStation, waterLevelSurface, waterLevelUnderground, waterTemp, weatherAirPressure, weatherHumidity, weatherLightingDistance, weatherLightnings, weatherRain, weatherStation, weatherSun, weatherTemp, weatherVaporPressure, weatherWindDirection, weatherWindSpeed, weatherWindSpeedMax
    */
   type:
     | "airQualityCO"
+    | "airQualityIndex"
     | "airQualityNO2"
+    | "airQualityNO2Index"
     | "airQualityO3"
+    | "airQualityO3Index"
     | "airQualityPM10"
+    | "airQualityPM10Index"
     | "airQualityPM25"
+    | "airQualitySO2"
     | "airQualityStation"
     | "bicycleSensorTotal"
     | "peopleCount"
+    | "waterLevelStation"
     | "waterLevelSurface"
+    | "waterLevelUnderground"
     | "waterTemp"
     | "weatherAirPressure"
     | "weatherHumidity"
@@ -419,6 +459,7 @@ type StationTypeSummary = {
     | "weatherSun"
     | "weatherTemp"
     | "weatherVaporPressure"
+    | "weatherWindDirection"
     | "weatherWindSpeed"
     | "weatherWindSpeedMax";
   label: string;
@@ -510,14 +551,21 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
       name: z.union([z.string(), z.null()]),
       type: z.enum([
         "airQualityCO",
+        "airQualityIndex",
         "airQualityNO2",
+        "airQualityNO2Index",
         "airQualityO3",
+        "airQualityO3Index",
         "airQualityPM10",
+        "airQualityPM10Index",
         "airQualityPM25",
+        "airQualitySO2",
         "airQualityStation",
         "bicycleSensorTotal",
         "peopleCount",
+        "waterLevelStation",
         "waterLevelSurface",
+        "waterLevelUnderground",
         "waterTemp",
         "weatherAirPressure",
         "weatherHumidity",
@@ -528,6 +576,7 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "weatherSun",
         "weatherTemp",
         "weatherVaporPressure",
+        "weatherWindDirection",
         "weatherWindSpeed",
         "weatherWindSpeedMax",
       ]),
@@ -536,14 +585,21 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
       hasData: z.boolean(),
       countAggregatorType: z.enum([
         "airQualityCO",
+        "airQualityIndex",
         "airQualityNO2",
+        "airQualityNO2Index",
         "airQualityO3",
+        "airQualityO3Index",
         "airQualityPM10",
+        "airQualityPM10Index",
         "airQualityPM25",
+        "airQualitySO2",
         "airQualityStation",
         "bicycleSensorTotal",
         "peopleCount",
+        "waterLevelStation",
         "waterLevelSurface",
+        "waterLevelUnderground",
         "waterTemp",
         "weatherAirPressure",
         "weatherHumidity",
@@ -554,6 +610,7 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
         "weatherSun",
         "weatherTemp",
         "weatherVaporPressure",
+        "weatherWindDirection",
         "weatherWindSpeed",
         "weatherWindSpeedMax",
       ]),
@@ -564,14 +621,21 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
             .object({
               type: z.enum([
                 "airQualityCO",
+                "airQualityIndex",
                 "airQualityNO2",
+                "airQualityNO2Index",
                 "airQualityO3",
+                "airQualityO3Index",
                 "airQualityPM10",
+                "airQualityPM10Index",
                 "airQualityPM25",
+                "airQualitySO2",
                 "airQualityStation",
                 "bicycleSensorTotal",
                 "peopleCount",
+                "waterLevelStation",
                 "waterLevelSurface",
+                "waterLevelUnderground",
                 "waterTemp",
                 "weatherAirPressure",
                 "weatherHumidity",
@@ -582,6 +646,7 @@ const StationGeoJsonFeatureProperties: z.ZodType<StationGeoJsonFeatureProperties
                 "weatherSun",
                 "weatherTemp",
                 "weatherVaporPressure",
+                "weatherWindDirection",
                 "weatherWindSpeed",
                 "weatherWindSpeedMax",
               ]),
@@ -706,14 +771,21 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
   .object({
     type: z.enum([
       "airQualityCO",
+      "airQualityIndex",
       "airQualityNO2",
+      "airQualityNO2Index",
       "airQualityO3",
+      "airQualityO3Index",
       "airQualityPM10",
+      "airQualityPM10Index",
       "airQualityPM25",
+      "airQualitySO2",
       "airQualityStation",
       "bicycleSensorTotal",
       "peopleCount",
+      "waterLevelStation",
       "waterLevelSurface",
+      "waterLevelUnderground",
       "waterTemp",
       "weatherAirPressure",
       "weatherHumidity",
@@ -724,6 +796,7 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
+      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
@@ -746,23 +819,28 @@ const StationTypeSummary: z.ZodType<StationTypeSummary> = z
   })
   .strict()
   .passthrough();
-const StationTypeListResponse: z.ZodType<StationTypeListResponse> = z
-  .object({ data: z.array(StationTypeSummary) })
-  .strict()
-  .passthrough();
+const StationTypeListResponse: z.ZodType<StationTypeListResponse> =
+  createLenientStationTypeListResponseSchema(StationTypeSummary);
 const StationSummary: z.ZodType<StationSummary> = z
   .object({
     id: z.number().int(),
     type: z.enum([
       "airQualityCO",
+      "airQualityIndex",
       "airQualityNO2",
+      "airQualityNO2Index",
       "airQualityO3",
+      "airQualityO3Index",
       "airQualityPM10",
+      "airQualityPM10Index",
       "airQualityPM25",
+      "airQualitySO2",
       "airQualityStation",
       "bicycleSensorTotal",
       "peopleCount",
+      "waterLevelStation",
       "waterLevelSurface",
+      "waterLevelUnderground",
       "waterTemp",
       "weatherAirPressure",
       "weatherHumidity",
@@ -773,6 +851,7 @@ const StationSummary: z.ZodType<StationSummary> = z
       "weatherSun",
       "weatherTemp",
       "weatherVaporPressure",
+      "weatherWindDirection",
       "weatherWindSpeed",
       "weatherWindSpeedMax",
     ]),
@@ -888,14 +967,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -906,6 +992,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -962,14 +1049,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -980,6 +1074,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1046,14 +1141,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1064,6 +1166,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1104,14 +1207,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1122,6 +1232,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1152,14 +1263,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1170,6 +1288,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1220,14 +1339,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1238,6 +1364,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1296,14 +1423,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1314,6 +1448,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1363,14 +1498,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1381,6 +1523,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1445,14 +1588,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1463,6 +1613,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1496,14 +1647,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1514,6 +1672,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1537,14 +1696,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1555,6 +1721,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1603,14 +1770,21 @@ export const endpoints = [
         type: "Path",
         schema: z.enum([
           "airQualityCO",
+          "airQualityIndex",
           "airQualityNO2",
+          "airQualityNO2Index",
           "airQualityO3",
+          "airQualityO3Index",
           "airQualityPM10",
+          "airQualityPM10Index",
           "airQualityPM25",
+          "airQualitySO2",
           "airQualityStation",
           "bicycleSensorTotal",
           "peopleCount",
+          "waterLevelStation",
           "waterLevelSurface",
+          "waterLevelUnderground",
           "waterTemp",
           "weatherAirPressure",
           "weatherHumidity",
@@ -1621,6 +1795,7 @@ export const endpoints = [
           "weatherSun",
           "weatherTemp",
           "weatherVaporPressure",
+          "weatherWindDirection",
           "weatherWindSpeed",
           "weatherWindSpeedMax",
         ]),
@@ -1699,14 +1874,21 @@ export const endpoints = [
         schema: z
           .enum([
             "airQualityCO",
+            "airQualityIndex",
             "airQualityNO2",
+            "airQualityNO2Index",
             "airQualityO3",
+            "airQualityO3Index",
             "airQualityPM10",
+            "airQualityPM10Index",
             "airQualityPM25",
+            "airQualitySO2",
             "airQualityStation",
             "bicycleSensorTotal",
             "peopleCount",
+            "waterLevelStation",
             "waterLevelSurface",
+            "waterLevelUnderground",
             "waterTemp",
             "weatherAirPressure",
             "weatherHumidity",
@@ -1717,6 +1899,7 @@ export const endpoints = [
             "weatherSun",
             "weatherTemp",
             "weatherVaporPressure",
+            "weatherWindDirection",
             "weatherWindSpeed",
             "weatherWindSpeedMax",
           ])
