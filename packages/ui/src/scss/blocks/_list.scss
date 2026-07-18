@@ -73,7 +73,7 @@
 	}
 
 	&__icon {
-		width: variables.$ms3-listIconWidth + 12px;
+		width: calc(var(--ms3-list-icon-width) + 12px);
 	}
 
 	&__main {

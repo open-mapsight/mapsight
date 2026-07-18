@@ -92,6 +92,12 @@ $ms3-fullscreen-zIndexWrapper: 2 !default;
 //  - Desktop
 $ms3-step1: 768px !default;
 
+// CSS custom-property emission (see `_tokens.scss`)
+// - `":root"` — document-wide defaults (safe for host chrome / portals outside `.ms3-wrapper`)
+// - `".ms3-wrapper"` — scope tokens to each Mapsight root (better when multiple instances/themes share a page)
+// - `null` — do not auto-emit; call `@include tokens.tokens` on the selectors you need
+$ms3-tokens-selector: ":root" !default;
+
 // calculated variables (no !default)
 $ms3-uiIconPath: $ms3-iconPath + "mapsight-ui/"; // kein default, soll nicht direkt geändert werden
 $ms3-breakpoint-mobile: 0 ($ms3-step1 - 1px);

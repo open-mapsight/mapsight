@@ -1,0 +1,85 @@
+@use "variables";
+
+// Design tokens mirrored from Sass config for CSS-only consumers and gradual
+// migration off `$ms3-*` property values. Hosts configure via
+// `@use "@mapsight/ui/src/scss/variables" with (...)` before `@use`ing default
+// (or this module); values below read that configured module.
+//
+// Prefer `@include tokens` inside your own selectors when you need more than one
+// theme scope on a page. Auto-emission uses `$ms3-tokens-selector` (see variables).
+
+/// Emits all `--ms3-*` design tokens on the current selector.
+@mixin tokens {
+	// colors
+	--ms3-primary-color: #{variables.$ms3-primaryColor};
+	--ms3-inverted-primary-color: #{variables.$ms3-invertedPrimaryColor};
+	--ms3-secondary-color: #{variables.$ms3-secondaryColor};
+	--ms3-tertiary-color: #{variables.$ms3-tertiaryColor};
+	--ms3-theme-color-a: #{variables.$ms3-themeColorA};
+	--ms3-theme-color-b: #{variables.$ms3-themeColorB};
+	--ms3-background-color: #{variables.$ms3-backgroundColor};
+	--ms3-background-color-offset: #{variables.$ms3-backgroundColorOffset};
+	--ms3-background-color-offset-2: #{variables.$ms3-backgroundColorOffset2};
+	--ms3-page-background-color: #{variables.$ms3-pageBackgroundColor};
+	--ms3-background-highlight-color: #{variables.$ms3-backgroundHighlightColor};
+	--ms3-foreground-color: #{variables.$ms3-foregroundColor};
+	--ms3-table-line-color: #{variables.$ms3-tableLineColor};
+	--ms3-border-color: #{variables.$ms3-borderColor};
+	--ms3-dots-shadow-color: #{variables.$ms3-dotsShadowColor};
+	--ms3-tooltip-background-color: #{variables.$ms3-tooltipBackgroundColor};
+	--ms3-tooltip-border-color: #{variables.$ms3-tooltipBorderColor};
+	--ms3-attributions-background-color: #{variables.$ms3-attributionsBackgroundColor};
+	--ms3-background-color-app-overlay: #{variables.$ms3-backgroundColorAppOverlay};
+	--ms3-map-background-color: #{variables.$ms3-mapBackgroundColor};
+	--ms3-hint-default-color: #{variables.$ms3-hintDefaultColor};
+
+	// typography
+	--ms3-font-size-base: #{variables.$ms3-fontSizeBase};
+	--ms3-font-size-smaller: #{variables.$ms3-fontSizeSmaller};
+	--ms3-font-size-smallest: #{variables.$ms3-fontSizeSmallest};
+	--ms3-font-size-headline: #{variables.$ms3-fontSizeHeadline};
+	--ms3-font-size-input: #{variables.$ms3-fontSizeInput};
+	--ms3-hint-font-family: #{variables.$ms3-hintFontFamily};
+
+	// sizes
+	--ms3-list-icon-width: #{variables.$ms3-listIconWidth};
+	--ms3-search-height: #{variables.$ms3-searchHeight};
+	--ms3-search-result-max-height: #{variables.$ms3-searchResultMaxHeight};
+	--ms3-border-radius: #{variables.$ms3-borderRadius};
+	--ms3-fullscreen-top: #{variables.$ms3-fullscreen-top};
+	--ms3-map-overlay-padding: #{variables.$ms3-mapOverlayPadding};
+	--ms3-map-max-height-default: #{variables.$ms3-mapMaxHeightDefault};
+	--ms3-map-min-height-desktop: #{variables.$ms3-mapMinHeightDesktop};
+	--ms3-mobile-feature-select-info-height: #{variables.$ms3-mobileFeatureSelectInfoHeight};
+	--ms3-vertical-panel-padding: #{variables.$ms3-verticalPanelPadding};
+	--ms3-vertical-panel-border-radius: #{variables.$ms3-verticalPanelBorderRadius};
+	--ms3-vertical-panel-width: #{variables.$ms3-verticalPanelWidth};
+	--ms3-vertical-panel-content-width: #{variables.$ms3-verticalPanelContentWidth};
+	--ms3-marginal-gap: #{variables.$ms3-marginalGap};
+
+	// motion
+	--ms3-easing-default: #{variables.$ms3-easing-default};
+	--ms3-transition-fast: #{variables.$ms3-transition-fast};
+
+	// z-index
+	--ms3-z-index-list-toggle-button: #{variables.$ms3-zIndexListToggleButton};
+	--ms3-z-index-app-overlay: #{variables.$ms3-zIndexAppOverlay};
+	--ms3-z-index-viewport-button: #{variables.$ms3-zIndexViewportButton};
+	--ms3-z-index-list-header: #{variables.$ms3-zIndexListHeader};
+	--ms3-z-index-wrapper: #{variables.$ms3-zIndexWrapper};
+	--ms3-fullscreen-z-index-wrapper: #{variables.$ms3-fullscreen-zIndexWrapper};
+
+	// scrollbar utility
+	--ms3-scrollbar-size: 8px;
+	--ms3-scrollbar-thumb: rgb(55 65 81 / 28%);
+	--ms3-scrollbar-thumb-hover: rgb(55 65 81 / 45%);
+	--ms3-scrollbar-thumb-firefox: rgb(55 65 81 / 35%);
+	--ms3-scrollbar-thumb-firefox-hover: rgb(55 65 81 / 50%);
+	--ms3-scrollbar-track-color: #{variables.$ms3-backgroundColor};
+}
+
+@if variables.$ms3-tokens-selector {
+	#{variables.$ms3-tokens-selector} {
+		@include tokens;
+	}
+}

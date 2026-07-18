@@ -1,9 +1,8 @@
-@use "../variables";
 
 .ms3-list-header {
 	display: flex;
-	background: variables.$ms3-backgroundColor;
-	z-index: variables.$ms3-zIndexListHeader;
+	background: var(--ms3-background-color);
+	z-index: var(--ms3-z-index-list-header);
 
 	&.js-is-sticky,
 	&.js-is-stuck {

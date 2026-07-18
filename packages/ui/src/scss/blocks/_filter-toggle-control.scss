@@ -1,11 +1,10 @@
-@use "../variables";
 
 .ms3-filter-toggle-control {
 	&__panel {
 		padding: 12px 20px 12px 10px;
 		margin-top: 10px;
-		border: 1px solid variables.$ms3-borderColor;
-		background: variables.$ms3-pageBackgroundColor;
+		border: 1px solid var(--ms3-border-color);
+		background: var(--ms3-page-background-color);
 		text-align: left;
 	}
 

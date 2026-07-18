@@ -10,9 +10,9 @@
 	min-height: 40px;
 	padding: 0;
 	margin: 5px 7px;
-	background: variables.$ms3-backgroundColor;
+	background: var(--ms3-background-color);
 	border: 0;
-	border-radius: variables.$ms3-borderRadius;
+	border-radius: var(--ms3-border-radius);
 	box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
 
 	&::before {
@@ -42,7 +42,7 @@
 	&--bottom-right {
 		bottom: 0;
 		right: 0;
-		z-index: variables.$ms3-zIndexViewportButton;
+		z-index: var(--ms3-z-index-viewport-button);
 	}
 
 	&--mobile-view-toggle--mobile {

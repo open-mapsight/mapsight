@@ -1,24 +1,23 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
-@use "../variables";
 
 .ms3-map-wrapper {
 	position: relative;
 	clear: both;
 	flex-grow: 1;
-	height: calc(100vh - #{variables.$ms3-fullscreen-top});
-	height: calc(100svh - #{variables.$ms3-fullscreen-top});
-	max-height: #{variables.$ms3-mapMaxHeightDefault};
+	height: calc(100vh - var(--ms3-fullscreen-top));
+	height: calc(100svh - var(--ms3-fullscreen-top));
+	max-height: var(--ms3-map-max-height-default);
 	transition: max-height 200ms ease-out;
 
 	.ms3-wrapper--desktop & {
-		min-height: #{variables.$ms3-mapMinHeightDesktop};
+		min-height: var(--ms3-map-min-height-desktop);
 	}
 
 	.ms3-wrapper--mapOnly &,
 	.ms3-wrapper--fullscreen & {
 		height: auto;
-		max-height: calc(100vh - #{variables.$ms3-fullscreen-top});
-		max-height: calc(100svh - #{variables.$ms3-fullscreen-top});
+		max-height: calc(100vh - var(--ms3-fullscreen-top));
+		max-height: calc(100svh - var(--ms3-fullscreen-top));
 	}
 
 	@media print {
