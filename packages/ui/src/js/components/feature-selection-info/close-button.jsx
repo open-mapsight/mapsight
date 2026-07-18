@@ -18,7 +18,6 @@ function CloseButton({
 }) {
 	const dispatch = useDispatch();
 	const removeSelection = useCallback(() => {
-		console.log("click close fSI");
 		dispatch(
 			removeFrom(
 				[FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT, "features"],
@@ -31,7 +30,6 @@ function CloseButton({
 	const handleCloseByKeyboard = useCallback(
 		/** @param {KeyboardEvent} ev ev */ (ev) => {
 			if (enableKeyboardControl) {
-				console.log("keyboard close fSI");
 				if (
 					ev.key === "Enter" ||
 					ev.key === "Spacebar" ||
