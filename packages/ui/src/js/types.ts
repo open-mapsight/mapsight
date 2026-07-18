@@ -348,6 +348,18 @@ export type CreateOptions = {
 	// functionality
 	plugins?: PluginDefinition[];
 	controllers?: Record<string, BaseController>;
+	/**
+	 * When `true` or an options object, `browserEmbed` prepends
+	 * `createDefaultPlugins`. Prefer an explicit `plugins` list for new hosts.
+	 */
+	useDefaultPlugins?: boolean | Record<string, unknown>;
+	/** @deprecated Prefer `useDefaultPlugins` */
+	defaultPluginsOptions?: Record<string, unknown>;
+	/**
+	 * Historic sugar: invoked as an `afterCreate` plugin with the UI context.
+	 * Prefer a named plugin in `plugins` for new hosts.
+	 */
+	hook?: (context: MapsightUiContext) => void;
 
 	// rendering
 	components?: MapsightUiComponents;

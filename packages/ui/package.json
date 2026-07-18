@@ -80,9 +80,29 @@
 			"types": "./dist/config/schema/*.d.ts",
 			"default": "./dist/config/schema/*.js"
 		},
+		"./embed": {
+			"types": "./dist/embed/index.d.ts",
+			"default": "./dist/embed/index.js"
+		},
 		"./embed/*": {
 			"types": "./dist/embed/*.d.ts",
 			"default": "./dist/embed/*.js"
+		},
+		"./components/feature-list": {
+			"types": "./dist/components/feature-list/index.d.ts",
+			"default": "./dist/components/feature-list/index.js"
+		},
+		"./components/tag-switcher": {
+			"types": "./dist/components/tag-switcher/index.d.ts",
+			"default": "./dist/components/tag-switcher/index.js"
+		},
+		"./components/contexts": {
+			"types": "./dist/components/contexts.d.ts",
+			"default": "./dist/components/contexts.js"
+		},
+		"./helpers/global-event-hub": {
+			"types": "./dist/helpers/global-event-hub.d.ts",
+			"default": "./dist/helpers/global-event-hub.js"
 		}
 	},
 	"files": [
