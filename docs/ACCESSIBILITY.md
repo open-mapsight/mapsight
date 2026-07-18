@@ -36,6 +36,9 @@ tree has **not** completed a formal WCAG audit.
 4. Playwright + axe (or equivalent) in CI for embed smoke paths
 5. Published conformance target once audit completes
 
+Reusable overlay shells (native dialog, planned popover / bottom sheet) are tracked
+in [`packages/ui/docs/A11Y_OVERLAY_PRIMITIVES.md`](../packages/ui/docs/A11Y_OVERLAY_PRIMITIVES.md).
+
 Report issues: [GitHub issues](https://github.com/open-mapsight/mapsight/issues) with label `accessibility` if
 available.
 
