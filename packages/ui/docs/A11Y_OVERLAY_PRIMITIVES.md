@@ -8,13 +8,14 @@ Branch: `feature/ui-a11y-primitives`
 
 ## Status
 
-| Primitive                            | Status   | Entry                                                                                          |
-| ------------------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
-| `useNativeDialog`                    | **done** | `hooks/useNativeDialog`                                                                        |
-| `NativeDialog`                       | **done** | `components/native-dialog`                                                                     |
-| `PopoverDialog` / `usePopoverDialog` | planned  | react-aria overlay + dialog + focus (list-options pattern)                                     |
-| `BottomSheet` + snap separator       | planned  | in-flow sheet; APG [Window Splitter](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/) |
-| `SegmentedControl` / `MapToolbar`    | optional | only if a second host needs them                                                               |
+| Primitive                         | Status   | Entry                                                                                          |
+| --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `useNativeDialog`                 | **done** | `hooks/useNativeDialog`                                                                        |
+| `NativeDialog`                    | **done** | `components/native-dialog`                                                                     |
+| `usePopoverDialog`                | **done** | `hooks/usePopoverDialog`                                                                       |
+| `PopoverDialog`                   | **done** | `components/popover-dialog`                                                                    |
+| `BottomSheet` + snap separator    | planned  | in-flow sheet; APG [Window Splitter](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/) |
+| `SegmentedControl` / `MapToolbar` | optional | only if a second host needs them                                                               |
 
 Existing (keep / migrate toward):
 
@@ -33,4 +34,27 @@ Existing (keep / migrate toward):
 
 1. Host apps replace hand-rolled `showModal` sync with `useNativeDialog` / `NativeDialog`.
 2. Later: migrate public map-overlay mobile modals from react-modal → `NativeDialog` where a sheet layout is needed (opt-in, not a breaking flip).
-3. Extract popover + bottom sheet next on this branch (separate commits / PRs fine).
+3. Extract bottom sheet next on this branch (separate commits fine).
+
+### PopoverDialog usage sketch
+
+```tsx
+const triggerRef = useRef<HTMLButtonElement>(null);
+const popoverRef = useRef<HTMLDivElement>(null);
+const {buttonProps} = useButton({onPress: toggle}, triggerRef);
+const {popoverProps, titleProps, triggerAriaProps} = usePopoverDialog({
+	isOpen,
+	onClose,
+	triggerRef,
+	popoverRef,
+	popoverId: "my-popover",
+});
+
+<button {...buttonProps} {...triggerAriaProps} ref={triggerRef} />;
+{
+	/* or shell: */
+}
+<PopoverDialog isOpen onClose triggerRef={triggerRef} title="…">
+	…
+</PopoverDialog>;
+```
