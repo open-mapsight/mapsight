@@ -8,14 +8,14 @@ Branch: `feature/ui-a11y-primitives`
 
 ## Status
 
-| Primitive                         | Status   | Entry                                                                                          |
-| --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| `useNativeDialog`                 | **done** | `hooks/useNativeDialog`                                                                        |
-| `NativeDialog`                    | **done** | `components/native-dialog`                                                                     |
-| `usePopoverDialog`                | **done** | `hooks/usePopoverDialog`                                                                       |
-| `PopoverDialog`                   | **done** | `components/popover-dialog`                                                                    |
-| `BottomSheet` + snap separator    | planned  | in-flow sheet; APG [Window Splitter](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/) |
-| `SegmentedControl` / `MapToolbar` | optional | only if a second host needs them                                                               |
+| Primitive                         | Status   | Entry                                           |
+| --------------------------------- | -------- | ----------------------------------------------- |
+| `useNativeDialog`                 | **done** | `hooks/useNativeDialog`                         |
+| `NativeDialog`                    | **done** | `components/native-dialog`                      |
+| `usePopoverDialog`                | **done** | `hooks/usePopoverDialog`                        |
+| `PopoverDialog`                   | **done** | `components/popover-dialog`                     |
+| `BottomSheet` + snap helpers      | **done** | `components/bottom-sheet` (APG Window Splitter) |
+| `SegmentedControl` / `MapToolbar` | optional | only if a second host needs them                |
 
 Existing (keep / migrate toward):
 
@@ -34,7 +34,13 @@ Existing (keep / migrate toward):
 
 1. Host apps replace hand-rolled `showModal` sync with `useNativeDialog` / `NativeDialog`.
 2. Later: migrate public map-overlay mobile modals from react-modal → `NativeDialog` where a sheet layout is needed (opt-in, not a breaking flip).
-3. Extract bottom sheet next on this branch (separate commits fine).
+3. Host apps adopt shells; optional SCSS for `ms3-bottom-sheet` / popover later.
+
+### BottomSheet notes
+
+- In-flow (not modal): no focus trap; Escape only if `onDismiss` is passed.
+- Pass custom `snaps` when a floating viewport bar needs clearance.
+- Prefer a snaps **factory** (`() => number[]`) so resize refreshes heights without unstable array deps.
 
 ### PopoverDialog usage sketch
 
