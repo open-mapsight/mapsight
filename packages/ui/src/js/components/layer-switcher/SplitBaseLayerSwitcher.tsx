@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import {type ReactNode, useCallback, useId, useState} from "react";
 import {connect, shallowEqual} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
@@ -12,6 +12,7 @@ import {translate} from "../../helpers/i18n";
 type LayerGroup = {
 	group: string;
 	layerIds: string[];
+	visibleCount: number;
 };
 
 type SplitBaseLayerSwitcherStateProps = {
@@ -24,6 +25,8 @@ type SplitBaseLayerSwitcherOwnProps = {
 	layerIdsSelector: (state: MapState) => string[];
 	renderBaseLayerEntry: (id: string, group?: string | null) => ReactNode;
 	renderEntry: (id: string, group?: string | null) => ReactNode;
+	/** When true, overlay groups can collapse and show visible/total counts. */
+	collapsibleGroups?: boolean;
 };
 
 function getSplitLayerIds(ids: string[], layers: MapState["layers"]) {
@@ -54,9 +57,85 @@ function getSplitLayerIds(ids: string[], layers: MapState["layers"]) {
 		groups: Array.from(groupsByName, ([group, layerIds]) => ({
 			group,
 			layerIds,
+			visibleCount: layerIds.filter(
+				(layerId) => layers[layerId]?.options?.visible === true,
+			).length,
 		})),
 		ungroupedLayerIds,
 	};
+}
+
+function CollapsibleOverlayGroup({
+	group,
+	layerIds,
+	visibleCount,
+	collapsed,
+	onToggle,
+	renderEntry,
+}: {
+	group: string;
+	layerIds: string[];
+	visibleCount: number;
+	collapsed: boolean;
+	onToggle: () => void;
+	renderEntry: (id: string, group?: string | null) => ReactNode;
+}) {
+	const panelId = useId();
+	const total = layerIds.length;
+	const countLabel = `${visibleCount}/${total}`;
+	const toggleLabel = collapsed
+		? translate("ui.layer-switcher.expandGroup")
+		: translate("ui.layer-switcher.collapseGroup");
+
+	return (
+		<section
+			className={`ms3-grouped-switcher__group${
+				collapsed ? " ms3-grouped-switcher__group--collapsed" : ""
+			}${
+				visibleCount > 0
+					? " ms3-grouped-switcher__group--has-visible"
+					: ""
+			}`}
+			data-ms3-switcher-group={group}
+		>
+			<h4
+				className="ms3-layer-switcher__header ms3-grouped-switcher__header"
+				data-ms3-switcher-header-group={group}
+			>
+				<button
+					type="button"
+					className="ms3-grouped-switcher__toggle"
+					aria-expanded={!collapsed}
+					aria-controls={panelId}
+					aria-label={`${group}: ${countLabel}. ${toggleLabel}`}
+					onClick={onToggle}
+				>
+					<span className="ms3-switcher-header__label">{group}</span>
+					<span className="ms3-grouped-switcher__meta">
+						<span
+							className="ms3-grouped-switcher__count"
+							data-ms3-count={visibleCount}
+							data-ms3-count-total={total}
+						>
+							{countLabel}
+						</span>
+						<span
+							className="ms3-grouped-switcher__chevron"
+							aria-hidden="true"
+						/>
+					</span>
+				</button>
+			</h4>
+			<ul
+				id={panelId}
+				className="ms3-layer-switcher__entries"
+				data-ms3-switcher-entries-group={group}
+				hidden={collapsed}
+			>
+				{layerIds.map((layerId) => renderEntry(layerId, group))}
+			</ul>
+		</section>
+	);
 }
 
 function SplitBaseLayerSwitcher({
@@ -65,11 +144,45 @@ function SplitBaseLayerSwitcher({
 	ungroupedLayerIds,
 	renderBaseLayerEntry,
 	renderEntry,
+	collapsibleGroups = false,
 }: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
 	const hasOverlayLayers = groups.length > 0 || ungroupedLayerIds.length > 0;
+	/** Explicit user overrides; unset keys use the default (collapsed when none visible). */
+	const [collapsedByGroup, setCollapsedByGroup] = useState<
+		Record<string, boolean>
+	>({});
+
+	const isGroupCollapsed = useCallback(
+		(group: string, visibleCount: number) => {
+			if (!collapsibleGroups) {
+				return false;
+			}
+			if (Object.prototype.hasOwnProperty.call(collapsedByGroup, group)) {
+				return collapsedByGroup[group] === true;
+			}
+			return visibleCount === 0;
+		},
+		[collapsedByGroup, collapsibleGroups],
+	);
+
+	const toggleGroup = useCallback(
+		(group: string, currentlyCollapsed: boolean) => {
+			setCollapsedByGroup((previous) => ({
+				...previous,
+				[group]: !currentlyCollapsed,
+			}));
+		},
+		[],
+	);
 
 	return (
-		<div className="ms3-layer-switcher ms3-layer-switcher--split-base-layers">
+		<div
+			className={`ms3-layer-switcher ms3-layer-switcher--split-base-layers${
+				collapsibleGroups
+					? " ms3-layer-switcher--collapsible-groups"
+					: ""
+			}`}
+		>
 			{baseLayerIds.length > 0 ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--base-layers">
 					<h3 className="ms3-layer-switcher__section-title">
@@ -89,30 +202,49 @@ function SplitBaseLayerSwitcher({
 						{translate("ui.layer-switcher.overlayLayers")}
 					</h3>
 					<div className="ms3-grouped-switcher ms3-grouped-switcher--wrapped">
-						{groups.map(({group, layerIds}) => (
-							<section
-								key={group}
-								className="ms3-grouped-switcher__group"
-								data-ms3-switcher-group={group}
-							>
-								<h4
-									className="ms3-layer-switcher__header"
-									data-ms3-switcher-header-group={group}
+						{groups.map(({group, layerIds, visibleCount}) => {
+							const collapsed = isGroupCollapsed(
+								group,
+								visibleCount,
+							);
+
+							return collapsibleGroups ? (
+								<CollapsibleOverlayGroup
+									key={group}
+									group={group}
+									layerIds={layerIds}
+									visibleCount={visibleCount}
+									collapsed={collapsed}
+									onToggle={() =>
+										toggleGroup(group, collapsed)
+									}
+									renderEntry={renderEntry}
+								/>
+							) : (
+								<section
+									key={group}
+									className="ms3-grouped-switcher__group"
+									data-ms3-switcher-group={group}
 								>
-									<span className="ms3-switcher-header__label">
-										{group}
-									</span>
-								</h4>
-								<ul
-									className="ms3-layer-switcher__entries"
-									data-ms3-switcher-entries-group={group}
-								>
-									{layerIds.map((layerId) =>
-										renderEntry(layerId, group),
-									)}
-								</ul>
-							</section>
-						))}
+									<h4
+										className="ms3-layer-switcher__header"
+										data-ms3-switcher-header-group={group}
+									>
+										<span className="ms3-switcher-header__label">
+											{group}
+										</span>
+									</h4>
+									<ul
+										className="ms3-layer-switcher__entries"
+										data-ms3-switcher-entries-group={group}
+									>
+										{layerIds.map((layerId) =>
+											renderEntry(layerId, group),
+										)}
+									</ul>
+								</section>
+							);
+						})}
 
 						{ungroupedLayerIds.length > 0 ? (
 							<section className="ms3-grouped-switcher__group">

@@ -155,6 +155,8 @@ export type LayerSwitcherConfigState = {
 	grouped: boolean;
 	layerIdsSelector: (state: object) => string[];
 	splitBaseLayers?: boolean;
+	/** Opt-in: overlay groups collapse and show visible/total counts. */
+	collapsibleGroups?: boolean;
 };
 
 export type FetchTextState = {

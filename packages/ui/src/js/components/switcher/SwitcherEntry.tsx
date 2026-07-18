@@ -53,6 +53,8 @@ export type SwitcherEntryProps = {
 	activeText?: boolean;
 	status?: FeatureSourceStatus;
 	locked?: boolean;
+	/** Optional preview thumbnail (e.g. base-layer map tile). */
+	previewUrl?: string | null;
 };
 
 function SwitcherEntry({
@@ -69,6 +71,7 @@ function SwitcherEntry({
 	activeText: _activeText,
 	status,
 	locked = false,
+	previewUrl = null,
 	...attributes
 }: SwitcherEntryProps) {
 	// `toggleActive` manages the "split" mode. If `toggleActive` isn't set we switch to the
@@ -97,6 +100,18 @@ function SwitcherEntry({
 		</SwitcherStatusIcon>
 	);
 
+	const preview = previewUrl ? (
+		<span className={`${baseClassName}__preview`} aria-hidden="true">
+			<img
+				className={`${baseClassName}__preview-image`}
+				src={previewUrl}
+				alt=""
+				loading="lazy"
+				decoding="async"
+			/>
+		</span>
+	) : null;
+
 	const text = (
 		<Fragment>
 			<span className={`${baseClassName}__label`}>{title}</span>
@@ -116,7 +131,9 @@ function SwitcherEntry({
 			// TODO: remove checkboxStatusClass
 			className={`${className} [ ${baseClassName} ${baseClassName}--${checkboxStatusClass} ${baseClassName}--${
 				isSplit ? "split" : "joint"
-			} ${locked ? `${baseClassName}--locked` : ""} ]`}
+			} ${locked ? `${baseClassName}--locked` : ""} ${
+				previewUrl ? `${baseClassName}--with-preview` : ""
+			} ]`}
 			{...attributes}
 		>
 			{(() => {
@@ -127,6 +144,7 @@ function SwitcherEntry({
 							toggleActive={toggleActive}
 							active={active}
 						>
+							{preview}
 							{checkbox}
 							{text}
 						</SwitcherButton>

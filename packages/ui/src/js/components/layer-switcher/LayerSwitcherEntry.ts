@@ -87,6 +87,7 @@ export type LayerSwitcherEntryProps = {
 const mapStateToProps = (
 	state: State,
 	{
+		layerId,
 		titleSelector,
 		lockedSelector,
 		layerVisibilitySelector,
@@ -103,6 +104,8 @@ const mapStateToProps = (
 		visibility: layerVisibilitySelector(mapState),
 		featureSource: featureSourceSelector(mapState, state),
 		featureSourceId: featureSourceIdSelector(mapState),
+		previewUrl:
+			mapState.layers[layerId]?.metaData?.layerSwitcherPreviewUrl ?? null,
 		currentlySetFeatureSourceId: Array.isArray(setFeatureSourceIdPath)
 			? (getPath(state, setFeatureSourceIdPath) as string | undefined)
 			: undefined,
@@ -136,6 +139,7 @@ const LayerSwitcherEntry = connect(
 			? getFeatureSourceStatus(stateProps.featureSource)
 			: undefined,
 		locked: stateProps.locked,
+		previewUrl: stateProps.previewUrl,
 		...getActiveProps({
 			visibility: stateProps.visibility,
 			featureSourceId: stateProps.featureSourceId ?? "",

@@ -25,6 +25,7 @@ export default connect(
 			layerIdsSelector: configSelector(state)?.layerIdsSelector,
 			grouped: configSelector(state)?.grouped,
 			splitBaseLayers: configSelector(state)?.splitBaseLayers,
+			collapsibleGroups: configSelector(state)?.collapsibleGroups,
 			setFeatureSourceIdPath:
 				setFeatureSourceId === true
 					? TRUE_SET_FEATURE_SOURCE_PATH

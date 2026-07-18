@@ -60,6 +60,16 @@
 			flex-grow: 1;
 		}
 
+		&__preview {
+			display: none;
+		}
+
+		&__preview-image {
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+
 		&:first-child {
 			border-top: 0;
 		}
@@ -130,4 +140,47 @@
 			outline: 0;
 		}
 	}
+}
+
+// Opt-in collapsible overlay groups (`collapsibleGroups` on LayerSwitcher).
+.ms3-grouped-switcher__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+	margin: 0;
+	padding: 9px 13px;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ms3-grouped-switcher__meta {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 6px;
+}
+
+.ms3-grouped-switcher__chevron {
+	display: inline-block;
+	width: 0.45em;
+	height: 0.45em;
+	border-right: 2px solid currentcolor;
+	border-bottom: 2px solid currentcolor;
+	transform: rotate(45deg);
+	transition: transform 160ms ease;
+}
+
+.ms3-grouped-switcher__group:not(.ms3-grouped-switcher__group--collapsed)
+	.ms3-grouped-switcher__chevron {
+	transform: rotate(-135deg);
+}
+
+.ms3-grouped-switcher__group--collapsed .ms3-layer-switcher__entries[hidden] {
+	display: none;
 }

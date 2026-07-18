@@ -29,6 +29,8 @@ export type LayerSwitcherContainerProps = {
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
 	splitBaseLayers?: boolean;
+	/** Opt-in: overlay groups collapse and show visible/total counts. */
+	collapsibleGroups?: boolean;
 	setFeatureSourceIdPath?: ActionPath | null;
 };
 
@@ -39,6 +41,7 @@ function LayerSwitcherContainer({
 	layerIdsSelector = layerIdsIntegratedSwitcherSelector,
 	grouped = false,
 	splitBaseLayers = false,
+	collapsibleGroups = false,
 	setFeatureSourceIdPath,
 	...attributes
 }: LayerSwitcherContainerProps) {
@@ -83,6 +86,7 @@ function LayerSwitcherContainer({
 					layerIdsSelector={layerIdsSelector}
 					renderBaseLayerEntry={renderBaseLayerEntry}
 					renderEntry={renderLayerEntry}
+					collapsibleGroups={collapsibleGroups}
 					{...attributes}
 				/>
 			) : grouped ? (
