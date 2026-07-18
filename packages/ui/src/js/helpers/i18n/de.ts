@@ -49,6 +49,16 @@ const de: Record<string, string> = {
 		"Entfernung zum eigenen Standort",
 	"ui.feature-list.tag-switcher.announcements": "Nach Tags filtern …",
 
+	"ui.feature-list.options.trigger": "Liste filtern und sortieren",
+	"ui.feature-list.options.title": "Liste filtern und sortieren",
+	"ui.feature-list.options.close": "Listenoptionen schließen",
+	"ui.feature-list.options.sorting": "Sortierung",
+	"ui.feature-list.options.location": "Standort",
+	"ui.feature-list.options.filter": "Filter",
+	"ui.feature-list.options.reset": "Zurücksetzen",
+	"ui.feature-list.options.entries": "Einträge",
+	"ui.feature-list.options.filterActive": "Filter aktiv",
+
 	"ui.feature-list.content.noListSelected": "keine Liste gewählt",
 	"ui.feature-list.content.noEntries": "keine Einträge",
 	"ui.feature-list.loading": "Liste wird geladen …",
@@ -99,6 +109,8 @@ const de: Record<string, string> = {
 	"ui.map-overlay.layer-switcher.openLayers": "Ebenenauswahl öffnen",
 	"ui.layer-switcher.baseLayers": "Basiskarte",
 	"ui.layer-switcher.overlayLayers": "Datenebenen",
+	"ui.layer-switcher.expandGroup": "Gruppe ausklappen",
+	"ui.layer-switcher.collapseGroup": "Gruppe einklappen",
 
 	// HOWTO: wrap the metadata one base layer of the project with something like
 	// 		withLegend(_metadata, `<article><h1>${translate('ui.map.usage.heading')}</h1>${translate('ui.map.usage.html')}</article>`)
