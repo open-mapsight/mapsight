@@ -61,23 +61,24 @@ Maintainer deployments currently exercise:
 
 ## Integration
 
-| Document                                                   | About                                          |
-| ---------------------------------------------------------- | ---------------------------------------------- |
-| [OVERVIEW.md](integration/OVERVIEW.md)                     | Three-layer model, embed lifecycle             |
-| [getting-started.md](getting-started.md)                   | npm library path — install to first map        |
-| [CONFIG_REFERENCE.md](integration/CONFIG_REFERENCE.md)     | Embed JSON anatomy + Zod entry points          |
-| [CMS_PHP.md](integration/CMS_PHP.md)                       | Generic CMS snippet embed                      |
-| [CMS_EDITORS.md](integration/CMS_EDITORS.md)               | Safe vs forbidden snippet edits                |
-| [CMS_INFOSITE.md](integration/CMS_INFOSITE.md)             | Infosite CMS (**stub**, pending module review) |
-| [PUBLISHING_DATA.md](integration/PUBLISHING_DATA.md)       | GeoJSON handoff for data stewards              |
-| [OGC_LAYERS.md](integration/OGC_LAYERS.md)                 | WMS/WFS overlay patterns                       |
-| [PRIVACY_DATA_FLOWS.md](integration/PRIVACY_DATA_FLOWS.md) | Visitor data flows for hosts / DPOs            |
-| [PULP.md](integration/PULP.md)                             | mapsight-pulp ETL                              |
-| [TILE_PROXY.md](integration/TILE_PROXY.md)                 | Basemap tile proxy                             |
-| [DATA_BACKEND.md](integration/DATA_BACKEND.md)             | Optional host data platform                    |
-| [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)           | Dehydrated state contract                      |
-| [REACT_SPA.md](integration/REACT_SPA.md)                   | Vite SPA starter + showcase feature demo       |
-| [NEXTJS.md](integration/NEXTJS.md)                         | Next.js starter pattern                        |
+| Document                                                                 | About                                          |
+| ------------------------------------------------------------------------ | ---------------------------------------------- |
+| [OVERVIEW.md](integration/OVERVIEW.md)                                   | Three-layer model, embed lifecycle             |
+| [getting-started.md](getting-started.md)                                 | npm library path — install to first map        |
+| [CONFIG_REFERENCE.md](integration/CONFIG_REFERENCE.md)                   | Embed JSON anatomy + Zod entry points          |
+| [CMS_PHP.md](integration/CMS_PHP.md)                                     | Generic CMS snippet embed                      |
+| [UPGRADE_FROM_LEGACY_EMBED.md](integration/UPGRADE_FROM_LEGACY_EMBED.md) | Pre-OSS embed bag → current API                |
+| [CMS_EDITORS.md](integration/CMS_EDITORS.md)                             | Safe vs forbidden snippet edits                |
+| [CMS_INFOSITE.md](integration/CMS_INFOSITE.md)                           | Infosite CMS (**stub**, pending module review) |
+| [PUBLISHING_DATA.md](integration/PUBLISHING_DATA.md)                     | GeoJSON handoff for data stewards              |
+| [OGC_LAYERS.md](integration/OGC_LAYERS.md)                               | WMS/WFS overlay patterns                       |
+| [PRIVACY_DATA_FLOWS.md](integration/PRIVACY_DATA_FLOWS.md)               | Visitor data flows for hosts / DPOs            |
+| [PULP.md](integration/PULP.md)                                           | mapsight-pulp ETL                              |
+| [TILE_PROXY.md](integration/TILE_PROXY.md)                               | Basemap tile proxy                             |
+| [DATA_BACKEND.md](integration/DATA_BACKEND.md)                           | Optional host data platform                    |
+| [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)                         | Dehydrated state contract                      |
+| [REACT_SPA.md](integration/REACT_SPA.md)                                 | Vite SPA starter + showcase feature demo       |
+| [NEXTJS.md](integration/NEXTJS.md)                                       | Next.js starter pattern                        |
 
 **TYPO3:** **Pending** dedicated guide — same mental model as [CMS_PHP.md](integration/CMS_PHP.md).
 

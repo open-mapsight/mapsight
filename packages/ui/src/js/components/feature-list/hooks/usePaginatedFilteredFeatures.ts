@@ -30,12 +30,18 @@ function filterByQueries(queries: Array<string>, feature: MapsightUiFeature) {
 		"name",
 		"listName",
 		"listInformation",
+		"description",
 	];
 
-	const values = properties
-		.map((key) => getFeatureProperty(feature, key))
+	const values = [
+		...properties.map((key) => getFeatureProperty(feature, key)),
+		feature.id,
+		// Historic hosts also searched these non-typed properties.
+		(feature.properties as {roadNumber?: unknown} | undefined)?.roadNumber,
+		(feature.properties as {source?: unknown} | undefined)?.source,
+	]
 		.filter((val) => !!val)
-		.map((val: string) => val.toLowerCase());
+		.map((val) => String(val).toLowerCase());
 
 	return queries.every((query) =>
 		values.some((value) => value.indexOf(query) !== -1),

@@ -88,6 +88,11 @@ Preset factories (e.g. `simpleMap()`) return the `options` object for `browserEm
 `{ styleFunction, baseMapsightConfig, createOptions }`. The CMS `embed.js` lib entry re-exports `browserEmbed` and
 imports stylesheet side effects.
 
+Pre-OSS hosts that still build a mutable config bag (`baseMapsightCoreConfig` /
+`embedOptions` / `hook` / `defaultPluginsOptions`) can keep that shape:
+`createEmbedBag` from `@mapsight/ui/embed`, and `browserEmbed` normalizes the bag.
+See [Upgrade from legacy embed](UPGRADE_FROM_LEGACY_EMBED.md).
+
 Details: [Config reference](CONFIG_REFERENCE.md).
 
 ```mermaid
