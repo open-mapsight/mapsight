@@ -1,5 +1,13 @@
 # @mapsight/lib-ol
 
+## 4.2.2
+
+### Patch Changes
+
+- 3539440: Bump dependencies from Dependabot ([#149](https://github.com/open-mapsight/mapsight/pull/149)).
+- Updated dependencies [`c58c407`, `1710d90`]:
+    - `@mapsight/lib-js@3.0.5 → 3.0.6` (patch)
+
 ## 4.2.1
 
 ### Patch Changes

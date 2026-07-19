@@ -1,5 +1,19 @@
 # @mapsight/core
 
+## 14.5.0
+
+### Minor Changes
+
+- 0b2f8a8: Add a lazy-loading MapboxVectorLayer ol-proxy definition for Mapbox/MapLibre style vector tile layers
+- 1710d90: Restore additional pre-OSS host runtime compatibility (controller `globalState` reduce arg, layout slot wiring, presentational list toggle, style-env merge) and mark those legacy surfaces `@deprecated` for removal in the next major of each package.
+
+### Patch Changes
+
+- 3539440: Bump dependencies from Dependabot ([#149](https://github.com/open-mapsight/mapsight/pull/149)).
+- Updated dependencies [`3539440`, `c58c407`, `1710d90`]:
+    - `@mapsight/lib-ol@4.2.1 → 4.2.2` (patch)
+    - `@mapsight/lib-js@3.0.5 → 3.0.6` (patch)
+
 ## 14.4.2
 
 ### Patch Changes

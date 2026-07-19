@@ -1,5 +1,14 @@
 # @mapsight/count-aggregator-ui
 
+## 3.0.0
+
+### Patch Changes
+
+- 5de7693: Bump dependencies from Dependabot ([#139](https://github.com/open-mapsight/mapsight/pull/139)).
+- Updated dependencies [`114126c`, `65ce23a`, `c58c407`, `1710d90`]:
+    - `@mapsight/count-aggregator-api@1.2.1 → 1.3.0` (minor)
+    - `@mapsight/ui@7.3.2 → 7.4.0` (minor)
+
 ## 2.0.2
 
 ### Patch Changes
