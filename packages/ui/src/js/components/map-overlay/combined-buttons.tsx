@@ -11,8 +11,11 @@ import {Children, type PropsWithChildren} from "react";
 function CombinedButtons({children}: PropsWithChildren) {
 	return (
 		<div className="ms3-map-overlay-combined-buttons">
-			{Children.map(children, (child) => (
-				<div className="ms3-map-overlay-combined-buttons__button">
+			{Children.toArray(children).map((child, index) => (
+				<div
+					key={index}
+					className="ms3-map-overlay-combined-buttons__button"
+				>
 					{child}
 				</div>
 			))}
