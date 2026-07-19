@@ -1,5 +1,11 @@
 # @mapsight/lib-js
 
+## 3.0.7
+
+### Patch Changes
+
+- 553337a: Fix FeatureList `itemAs` wrapper behaviour and `getPath` defaultValue so host list items (overrideListHtml) render again. Document the host contract and add regression tests.
+
 ## 3.0.6
 
 ### Patch Changes
