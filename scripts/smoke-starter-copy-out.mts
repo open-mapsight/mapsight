@@ -1,4 +1,4 @@
-import {spawnSync} from "node:child_process";
+import {spawn} from "node:child_process";
 import {
 	cpSync,
 	mkdirSync,
@@ -48,49 +48,116 @@ type PackageJson = {
 	overrides?: Record<string, string>;
 };
 
-function run(command: string, args: string[], cwd = ROOT): string {
-	const result = spawnSync(command, args, {
+function mirrorPrefixed(
+	stream: NodeJS.ReadableStream | null,
+	prefix: string,
+	write: (chunk: string) => void,
+	onData?: (chunk: string) => void,
+): Promise<void> {
+	if (!stream) {
+		return Promise.resolve();
+	}
+
+	return new Promise((resolve, reject) => {
+		let pending = "";
+
+		stream.on("data", (chunk: Buffer | string) => {
+			const text =
+				typeof chunk === "string" ? chunk : chunk.toString("utf8");
+			onData?.(text);
+			pending += text;
+
+			while (true) {
+				const newline = pending.indexOf("\n");
+				if (newline === -1) {
+					break;
+				}
+
+				const line = pending.slice(0, newline);
+				pending = pending.slice(newline + 1);
+				write(`${prefix}${line}\n`);
+			}
+		});
+		stream.on("error", reject);
+		stream.on("end", () => {
+			if (pending.length > 0) {
+				write(`${prefix}${pending}\n`);
+			}
+			resolve();
+		});
+	});
+}
+
+async function run(
+	command: string,
+	args: string[],
+	cwd = ROOT,
+	logPrefix = "",
+): Promise<string> {
+	const child = spawn(command, args, {
 		cwd,
-		encoding: "utf8",
-		stdio: ["ignore", "pipe", "inherit"],
+		stdio: ["ignore", "pipe", "pipe"],
+	});
+	let stdout = "";
+
+	const stdoutDone = mirrorPrefixed(
+		child.stdout,
+		logPrefix,
+		(chunk) => {
+			process.stdout.write(chunk);
+		},
+		(chunk) => {
+			stdout += chunk;
+		},
+	);
+	const stderrDone = mirrorPrefixed(child.stderr, logPrefix, (chunk) => {
+		process.stderr.write(chunk);
 	});
 
-	if (result.status !== 0) {
-		if (result.stdout) {
-			console.error(result.stdout);
-		}
+	const [status] = await Promise.all([
+		new Promise<number | null>((resolve, reject) => {
+			child.on("error", reject);
+			child.on("close", resolve);
+		}),
+		stdoutDone,
+		stderrDone,
+	]);
+
+	if (status !== 0) {
 		throw new Error(
-			`Command failed (${result.status ?? "unknown"}): ${command} ${args.join(" ")}`,
+			`Command failed (${status ?? "unknown"}): ${command} ${args.join(" ")}`,
 		);
 	}
 
-	return result.stdout.trim();
+	return stdout.trim();
 }
 
-function packMapsightPackages(tarballDir: string): Map<string, string> {
-	const tarballs = new Map<string, string>();
+async function packMapsightPackages(
+	tarballDir: string,
+): Promise<Map<string, string>> {
+	const packed = await Promise.all(
+		mapsightPackages.map(async (packageName) => {
+			const filter = packageFilters.get(packageName)!;
+			const output = await run("pnpm", [
+				"--filter",
+				filter,
+				"pack",
+				"--pack-destination",
+				tarballDir,
+			]);
+			const tarballPath = output.split("\n").at(-1);
 
-	for (const packageName of mapsightPackages) {
-		const filter = packageFilters.get(packageName)!;
-		const output = run("pnpm", [
-			"--filter",
-			filter,
-			"pack",
-			"--pack-destination",
-			tarballDir,
-		]);
-		const tarballPath = output.split("\n").at(-1);
+			if (!tarballPath) {
+				throw new Error(
+					`Could not determine tarball path for ${packageName}`,
+				);
+			}
 
-		if (!tarballPath) {
-			throw new Error(
-				`Could not determine tarball path for ${packageName}`,
-			);
-		}
+			return [packageName, tarballPath] as const;
+		}),
+	);
 
-		tarballs.set(packageName, tarballPath);
-	}
-
-	return tarballs;
+	return new Map(packed);
 }
 
 function rewriteMapsightDeps(
@@ -156,31 +223,40 @@ function prepareStarterPackageJson(
 	writeFileSync(packageJsonPath, `${JSON.stringify(next, null, "\t")}\n`);
 }
 
-function smokeStarter(
+async function smokeStarter(
 	starter: (typeof starters)[number],
 	workspaceDir: string,
 	tarballs: Map<string, string>,
-): void {
-	console.log(`\n[copy-out] ${starter}`);
+): Promise<void> {
+	const prefix = `[copy-out:${starter}] `;
+	console.log(`${prefix}start`);
 	const starterDir = copyStarter(starter, workspaceDir);
 	prepareStarterPackageJson(starterDir, tarballs);
 
-	run("npm", ["install", "--no-audit", "--fund=false"], starterDir);
-	run("npm", ["run", "build"], starterDir);
+	await run(
+		"npm",
+		["install", "--no-audit", "--fund=false"],
+		starterDir,
+		prefix,
+	);
+	await run("npm", ["run", "build"], starterDir, prefix);
+	console.log(`${prefix}done`);
 }
 
-function main(): void {
+async function main(): Promise<void> {
 	const workspaceDir = mkdtempSync(path.join(tmpdir(), "mapsight-starters-"));
 	const tarballDir = path.join(workspaceDir, "tarballs");
 	mkdirSync(tarballDir);
 
 	try {
 		console.log(`[copy-out] temp dir: ${workspaceDir}`);
-		const tarballs = packMapsightPackages(tarballDir);
+		const tarballs = await packMapsightPackages(tarballDir);
 
-		for (const starter of starters) {
-			smokeStarter(starter, workspaceDir, tarballs);
-		}
+		await Promise.all(
+			starters.map((starter) =>
+				smokeStarter(starter, workspaceDir, tarballs),
+			),
+		);
 	} finally {
 		if (KEEP_TMP) {
 			console.log(`[copy-out] kept temp dir: ${workspaceDir}`);
@@ -190,4 +266,4 @@ function main(): void {
 	}
 }
 
-main();
+await main();
