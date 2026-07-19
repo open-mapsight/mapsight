@@ -1,5 +1,11 @@
 # @mapsight/count-aggregator-api
 
+## 1.3.0
+
+### Minor Changes
+
+- 114126c: Sync the count-aggregator OpenAPI contract with current platform station types and ignore unknown types in `GET /station-types` instead of failing the whole list.
+
 ## 1.2.1
 
 ### Patch Changes

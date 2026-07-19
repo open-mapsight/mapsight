@@ -1,5 +1,21 @@
 # @mapsight/ui
 
+## 7.4.0
+
+### Minor Changes
+
+- c58c407: Restore legacy embed bag helpers and host entry aliases (createEmbedBag, default plugins / hook sugar, filterFeatures, withKeyboard, global-event-hub, is-numeric) so pre-OSS CMS hosts can migrate with smaller diffs.
+- 1710d90: Restore additional pre-OSS host runtime compatibility (controller `globalState` reduce arg, layout slot wiring, presentational list toggle, style-env merge) and mark those legacy surfaces `@deprecated` for removal in the next major of each package.
+
+### Patch Changes
+
+- 65ce23a: Isolate FeatureList selection/highlight updates so only affected list items re-render
+- Updated dependencies [`d0334aa`, `3539440`, `cb180eb`, `0b2f8a8`, `c58c407`, `1710d90`]:
+    - `@mapsight/traffic-style@5.3.2 → 5.4.0` (minor)
+    - `@mapsight/core@14.4.2 → 14.5.0` (minor)
+    - `@mapsight/lib-ol@4.2.1 → 4.2.2` (patch)
+    - `@mapsight/lib-js@3.0.5 → 3.0.6` (patch)
+
 ## 7.3.2
 
 ### Patch Changes

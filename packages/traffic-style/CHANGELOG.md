@@ -1,5 +1,17 @@
 # @mapsight/traffic-style
 
+## 5.4.0
+
+### Minor Changes
+
+- cb180eb: Expand `@mapsight/traffic-style/icon-meta` with catalog helpers (`listIconIds`, `listComposableIconIds`, `hasIcon`, `getIconLabel`) and document them for host-app integration.
+
+### Patch Changes
+
+- d0334aa: Bump dependencies from Dependabot ([#141](https://github.com/open-mapsight/mapsight/pull/141)).
+- Updated dependencies [`3539440`]:
+    - `@mapsight/lib-ol@4.2.1 → 4.2.2` (patch)
+
 ## 5.3.2
 
 ### Patch Changes

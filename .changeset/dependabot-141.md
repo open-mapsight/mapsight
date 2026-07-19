@@ -1,5 +1,0 @@
----
-"@mapsight/traffic-style": patch
----
-
-Bump dependencies from Dependabot ([#141](https://github.com/open-mapsight/mapsight/pull/141)).

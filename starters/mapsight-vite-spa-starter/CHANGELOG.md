@@ -1,5 +1,16 @@
 # mapsight-vite-spa-starter
 
+## 0.1.3
+
+### Patch Changes
+
+- 3539440: Bump dependencies from Dependabot ([#149](https://github.com/open-mapsight/mapsight/pull/149)).
+- Updated dependencies [`d0334aa`, `3539440`, `65ce23a`, `cb180eb`, `c58c407`, `1710d90`]:
+    - `@mapsight/traffic-style@5.3.2 → 5.4.0` (minor)
+    - `@mapsight/lib-ol@4.2.1 → 4.2.2` (patch)
+    - `@mapsight/ui@7.3.2 → 7.4.0` (minor)
+    - `@mapsight/lib-js@3.0.5 → 3.0.6` (patch)
+
 ## 0.1.2
 
 ### Patch Changes
