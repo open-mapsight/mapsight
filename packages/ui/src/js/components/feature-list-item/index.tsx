@@ -4,11 +4,12 @@ import type {
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
 } from "react";
-import {Fragment, memo, useCallback, useRef} from "react";
+import {Fragment, memo, useRef} from "react";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
-import type {MapsightUiFeature, MapsightUiFeatureProperty} from "../../types";
+import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
+import getOverrideListHtml from "./get-override-list-html";
 import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
@@ -35,7 +36,103 @@ export type FeatureListItemProps = FeatureListItemInteractionProps & {
 	enableKeyboardControl?: boolean;
 };
 
-function FeatureListItem({
+/**
+ * Hook-free shell: branch before any hooks so only override-html rows mount a
+ * component that owns wrapper click handling (historic FeatureSelectButton skip).
+ */
+function FeatureListItem(props: FeatureListItemProps) {
+	const overrideListHtml = getOverrideListHtml(props.feature);
+	if (overrideListHtml) {
+		return (
+			<FeatureListItemOverrideHtml {...props} html={overrideListHtml} />
+		);
+	}
+	return <FeatureListItemStandard {...props} />;
+}
+
+type FeatureListItemOverrideHtmlProps = FeatureListItemProps & {
+	html: string;
+};
+
+function FeatureListItemOverrideHtml({
+	as: T = "div",
+	showFeatureListInfo,
+	feature,
+	selectFeature,
+	deselectFeatures,
+	enableKeyboardControl,
+	html,
+}: FeatureListItemOverrideHtmlProps) {
+	const {
+		selectOnClick,
+		deselectOnClick,
+		hidden,
+		isSelected,
+		isPreselected,
+		isHighlighted,
+		showDetails,
+		scrollOnSelection,
+	} = useFeatureListItemState(feature);
+
+	const ref = useRef<HTMLElement | null>(null);
+
+	useFeatureListItemScrollAndFocus(
+		ref,
+		showDetails,
+		isPreselected && !isSelected,
+		{
+			scrollOnSelection: scrollOnSelection,
+			scrollOnPreselection: undefined,
+			enableKeyboardControl: enableKeyboardControl,
+		},
+	);
+
+	if (hidden) {
+		return null;
+	}
+
+	const isWrapperComponent = typeof T !== "string";
+	const interactive = selectOnClick === true || deselectOnClick;
+	const selectable =
+		selectOnClick === true || (isSelected && deselectOnClick);
+
+	const onClick = (event: ReactMouseEvent) => {
+		if (event.button === 1 || event.metaKey || event.ctrlKey) {
+			return;
+		}
+		event.preventDefault();
+		if (isSelected && deselectOnClick) {
+			deselectFeatures?.(feature.id);
+		} else if (selectOnClick === true) {
+			selectFeature?.(feature.id, {keyboard: false});
+		}
+	};
+
+	return (
+		<T
+			{...(isWrapperComponent ? {feature} : null)}
+			ref={ref}
+			className={
+				"ms3-list__item " +
+				(isSelected ? " ms3-list__item--selected" : "") +
+				(isPreselected ? " ms3-list__item--preselected" : "") +
+				(isHighlighted ? " ms3-list__item--highlight" : "") +
+				(showDetails ? " ms3-list__item--has-details" : "") +
+				(showFeatureListInfo ? " ms3-list__item--has-info" : "") +
+				(interactive ? " ms3-list__item--selectable" : "") +
+				(ref.current?.className.includes("focus-visible")
+					? " focus-visible"
+					: "")
+			}
+			tabIndex={interactive ? -1 : undefined}
+			role={selectable ? "button" : undefined}
+			onClick={selectable ? onClick : undefined}
+			dangerouslySetInnerHTML={{__html: html}}
+		/>
+	);
+}
+
+function FeatureListItemStandard({
 	as: T = "div",
 	partAs: PartT = "span",
 	headAs: HeadT = FeatureListItemHead,
@@ -72,36 +169,10 @@ function FeatureListItem({
 		},
 	);
 
-	// Pre-OSS put select/deselect on the item wrapper when `overrideListHtml`
-	// short-circuits past FeatureListItemHead / FeatureSelectButton.
-	const onOverrideListHtmlClick = useCallback(
-		(event: ReactMouseEvent) => {
-			if (event.button === 1 || event.metaKey || event.ctrlKey) {
-				return;
-			}
-			event.preventDefault();
-			if (isSelected && deselectOnClick) {
-				deselectFeatures?.(feature.id);
-			} else if (selectOnClick === true) {
-				selectFeature?.(feature.id, {keyboard: false});
-			}
-		},
-		[
-			deselectFeatures,
-			deselectOnClick,
-			feature.id,
-			isSelected,
-			selectFeature,
-			selectOnClick,
-		],
-	);
-
 	if (hidden) {
 		return null;
 	}
 
-	// if render type is not a native element but presumably a React component,
-	// pass some extra props to be used by said component
 	const isWrapperComponent = typeof T !== "string";
 
 	const wrapperProps: Record<string, unknown> = {
@@ -121,48 +192,6 @@ function FeatureListItem({
 				? " focus-visible"
 				: ""),
 	};
-
-	// Legacy: feature may name an alternate HTML property via `__overrideListHtmlProp`.
-	const overrideListHtmlPropertyRaw = getFeatureProperty(
-		feature,
-		"__overrideListHtmlProp",
-		"overrideListHtml",
-	);
-	const overrideListHtmlProperty = (
-		typeof overrideListHtmlPropertyRaw === "string" &&
-		overrideListHtmlPropertyRaw.length > 0
-			? overrideListHtmlPropertyRaw
-			: "overrideListHtml"
-	) as MapsightUiFeatureProperty;
-	const overrideListHtmlRaw = getFeatureProperty(
-		feature,
-		overrideListHtmlProperty,
-	);
-	const overrideListHtml =
-		typeof overrideListHtmlRaw === "string" &&
-		overrideListHtmlRaw.length > 0
-			? overrideListHtmlRaw
-			: undefined;
-
-	// Host wrappers (e.g. StartPageItem / LinkItem) expect the HTML on the
-	// wrapper element itself. Mirror historic wrapper interaction props so the
-	// row stays selectable without FeatureSelectButton.
-	if (overrideListHtml) {
-		if (selectOnClick === true || deselectOnClick) {
-			wrapperProps.tabIndex = -1;
-		}
-		if (selectOnClick === true || (isSelected && deselectOnClick)) {
-			wrapperProps.role = "button";
-			wrapperProps.onClick = onOverrideListHtmlClick;
-		}
-
-		return (
-			<T
-				{...wrapperProps}
-				dangerouslySetInnerHTML={{__html: overrideListHtml}}
-			/>
-		);
-	}
 
 	let info: ReactNode = null;
 	if (showFeatureListInfo) {
