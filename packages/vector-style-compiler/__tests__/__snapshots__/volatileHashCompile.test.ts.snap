@@ -3,7 +3,7 @@
 exports[`transforms tree to volatile hash program 1`] = `
 "
 switch (style) {
-	case 'features':
+	case 'features': {
 		{
 		const $a = props['mapsightIconId'];
 		const $b = $a/* props['mapsightIconId'] */;
@@ -12,6 +12,7 @@ switch (style) {
 				parts.push(String(mapsightRuntimeIcon(props['mapsightIconId'], "default")));
 		}
 		}
+	}
 		break;
 }"
 `;

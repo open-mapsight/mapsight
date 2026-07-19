@@ -209,7 +209,14 @@ export default function treeToProgram(
 		return (
 			(subTree.default ? stateToProgram(subTree.default, depth) : "") +
 			(cases.length
-				? `${_}switch (state) {${cases.map((a) => `${__}case '${a}':${stateToProgram(subTree[a]!, depth + 2)}${___}break;`).join("")}${_}}`
+				? `${_}switch (state) {${cases
+						.map((a) => {
+							// Always brace case bodies so `const` bindings do not collide
+							// across cases in the same switch (TDZ / redeclare errors).
+							const body = stateToProgram(subTree[a]!, depth + 2);
+							return `${__}case '${a}': {${body}${__}}${___}break;`;
+						})
+						.join("")}${_}}`
 				: "")
 		);
 	}
@@ -221,7 +228,15 @@ export default function treeToProgram(
 		return (
 			(rootTree.default ? styleToProgram(rootTree.default, depth) : "") +
 			(cases.length
-				? `${_}switch (style) {${cases.map((a) => `${__}case '${a}':${styleToProgram(rootTree[a]!, depth + 2)}${___}break;`).join("")}${_}}`
+				? `${_}switch (style) {${cases
+						.map((a) => {
+							const body = styleToProgram(
+								rootTree[a]!,
+								depth + 2,
+							);
+							return `${__}case '${a}': {${body}${__}}${___}break;`;
+						})
+						.join("")}${_}}`
 				: "")
 		);
 	}
