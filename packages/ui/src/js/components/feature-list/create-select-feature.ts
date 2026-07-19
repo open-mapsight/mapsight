@@ -26,8 +26,10 @@ function scrollToMapTop(offsetTop = 0, immediate = false): void {
 }
 
 /**
- * Historic factory used by {@link withKeyboard}. Prefer {@link useSelectFeature}
- * inside React list components.
+ * Historic factory used by {@link withKeyboard}.
+ *
+ * @deprecated Prefer {@link useSelectFeature} inside React list components.
+ *   Removed in the next major of `@mapsight/ui`.
  */
 export default function createSelectFeature(
 	selectedOnly: boolean,

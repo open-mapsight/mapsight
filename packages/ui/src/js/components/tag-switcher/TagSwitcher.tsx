@@ -32,8 +32,13 @@ function TagSwitcher({
 	const groupedIds = useMemo(() => {
 		// Object.fromEntries needs babel runtime core3
 		const groupedIdsTmp = {};
+		if (!groupedTagData) {
+			return groupedIdsTmp;
+		}
 		Object.keys(groupedTagData).forEach((group) => {
-			groupedIdsTmp[group] = Object.keys(groupedTagData[group].tags);
+			groupedIdsTmp[group] = Object.keys(
+				groupedTagData[group]?.tags ?? {},
+			);
 			if (sortTags) {
 				groupedIdsTmp[group].sort((a, b) =>
 					a.localeCompare(b, locale, {numeric: true}),

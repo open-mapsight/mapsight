@@ -1,8 +1,9 @@
 import type {PropsWithChildren, RefCallback} from "react";
-import {useCallback, useRef} from "react";
+import {useCallback, useContext, useRef} from "react";
 import {useInView} from "react-intersection-observer";
 import {useDispatch, useSelector, useStore} from "react-redux";
 
+import {ComponentsContext} from "../helpers/components";
 import useUpdateMapSizeOnRender from "../hooks/useUpdateMapSizeOnRender";
 import useUpdateMapSizeOnTransitionEnd from "../hooks/useUpdateMapSizeOnTransitionEnd";
 import useUpdateMapSizeOnViewChange from "../hooks/useUpdateMapSizeOnViewChange";
@@ -13,10 +14,18 @@ import {
 	useAppChannelEventListener,
 } from "./helping/app-channel";
 
-export default function MapWrapper(
-	props: PropsWithChildren<{anchor?: "right" | "bottom"}>,
-) {
+type MapWrapperProps = PropsWithChildren<{anchor?: "right" | "bottom"}>;
+
+/**
+ * Keeps the size/scroll shell, but lets hosts wrap `children` (e.g. SkipLink).
+ *
+ * @deprecated Host `components.MapWrapper` wrapping is a migration aid.
+ *   Prefer composing overlays outside this slot. May change in the next major
+ *   of `@mapsight/ui`.
+ */
+export default function MapWrapper(props: MapWrapperProps) {
 	const {children, anchor} = props;
+	const HostMapWrapper = useContext(ComponentsContext).MapWrapper;
 
 	const dispatch = useDispatch();
 	const mapWrapperRef = useRef<HTMLDivElement | undefined>(undefined);
@@ -58,7 +67,17 @@ export default function MapWrapper(
 			ref={setRef}
 			className={`ms3-map-wrapper ms3-map-wrapper--anchored-${anchor} [ ms3-flex ms3-flex--column ] [ ms3-scroll-target ]`}
 		>
-			{children}
+			{HostMapWrapper ? (
+				<HostMapWrapper anchor={anchor}>{children}</HostMapWrapper>
+			) : (
+				children
+			)}
 		</div>
 	);
+}
+
+declare module "../helpers/components" {
+	interface ComponentProps {
+		MapWrapper: MapWrapperProps;
+	}
 }
