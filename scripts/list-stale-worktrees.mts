@@ -59,16 +59,10 @@ function parseWorktrees(porcelain: string): Worktree[] {
 	return out;
 }
 
-function upstreamGone(branch: string): boolean {
+/** True when `branch@{upstream}` does not resolve (deleted remote + prune, or never set). */
+function hasNoUpstream(branch: string): boolean {
 	try {
-		const tracking = git([
-			"rev-parse",
-			"--abbrev-ref",
-			`${branch}@{upstream}`,
-		]);
-		// If upstream exists, check whether the local tip is an ancestor of origin/main
-		// (common after squash-merge) or the remote-tracking ref is missing after prune.
-		void tracking;
+		git(["rev-parse", "--verify", `${branch}@{upstream}`]);
 		return false;
 	} catch {
 		return true;
@@ -118,7 +112,7 @@ function main(): void {
 			) {
 				continue;
 			}
-			if (upstreamGone(wt.branch)) {
+			if (hasNoUpstream(wt.branch)) {
 				reasons.push(
 					`branch '${wt.branch}' has no upstream (often deleted after merge)`,
 				);
