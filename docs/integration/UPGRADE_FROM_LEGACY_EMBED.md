@@ -4,6 +4,10 @@ Short guide for host apps built against the pre–open-source Mapsight embed
 shape (config bag + automatic default plugins). New hosts should keep using
 the flat API in [CMS_PHP](CMS_PHP.md) and [OVERVIEW](OVERVIEW.md).
 
+Legacy helpers below are **`@deprecated`**: keep using them while migrating,
+but plan to drop them in the **next major** of each package (`@mapsight/ui`,
+`@mapsight/core`, `@mapsight/lib-js`).
+
 ## Then vs now
 
 | Historic                                                               | Current                                                       |
@@ -91,6 +95,34 @@ hub.on(EVENT_PARTIAL_CONTENT_CHANGED, () => {
 | `@mapsight/ui/components/tag-switcher`               | Directory index                          |
 | `@mapsight/ui/components/contexts`                   | Typedef alias for `MapsightUiComponents` |
 | `@mapsight/lib-js/types/is-numeric`                  | Alias of `isNumberLike`                  |
+
+## Host layout component slots
+
+These `createOptions.components` keys are wired again for legacy hosts:
+
+| Key                          | Where it mounts                                                     |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `AppWrapperStart`            | Start of the app wrapper (typical mobile chrome)                    |
+| `AdditionalContainerContent` | Additional-container body (list region; often hosts routing)        |
+| `MainPanelContainer`         | Inner replace of the main panel (panel chrome / width classes stay) |
+| `MapWrapper`                 | Wraps map children inside the size/scroll shell                     |
+
+Related runtime shims (also deprecated):
+
+| Surface                                                         | Prefer instead                                      |
+| --------------------------------------------------------------- | --------------------------------------------------- |
+| `controller.reduce(slice, action, globalState)` 3rd arg         | Selectors / `getStore()` after controller `init()`  |
+| Presentational `ListToggleButton` (`active` + `onClick`)        | `MainPanelListToggleButton` or a host-owned control |
+| Extra `ms3-flex*` classes on `MapRow` / `MainContainer`         | Theme SCSS layout                                   |
+| `MapController.setDefaultStyleEnv` patches merge into prior env | Keep calling; merge behavior matches historic Redux |
+
+## Deprecation / removal
+
+All of the above legacy helpers are marked `@deprecated` in source. They remain
+supported through the current major lines so hosts can migrate incrementally.
+Expect removal in the **next major** of the owning package. `@mapsight/lib-js`
+itself is on a longer sunset path; prefer `@mapsight/lib-js` modern helpers
+(and eventually package successors) rather than new `is-numeric` imports.
 
 ## See also
 

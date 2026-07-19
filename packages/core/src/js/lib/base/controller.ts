@@ -232,9 +232,13 @@ export class BaseController<TState extends State = State>
 	/**
 	 * @param state that part of the state in control of the controller
 	 * @param action action to perform on state
+	 * @param _globalState full store state before this action
+	 * @deprecated The 3rd `globalState` argument is a pre-OSS host compatibility
+	 *   shim. Prefer selectors / `getStore()` after {@link init}. It will be
+	 *   removed in the next major of `@mapsight/core`. Core controllers ignore it.
 	 * @returns modified part of the state in control of the controller after performing action
 	 */
-	reduce(state: TState = {} as TState, action: Action) {
+	reduce(state: TState = {} as TState, action: Action, _globalState?: State) {
 		this.#reducers.forEach((reducer) => {
 			state = reducer(state, action);
 		});

@@ -1,6 +1,9 @@
 /**
  * Historic `@mapsight/ui/components/contexts` typedef path.
- * Prefer {@link MapsightUiComponents} from `@mapsight/ui/helpers/components`.
+ *
+ * @deprecated Prefer {@link MapsightUiComponents} from
+ *   `@mapsight/ui/helpers/components`. Removed in the next major of
+ *   `@mapsight/ui`.
  */
 
 export type {

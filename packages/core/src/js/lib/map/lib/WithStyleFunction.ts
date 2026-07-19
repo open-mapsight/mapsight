@@ -15,9 +15,16 @@ export default class WithStyleFunction extends WithMap {
 		this._styleFunctionRef = styleFunction;
 	}
 
-	/** Merged into every style call before layer env and view state (zoom, etc.). */
+	/**
+	 * Merged into every style call before layer env and view state (zoom, etc.).
+	 * Patches merge into the existing env (historic Redux `setStyleEnv` behavior);
+	 * they do not replace it.
+	 */
 	setDefaultStyleEnv(env: MapsightStyleFunctionEnv) {
-		this._defaultStyleEnv = env;
+		this._defaultStyleEnv = {
+			...this._defaultStyleEnv,
+			...env,
+		};
 	}
 
 	createStyleFunction(env: MapsightStyleFunctionEnv = {}): StyleFunction {

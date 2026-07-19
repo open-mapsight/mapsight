@@ -55,19 +55,46 @@ export function createMapsightStore<
 ): TStore {
 	const {reduxDevToolsOptions = {}} = options;
 
+	/**
+	 * Previous root state, passed as the historic 3rd `globalState` argument to
+	 * `controller.reduce(slice, action, globalState)`.
+	 *
+	 * @deprecated Prefer reading sibling state via selectors / controller
+	 *   `init()` + `getStore()`. The 3rd reduce argument will be removed in the
+	 *   next major of `@mapsight/core`.
+	 */
+	let previousRootState: Record<string, unknown> = preLoadedState;
+
 	// Get reducers from controllers bound to the controller
 	const coreReducers = mapValues(controllers, (controller, key) =>
 		createFilteredReducerForPath(
-			(state, action) => controller.reduce(state, action),
+			(state, action) =>
+				(
+					controller.reduce as (
+						state: unknown,
+						action: unknown,
+						/** @deprecated See createMapsightStore previousRootState. */
+						globalState?: unknown,
+					) => unknown
+				)(state, action, previousRootState),
 			key,
 			STATE_PATH_KEY,
 		),
 	);
 
-	const reducer = combineReducers({
+	const combinedReducer = combineReducers({
 		...coreReducers,
 		...appReducers,
 	});
+
+	const reducer: typeof combinedReducer = (state, action) => {
+		if (state !== undefined) {
+			previousRootState = state;
+		}
+		const next = combinedReducer(state, action);
+		previousRootState = next;
+		return next;
+	};
 
 	const coreEnhancer = ((createStore) => (baseReducer, preloadedState) => {
 		const store = createStore(
