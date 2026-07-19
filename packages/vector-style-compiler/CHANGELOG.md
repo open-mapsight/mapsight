@@ -1,5 +1,13 @@
 # @mapsight/vector-style-compiler
 
+## 13.0.1
+
+### Patch Changes
+
+- e228de9: Brace generated `switch` case bodies so multiple simple styles with `const` bindings do not collide (TDZ / redeclare errors under Vite/Oxc).
+- Updated dependencies [`553337a`]:
+    - `@mapsight/lib-js@3.0.6 → 3.0.7` (patch)
+
 ## 13.0.0
 
 ### Patch Changes

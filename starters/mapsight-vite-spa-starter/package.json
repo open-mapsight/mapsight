@@ -5,10 +5,10 @@
 	"private": true,
 	"type": "module",
 	"dependencies": {
-		"@mapsight/lib-js": "^3.0.6",
+		"@mapsight/lib-js": "^3.0.7",
 		"@mapsight/lib-ol": "^4.2.2",
 		"@mapsight/traffic-style": "^5.4.0",
-		"@mapsight/ui": "^7.4.0",
+		"@mapsight/ui": "^7.4.1",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
 		"ol": "^10.9.0",
@@ -19,7 +19,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^13.0.0",
+		"@mapsight/vector-style-compiler": "^13.0.1",
 		"@types/node": "^24.13.2",
 		"@types/react": "^19.2.15",
 		"@types/react-dom": "^19.2.3",
