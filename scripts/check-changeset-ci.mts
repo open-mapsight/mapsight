@@ -1,5 +1,5 @@
 import {execFileSync} from "node:child_process";
-import {existsSync} from "node:fs";
+import {existsSync, readdirSync} from "node:fs";
 import path from "node:path";
 
 const eventName =
@@ -51,12 +51,16 @@ if (!prBaseSha || !prNumber || !prUser) {
 }
 
 if (prUser === "dependabot[bot]" && isDependencyOnlyPullRequest(prBaseSha)) {
-	const dependabotChangeset = path.join(
-		".changeset",
-		`dependabot-${prNumber}.md`,
-	);
+	const changesetDir = path.join(".changeset");
+	const prefix = `dependabot-${prNumber}`;
+	const hasDependabotChangeset =
+		existsSync(changesetDir) &&
+		readdirSync(changesetDir).some(
+			(entry) =>
+				entry === `${prefix}.md` || entry.startsWith(`${prefix}-`),
+		);
 
-	if (existsSync(dependabotChangeset)) {
+	if (hasDependabotChangeset) {
 		runChangesetStatus();
 	} else {
 		console.log(
