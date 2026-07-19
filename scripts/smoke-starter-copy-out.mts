@@ -132,32 +132,53 @@ async function run(
 	return stdout.trim();
 }
 
+async function settleAllOrThrow<T>(
+	tasks: Array<Promise<T>>,
+	label: string,
+): Promise<T[]> {
+	const results = await Promise.allSettled(tasks);
+	const failures = results.flatMap((result, index) =>
+		result.status === "rejected" ? [{index, reason: result.reason}] : [],
+	);
+
+	if (failures.length > 0) {
+		for (const {index, reason} of failures) {
+			console.error(`[copy-out] ${label} #${index} failed:`, reason);
+		}
+		throw new Error(`${label}: ${failures.length} task(s) failed`);
+	}
+
+	return results.map((result) => (result as PromiseFulfilledResult<T>).value);
+}
+
 async function packMapsightPackages(
 	tarballDir: string,
 ): Promise<Map<string, string>> {
-	const packed = await Promise.all(
-		mapsightPackages.map(async (packageName) => {
-			const filter = packageFilters.get(packageName)!;
-			const output = await run("pnpm", [
-				"--filter",
-				filter,
-				"pack",
-				"--pack-destination",
-				tarballDir,
-			]);
-			const tarballPath = output.split("\n").at(-1);
+	// Pack sequentially: concurrent `pnpm pack` races on workspace protocol
+	// resolution (e.g. traffic-style → lib-ol) and fails flakily in CI.
+	const tarballs = new Map<string, string>();
 
-			if (!tarballPath) {
-				throw new Error(
-					`Could not determine tarball path for ${packageName}`,
-				);
-			}
+	for (const packageName of mapsightPackages) {
+		const filter = packageFilters.get(packageName)!;
+		const output = await run("pnpm", [
+			"--filter",
+			filter,
+			"pack",
+			"--pack-destination",
+			tarballDir,
+		]);
+		const tarballPath = output.split("\n").at(-1);
 
-			return [packageName, tarballPath] as const;
-		}),
-	);
+		if (!tarballPath) {
+			throw new Error(
+				`Could not determine tarball path for ${packageName}`,
+			);
+		}
 
-	return new Map(packed);
+		tarballs.set(packageName, tarballPath);
+	}
+
+	return tarballs;
 }
 
 function rewriteMapsightDeps(
@@ -252,10 +273,11 @@ async function main(): Promise<void> {
 		console.log(`[copy-out] temp dir: ${workspaceDir}`);
 		const tarballs = await packMapsightPackages(tarballDir);
 
-		await Promise.all(
+		await settleAllOrThrow(
 			starters.map((starter) =>
 				smokeStarter(starter, workspaceDir, tarballs),
 			),
+			"starter smoke",
 		);
 	} finally {
 		if (KEEP_TMP) {

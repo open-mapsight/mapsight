@@ -347,6 +347,10 @@ jobs:
           name: build-output
           path: .
 
+      - name: Build starter dependencies
+        run: pnpm turbo run build --filter=mapsight-host-starter --filter=mapsight-next-starter --filter=mapsight-vite-spa-starter
+        shell: bash
+
       - name: Run copy-out starter smoke tests
         run: pnpm run test:starters:copy-out
         shell: bash
