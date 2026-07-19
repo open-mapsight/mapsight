@@ -4,6 +4,7 @@ import {createElement, useMemo} from "react";
 import getFeatureProperty from "../../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../../types";
 import FeatureListItem from "../../feature-list-item";
+import type {SelectFeatureHandler} from "../../feature-list-item/types";
 
 export interface MapsightUiListGroup {
 	name: string;
@@ -70,14 +71,19 @@ const renderItems = (
 	as: ElementType,
 	itemProps: Record<string, unknown>,
 ) =>
-	features.map((feature) =>
-		createElement(FeatureListItem, {
-			...itemProps,
+	features.map((feature) => {
+		// FeatureList context uses `deselectFeature`; FeatureListItem expects `deselectFeatures`.
+		const {deselectFeature, deselectFeatures, ...restItemProps} = itemProps;
+		const deselectHandler = (deselectFeatures ?? deselectFeature) as
+			SelectFeatureHandler | undefined;
+		return createElement(FeatureListItem, {
+			...restItemProps,
 			key: feature.id,
 			feature,
 			as,
-		}),
-	);
+			deselectFeatures: deselectHandler,
+		});
+	});
 
 export type ItemGroups = {
 	groups: null | MapsightUiListGroup[];

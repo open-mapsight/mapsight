@@ -30,13 +30,14 @@ function feature(id: string, name: string): MapsightUiFeature {
 describe("useFeatureListItemGroups", () => {
 	it("passes itemAs as FeatureListItem `as` (wrapper), not a full replacement", () => {
 		const features = [feature("1", "One"), feature("2", "Two")];
+		const deselectFeature = () => {};
 		const {result} = renderHook(() =>
 			useFeatureListItemGroups(
 				// falsy disables grouping (same as production callers)
 				undefined as unknown as never,
 				features,
 				HostItemWrapper,
-				{showFeatureListInfo: false},
+				{showFeatureListInfo: false, deselectFeature},
 			),
 		);
 
@@ -49,5 +50,7 @@ describe("useFeatureListItemGroups", () => {
 		expect(first.props.as).toBe(HostItemWrapper);
 		expect(first.props.feature).toBe(features[0]);
 		expect(first.props.showFeatureListInfo).toBe(false);
+		expect(first.props.deselectFeatures).toBe(deselectFeature);
+		expect(first.props).not.toHaveProperty("deselectFeature");
 	});
 });

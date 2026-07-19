@@ -85,22 +85,35 @@ function FeatureListItem({
 			(isHighlighted ? " ms3-list__item--highlight" : "") +
 			(showDetails ? " ms3-list__item--has-details" : "") +
 			(showFeatureListInfo ? " ms3-list__item--has-info" : "") +
-			(selectOnClick === true ? " ms3-list__item--selectable" : "") +
+			(selectOnClick === true || deselectOnClick
+				? " ms3-list__item--selectable"
+				: "") +
 			(ref.current?.className.includes("focus-visible")
 				? " focus-visible"
 				: ""),
 	};
 
 	// Legacy: feature may name an alternate HTML property via `__overrideListHtmlProp`.
-	const overrideListHtmlProperty = getFeatureProperty(
+	const overrideListHtmlPropertyRaw = getFeatureProperty(
 		feature,
 		"__overrideListHtmlProp",
 		"overrideListHtml",
+	);
+	const overrideListHtmlProperty = (
+		typeof overrideListHtmlPropertyRaw === "string" &&
+		overrideListHtmlPropertyRaw.length > 0
+			? overrideListHtmlPropertyRaw
+			: "overrideListHtml"
 	) as MapsightUiFeatureProperty;
-	const overrideListHtml = getFeatureProperty(
+	const overrideListHtmlRaw = getFeatureProperty(
 		feature,
 		overrideListHtmlProperty,
-	) as string | undefined;
+	);
+	const overrideListHtml =
+		typeof overrideListHtmlRaw === "string" &&
+		overrideListHtmlRaw.length > 0
+			? overrideListHtmlRaw
+			: undefined;
 
 	// Host wrappers (e.g. StartPageItem → <a>) expect the HTML on the wrapper.
 	if (overrideListHtml) {
