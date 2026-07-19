@@ -11,6 +11,7 @@ import {
 import {VIEW_MAP_ONLY} from "../../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../../config/constants/controllers";
 import {FEATURE_SELECTION_HIGHLIGHT} from "../../../config/feature/selections";
+import {consumeDocumentScrollForSelection} from "../../../helpers/document-scroll";
 import {setLastListScrollPosition, setView} from "../../../store/actions";
 import {
 	listUiOptionSelectedOnlySelector,
@@ -18,15 +19,11 @@ import {
 	listUiOptionSelectionSelectionSelector,
 	viewSelector,
 } from "../../../store/selectors";
+import type {MapsightUiFeatureId} from "../../../types";
 import {
 	APP_EVENT_SCROLL_TO_MAP,
 	useAppChannelDispatchEvent,
 } from "../../helping/app-channel";
-
-const getDocumentScroll = () =>
-	window.document.documentElement.scrollTop ||
-	window.document.body.scrollTop ||
-	0;
 
 export default function useSelectFeature() {
 	const appChannelDispatch = useAppChannelDispatchEvent();
@@ -41,7 +38,7 @@ export default function useSelectFeature() {
 
 	return useMemo(
 		() =>
-			function selectFeatureInList(featureId) {
+			function selectFeatureInList(featureId: MapsightUiFeatureId) {
 				const actions = [
 					deselectAll(
 						FEATURE_SELECTIONS,
@@ -50,7 +47,7 @@ export default function useSelectFeature() {
 					selectExclusively(
 						FEATURE_SELECTIONS,
 						selectionBehaviorSelection,
-						featureId,
+						String(featureId),
 					),
 				];
 
@@ -59,7 +56,9 @@ export default function useSelectFeature() {
 					selectionBehavior[view] === "scrollToMap"
 				) {
 					actions.push(
-						setLastListScrollPosition(getDocumentScroll()),
+						setLastListScrollPosition(
+							consumeDocumentScrollForSelection(),
+						),
 					);
 					setTimeout(
 						() =>
@@ -69,9 +68,13 @@ export default function useSelectFeature() {
 						10,
 					);
 				} else if (selectionBehavior[view] === "showInMapOnlyView") {
+					// Capture at pointerdown (see FeatureSelectButton) so click
+					// scroll-into-view does not shrink the restored position.
 					actions.push(
-						setLastListScrollPosition(getDocumentScroll()),
-					); // hier auch speichern, damit auch hier das close des poi die scroll-position wiederherstellt
+						setLastListScrollPosition(
+							consumeDocumentScrollForSelection(),
+						),
+					);
 					actions.push(setView(VIEW_MAP_ONLY));
 				}
 

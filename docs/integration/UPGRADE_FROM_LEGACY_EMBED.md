@@ -123,10 +123,22 @@ Historic hosts pass a custom **row wrapper** via `itemAs` (e.g. an `<li>` +
 replacement: Mapsight still renders `FeatureListItem` and sets `itemAs` as its
 `as` prop so icon / title / details stay intact.
 
+### Prefer: typed list content
+
+New work should use default `FeatureListItem` markup (or a typed React `itemAs`
+that renders real structure) and let `FeatureSelectButton` own selection. Do
+**not** put list HTML into feature properties.
+
+### Legacy: `overrideListHtml` (avoid for new features)
+
 When a feature has `properties.overrideListHtml` (or the property named by
 `properties.__overrideListHtmlProp`), that HTML is applied on the **wrapper**
-via `dangerouslySetInnerHTML`. Host wrappers that forward props onto an `<a>`
-must not also pass React `children` in that case (React forbids mixing the two).
+via `dangerouslySetInnerHTML`, and selection is wired as `role="button"` /
+`onClick` on the host row — the same class of a11y smell as “`<a>` as button”.
+This path is `@deprecated` and scheduled for removal in the next major of
+`@mapsight/ui`. Host wrappers that apply the HTML on the `<li>` must not nest
+it inside an `<a>` (React forbids mixing `dangerouslySetInnerHTML` with
+`children`; live hosts put interactive props on the `<li>`).
 
 `@mapsight/lib-js` `getPath` returns the `defaultValue` when the resolved value
 is `undefined` (including a missing final key), which is how

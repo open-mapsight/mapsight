@@ -1,4 +1,4 @@
-import type {ComponentType, HTMLAttributes, ReactNode} from "react";
+import type {HTMLAttributes, ReactNode} from "react";
 import {useCallback} from "react";
 import {useDispatch} from "react-redux";
 
@@ -10,29 +10,9 @@ import {
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_HIGHLIGHT} from "../../config/feature/selections";
 import getFeatureProperty from "../../helpers/get-feature-property";
-import type {MapsightUiFeature, MapsightUiFeatureId} from "../../types";
-import FeatureSelectButtonUntyped from "../feature-select-button";
-import type {
-	FeatureListItemInteractionProps,
-	ListSelectOnClick,
-	SelectFeatureHandler,
-} from "./types";
-
-type FeatureSelectButtonProps = {
-	tabIndex?: number;
-	className?: string;
-	featureId: MapsightUiFeatureId;
-	isSelected?: boolean;
-	selectOnClick?: ListSelectOnClick;
-	deselectOnClick?: boolean;
-	onSelect?: SelectFeatureHandler;
-	onDeselect?: SelectFeatureHandler;
-	permanentLink?: string;
-	children?: ReactNode;
-} & Omit<HTMLAttributes<HTMLElement>, "onSelect">;
-
-const FeatureSelectButton =
-	FeatureSelectButtonUntyped as ComponentType<FeatureSelectButtonProps>;
+import type {MapsightUiFeature} from "../../types";
+import FeatureSelectButton from "../feature-select-button";
+import type {FeatureListItemInteractionProps, ListSelectOnClick} from "./types";
 
 export type FeatureListItemHeadProps = FeatureListItemInteractionProps & {
 	children?: ReactNode;
