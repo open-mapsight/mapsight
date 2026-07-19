@@ -37,8 +37,8 @@ function FeatureSelectButton({
 	const handleClick = useCallback(
 		(e: MouseEvent<HTMLElement>) => {
 			if (permanentLink) {
-				if (e.button === 1 || e.metaKey) {
-					// Continue as normal for external links and cmd clicks etc
+				if (e.button === 1 || e.metaKey || e.ctrlKey) {
+					// Middle-click / modified clicks: let the browser open the link
 					return;
 				}
 				e.preventDefault();

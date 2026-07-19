@@ -1,11 +1,13 @@
 import type {
 	ComponentType,
 	ElementType,
+	KeyboardEvent as ReactKeyboardEvent,
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
 } from "react";
 import {Fragment, memo, useRef} from "react";
 
+import {rememberDocumentScrollForSelection} from "../../helpers/document-scroll";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
@@ -18,6 +20,15 @@ import type {
 	FeatureListItemDistanceLabelProps,
 	FeatureListItemInteractionProps,
 } from "./types";
+
+function eventFromInteractiveDescendant(target: EventTarget | null): boolean {
+	if (!(target instanceof Element)) {
+		return false;
+	}
+	return !!target.closest(
+		"a, button, input, select, textarea, label, summary",
+	);
+}
 
 function getMainContentForFeature(feature: MapsightUiFeature): ReactNode {
 	const listName = getFeatureProperty(feature, "listName");
@@ -104,18 +115,36 @@ function FeatureListItemLegacyHtmlRow({
 	const selectable =
 		selectOnClick === true || (isSelected && deselectOnClick);
 
-	// Legacy: selection on the wrapper (no FeatureSelectButton). Middle/meta
-	// clicks still allow a host deep-link if the wrapper is an <a>.
+	const activate = (keyboard: boolean) => {
+		if (isSelected && deselectOnClick) {
+			deselectFeatures?.(feature.id);
+		} else if (selectOnClick === true) {
+			selectFeature?.(feature.id, {keyboard});
+		}
+	};
+
+	// Legacy: selection on the wrapper (no FeatureSelectButton). Middle /
+	// modified clicks still allow a host deep-link if the wrapper is an <a>.
 	const onClick = (event: ReactMouseEvent) => {
 		if (event.button === 1 || event.metaKey || event.ctrlKey) {
 			return;
 		}
-		event.preventDefault();
-		if (isSelected && deselectOnClick) {
-			deselectFeatures?.(feature.id);
-		} else if (selectOnClick === true) {
-			selectFeature?.(feature.id, {keyboard: false});
+		if (eventFromInteractiveDescendant(event.target)) {
+			return;
 		}
+		event.preventDefault();
+		activate(false);
+	};
+
+	const onKeyDown = (event: ReactKeyboardEvent) => {
+		if (event.key !== "Enter" && event.key !== " ") {
+			return;
+		}
+		if (eventFromInteractiveDescendant(event.target)) {
+			return;
+		}
+		event.preventDefault();
+		activate(true);
 	};
 
 	return (
@@ -136,7 +165,11 @@ function FeatureListItemLegacyHtmlRow({
 			}
 			tabIndex={interactive ? -1 : undefined}
 			role={selectable ? "button" : undefined}
+			onPointerDown={
+				selectable ? rememberDocumentScrollForSelection : undefined
+			}
 			onClick={selectable ? onClick : undefined}
+			onKeyDown={selectable ? onKeyDown : undefined}
 			dangerouslySetInnerHTML={{__html: html}}
 		/>
 	);

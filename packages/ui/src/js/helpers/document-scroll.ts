@@ -17,19 +17,24 @@ export function getDocumentScroll(): number {
 	);
 }
 
+/** Drop unused pointerdown captures so keyboard select does not reuse them. */
+const SCROLL_CAPTURE_MAX_AGE_MS = 2000;
+
 let scrollAtPointerDown: number | null = null;
+let scrollAtPointerDownAt = 0;
 
 /** Call from list-item pointerdown before focus/click scroll adjustment. */
 export function rememberDocumentScrollForSelection(): void {
 	scrollAtPointerDown = getDocumentScroll();
+	scrollAtPointerDownAt = Date.now();
 }
 
 /** Read scroll captured at pointerdown; falls back to current scroll. */
 export function consumeDocumentScrollForSelection(): number {
-	const value =
-		scrollAtPointerDown === null
-			? getDocumentScroll()
-			: scrollAtPointerDown;
+	const age = Date.now() - scrollAtPointerDownAt;
+	const captured = scrollAtPointerDown;
+	const stale = captured === null || age > SCROLL_CAPTURE_MAX_AGE_MS;
 	scrollAtPointerDown = null;
-	return value;
+	scrollAtPointerDownAt = 0;
+	return stale ? getDocumentScroll() : captured;
 }
