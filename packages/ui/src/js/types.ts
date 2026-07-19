@@ -384,8 +384,16 @@ export type MapsightUiFeatureProperty =
 	| "tooltip"
 	| "tagGroups"
 	| "permanentLink"
+	/**
+	 * @deprecated Raw HTML for the entire list row (`dangerouslySetInnerHTML` +
+	 *   wrapper `role="button"`). Prefer typed `itemAs` / default list content.
+	 *   Removed in the next major of `@mapsight/ui`.
+	 */
 	| "overrideListHtml"
-	/** Hosts may set this to rename the HTML override property (legacy). */
+	/**
+	 * @deprecated Optional rename of the `overrideListHtml` feature property.
+	 *   Removed in the next major of `@mapsight/ui`.
+	 */
 	| "__overrideListHtmlProp"
 	| "isIncompleteSuggest";
 

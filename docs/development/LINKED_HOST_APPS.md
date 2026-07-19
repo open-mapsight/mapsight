@@ -42,8 +42,9 @@ See [Upgrade from legacy embed](../integration/UPGRADE_FROM_LEGACY_EMBED.md)
 (“FeatureList `itemAs` and `overrideListHtml`”):
 
 - `itemAs` is a **wrapper** (`FeatureListItem`’s `as`), not a full row replace.
-- `overrideListHtml` is applied on that wrapper; do not mix React `children`
-  with `dangerouslySetInnerHTML` on the same host link.
+- `overrideListHtml` is a **deprecated** escape hatch (raw HTML + wrapper
+  `role="button"`). Prefer typed list content. If you must keep it, put HTML +
+  interactive props on the `<li>`, not inside a nested `<a>`.
 
 ## Worktree hygiene
 

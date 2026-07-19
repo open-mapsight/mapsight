@@ -9,11 +9,11 @@ import {Fragment, memo, useRef} from "react";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
-import getOverrideListHtml from "./get-override-list-html";
 import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
 import FeatureListIcon from "./icon";
+import getLegacyOverrideListHtml from "./legacy-override-list-html";
 import type {
 	FeatureListItemDistanceLabelProps,
 	FeatureListItemInteractionProps,
@@ -37,24 +37,32 @@ export type FeatureListItemProps = FeatureListItemInteractionProps & {
 };
 
 /**
- * Hook-free shell: branch before any hooks so only override-html rows mount a
- * component that owns wrapper click handling (historic FeatureSelectButton skip).
+ * Hook-free shell: branch before hooks so the legacy HTML-row path is isolated.
+ *
+ * New hosts should stay on the standard path (typed content +
+ * `FeatureSelectButton`). Do not add features that only work on the legacy
+ * branch.
  */
 function FeatureListItem(props: FeatureListItemProps) {
-	const overrideListHtml = getOverrideListHtml(props.feature);
-	if (overrideListHtml) {
-		return (
-			<FeatureListItemOverrideHtml {...props} html={overrideListHtml} />
-		);
+	const legacyHtml = getLegacyOverrideListHtml(props.feature);
+	if (legacyHtml) {
+		return <FeatureListItemLegacyHtmlRow {...props} html={legacyHtml} />;
 	}
 	return <FeatureListItemStandard {...props} />;
 }
 
-type FeatureListItemOverrideHtmlProps = FeatureListItemProps & {
+type FeatureListItemLegacyHtmlRowProps = FeatureListItemProps & {
 	html: string;
 };
 
-function FeatureListItemOverrideHtml({
+/**
+ * @deprecated Pre-OSS list rows that inject CMS/GeoJSON HTML onto the wrapper
+ *   and pretend the whole row is a button (`role="button"` + `onClick` on the
+ *   `itemAs` host element — same smell as “`<a>` as button”). Prefer typed
+ *   list content and FeatureSelectButton. Kept only for host migration; removed
+ *   in the next major of `@mapsight/ui`.
+ */
+function FeatureListItemLegacyHtmlRow({
 	as: T = "div",
 	showFeatureListInfo,
 	feature,
@@ -62,7 +70,7 @@ function FeatureListItemOverrideHtml({
 	deselectFeatures,
 	enableKeyboardControl,
 	html,
-}: FeatureListItemOverrideHtmlProps) {
+}: FeatureListItemLegacyHtmlRowProps) {
 	const {
 		selectOnClick,
 		deselectOnClick,
@@ -96,6 +104,8 @@ function FeatureListItemOverrideHtml({
 	const selectable =
 		selectOnClick === true || (isSelected && deselectOnClick);
 
+	// Legacy: selection on the wrapper (no FeatureSelectButton). Middle/meta
+	// clicks still allow a host deep-link if the wrapper is an <a>.
 	const onClick = (event: ReactMouseEvent) => {
 		if (event.button === 1 || event.metaKey || event.ctrlKey) {
 			return;

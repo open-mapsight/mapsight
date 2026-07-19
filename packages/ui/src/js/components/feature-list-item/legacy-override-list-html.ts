@@ -1,8 +1,17 @@
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature, MapsightUiFeatureProperty} from "../../types";
 
-/** Resolve legacy host list HTML from feature properties, if present. */
-export default function getOverrideListHtml(
+/**
+ * Resolve raw list-row HTML from feature properties (`overrideListHtml` /
+ * `__overrideListHtmlProp`).
+ *
+ * @deprecated Pre-OSS host escape hatch: HTML baked into GeoJSON/CMS features,
+ *   then rendered with `dangerouslySetInnerHTML` and a wrapper `role="button"`
+ *   (same class of a11y smell as “`<a>` as button”). Prefer a typed `itemAs`
+ *   row and/or default FeatureListItem + FeatureSelectButton. Removed in the
+ *   next major of `@mapsight/ui`.
+ */
+export default function getLegacyOverrideListHtml(
 	feature: MapsightUiFeature,
 ): string | undefined {
 	const overrideListHtmlPropertyRaw = getFeatureProperty(
