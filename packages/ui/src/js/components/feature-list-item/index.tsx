@@ -1,5 +1,10 @@
-import type {ComponentType, ElementType, ReactNode} from "react";
-import {Fragment, memo, useRef} from "react";
+import type {
+	ComponentType,
+	ElementType,
+	MouseEvent as ReactMouseEvent,
+	ReactNode,
+} from "react";
+import {Fragment, memo, useCallback, useRef} from "react";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature, MapsightUiFeatureProperty} from "../../types";
@@ -67,6 +72,30 @@ function FeatureListItem({
 		},
 	);
 
+	// Pre-OSS put select/deselect on the item wrapper when `overrideListHtml`
+	// short-circuits past FeatureListItemHead / FeatureSelectButton.
+	const onOverrideListHtmlClick = useCallback(
+		(event: ReactMouseEvent) => {
+			if (event.button === 1 || event.metaKey || event.ctrlKey) {
+				return;
+			}
+			event.preventDefault();
+			if (isSelected && deselectOnClick) {
+				deselectFeatures?.(feature.id);
+			} else if (selectOnClick === true) {
+				selectFeature?.(feature.id, {keyboard: false});
+			}
+		},
+		[
+			deselectFeatures,
+			deselectOnClick,
+			feature.id,
+			isSelected,
+			selectFeature,
+			selectOnClick,
+		],
+	);
+
 	if (hidden) {
 		return null;
 	}
@@ -115,8 +144,18 @@ function FeatureListItem({
 			? overrideListHtmlRaw
 			: undefined;
 
-	// Host wrappers (e.g. StartPageItem → <a>) expect the HTML on the wrapper.
+	// Host wrappers (e.g. StartPageItem / LinkItem) expect the HTML on the
+	// wrapper element itself. Mirror historic wrapper interaction props so the
+	// row stays selectable without FeatureSelectButton.
 	if (overrideListHtml) {
+		if (selectOnClick === true || deselectOnClick) {
+			wrapperProps.tabIndex = -1;
+		}
+		if (selectOnClick === true || (isSelected && deselectOnClick)) {
+			wrapperProps.role = "button";
+			wrapperProps.onClick = onOverrideListHtmlClick;
+		}
+
 		return (
 			<T
 				{...wrapperProps}
