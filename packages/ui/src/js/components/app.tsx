@@ -33,7 +33,7 @@ import AppWrapper from "./layout/wrapper";
 import MainPanel from "./main-panel";
 import MainPanelContainer from "./main-panel/container";
 import {MainPanelContextProvider} from "./main-panel/context";
-import MainPanelListToggleButton from "./main-panel/list-toggle-button";
+import {MainPanelListToggleButton} from "./main-panel/list-toggle-button";
 // Components
 import Map from "./map";
 import MapOverlay from "./map-overlay";

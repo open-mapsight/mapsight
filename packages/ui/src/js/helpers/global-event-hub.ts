@@ -2,7 +2,9 @@ import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "../components/helping/app-chann
 
 /**
  * Historic event name used by pre-OSS hosts (`page-partial-content-changed`).
- * Prefer {@link APP_EVENT_PARTIAL_CONTENT_CHANGED} for new code.
+ *
+ * @deprecated Prefer {@link APP_EVENT_PARTIAL_CONTENT_CHANGED}. Removed in the
+ *   next major of `@mapsight/ui`.
  */
 export const EVENT_PARTIAL_CONTENT_CHANGED = "page-partial-content-changed";
 
@@ -10,8 +12,11 @@ type HubListener = (...args: unknown[]) => void;
 
 /**
  * Minimal process-wide bus for hosts that subscribe outside React before
- * `browserEmbed` / `create`. Prefer AppChannel listeners or
- * `createOptions.partialChangeHandler` for new hosts.
+ * `browserEmbed` / `create`.
+ *
+ * @deprecated Prefer AppChannel listeners or
+ *   `createOptions.partialChangeHandler`. Removed in the next major of
+ *   `@mapsight/ui`.
  */
 class GlobalEventHub {
 	#listeners = new Map<string, Set<HubListener>>();
@@ -51,14 +56,19 @@ class GlobalEventHub {
 	}
 }
 
+/** @deprecated See {@link GlobalEventHub}. */
 const hub = new GlobalEventHub();
 hub.setMaxListeners(50);
 
+/** @deprecated See {@link GlobalEventHub}. */
 export default hub;
 
 /**
  * EventListener suitable for {@link CreateOptions.partialChangeHandler}.
  * Emits both the historic and current event names on the process hub.
+ *
+ * @deprecated Prefer a host `partialChangeHandler` that does not use the
+ *   process hub. Removed in the next major of `@mapsight/ui`.
  */
 export function createHubPartialChangeHandler(): EventListener {
 	return (event) => {

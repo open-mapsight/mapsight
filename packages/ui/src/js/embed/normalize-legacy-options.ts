@@ -13,7 +13,9 @@ export type DefaultPluginsOptions = Parameters<typeof createDefaultPlugins>[0];
 
 /**
  * Historic embed option fields still used by pre-OSS host apps.
- * Prefer modern {@link CreateOptions} for new hosts.
+ *
+ * @deprecated Prefer {@link CreateOptions}. Removed in the next major of
+ *   `@mapsight/ui`.
  */
 export type LegacyEmbedOptions = Omit<
 	CreateOptions,
@@ -40,6 +42,9 @@ export type BrowserEmbedOptions = {
 /**
  * Legacy config bag built by {@link createEmbedBag}. Hosts often mutate
  * `baseMapsightCoreConfig` / `embedOptions` after the factory returns.
+ *
+ * @deprecated Prefer {@link BrowserEmbedOptions}. Removed in the next major of
+ *   `@mapsight/ui`.
  */
 export type LegacyEmbedBag = {
 	styleFunction: MapsightStyleFunction;
@@ -60,6 +65,10 @@ export type BrowserEmbedInput = BrowserEmbedOptions | LegacyEmbedBag;
  *
  * Prefer live legacy fields (`baseMapsightCoreConfig`, `embedOptions`) so hosts
  * that mutate the bag after {@link createEmbedBag} keep working.
+ *
+ * @deprecated Legacy-bag normalization only. Prefer passing
+ *   {@link BrowserEmbedOptions} directly. Removed in the next major of
+ *   `@mapsight/ui`.
  */
 export function normalizeBrowserEmbedOptions(
 	options: BrowserEmbedInput,
@@ -169,6 +178,9 @@ export function normalizeBrowserEmbedOptions(
 
 /**
  * Convert a legacy bag to flat {@link BrowserEmbedOptions}.
+ *
+ * @deprecated Prefer constructing {@link BrowserEmbedOptions} directly.
+ *   Removed in the next major of `@mapsight/ui`.
  */
 export function legacyBagToBrowserEmbedOptions(
 	bag: LegacyEmbedBag,

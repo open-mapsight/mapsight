@@ -43,6 +43,19 @@ describe("createMapsightConfigSchema", () => {
 		expect(result.success).toBe(true);
 	});
 
+	it("allows optional host display name on feature sources", () => {
+		const result = exampleConfigSchema.safeParse({
+			featureSources: {
+				pois: {
+					type: "xhr-json",
+					url: "/data/pois.json",
+					name: "Points of interest",
+				},
+			},
+		});
+		expect(result.success).toBe(true);
+	});
+
 	it("parses bounded feature source history config", () => {
 		const result = exampleConfigSchema.safeParse({
 			featureSources: {

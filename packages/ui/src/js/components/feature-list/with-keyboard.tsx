@@ -34,8 +34,10 @@ type WithKeyboardProps = {
 
 /**
  * Historic HOC that wires arrow-key preselect / Enter selection onto a
- * scrolling container. Prefer list-internal {@link useKeyboardNavigation} for
- * new UI; this export remains for hosts that wrap an outer panel.
+ * scrolling container.
+ *
+ * @deprecated Prefer list-internal keyboard navigation. Removed in the next
+ *   major of `@mapsight/ui`.
  */
 export function withKeyboard<P extends WithKeyboardProps>(
 	Component: ComponentType<P>,
