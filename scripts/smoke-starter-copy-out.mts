@@ -48,6 +48,13 @@ type PackageJson = {
 	overrides?: Record<string, string>;
 };
 
+type RunOptions = {
+	cwd?: string;
+	logPrefix?: string;
+	/** When true, return full stdout (needed for `pnpm pack` path parsing). */
+	captureStdout?: boolean;
+};
+
 function mirrorPrefixed(
 	stream: NodeJS.ReadableStream | null,
 	prefix: string,
@@ -58,14 +65,14 @@ function mirrorPrefixed(
 		return Promise.resolve();
 	}
 
+	stream.setEncoding("utf8");
+
 	return new Promise((resolve, reject) => {
 		let pending = "";
 
-		stream.on("data", (chunk: Buffer | string) => {
-			const text =
-				typeof chunk === "string" ? chunk : chunk.toString("utf8");
-			onData?.(text);
-			pending += text;
+		stream.on("data", (chunk: string) => {
+			onData?.(chunk);
+			pending += chunk;
 
 			while (true) {
 				const newline = pending.indexOf("\n");
@@ -91,9 +98,9 @@ function mirrorPrefixed(
 async function run(
 	command: string,
 	args: string[],
-	cwd = ROOT,
-	logPrefix = "",
+	options: RunOptions = {},
 ): Promise<string> {
+	const {cwd = ROOT, logPrefix = "", captureStdout = false} = options;
 	const child = spawn(command, args, {
 		cwd,
 		stdio: ["ignore", "pipe", "pipe"],
@@ -106,9 +113,11 @@ async function run(
 		(chunk) => {
 			process.stdout.write(chunk);
 		},
-		(chunk) => {
-			stdout += chunk;
-		},
+		captureStdout
+			? (chunk) => {
+					stdout += chunk;
+				}
+			: undefined,
 	);
 	const stderrDone = mirrorPrefixed(child.stderr, logPrefix, (chunk) => {
 		process.stderr.write(chunk);
@@ -129,7 +138,7 @@ async function run(
 		);
 	}
 
-	return stdout.trim();
+	return captureStdout ? stdout.trim() : "";
 }
 
 async function settleAllOrThrow<T>(
@@ -160,13 +169,11 @@ async function packMapsightPackages(
 
 	for (const packageName of mapsightPackages) {
 		const filter = packageFilters.get(packageName)!;
-		const output = await run("pnpm", [
-			"--filter",
-			filter,
-			"pack",
-			"--pack-destination",
-			tarballDir,
-		]);
+		const output = await run(
+			"pnpm",
+			["--filter", filter, "pack", "--pack-destination", tarballDir],
+			{captureStdout: true},
+		);
 		const tarballPath = output.split("\n").at(-1);
 
 		if (!tarballPath) {
@@ -254,13 +261,14 @@ async function smokeStarter(
 	const starterDir = copyStarter(starter, workspaceDir);
 	prepareStarterPackageJson(starterDir, tarballs);
 
-	await run(
-		"npm",
-		["install", "--no-audit", "--fund=false"],
-		starterDir,
-		prefix,
-	);
-	await run("npm", ["run", "build"], starterDir, prefix);
+	await run("npm", ["install", "--no-audit", "--fund=false"], {
+		cwd: starterDir,
+		logPrefix: prefix,
+	});
+	await run("npm", ["run", "build"], {
+		cwd: starterDir,
+		logPrefix: prefix,
+	});
 	console.log(`${prefix}done`);
 }
 
