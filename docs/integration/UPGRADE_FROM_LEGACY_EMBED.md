@@ -116,6 +116,22 @@ Related runtime shims (also deprecated):
 | Extra `ms3-flex*` classes on `MapRow` / `MainContainer`         | Theme SCSS layout                                   |
 | `MapController.setDefaultStyleEnv` patches merge into prior env | Keep calling; merge behavior matches historic Redux |
 
+## FeatureList `itemAs` and `overrideListHtml`
+
+Historic hosts pass a custom **row wrapper** via `itemAs` (e.g. an `<li>` +
+`<a>` that deep-links into a topic). That component is **not** a full list-item
+replacement: Mapsight still renders `FeatureListItem` and sets `itemAs` as its
+`as` prop so icon / title / details stay intact.
+
+When a feature has `properties.overrideListHtml` (or the property named by
+`properties.__overrideListHtmlProp`), that HTML is applied on the **wrapper**
+via `dangerouslySetInnerHTML`. Host wrappers that forward props onto an `<a>`
+must not also pass React `children` in that case (React forbids mixing the two).
+
+`@mapsight/lib-js` `getPath` returns the `defaultValue` when the resolved value
+is `undefined` (including a missing final key), which is how
+`__overrideListHtmlProp` falls back to `overrideListHtml`.
+
 ## Deprecation / removal
 
 All of the above legacy helpers are marked `@deprecated` in source. They remain
