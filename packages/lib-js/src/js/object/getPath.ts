@@ -29,11 +29,13 @@ export default function getPath(
 	let current: unknown = object;
 	while (current !== null && current !== undefined && index < length) {
 		const key = path[index++]!;
-		current = current[key];
+		current = (current as Record<string | number | symbol, unknown>)[key];
 	}
 
+	// Full path walked: return the value, or defaultValue when it is `undefined`
+	// (including a missing final key — matches the documented / lodash-get behaviour).
 	if (index && index === length) {
-		return current;
+		return current !== undefined ? current : defaultValue;
 	}
 
 	return defaultValue;

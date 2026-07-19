@@ -1,7 +1,5 @@
-import type {ComponentType, ElementType, ReactElement} from "react";
+import type {ElementType, ReactElement} from "react";
 import {createElement, useMemo} from "react";
-
-import type {Feature} from "@mapsight/core/types";
 
 import getFeatureProperty from "../../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../../types";
@@ -9,7 +7,7 @@ import FeatureListItem from "../../feature-list-item";
 
 export interface MapsightUiListGroup {
 	name: string;
-	features: Feature[];
+	features: MapsightUiFeature[];
 }
 
 function determineFeatureGroups(
@@ -62,20 +60,24 @@ function findGroup(
 	return groups.find((g) => g.name === name);
 }
 
+/**
+ * Always render {@link FeatureListItem}; `itemAs` is its wrapper (`as` prop).
+ * Historic hosts pass link/list wrappers (e.g. StartPageItem) that expect
+ * FeatureListItem to supply icon/title/`overrideListHtml` as children.
+ */
 const renderItems = (
-	features: Feature[],
-	as: ComponentType<{feature: Feature}>,
+	features: MapsightUiFeature[],
+	as: ElementType,
 	itemProps: Record<string, unknown>,
-) => {
-	const Component = typeof as === "string" ? FeatureListItem : as;
-	return features.map((feature) =>
-		createElement(Component, {
+) =>
+	features.map((feature) =>
+		createElement(FeatureListItem, {
 			...itemProps,
 			key: feature.id,
-			feature: feature,
+			feature,
+			as,
 		}),
 	);
-};
 
 export type ItemGroups = {
 	groups: null | MapsightUiListGroup[];
@@ -85,7 +87,7 @@ export type ItemGroups = {
 function calcAndRenderGroupedFeatureItems(
 	enableGrouping: boolean,
 	features: MapsightUiFeature[],
-	itemAs: ComponentType<{feature: Feature}>,
+	itemAs: ElementType,
 	itemProps: Record<string, unknown>,
 ): ItemGroups {
 	if (enableGrouping && features.length) {
@@ -111,7 +113,7 @@ function calcAndRenderGroupedFeatureItems(
 export default function useFeatureListItemGroups(
 	groupAs: ElementType,
 	features: MapsightUiFeature[],
-	itemAs: ComponentType<{feature: Feature}>,
+	itemAs: ElementType,
 	itemProps: Record<string, unknown>,
 ): ItemGroups {
 	return useMemo(
