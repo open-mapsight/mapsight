@@ -1,5 +1,16 @@
 # @mapsight/ui
 
+## 7.4.1
+
+### Patch Changes
+
+- 553337a: Fix FeatureList `itemAs` wrapper behaviour and `getPath` defaultValue so host list items (overrideListHtml) render again. Document the host contract and add regression tests.
+- 8fe2421: Restore `.ms3-map-overlay-combined-buttons__button` wrappers around CombinedButtons children so host CSS can share a single 1px edge between zoom +/- (and similar stacked overlay controls).
+- dcd6ae1: Remember document scroll at list-item pointerdown so mapOnly selection restores the pre-click list position.
+- dcd6ae1: Restore select/deselect interaction props on FeatureListItem when `overrideListHtml` short-circuits past FeatureSelectButton, and migrate FeatureSelectButton / useSelectFeature to TypeScript.
+- Updated dependencies [`553337a`]:
+    - `@mapsight/lib-js@3.0.6 → 3.0.7` (patch)
+
 ## 7.4.0
 
 ### Minor Changes
