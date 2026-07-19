@@ -2,7 +2,7 @@ import type {ComponentType, ElementType, ReactNode} from "react";
 import {Fragment, memo, useRef} from "react";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
-import type {MapsightUiFeature} from "../../types";
+import type {MapsightUiFeature, MapsightUiFeatureProperty} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
 import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
@@ -75,8 +75,8 @@ function FeatureListItem({
 	// pass some extra props to be used by said component
 	const isWrapperComponent = typeof T !== "string";
 
-	const wrapperProps = {
-		...(isWrapperComponent ? {/* TODO: Which props? */} : null),
+	const wrapperProps: Record<string, unknown> = {
+		...(isWrapperComponent ? {feature} : null),
 		ref: ref,
 		className:
 			"ms3-list__item " +
@@ -85,10 +85,45 @@ function FeatureListItem({
 			(isHighlighted ? " ms3-list__item--highlight" : "") +
 			(showDetails ? " ms3-list__item--has-details" : "") +
 			(showFeatureListInfo ? " ms3-list__item--has-info" : "") +
+			(selectOnClick === true || deselectOnClick
+				? " ms3-list__item--selectable"
+				: "") +
 			(ref.current?.className.includes("focus-visible")
 				? " focus-visible"
 				: ""),
 	};
+
+	// Legacy: feature may name an alternate HTML property via `__overrideListHtmlProp`.
+	const overrideListHtmlPropertyRaw = getFeatureProperty(
+		feature,
+		"__overrideListHtmlProp",
+		"overrideListHtml",
+	);
+	const overrideListHtmlProperty = (
+		typeof overrideListHtmlPropertyRaw === "string" &&
+		overrideListHtmlPropertyRaw.length > 0
+			? overrideListHtmlPropertyRaw
+			: "overrideListHtml"
+	) as MapsightUiFeatureProperty;
+	const overrideListHtmlRaw = getFeatureProperty(
+		feature,
+		overrideListHtmlProperty,
+	);
+	const overrideListHtml =
+		typeof overrideListHtmlRaw === "string" &&
+		overrideListHtmlRaw.length > 0
+			? overrideListHtmlRaw
+			: undefined;
+
+	// Host wrappers (e.g. StartPageItem → <a>) expect the HTML on the wrapper.
+	if (overrideListHtml) {
+		return (
+			<T
+				{...wrapperProps}
+				dangerouslySetInnerHTML={{__html: overrideListHtml}}
+			/>
+		);
+	}
 
 	let info: ReactNode = null;
 	if (showFeatureListInfo) {
@@ -105,39 +140,31 @@ function FeatureListItem({
 	const showInfoInHead = selectOnClick === true;
 
 	let head: ReactNode | undefined;
-	let headHtml: string | undefined;
 	if (HeadT) {
-		// NOTE(PG): Legacy code to support list HTML from the source. Should
-		//            probably be deprecated and replaced by a custom component
-		headHtml = getFeatureProperty(feature, "overrideListHtml") as
-			string | undefined;
-
-		if (!headHtml) {
-			head = (
-				<Fragment>
-					<FeatureListIcon
-						as="span"
-						mapsightIconId={
-							getFeatureProperty(feature, "mapsightIconId") as
-								string | undefined
-						}
-					/>
-					<PartT
-						className={`ms3-list__main${
-							selectOnClick || deselectOnClick
-								? " ms3-list__main--selectable"
-								: ""
-						}${DistanceLabelT ? " ms3-list__main--with-distance" : ""}`}
-					>
-						<PartT className="ms3-list__main-title">
-							{getMainContentForFeature(feature)}
-						</PartT>
-						{DistanceLabelT && <DistanceLabelT feature={feature} />}
+		head = (
+			<Fragment>
+				<FeatureListIcon
+					as="span"
+					mapsightIconId={
+						getFeatureProperty(feature, "mapsightIconId") as
+							string | undefined
+					}
+				/>
+				<PartT
+					className={`ms3-list__main${
+						selectOnClick || deselectOnClick
+							? " ms3-list__main--selectable"
+							: ""
+					}${DistanceLabelT ? " ms3-list__main--with-distance" : ""}`}
+				>
+					<PartT className="ms3-list__main-title">
+						{getMainContentForFeature(feature)}
 					</PartT>
-					{showInfoInHead && info}
-				</Fragment>
-			);
-		}
+					{DistanceLabelT && <DistanceLabelT feature={feature} />}
+				</PartT>
+				{showInfoInHead && info}
+			</Fragment>
+		);
 	}
 
 	let details: ReactNode = null;
@@ -161,9 +188,6 @@ function FeatureListItem({
 					deselectOnClick={deselectOnClick}
 					selectFeature={selectFeature}
 					deselectFeatures={deselectFeatures}
-					dangerouslySetInnerHTML={
-						headHtml ? {__html: headHtml} : undefined
-					}
 					className="ms3-list__item__head"
 				>
 					{head}

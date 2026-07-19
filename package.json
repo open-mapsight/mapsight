@@ -77,6 +77,7 @@
 		"typecheck:scripts:starters": "run-s sync:workspace-mapsight typecheck:scripts:starters:tsc",
 		"typecheck:scripts:starters:tsc": "tsc --noEmit -p starters/tsconfig.json",
 		"version-packages": "changeset version && pnpm run sync:starter-pins",
-		"watch": "turbo watch watch"
+		"watch": "turbo watch watch",
+		"worktrees:stale": "node scripts/list-stale-worktrees.mts"
 	}
 }

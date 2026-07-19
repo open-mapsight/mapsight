@@ -385,6 +385,8 @@ export type MapsightUiFeatureProperty =
 	| "tagGroups"
 	| "permanentLink"
 	| "overrideListHtml"
+	/** Hosts may set this to rename the HTML override property (legacy). */
+	| "__overrideListHtmlProp"
 	| "isIncompleteSuggest";
 
 export type MapsightUiFeatureId = string | number;
