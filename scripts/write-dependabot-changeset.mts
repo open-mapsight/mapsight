@@ -9,14 +9,19 @@ import {
 } from "node:fs";
 import path from "node:path";
 
-const baseSha = process.env.BASE_SHA;
-const prNumber = process.env.PR_NUMBER;
+const baseShaEnv = process.env.BASE_SHA;
+const prNumberEnv = process.env.PR_NUMBER;
 const repository = process.env.GITHUB_REPOSITORY ?? "open-mapsight/mapsight";
 
-if (!baseSha || !prNumber) {
+if (!baseShaEnv || !prNumberEnv) {
 	console.error("BASE_SHA and PR_NUMBER are required.");
 	process.exit(1);
 }
+
+// Re-bind after the guard so nested helpers see definite strings (tsc does not
+// preserve env narrowing into closures).
+const baseSha: string = baseShaEnv;
+const prNumber: string = prNumberEnv;
 
 const repoRoot = process.cwd();
 const changesetDir = path.join(repoRoot, ".changeset");
