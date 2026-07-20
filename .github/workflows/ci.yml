@@ -317,12 +317,14 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          if [[ "${{ steps.playwright-cache.outputs.cache-hit }}" == "true" ]]; then
+          if [[ "$PLAYWRIGHT_CACHE_HIT" == "true" ]]; then
             pnpm exec playwright install chromium
           else
             pnpm exec playwright install --with-deps chromium
           fi
         shell: bash
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
 
       - name: Build starter dependencies
         run: pnpm turbo run build --filter=mapsight-host-starter --filter=mapsight-next-starter --filter=mapsight-vite-spa-starter
