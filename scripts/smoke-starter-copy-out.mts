@@ -1,4 +1,4 @@
-import {spawn} from "node:child_process";
+import {spawnSync} from "node:child_process";
 import {
 	cpSync,
 	mkdirSync,
@@ -48,135 +48,37 @@ type PackageJson = {
 	overrides?: Record<string, string>;
 };
 
-type RunOptions = {
-	cwd?: string;
-	logPrefix?: string;
-	/** When true, return full stdout (needed for `pnpm pack` path parsing). */
-	captureStdout?: boolean;
-};
-
-function mirrorPrefixed(
-	stream: NodeJS.ReadableStream | null,
-	prefix: string,
-	write: (chunk: string) => void,
-	onData?: (chunk: string) => void,
-): Promise<void> {
-	if (!stream) {
-		return Promise.resolve();
-	}
-
-	stream.setEncoding("utf8");
-
-	return new Promise((resolve, reject) => {
-		let pending = "";
-
-		stream.on("data", (chunk: string) => {
-			onData?.(chunk);
-			pending += chunk;
-
-			while (true) {
-				const newline = pending.indexOf("\n");
-				if (newline === -1) {
-					break;
-				}
-
-				const line = pending.slice(0, newline);
-				pending = pending.slice(newline + 1);
-				write(`${prefix}${line}\n`);
-			}
-		});
-		stream.on("error", reject);
-		stream.on("end", () => {
-			if (pending.length > 0) {
-				write(`${prefix}${pending}\n`);
-			}
-			resolve();
-		});
-	});
-}
-
-async function run(
-	command: string,
-	args: string[],
-	options: RunOptions = {},
-): Promise<string> {
-	const {cwd = ROOT, logPrefix = "", captureStdout = false} = options;
-	const child = spawn(command, args, {
+function run(command: string, args: string[], cwd = ROOT): string {
+	const result = spawnSync(command, args, {
 		cwd,
-		stdio: ["ignore", "pipe", "pipe"],
-	});
-	let stdout = "";
-
-	const stdoutDone = mirrorPrefixed(
-		child.stdout,
-		logPrefix,
-		(chunk) => {
-			process.stdout.write(chunk);
-		},
-		captureStdout
-			? (chunk) => {
-					stdout += chunk;
-				}
-			: undefined,
-	);
-	const stderrDone = mirrorPrefixed(child.stderr, logPrefix, (chunk) => {
-		process.stderr.write(chunk);
+		encoding: "utf8",
+		stdio: ["ignore", "pipe", "inherit"],
 	});
 
-	const [status] = await Promise.all([
-		new Promise<number | null>((resolve, reject) => {
-			child.on("error", reject);
-			child.on("close", resolve);
-		}),
-		stdoutDone,
-		stderrDone,
-	]);
-
-	if (status !== 0) {
-		throw new Error(
-			`Command failed (${status ?? "unknown"}): ${command} ${args.join(" ")}`,
-		);
-	}
-
-	return captureStdout ? stdout.trim() : "";
-}
-
-async function settleAllOrThrow<T>(
-	tasks: Array<Promise<T>>,
-	label: string,
-): Promise<T[]> {
-	const results = await Promise.allSettled(tasks);
-	const failures = results.flatMap((result, index) =>
-		result.status === "rejected" ? [{index, reason: result.reason}] : [],
-	);
-
-	if (failures.length > 0) {
-		for (const {index, reason} of failures) {
-			console.error(`[copy-out] ${label} #${index} failed:`, reason);
+	if (result.status !== 0) {
+		if (result.stdout) {
+			console.error(result.stdout);
 		}
-		throw new AggregateError(
-			failures.map(({reason}) => reason),
-			`${label}: ${failures.length} task(s) failed`,
+		throw new Error(
+			`Command failed (${result.status ?? "unknown"}): ${command} ${args.join(" ")}`,
 		);
 	}
 
-	return results.map((result) => (result as PromiseFulfilledResult<T>).value);
+	return result.stdout.trim();
 }
 
-async function packMapsightPackages(
-	tarballDir: string,
-): Promise<Map<string, string>> {
-	// Pack sequentially: concurrent `pnpm pack` races on workspace protocol
-	// resolution (e.g. traffic-style → lib-ol) and fails flakily in CI.
+function packMapsightPackages(tarballDir: string): Map<string, string> {
 	const tarballs = new Map<string, string>();
 
 	for (const packageName of mapsightPackages) {
 		const filter = packageFilters.get(packageName)!;
-		const output = await run(
-			"pnpm",
-			["--filter", filter, "pack", "--pack-destination", tarballDir],
-			{captureStdout: true},
-		);
+		const output = run("pnpm", [
+			"--filter",
+			filter,
+			"pack",
+			"--pack-destination",
+			tarballDir,
+		]);
 		const tarballPath = output.split("\n").at(-1);
 
 		if (!tarballPath) {
@@ -254,42 +156,31 @@ function prepareStarterPackageJson(
 	writeFileSync(packageJsonPath, `${JSON.stringify(next, null, "\t")}\n`);
 }
 
-async function smokeStarter(
+function smokeStarter(
 	starter: (typeof starters)[number],
 	workspaceDir: string,
 	tarballs: Map<string, string>,
-): Promise<void> {
-	const prefix = `[copy-out:${starter}] `;
-	console.log(`${prefix}start`);
+): void {
+	console.log(`\n[copy-out] ${starter}`);
 	const starterDir = copyStarter(starter, workspaceDir);
 	prepareStarterPackageJson(starterDir, tarballs);
 
-	await run("npm", ["install", "--no-audit", "--fund=false"], {
-		cwd: starterDir,
-		logPrefix: prefix,
-	});
-	await run("npm", ["run", "build"], {
-		cwd: starterDir,
-		logPrefix: prefix,
-	});
-	console.log(`${prefix}done`);
+	run("npm", ["install", "--no-audit", "--fund=false"], starterDir);
+	run("npm", ["run", "build"], starterDir);
 }
 
-async function main(): Promise<void> {
+function main(): void {
 	const workspaceDir = mkdtempSync(path.join(tmpdir(), "mapsight-starters-"));
 	const tarballDir = path.join(workspaceDir, "tarballs");
 	mkdirSync(tarballDir);
 
 	try {
 		console.log(`[copy-out] temp dir: ${workspaceDir}`);
-		const tarballs = await packMapsightPackages(tarballDir);
+		const tarballs = packMapsightPackages(tarballDir);
 
-		await settleAllOrThrow(
-			starters.map((starter) =>
-				smokeStarter(starter, workspaceDir, tarballs),
-			),
-			"starter smoke",
-		);
+		for (const starter of starters) {
+			smokeStarter(starter, workspaceDir, tarballs);
+		}
 	} finally {
 		if (KEEP_TMP) {
 			console.log(`[copy-out] kept temp dir: ${workspaceDir}`);
@@ -299,4 +190,4 @@ async function main(): Promise<void> {
 	}
 }
 
-await main();
+main();
