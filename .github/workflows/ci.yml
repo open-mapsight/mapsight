@@ -62,7 +62,12 @@ jobs:
               e2e/starters/*)
                 starters_e2e=true
                 ;;
-              scripts/smoke-starter-copy-out.mts|scripts/sync-workspace-mapsight.mts)
+              scripts/smoke-starter-copy-out.mts)
+                starters_copy_out=true
+                ;;
+              scripts/sync-workspace-mapsight.mts)
+                # Used by monorepo starter prebuilds (e2e) and by copy-out prep.
+                starters_e2e=true
                 starters_copy_out=true
                 ;;
               starters/*)
