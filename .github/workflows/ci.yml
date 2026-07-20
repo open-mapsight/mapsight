@@ -349,7 +349,6 @@ jobs:
 
       - uses: ./.github/actions/setup/
         with:
-          turbo-cache: false
           sync-main-ref: false
 
       - name: Download build artifacts
