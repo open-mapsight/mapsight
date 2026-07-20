@@ -1,6 +1,20 @@
 name: Setup and Build
 description: Common setup steps for CI jobs (checkout, install dependencies, cache, and build)
 
+inputs:
+  check-latest:
+    description: Whether setup-node should check for a newer Node patch matching .nvmrc
+    required: false
+    default: "false"
+  turbo-cache:
+    description: Whether to restore/save the Turbo remote local cache directory
+    required: false
+    default: "true"
+  sync-main-ref:
+    description: On pull_request, point local main at the PR base SHA for turbo/changeset comparisons
+    required: false
+    default: "true"
+
 runs:
   using: composite
   steps:
@@ -13,13 +27,14 @@ runs:
         node-version-file: .nvmrc
         registry-url: "https://registry.npmjs.org"
         cache: pnpm
-        check-latest: true
+        check-latest: ${{ inputs.check-latest == 'true' }}
 
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       shell: bash
 
     - name: Cache Turbo
+      if: inputs.turbo-cache == 'true'
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         key: ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-${{ github.sha }}-${{ github.job }}
@@ -30,7 +45,7 @@ runs:
         path: .turbo
 
     - name: Provide ref to compare against
-      if: github.event_name == 'pull_request'
+      if: inputs.sync-main-ref == 'true' && github.event_name == 'pull_request'
       run: |
         if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
           git fetch --depth=1 origin "$BASE_SHA"
