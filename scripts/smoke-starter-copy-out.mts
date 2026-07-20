@@ -264,10 +264,14 @@ async function smokeStarter(
 	const starterDir = copyStarter(starter, workspaceDir);
 	prepareStarterPackageJson(starterDir, tarballs);
 
-	await run("npm", ["install", "--no-audit", "--fund=false"], {
-		cwd: starterDir,
-		logPrefix: prefix,
-	});
+	await run(
+		"npm",
+		["install", "--prefer-offline", "--no-audit", "--fund=false"],
+		{
+			cwd: starterDir,
+			logPrefix: prefix,
+		},
+	);
 	await run("npm", ["run", "build"], {
 		cwd: starterDir,
 		logPrefix: prefix,
