@@ -154,7 +154,10 @@ async function settleAllOrThrow<T>(
 		for (const {index, reason} of failures) {
 			console.error(`[copy-out] ${label} #${index} failed:`, reason);
 		}
-		throw new Error(`${label}: ${failures.length} task(s) failed`);
+		throw new AggregateError(
+			failures.map(({reason}) => reason),
+			`${label}: ${failures.length} task(s) failed`,
+		);
 	}
 
 	return results.map((result) => (result as PromiseFulfilledResult<T>).value);
