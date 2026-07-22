@@ -10,7 +10,7 @@
 		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
 	"dependencies": {
-		"@fortawesome/free-solid-svg-icons": "^7.2.0",
+		"@fortawesome/free-solid-svg-icons": "^7.3.0",
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^5.0.0",
 		"fs-extra": "^11.3.6",
@@ -18,7 +18,7 @@
 		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
 		"sharp": "^0.35.3",
-		"svgo": "^4.0.1",
+		"svgo": "^4.0.2",
 		"vinyl": "^3.0.1",
 		"zod": "catalog:"
 	},

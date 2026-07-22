@@ -20,7 +20,7 @@
 		"ol": "catalog:",
 		"proj4": "catalog:",
 		"react-aria": "^3.49.0",
-		"react-intersection-observer": "^10.0.3",
+		"react-intersection-observer": "^10.1.0",
 		"react-modal": "^3.16.3",
 		"react-paginate": "^8.3.0",
 		"react-redux": "catalog:",
@@ -38,7 +38,7 @@
 		"chokidar": "^5.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"svgo": "^4.0.1",
+		"svgo": "^4.0.2",
 		"vitest": "catalog:"
 	},
 	"exports": {
