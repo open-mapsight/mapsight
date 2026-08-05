@@ -38,7 +38,7 @@
 		"chokidar": "^5.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"svgo": "^4.0.1",
+		"svgo": "^4.0.2",
 		"vitest": "catalog:"
 	},
 	"exports": {
