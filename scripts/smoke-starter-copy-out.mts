@@ -264,14 +264,13 @@ async function smokeStarter(
 	const starterDir = copyStarter(starter, workspaceDir);
 	prepareStarterPackageJson(starterDir, tarballs);
 
-	await run(
-		"npm",
-		["install", "--prefer-offline", "--no-audit", "--fund=false"],
-		{
-			cwd: starterDir,
-			logPrefix: prefix,
-		},
-	);
+	// Do not use --prefer-offline: Dependabot bumps of newly published
+	// versions fail on CI runners when the npm cache is empty/stale
+	// (ETARGET / ERESOLVE with react@undefined).
+	await run("npm", ["install", "--no-audit", "--fund=false"], {
+		cwd: starterDir,
+		logPrefix: prefix,
+	});
 	await run("npm", ["run", "build"], {
 		cwd: starterDir,
 		logPrefix: prefix,
