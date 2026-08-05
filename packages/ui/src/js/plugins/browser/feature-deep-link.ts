@@ -59,13 +59,10 @@ function patchWindowHistoryFunction(
 	fn: "pushState" | "replaceState",
 	callback: (state: unknown) => void,
 ) {
-	const originalFn = window.history[fn];
+	const originalFn = window.history[fn].bind(window.history);
 
 	window.history[fn] = (state, ...rest) => {
-		const returnValue: unknown = originalFn.apply(window.history, [
-			state,
-			...rest,
-		]);
+		const returnValue: unknown = originalFn(state, ...rest);
 		callback(state);
 		return returnValue;
 	};
