@@ -50,7 +50,9 @@ export default function makeSticky(
 	targetElement.classList.add(willStickClass);
 
 	const isWindow = scrollElement === window;
-	const delay = (isWindow && window.requestAnimationFrame) || ((f) => f());
+	const delay = isWindow
+		? (f) => window.requestAnimationFrame(f)
+		: (f) => f();
 	const parentElement = targetElement.parentNode;
 	parentElement.className += ` ${parentClass}`;
 
