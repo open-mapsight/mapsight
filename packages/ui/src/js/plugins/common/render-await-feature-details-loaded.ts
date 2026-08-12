@@ -147,8 +147,7 @@ function getSelectedFeatureIdFromConfig(
 	featureSelection: string,
 	featureSelectionsControllerName: string,
 ) {
-	const baseState = baseMapsightConfig[
-		featureSelectionsControllerName
-	] as FeatureSelectionsState;
-	return baseState[featureSelection]?.features[0];
+	const baseState = baseMapsightConfig?.[featureSelectionsControllerName] as
+		FeatureSelectionsState | undefined;
+	return baseState?.[featureSelection]?.features?.[0];
 }
