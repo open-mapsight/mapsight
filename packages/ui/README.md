@@ -35,24 +35,12 @@ Next.js host).
 
 ## Package layout
 
-<<<<<<< HEAD
-| Import                       | Role                                                                         |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `@mapsight/ui`               | `create()`, React components, plugins, hooks                                 |
-| `@mapsight/ui/config`        | Config builders (`map`, `features`, `featureList`, Zod schemas)              |
-| `@mapsight/ui/embed/browser` | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`) |
-| `@mapsight/ui/embed/node`    | Server-side render entry for dehydrated HTML shells                          |
-=======
-| Import                                 | Role                                                                           |
-| -------------------------------------- | ------------------------------------------------------------------------------ |
-| `@mapsight/ui`                         | `create()`, React components, plugins, hooks                                   |
-| `@mapsight/ui/config`                  | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
-| `@mapsight/ui/async-status`            | Loading / error / empty view model + adapters (no Query peer)                  |
-| `@mapsight/ui/async-status/components` | `AsyncStatusRegion`, `AsyncStatusIndicator`                                    |
-| `@mapsight/ui/react-query`             | TanStack Query adapters (`QueryStatusRegion`) — optional peer                  |
-| `@mapsight/ui/embed/browser`           | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
-| `@mapsight/ui/embed/node`              | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
->>>>>>> f5a40033 (feat(ui): emit SSR embed fragments with dehydrated state)
+| Import                       | Role                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| `@mapsight/ui`               | `create()`, React components, plugins, hooks                                   |
+| `@mapsight/ui/config`        | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
+| `@mapsight/ui/embed/browser` | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
+| `@mapsight/ui/embed/node`    | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
 
 Peer dependency: `react`, `react-dom`.
 
