@@ -53,10 +53,16 @@ Pages must never hard-depend on SSR uptime. This pattern is proven in reference 
 Monorepo entry points today:
 
 - Client: [`packages/ui/src/js/embed/browser.ts`](../../packages/ui/src/js/embed/browser.ts)
-- Server: [`packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js), [
-  `packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts)
+- Server: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts) —
+  `render()` / `renderAsync()` return the HTML shell; `getDehydratedState()` /
+  `emitFragment({ id })` build the container fragment with `data-dehydrated-state`
+- Optional Express-style middleware: [
+  `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js) —
+  POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
+  `text/html` fragment
 
-**Not decided:** primary server runtime (Node LTS vs Bun), unified render API vs per-framework adapters.
+**Maintainer CMS path for this phase:** PHP → **Node LTS** sidecar (Decision 006 still
+lists Bun/framework alternatives as open for other hosts).
 
 ---
 
