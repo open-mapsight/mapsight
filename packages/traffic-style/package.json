@@ -10,10 +10,10 @@
 		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
 	"dependencies": {
-		"@fortawesome/free-solid-svg-icons": "^7.2.0",
+		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^5.0.0",
-		"fs-extra": "^11.3.6",
+		"fs-extra": "^11.4.0",
 		"lru-cache": "^11.5.2",
 		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
