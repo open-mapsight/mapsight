@@ -1,5 +1,11 @@
 # @mapsight/core
 
+## 14.5.1
+
+### Patch Changes
+
+- 2196e08: Fix `@typescript-eslint/unbound-method` lint errors surfaced by typescript-eslint 8.65.
+
 ## 14.5.0
 
 ### Minor Changes

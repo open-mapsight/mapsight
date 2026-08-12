@@ -1,5 +1,13 @@
 # @mapsight/ui
 
+## 7.4.2
+
+### Patch Changes
+
+- 2196e08: Fix `@typescript-eslint/unbound-method` lint errors surfaced by typescript-eslint 8.65.
+- Updated dependencies [`2196e08`]:
+    - `@mapsight/core@14.5.0 → 14.5.1` (patch)
+
 ## 7.4.1
 
 ### Patch Changes
