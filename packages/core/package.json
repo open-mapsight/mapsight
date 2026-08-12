@@ -10,7 +10,7 @@
 		"@reduxjs/toolkit": "catalog:",
 		"eventemitter3": "^5.0.4",
 		"lodash": "catalog:",
-		"minimatch": "^10.2.5",
+		"minimatch": "^10.2.6",
 		"redux-batched-actions": "catalog:",
 		"zod": "catalog:"
 	},
