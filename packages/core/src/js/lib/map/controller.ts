@@ -72,7 +72,12 @@ for (const mixin of [
 ]) {
 	for (const name of Object.getOwnPropertyNames(mixin.prototype)) {
 		if (name === "init") {
-			initFunctions.push(mixin.prototype[name]);
+			// Mixin inits are invoked later with `.call(this)` on MapController.
+			// eslint-disable-next-line @typescript-eslint/unbound-method -- intentional
+			const mixinInit = mixin.prototype.init;
+			initFunctions.push(function initMixin(this: MapController) {
+				mixinInit.call(this);
+			});
 		} else if (name === "constructor") {
 			// ignore
 		} else if (Object.hasOwn(MapController.prototype, name)) {
