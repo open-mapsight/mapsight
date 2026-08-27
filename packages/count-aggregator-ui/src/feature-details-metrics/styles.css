@@ -21,7 +21,7 @@
 	border: 1px solid var(--ms3-metric-border);
 	border-radius: 4px;
 	background: var(--ms3-metric-surface);
-	overflow: hidden;
+	overflow: visible;
 }
 
 .ms3-smart-city-metric__header {
@@ -247,6 +247,35 @@
 .ms3-smart-city-metric__chart .recharts-cartesian-grid-horizontal line,
 .ms3-smart-city-metric__chart .recharts-cartesian-grid-vertical line {
 	stroke: var(--ms3-metric-border);
+}
+
+.ms3-smart-city-metric__chart .recharts-tooltip-wrapper {
+	outline: none;
+	z-index: 2;
+}
+
+.ms3-smart-city-metric__tooltip {
+	pointer-events: none;
+	max-width: 10rem;
+	border: 1px solid var(--ms3-metric-border);
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--ms3-metric-surface) 96%, transparent);
+	padding: 4px 8px;
+	box-shadow: 0 1px 2px rgb(17 24 39 / 12%);
+}
+
+.ms3-smart-city-metric__tooltip-time {
+	color: var(--ms3-metric-muted);
+	font-size: 10px;
+	line-height: 1.3;
+}
+
+.ms3-smart-city-metric__tooltip-value {
+	color: var(--ms3-metric-text);
+	font-size: 12px;
+	font-weight: 650;
+	line-height: 1.3;
+	font-variant-numeric: tabular-nums;
 }
 
 .ms3-smart-city-metric__value {
