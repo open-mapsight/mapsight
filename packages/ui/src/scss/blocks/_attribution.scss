@@ -1,12 +1,11 @@
-@use "../variables";
 
 .ms3-attribution {
 	pointer-events: auto;
 	line-height: 1;
-	font-size: variables.$ms3-fontSizeBase;
+	font-size: var(--ms3-font-size-base);
 
-	background: variables.$ms3-attributionsBackgroundColor;
-	border-top-left-radius: variables.$ms3-borderRadius;
+	background: var(--ms3-attributions-background-color);
+	border-top-left-radius: var(--ms3-border-radius);
 
 	max-width: calc(100% - 15px);
 

@@ -1,4 +1,3 @@
-@use "../variables";
 
 .ms3-search-overlay {
 	pointer-events: auto;
@@ -8,7 +7,7 @@
 		margin: 10px 0 0 10px;
 		position: relative;
 		z-index: 2;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 	}
 
 	.ms3-wrapper--mobile & {

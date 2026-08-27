@@ -1,0 +1,10 @@
+@use "../mixins/minimal-scrollbar";
+
+/// Utility class so plain CSS / CSS modules can opt into the same chrome.
+.ms3-minimal-scrollbar {
+	@include minimal-scrollbar.minimal-scrollbar;
+}
+
+.ms3-scroll-container {
+	@include minimal-scrollbar.scroll-container;
+}

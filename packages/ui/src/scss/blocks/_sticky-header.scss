@@ -1,14 +1,13 @@
-@use "../variables";
 
 .ms3-sticky-header {
 	&__container {
 		position: relative;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 		transition: background 600ms ease-in-out;
 	}
 
 	&__container--stuck {
-		background: variables.$ms3-backgroundColorOffset;
+		background: var(--ms3-background-color-offset);
 	}
 
 	&__header {
@@ -30,7 +29,7 @@
 			text-overflow: ellipsis;
 			overflow: hidden;
 			line-height: 1;
-			background: variables.$ms3-backgroundColor;
+			background: var(--ms3-background-color);
 		}
 
 		&--sticky-placeholder,
@@ -44,7 +43,7 @@
 
 		&--stuck {
 			z-index: 2;
-			border-bottom: 1px solid variables.$ms3-borderColor;
+			border-bottom: 1px solid var(--ms3-border-color);
 		}
 	}
 }

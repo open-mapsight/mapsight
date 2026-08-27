@@ -16,7 +16,7 @@
 	}
 
 	&__header {
-		color: variables.$ms3-primaryColor;
+		color: var(--ms3-primary-color);
 		margin: 0;
 		padding: 9px 13px;
 	}
@@ -28,7 +28,7 @@
 	}
 
 	&__entry {
-		border-top: 1px solid variables.$ms3-borderColor;
+		border-top: 1px solid var(--ms3-border-color);
 
 		.ms3-tag-switcher &__count {
 			@if variables.$ms3-option-showFeatureCountsInTagSwitcherGroups != always {
@@ -112,20 +112,20 @@
 		border-radius: 0 !important;
 		padding: 5px 7px 4px 7px;
 		margin: 0;
-		background: variables.$ms3-backgroundColor;
-		color: variables.$ms3-foregroundColor;
+		background: var(--ms3-background-color);
+		color: var(--ms3-foreground-color);
 		text-align: left;
 		transition:
 			color 200ms ease-in-out,
 			background 200ms ease-in-out;
 
 		&--active {
-			background: variables.$ms3-backgroundHighlightColor;
+			background: var(--ms3-background-highlight-color);
 		}
 
 		&:hover,
 		&:focus {
-			background: variables.$ms3-backgroundColorOffset2;
+			background: var(--ms3-background-color-offset-2);
 			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
 			outline: 0;
 		}

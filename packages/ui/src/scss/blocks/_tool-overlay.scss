@@ -1,4 +1,3 @@
-@use "../variables";
 
 .ms3-tool-overlay {
 	position: relative;
@@ -28,7 +27,7 @@
 		margin: 0;
 		padding: 4px 6px;
 		font-weight: bold;
-		color: variables.$ms3-secondaryColor;
+		color: var(--ms3-secondary-color);
 	}
 
 	&__text {

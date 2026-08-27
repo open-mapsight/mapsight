@@ -19,9 +19,9 @@
 
 	&:hover,
 	&:focus {
-		background-color: variables.$ms3-backgroundHighlightColor;
-		border-bottom: 1px solid variables.$ms3-borderColor;
-		border-left: 1px solid variables.$ms3-borderColor;
+		background-color: var(--ms3-background-highlight-color);
+		border-bottom: 1px solid var(--ms3-border-color);
+		border-left: 1px solid var(--ms3-border-color);
 	}
 
 	@media print {

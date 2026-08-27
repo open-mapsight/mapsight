@@ -1,22 +1,23 @@
-@use "../variables";
 
 .ms3-list-wrapper {
 	position: relative;
 	padding: 10px 0;
 
 	.ms3-panel--docked-left & {
-		width: variables.$ms3-verticalPanelContentWidth;
-		height: calc(100% - #{2 * variables.$ms3-verticalPanelPadding});
+		width: var(--ms3-vertical-panel-content-width);
+		height: calc(
+			100% - var(--ms3-vertical-panel-padding) - var(--ms3-vertical-panel-padding)
+		);
 		padding: 0;
-		margin: variables.$ms3-verticalPanelPadding;
+		margin: var(--ms3-vertical-panel-padding);
 
 		overflow-y: scroll;
 		overflow-x: hidden;
 		overflow-scrolling: touch;
 		-webkit-overflow-scrolling: touch;
 
-		border-radius: variables.$ms3-verticalPanelBorderRadius;
-		background: variables.$ms3-pageBackgroundColor;
+		border-radius: var(--ms3-vertical-panel-border-radius);
+		background: var(--ms3-page-background-color);
 	}
 
 	.ms3-panel--hide-list & {

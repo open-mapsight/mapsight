@@ -7,8 +7,8 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: variables.$ms3-zIndexAppOverlay;
-	background-color: variables.$ms3-backgroundColorAppOverlay;
+	z-index: var(--ms3-z-index-app-overlay);
+	background-color: var(--ms3-background-color-app-overlay);
 	display: flex;
 	align-items: center;
 	justify-content: center;

@@ -59,6 +59,58 @@ as assets (Vite/Webpack `~` alias — see starters and [
 @use "@mapsight/ui/src/scss/themes/2022-03" as theme;
 ```
 
+### CSS design tokens (`--ms3-*`)
+
+`default` loads `src/scss/_tokens.scss`, which mirrors configured Sass variables as CSS custom
+properties (colors, type sizes, radii, z-indexes, scrollbar tokens, and similar). Prefer
+`var(--ms3-…)` for new CSS-only styles and easy property values in UI SCSS. Compile-time options
+(`$ms3-option-*`), breakpoints, and icon path concatenation stay as Sass for now.
+
+**Where tokens are emitted** is controlled by `$ms3-tokens-selector` (configured with the other
+variables):
+
+| Value               | Behavior                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| `":root"` (default) | Document-wide defaults. Use when host chrome or portals live outside `.ms3-wrapper`. |
+| `".ms3-wrapper"`    | Tokens only on each Mapsight root — better when several instances share a page.      |
+| `null`              | No automatic emission; call the mixin yourself (see below).                          |
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-tokens-selector: ".ms3-wrapper"
+);
+@use "@mapsight/ui/src/scss/default";
+```
+
+**Mixin for custom scopes / multiple themes.** The compiled Sass config is still one set of values
+per stylesheet, but you can attach that set (or pure CSS overrides) to different selectors:
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-tokens-selector: null // disable auto-emit from default/tokens
+);
+@use "@mapsight/ui/src/scss/default";
+@use "@mapsight/ui/src/scss/tokens" as msTokens;
+
+.ms3-wrapper {
+	@include msTokens.tokens;
+}
+
+// Further themes: override tokens on a modifier (inherits from the wrapper include above)
+.ms3-wrapper.ms3-wrapper--dark {
+	--ms3-primary-color: #f5f5f5;
+	--ms3-background-color: #111;
+	--ms3-border-color: #333;
+}
+```
+
+You can also keep auto-emit on `.ms3-wrapper` and only add modifier overrides — no need for `null`
+unless you want a selector that is not `$ms3-tokens-selector`.
+
+Scroll utilities (also from `default`): `.ms3-minimal-scrollbar`, `.ms3-scroll-container`, plus mixins under
+`src/scss/mixins/minimal-scrollbar`.
+
 Copy `@mapsight/traffic-style` icons (`mapsight-icons*`) to `public/img/` separately — they are fetched at runtime via
 `imagesUrl`, not via this SCSS path.
 

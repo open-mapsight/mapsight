@@ -1,7 +1,5 @@
 @use "../variables";
 
-$ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
-
 .ms3-search {
 	&__query-input {
 		display: flex;
@@ -20,10 +18,10 @@ $ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
 	&__input {
 		width: calc(100% - 20px);
 		border: 0;
-		background: variables.$ms3-backgroundColor;
-		border-radius: variables.$ms3-borderRadius;
+		background: var(--ms3-background-color);
+		border-radius: var(--ms3-border-radius);
 		padding: 8px 10px 8px 10px;
-		font-size: variables.$ms3-fontSizeInput;
+		font-size: var(--ms3-font-size-input);
 	}
 
 	&__reset-button {
@@ -31,8 +29,8 @@ $ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
 		top: 0;
 		right: 0;
 		border: 0;
-		width: variables.$ms3-searchHeight;
-		height: variables.$ms3-searchHeight;
+		width: var(--ms3-search-height);
+		height: var(--ms3-search-height);
 		vertical-align: top;
 		background: transparent;
 
@@ -57,12 +55,12 @@ $ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
 
 	.ms3-search-overlay & {
 		position: relative;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 
 		&__output {
 			position: absolute;
 			left: 0;
-			top: variables.$ms3-searchHeight + 5px;
+			top: calc(var(--ms3-search-height) + 5px);
 			width: 100%;
 			box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 		}
@@ -74,7 +72,7 @@ $ms3-search_totalHeight: variables.$ms3-searchHeight + 4px;
 
 		&__query-input {
 			padding: 0 10px;
-			border-bottom: 1px solid variables.$ms3-borderColor;
+			border-bottom: 1px solid var(--ms3-border-color);
 		}
 
 		&-result {

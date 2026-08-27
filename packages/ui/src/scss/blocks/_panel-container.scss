@@ -1,4 +1,3 @@
-@use "../variables";
 
 .ms3-panel-container {
 	$b: &;
@@ -7,7 +6,7 @@
 	z-index: 2;
 
 	&--docked-left {
-		width: variables.$ms3-verticalPanelWidth;
+		width: var(--ms3-vertical-panel-width);
 		transition:
 			width 300ms ease-in,
 			flex 300ms ease-in;
@@ -25,7 +24,7 @@
 		flex-shrink: 0;
 
 		width: 100%;
-		max-height: variables.$ms3-mobileFeatureSelectInfoHeight;
+		max-height: var(--ms3-mobile-feature-select-info-height);
 		transition: max-height 300ms ease-in;
 
 		&#{$b}--empty {

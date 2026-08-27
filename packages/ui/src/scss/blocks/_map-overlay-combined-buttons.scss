@@ -4,9 +4,9 @@
 .ms3-map-overlay-combined-buttons {
 	width: 40px;
 	margin: 5px 15px;
-	background: variables.$ms3-backgroundColor;
+	background: var(--ms3-background-color);
 	border: 0;
-	border-radius: variables.$ms3-borderRadius;
+	border-radius: var(--ms3-border-radius);
 	transition: margin 300ms ease-in-out;
 
 	// Prefer `__button` wrappers (CombinedButtons). Also support flat children
@@ -19,14 +19,14 @@
 
 	&__button:first-child .ms3-map-overlay__button,
 	> .ms3-map-overlay__button:first-child {
-		border-top-left-radius: variables.$ms3-borderRadius;
-		border-top-right-radius: variables.$ms3-borderRadius;
+		border-top-left-radius: var(--ms3-border-radius);
+		border-top-right-radius: var(--ms3-border-radius);
 	}
 
 	&__button:last-child .ms3-map-overlay__button,
 	> .ms3-map-overlay__button:last-child {
-		border-bottom-left-radius: variables.$ms3-borderRadius;
-		border-bottom-right-radius: variables.$ms3-borderRadius;
+		border-bottom-left-radius: var(--ms3-border-radius);
+		border-bottom-right-radius: var(--ms3-border-radius);
 	}
 
 	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
