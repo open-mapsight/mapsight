@@ -6,7 +6,7 @@ import {IconsNav} from "./icons-nav.tsx";
 const navItems = [
 	{to: "/", label: "Home", end: true},
 	{to: "/ui/combined-list", label: "Demos", end: false},
-	{to: "/count-aggregator", label: "Count aggregator", end: true},
+	{to: "/count-aggregator", label: "Count aggregator", end: false},
 	{to: "/icons", label: "Icons", end: false},
 ] as const;
 

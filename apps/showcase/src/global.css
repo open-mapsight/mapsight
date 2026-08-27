@@ -464,3 +464,80 @@ body {
 	margin: 0;
 	color: #5b6773;
 }
+
+.count-aggregator-demo__eyebrow {
+	margin: 0.75rem 0 0;
+	font-size: 0.95rem;
+}
+
+.count-aggregator-demo__eyebrow a {
+	color: inherit;
+	text-underline-offset: 2px;
+}
+
+.count-aggregator-headless__note {
+	margin: 0 0 1.25rem;
+	padding: 0.75rem 1rem;
+	border: 1px dashed #c5ced8;
+	border-radius: 8px;
+	background: #f6f8fa;
+	font-size: 0.9rem;
+	color: #3d4a57;
+}
+
+.count-aggregator-headless__note code {
+	font-size: 0.85em;
+}
+
+.count-aggregator-headless__section {
+	margin-bottom: 1.5rem;
+}
+
+.count-aggregator-headless__section h2 {
+	margin: 0 0 0.5rem;
+	font-size: 1.05rem;
+}
+
+.count-aggregator-headless__station-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 0.35rem;
+}
+
+.count-aggregator-headless__range {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1.25rem;
+	margin-bottom: 0.75rem;
+}
+
+.count-aggregator-headless__load {
+	appearance: none;
+	border: 1px solid #1f2933;
+	border-radius: 6px;
+	background: #1f2933;
+	color: #fff;
+	padding: 0.45rem 0.9rem;
+	font: inherit;
+	cursor: pointer;
+}
+
+.count-aggregator-headless__load:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.count-aggregator-headless__table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+}
+
+.count-aggregator-headless__table th,
+.count-aggregator-headless__table td {
+	border-bottom: 1px solid #e3e8ef;
+	padding: 0.4rem 0.5rem;
+	text-align: left;
+}
