@@ -97,8 +97,10 @@ pnpm --filter @mapsight/vector-style-compiler generate:ide-metadata
 ```
 
 The generator creates both editor metadata formats from the same property list.
-`pnpm --filter @mapsight/vector-style-compiler build` also regenerates and
-copies the files into `dist/`.
+Web Types embed the package version from `package.json`, so
+`pnpm run version-packages` regenerates this metadata after Changesets bumps
+versions. `pnpm --filter @mapsight/vector-style-compiler build` also regenerates
+and copies the files into `dist/`.
 
 ## Current Limits
 

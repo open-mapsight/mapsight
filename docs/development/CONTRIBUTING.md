@@ -103,8 +103,8 @@ CI verifies pending changesets with `pnpm changeset status --since=main`.
 the [release workflow](https://github.com/open-mapsight/mapsight/blob/main/.github/workflows/ci.yml) (
 `changesets/action`):
 
-1. Opens or updates a “Version Packages” PR (`pnpm run version-packages`: version bumps, changelogs, and refreshed
-   starter `@mapsight/*` pins), or
+1. Opens or updates a “Version Packages” PR (`pnpm run version-packages`: version bumps, changelogs, refreshed
+   starter `@mapsight/*` pins, and regenerated vector-style-compiler IDE metadata), or
 2. When that PR merges, runs `pnpm run release` (`turbo build` + `changeset publish`) to publish to npm (OIDC — no
    manual `npm publish` from package directories).
 
