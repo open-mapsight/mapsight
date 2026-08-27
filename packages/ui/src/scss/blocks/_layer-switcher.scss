@@ -143,6 +143,11 @@
 }
 
 // Opt-in collapsible overlay groups (`collapsibleGroups` on LayerSwitcher).
+// Header already has padding; zero it so it does not stack with the toggle.
+.ms3-grouped-switcher__header {
+	padding: 0;
+}
+
 .ms3-grouped-switcher__toggle {
 	display: flex;
 	align-items: center;
