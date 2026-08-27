@@ -35,12 +35,12 @@ Next.js host).
 
 ## Package layout
 
-| Import                       | Role                                                                         |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `@mapsight/ui`               | `create()`, React components, plugins, hooks                                 |
-| `@mapsight/ui/config`        | Config builders (`map`, `features`, `featureList`, Zod schemas)              |
-| `@mapsight/ui/embed/browser` | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`) |
-| `@mapsight/ui/embed/node`    | Server-side render entry for dehydrated HTML shells                          |
+| Import                       | Role                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| `@mapsight/ui`               | `create()`, React components, plugins, hooks                                   |
+| `@mapsight/ui/config`        | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
+| `@mapsight/ui/embed/browser` | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
+| `@mapsight/ui/embed/node`    | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
 
 Peer dependency: `react`, `react-dom`.
 
