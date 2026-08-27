@@ -94,4 +94,41 @@ describe("nodeEmbed SSR emit contract", () => {
 		expect(clientRenderer.mock.calls[0]?.[2]).toBe(true);
 		expect(embedRoot.getAttribute("data-dehydrated-state")).toBe("");
 	});
+
+	it("does not emit in-flight feature source loading flags", () => {
+		const embed = nodeEmbed({
+			styleFunction: vi.fn(),
+			baseMapsightConfig: {
+				...minimalConfig,
+				featureSources: {
+					pois: {
+						type: "xhr-json",
+						url: "/pois.geojson",
+						isLoading: true,
+						data: null,
+					},
+				},
+			},
+			createOptions: {
+				renderer: stubServerRenderer("<div>shell</div>"),
+				plugins: [],
+				validateConfig: false,
+			},
+		});
+		embed.render({});
+
+		const fragment = embed.emitFragment({id: "loading-ssr"});
+		const container = document.createElement("div");
+		container.innerHTML = fragment;
+		const state = JSON.parse(
+			container.firstElementChild?.getAttribute(
+				"data-dehydrated-state",
+			) ?? "null",
+		);
+
+		expect(embed.store?.getState().featureSources?.pois?.isLoading).toBe(
+			true,
+		);
+		expect(state.featureSources.pois.isLoading).toBe(false);
+	});
 });

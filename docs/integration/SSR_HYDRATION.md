@@ -18,6 +18,11 @@ Server (or build-time SSR) emits:
 Client [`browserEmbed`](../../packages/ui/src/js/embed/browser.ts) reads the attribute when `reHydratedState` is not
 passed explicitly, merges into create options, and runs the initial render.
 
+In-flight work does not survive the process boundary. `isLoading` / fetch
+`status: "loading"` is cleared on emit and again on rehydrate; unfinished
+feature sources are loaded on the client. Otherwise the client would see
+`isLoading: true` with empty data and never start a new request.
+
 ```html
 <div
 	id="mapsight-embed-1"

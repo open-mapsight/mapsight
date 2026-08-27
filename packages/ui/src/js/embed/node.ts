@@ -4,6 +4,7 @@ import {create} from "..";
 import serverStringRenderer from "../renderer/server-string";
 import type {CreateOptions, MapsightUiStore} from "../types";
 import {wrapEmbedFragment} from "./emit-fragment";
+import {sanitizeRehydratedState} from "./sanitize-rehydrated-state";
 
 type Options = {
 	/** style function */
@@ -58,7 +59,8 @@ export default function nodeEmbed(options: Options): Result {
 	function getDehydratedState(): unknown {
 		const state = ctx.store?.getState();
 		try {
-			return JSON.parse(JSON.stringify(state));
+			const serialized = JSON.parse(JSON.stringify(state));
+			return sanitizeRehydratedState(serialized).state;
 		} catch (cause) {
 			throw new Error(
 				"mapsight ui: store state is not JSON-serializable for dehydration",

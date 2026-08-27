@@ -2,8 +2,11 @@ import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
 
 import getQueryStringParameter from "@mapsight/lib-js/string/get-query-string-parameter";
 
+import {VIEW_MAP_ONLY} from "../../config/constants/app";
 import * as c from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
+import {setView} from "../../store/actions";
+import {isViewMobile, viewSelector} from "../../store/selectors";
 import type {
 	ExternalMapsightUiRendererProps,
 	PluginInstance,
@@ -22,6 +25,7 @@ const defaultRendererPropName = "requestUrlSearch";
  * @param {string} [options.rendererPropName="requestUrlSearch"] request url search property name passed to the renderer
  * @param {string} [options.featureSelectionsController] name of the feature selections controller, defaults to mapsight ui default
  * @param {string} [options.featureSelection="select"] name of the feature selection to track
+ * @param {boolean} [options.setMapOnlyViewInMobile=true] match the browser plugin: mapOnly on mobile deep links
  * @param {string[] | boolean} [options.autoRemoveParameters] list of get parameters to remove once the feature
  *                                            has been selected, defaults to ["feature", "cHash"]. Pass false to disable.
  * @returns {import('../../types').PluginInstance} plugin instance
@@ -32,6 +36,7 @@ export default function createPlugin(
 		featureSelection?: string;
 		getParameter?: string;
 		rendererPropName?: keyof ExternalMapsightUiRendererProps;
+		setMapOnlyViewInMobile?: boolean;
 		autoRemoveParameters?: string[] | false;
 	} = {},
 ): PluginInstance {
@@ -40,6 +45,7 @@ export default function createPlugin(
 		featureSelection = defaultFeatureSelection,
 		getParameter = defaultGetParameter,
 		rendererPropName = defaultRendererPropName,
+		setMapOnlyViewInMobile = true,
 	} = options;
 
 	return {
@@ -61,6 +67,12 @@ export default function createPlugin(
 						featureId,
 					),
 				);
+				if (
+					setMapOnlyViewInMobile &&
+					isViewMobile(viewSelector(store.getState()))
+				) {
+					store.dispatch(setView(VIEW_MAP_ONLY));
+				}
 			}
 		},
 	};

@@ -198,4 +198,52 @@ describe("create config contract", () => {
 		ctx.render?.({});
 		expect(renderer.mock.calls[0]?.[2]).toBe(true);
 	});
+
+	it("clears SSR in-flight source loading and resumes the fetch", async () => {
+		const fetchMock = vi.fn().mockResolvedValue({
+			ok: true,
+			json: () =>
+				Promise.resolve({
+					type: "FeatureCollection",
+					features: [{id: "poi-1", type: "Feature"}],
+				}),
+		});
+		vi.stubGlobal("fetch", fetchMock);
+
+		const ctx = create(
+			document.createElement("div"),
+			vi.fn(),
+			{
+				...minimalConfig,
+				featureSources: {
+					pois: {type: "xhr-json", url: "/pois.geojson"},
+				},
+			},
+			{
+				renderer: stubRenderer(),
+				plugins: [],
+				validateConfig: false,
+				reHydratedState: {
+					app: {},
+					featureSources: {
+						pois: {
+							type: "xhr-json",
+							url: "/pois.geojson",
+							isLoading: true,
+							data: null,
+						},
+					},
+				},
+			},
+		);
+
+		await vi.waitFor(() => {
+			expect(fetchMock).toHaveBeenCalled();
+			const loaded = ctx.store?.getState().featureSources as {
+				pois?: {isLoading?: boolean; data?: {features?: unknown[]}};
+			};
+			expect(loaded?.pois?.isLoading).toBe(false);
+			expect(loaded?.pois?.data?.features).toHaveLength(1);
+		});
+	});
 });
