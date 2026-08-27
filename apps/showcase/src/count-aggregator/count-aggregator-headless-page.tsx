@@ -60,7 +60,12 @@ function HeadlessWizard(): ReactElement {
 		if (values === undefined) {
 			return [];
 		}
-		const out: {station: string; date: string; value: number}[] = [];
+		const out: {
+			stationId: number;
+			station: string;
+			date: string;
+			value: number;
+		}[] = [];
 		for (const stationData of values.stationsById.values()) {
 			const station = stations.find(
 				(s) => s.id === stationData.stationId,
@@ -71,6 +76,7 @@ function HeadlessWizard(): ReactElement {
 				String(stationData.stationId);
 			for (const point of stationData.values) {
 				out.push({
+					stationId: stationData.stationId,
 					station: label,
 					date: dateToYmd(point.date),
 					value: point.value,
@@ -198,7 +204,7 @@ function HeadlessWizard(): ReactElement {
 						</thead>
 						<tbody>
 							{rows.map((row) => (
-								<tr key={`${row.date}-${row.station}`}>
+								<tr key={`${row.date}-${row.stationId}`}>
 									<td>{row.date}</td>
 									<td>{row.station}</td>
 									<td>{row.value}</td>
