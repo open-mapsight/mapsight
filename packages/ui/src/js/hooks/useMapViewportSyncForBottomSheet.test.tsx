@@ -91,6 +91,30 @@ describe("useMapViewportSyncForBottomSheet", () => {
 		);
 	});
 
+	it("syncs the map when the sheet closes", () => {
+		vi.spyOn(window, "requestAnimationFrame").mockImplementation(
+			(callback) => {
+				callback(0);
+				return 1;
+			},
+		);
+
+		const {rerender} = render(<HookHarness isOpen={true} />);
+		dispatch.mockClear();
+
+		rerender(<HookHarness isOpen={false} />);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: "async",
+				action: expect.objectContaining({
+					type: "updateMapSize",
+					options: {from: "below", reCenter: true},
+				}),
+			}),
+		);
+	});
+
 	it("dismisses highlight, preselect, and select by default", () => {
 		const {getByText} = render(<HookHarness isOpen={false} />);
 
