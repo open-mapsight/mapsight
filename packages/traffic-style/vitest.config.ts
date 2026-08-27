@@ -4,6 +4,7 @@ export default defineConfig({
 	test: {
 		environment: "node",
 		include: [
+			"src/lib/*.test.ts",
 			"src/lib/icon/**/*.test.ts",
 			"src/lib/pictograms/**/*.test.ts",
 			"src/lib/runtime/**/*.test.ts",

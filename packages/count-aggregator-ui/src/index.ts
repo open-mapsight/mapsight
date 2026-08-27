@@ -17,6 +17,7 @@ export {
 } from "./context/count-aggregator-shell.js";
 
 export {createTheme, type CountAggregatorTheme} from "./lib/theme.js";
+export {cn} from "./lib/utils.js";
 export {
 	getCountAggregatorDictionary,
 	resolveCountAggregatorLocale,
