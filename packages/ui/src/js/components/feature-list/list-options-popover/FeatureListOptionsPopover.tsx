@@ -4,6 +4,7 @@ import {
 	Children,
 	type ReactNode,
 	useCallback,
+	useId,
 	useLayoutEffect,
 	useRef,
 	useState,
@@ -43,6 +44,7 @@ export default function FeatureListOptionsPopover({
 }: FeatureListOptionsPopoverProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [maxHeight, setMaxHeight] = useState<number | null>(null);
+	const popoverId = useId();
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const updatePositionRef = useRef<() => void>(() => {});
@@ -86,7 +88,7 @@ export default function FeatureListOptionsPopover({
 			placement: "bottom start",
 			offset: 6,
 			shouldCloseOnBlur: false,
-			popoverId: "ms3-list-options-popover",
+			popoverId,
 		});
 
 	const {buttonProps} = useButton(
