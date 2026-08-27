@@ -496,10 +496,23 @@
 		},
 		"fa-leaf-heart": {
 			"label": {
-				"de": "Luftqualität (PM10), Windgeschwindigkeit",
-				"en": "Air quality (PM10), wind speed"
+				"de": "Luftqualität, Windgeschwindigkeit",
+				"en": "Air quality, wind speed"
 			},
-			"aliases": ["airQualityPM10", "weatherWindSpeed"],
+			"aliases": [
+				"airQualityCO",
+				"airQualityIndex",
+				"airQualityNO2",
+				"airQualityNO2Index",
+				"airQualityO3",
+				"airQualityO3Index",
+				"airQualityPM10",
+				"airQualityPM10Index",
+				"airQualityPM25",
+				"airQualitySO2",
+				"airQualityStation",
+				"weatherWindSpeed"
+			],
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
@@ -532,14 +545,16 @@
 		},
 		"fa-thunderstorm-sun": {
 			"label": {
-				"de": "Luftfeuchtigkeit, Niederschlag, Lufttemperatur, Windgeschwindigkeit",
-				"en": "Humidity, precipitation, air temperature, wind speed"
+				"de": "Luftfeuchtigkeit, Niederschlag, Lufttemperatur, Wind",
+				"en": "Humidity, precipitation, air temperature, wind"
 			},
 			"aliases": [
 				"weatherHumidity",
 				"weatherRain",
 				"weatherTemp",
-				"weatherWindSpeed"
+				"weatherWindDirection",
+				"weatherWindSpeed",
+				"weatherWindSpeedMax"
 			],
 			"groups": ["smart-city"],
 			"render": "composable"
@@ -585,7 +600,13 @@
 				"de": "Wasserstand, Wassertemperatur, Lufttemperatur",
 				"en": "Water level, water temperature, air temperature"
 			},
-			"aliases": ["waterLevelSurface", "waterTemp", "weatherTemp"],
+			"aliases": [
+				"waterLevelStation",
+				"waterLevelSurface",
+				"waterLevelUnderground",
+				"waterTemp",
+				"weatherTemp"
+			],
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
@@ -594,7 +615,12 @@
 				"de": "Wasserstand, Wassertemperatur",
 				"en": "Water level, water temperature"
 			},
-			"aliases": ["waterLevelSurface", "waterTemp"],
+			"aliases": [
+				"waterLevelStation",
+				"waterLevelSurface",
+				"waterLevelUnderground",
+				"waterTemp"
+			],
 			"groups": ["smart-city"],
 			"render": "composable"
 		},

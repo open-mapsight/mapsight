@@ -32,6 +32,17 @@ export {
 	type StationTypeDisplay,
 } from "./lib/station-type-display.js";
 export {
+	AIR_QUALITY_INDEX_BANDS,
+	airQualityIndexBandColor,
+	airQualityIndexBandLabel,
+	isAirQualityIndexStationType,
+	isAirQualityIndexUnit,
+	resolveAirQualityIndexBand,
+	type AirQualityIndexBand,
+	type AirQualityIndexBandId,
+	type AirQualityIndexBandKey,
+} from "./lib/air-quality-index-bands.js";
+export {
 	indexTimeSeriesByStationId,
 	parseTimeSeriesMap,
 } from "./lib/responses.js";

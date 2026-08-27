@@ -102,5 +102,6 @@ export type {
 	MetricPlaceholderData,
 	MetricWidgetConfig,
 	MetricWidgetKind,
+	MetricWidgetVariant,
 	SmartCityMetricsOptions,
 } from "./types.js";

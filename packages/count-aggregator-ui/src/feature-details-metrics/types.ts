@@ -4,6 +4,9 @@ export type MetricWidgetKind = "timeSeries" | "sumTotal" | "sumLastDay";
 
 export type MetricChartType = "area" | "line";
 
+export type MetricWidgetVariant =
+	"default" | "airQualityIndex" | "windDirection";
+
 export interface MetricWidgetConfig {
 	kind: MetricWidgetKind;
 	resolution?: Resolution;
@@ -12,6 +15,7 @@ export interface MetricWidgetConfig {
 	decimals?: number;
 	valueScale?: number;
 	unit?: string;
+	variant?: MetricWidgetVariant;
 }
 
 export interface MetricPlaceholderData {
