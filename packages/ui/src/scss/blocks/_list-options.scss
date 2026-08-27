@@ -1,5 +1,3 @@
-@use "../variables";
-
 // Structural FeatureListOptionsPopover layout. Visual chrome (shadows, density,
 // brand fonts) belongs in `themes/2022-03` or the host stylesheet.
 
@@ -28,7 +26,7 @@
 	}
 
 	&__popover {
-		z-index: variables.$ms3-zIndexAppOverlay;
+		z-index: var(--ms3-z-index-app-overlay);
 		display: flex;
 		flex-direction: column;
 		max-height: var(--ms3-list-options-max-height, 70vh);

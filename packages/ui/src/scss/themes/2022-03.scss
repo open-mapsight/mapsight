@@ -164,7 +164,7 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 
 	&__trigger-label {
 		margin-top: 4px;
-		color: variables.$ms3-secondaryColor;
+		color: var(--ms3-secondary-color);
 		font-size: 0.85em;
 		line-height: 1.2;
 		text-align: right;
@@ -172,8 +172,8 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 
 	&__popover {
 		width: min(300px, calc(100vw - 24px));
-		background: variables.$ms3-backgroundColor;
-		border: 1px solid variables.$ms3-borderColor;
+		background: var(--ms3-background-color);
+		border: 1px solid var(--ms3-border-color);
 		border-radius: 4px;
 		font-size: 0.9em;
 		line-height: 1.35;
@@ -184,7 +184,7 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 
 	&__header {
 		padding: 10px 48px 10px 12px;
-		border-bottom: 1px solid variables.$ms3-borderColor;
+		border-bottom: 1px solid var(--ms3-border-color);
 	}
 
 	&__title {
@@ -199,14 +199,14 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 
 	&__footer {
 		padding: 10px 12px;
-		background: variables.$ms3-backgroundColor;
-		border-top: 1px solid variables.$ms3-borderColor;
+		background: var(--ms3-background-color);
+		border-top: 1px solid var(--ms3-border-color);
 	}
 
 	&__section + &__section {
 		margin-top: 12px;
 		padding-top: 12px;
-		border-top: 1px solid variables.$ms3-borderColor;
+		border-top: 1px solid var(--ms3-border-color);
 	}
 
 	&__section-title {
@@ -225,9 +225,9 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 	&__select {
 		min-height: 34px;
 		padding: 4px 8px;
-		border: 1px solid variables.$ms3-borderColor;
+		border: 1px solid var(--ms3-border-color);
 		border-radius: 4px;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 		font: inherit;
 	}
 
@@ -235,21 +235,21 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 		appearance: none;
 		min-height: 34px;
 		padding: 7px 10px;
-		border: 1px solid variables.$ms3-borderColor;
+		border: 1px solid var(--ms3-border-color);
 		border-radius: 4px;
-		background: variables.$ms3-backgroundColor;
-		color: variables.$ms3-primaryColor;
+		background: var(--ms3-background-color);
+		color: var(--ms3-primary-color);
 		font: inherit;
 		text-align: center;
 
 		&:hover,
 		&:focus-visible {
-			background: variables.$ms3-backgroundHighlightColor;
+			background: var(--ms3-background-highlight-color);
 			outline: 2px solid transparent;
 		}
 
 		&:disabled {
-			color: variables.$ms3-secondaryColor;
+			color: var(--ms3-secondary-color);
 			opacity: 0.45;
 		}
 	}
