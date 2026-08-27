@@ -19,31 +19,29 @@ export type MapsightUiPlacesData = Record<
 >;
 
 /**
- * @param places places
- * @param keyPath key path
- * @returns option elements
+ * Nested `<option>` / `<optgroup>` tree for place-based list sorting.
  */
-function renderOptions(
+export function renderPlaceOptions(
 	places: MapsightUiPlacesData,
 	keyPath: Array<string> = [],
 ): Array<ReactElement> {
 	return Object.entries(places).map(([key, place]) => {
-		const keyArr = [...keyPath, key];
-		const keyStr = keyArr.join(",");
+		const nextKeyPath = [...keyPath, key];
+		const value = nextKeyPath.join(",");
 
 		if ("type" in place && place.type === "group") {
 			return (
-				<optgroup label={place.title} key={keyStr}>
-					{renderOptions(place.entries, keyArr)}
+				<optgroup label={place.title} key={value}>
+					{renderPlaceOptions(place.entries, nextKeyPath)}
 				</optgroup>
 			);
-		} else {
-			return (
-				<option value={keyStr} key={keyStr}>
-					{place.title}
-				</option>
-			);
 		}
+
+		return (
+			<option value={value} key={value}>
+				{place.title}
+			</option>
+		);
 	});
 }
 
@@ -94,7 +92,7 @@ function FeatureSorter({
 					</option>
 				)}
 
-				{renderOptions(places)}
+				{renderPlaceOptions(places)}
 			</select>
 
 			<StatusIndicator status={geolocationStatus} />

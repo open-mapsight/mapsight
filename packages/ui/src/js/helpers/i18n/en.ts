@@ -47,6 +47,16 @@ const en: Record<string, string> = {
 	"ui.feature-list.distance.fromGeolocation": "Distance from your location",
 	"ui.feature-list.tag-switcher.announcements": "filter by tags …",
 
+	"ui.feature-list.options.trigger": "Filter and sort list",
+	"ui.feature-list.options.title": "Filter and sort list",
+	"ui.feature-list.options.close": "Close list options",
+	"ui.feature-list.options.sorting": "Sorting",
+	"ui.feature-list.options.location": "Location",
+	"ui.feature-list.options.filter": "Filter",
+	"ui.feature-list.options.reset": "Reset",
+	"ui.feature-list.options.entries": "entries",
+	"ui.feature-list.options.filterActive": "Filter active",
+
 	"ui.feature-list.content.noListSelected": "no list selected",
 	"ui.feature-list.content.noEntries": "no entries in list",
 	"ui.feature-list.loading": "Loading list…",

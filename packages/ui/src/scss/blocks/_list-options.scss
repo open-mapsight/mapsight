@@ -1,0 +1,76 @@
+// Structural FeatureListOptionsPopover layout. Visual chrome (shadows, density,
+// brand fonts) belongs in `themes/2022-03` or the host stylesheet.
+
+.ms3-list-options {
+	display: contents;
+
+	&__trigger-row {
+		display: flex;
+		justify-content: flex-end;
+		flex: 0 0 auto;
+		margin-left: auto;
+	}
+
+	&__trigger {
+		display: block;
+	}
+
+	&__trigger-label {
+		flex: 0 0 100%;
+	}
+
+	&__count {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.5em;
+	}
+
+	&__popover {
+		z-index: var(--ms3-z-index-app-overlay);
+		display: flex;
+		flex-direction: column;
+		max-height: var(--ms3-list-options-max-height, 70vh);
+		overflow: hidden;
+	}
+
+	&__header {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		flex: 0 0 auto;
+	}
+
+	&__title {
+		margin: 0;
+	}
+
+	&__body {
+		min-height: 0;
+		overflow: auto;
+	}
+
+	&__footer {
+		flex: 0 0 auto;
+	}
+
+	&__field,
+	&__label {
+		display: block;
+	}
+
+	&__select {
+		width: 100%;
+	}
+
+	&__reset {
+		display: block;
+		width: 100%;
+		cursor: pointer;
+
+		&:disabled {
+			cursor: default;
+		}
+	}
+}
