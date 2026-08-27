@@ -168,6 +168,44 @@ export function resolveCountAggregatorMockRequest(
 		return jsonResponse(stationList);
 	}
 
+	const rawValuesMatch = subPath.match(/^\/([^/]+)\/raw-values$/);
+	if (rawValuesMatch !== null) {
+		const stationIds = parseStationIds(url.searchParams);
+		if (stationIds.length === 0) {
+			return jsonResponse({message: "stationIds is required"}, 400);
+		}
+
+		const fromYmd = (url.searchParams.get("from") ?? "2026-06-01").slice(
+			0,
+			10,
+		);
+		const toYmd = (url.searchParams.get("to") ?? fromYmd).slice(0, 10);
+		const map = buildValuesMap(stationIds, fromYmd, toYmd, "daily");
+		const rawMap: Record<string, unknown> = {};
+
+		for (const [stationId, series] of Object.entries(map)) {
+			const entry = series as {
+				id: number;
+				stationId: string;
+				values: {datetime: string; value: number}[];
+			};
+			rawMap[stationId] = {
+				id: entry.id,
+				stationId: entry.stationId,
+				values: entry.values,
+			};
+		}
+
+		if (format === "csv") {
+			return textResponse(
+				buildCsv(stationIds, fromYmd, toYmd, "daily"),
+				"text/csv; charset=utf-8",
+			);
+		}
+
+		return jsonResponse(rawMap);
+	}
+
 	const valuesMatch = subPath.match(
 		/^\/([^/]+)\/values\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})\/([^/]+)$/,
 	);

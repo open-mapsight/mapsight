@@ -1,6 +1,23 @@
 import { z } from "zod";
 import { createLenientStationTypeListResponseSchema } from "../lib/lenient-station-type-list.js";
 
+type RawValuesResponse = {
+  id: number;
+  stationId: string;
+  values: Array<RawValuePoint>;
+};
+type RawValuePoint = {
+  /**
+   * Local station datetime in `Y-m-d H:i:s` format (no timezone offset).
+   *
+   * @pattern ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+   */
+  datetime: string;
+  /**
+   * Exact stored numeric measurement. No aggregation.
+   */
+  value: number;
+};
 type StationGeoJsonFeature = {
   type: string;
   geometry: StationGeoJsonPointGeometry;
@@ -914,6 +931,21 @@ const TimeSeriesResponse: z.ZodType<TimeSeriesResponse> = z
   })
   .strict()
   .passthrough();
+const RawValuePoint: z.ZodType<RawValuePoint> = z
+  .object({
+    datetime: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+    value: z.number(),
+  })
+  .strict()
+  .passthrough();
+const RawValuesResponse: z.ZodType<RawValuesResponse> = z
+  .object({
+    id: z.number().int(),
+    stationId: z.string(),
+    values: z.array(RawValuePoint),
+  })
+  .strict()
+  .passthrough();
 const StationOverviewResponse: z.ZodType<StationOverviewResponse> = z
   .object({
     stationId: z.number().int(),
@@ -950,6 +982,8 @@ export const schemas = {
   StationListResponse,
   DataValuePoint,
   TimeSeriesResponse,
+  RawValuePoint,
+  RawValuesResponse,
   StationOverviewResponse,
   DetectedDataProblem,
   GeoJsonFeatureCollection,
@@ -1635,6 +1669,86 @@ export const endpoints = [
       },
     ],
     response: DetectedDataProblem,
+  },
+  {
+    method: "get",
+    path: "/:type/raw-values",
+    alias: "count-aggregator.public.type.raw-values",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "type",
+        type: "Path",
+        schema: z.enum([
+          "airQualityCO",
+          "airQualityIndex",
+          "airQualityNO2",
+          "airQualityNO2Index",
+          "airQualityO3",
+          "airQualityO3Index",
+          "airQualityPM10",
+          "airQualityPM10Index",
+          "airQualityPM25",
+          "airQualitySO2",
+          "airQualityStation",
+          "bicycleSensorTotal",
+          "peopleCount",
+          "waterLevelStation",
+          "waterLevelSurface",
+          "waterLevelUnderground",
+          "waterTemp",
+          "weatherAirPressure",
+          "weatherHumidity",
+          "weatherLightingDistance",
+          "weatherLightnings",
+          "weatherRain",
+          "weatherStation",
+          "weatherSun",
+          "weatherTemp",
+          "weatherVaporPressure",
+          "weatherWindDirection",
+          "weatherWindSpeed",
+          "weatherWindSpeedMax",
+        ]),
+      },
+      {
+        name: "stationIds",
+        type: "Query",
+        schema: z.unknown(),
+      },
+      {
+        name: "from",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/)
+          .optional(),
+      },
+      {
+        name: "to",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}:\d{2})?$/)
+          .optional(),
+      },
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().gte(1).lte(500).optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.enum(["asc", "desc"]).optional(),
+      },
+      {
+        name: "format",
+        type: "Query",
+        schema: z.enum(["json", "csv"]).optional(),
+      },
+    ],
+    response: z.record(z.string(), RawValuesResponse),
   },
   {
     method: "get",

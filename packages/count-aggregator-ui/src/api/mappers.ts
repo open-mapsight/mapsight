@@ -1,5 +1,6 @@
 import type {
 	BucketMetric,
+	RawValuesMapResponse,
 	StationListResponse,
 	TimeSeriesMapResponse,
 } from "@mapsight/count-aggregator-api";
@@ -57,6 +58,24 @@ export function mapTimeSeriesMap(
 					? (valuesByMetric[primaryMetric] ?? [])
 					: [],
 			valuesByMetric,
+		});
+	}
+
+	return {stationsById};
+}
+
+export function mapRawValuesMap(
+	map: RawValuesMapResponse,
+	metric: BucketMetric,
+): AggregatedValuesData {
+	const stationsById = new Map<number, StationData>();
+
+	for (const [key, series] of Object.entries(map)) {
+		const values = mapDataValuePointsToChartPoints(series.values, metric);
+		stationsById.set(Number(key), {
+			stationId: Number(key),
+			values,
+			valuesByMetric: values.length > 0 ? {[metric]: values} : {},
 		});
 	}
 

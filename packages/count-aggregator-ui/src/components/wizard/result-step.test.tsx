@@ -1,5 +1,5 @@
-import {render, screen} from "@testing-library/react";
-import {describe, expect, it, vi} from "vitest";
+import {cleanup, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {CountAggregatorProvider} from "../../context/count-aggregator-provider.js";
 import type {
@@ -94,6 +94,10 @@ function renderResultStep(
 }
 
 describe("ResultStep", () => {
+	afterEach(() => {
+		cleanup();
+	});
+
 	it("shows validation messages and disables CSV when the selection is invalid", () => {
 		renderResultStep({
 			selectedStationIds: [],
@@ -111,6 +115,23 @@ describe("ResultStep", () => {
 			),
 		).toBeTruthy();
 		expect(screen.queryByRole("link", {name: /csv/i})).toBeNull();
+	});
+
+	it("builds a raw-values CSV href in Rohwerte mode", () => {
+		renderResultStep({
+			valuesMode: "raw",
+			showExport: true,
+			onEditSelection: vi.fn(),
+		});
+
+		const link = screen.getByRole("link", {
+			name: "Als CSV-Datei herunterladen",
+		});
+
+		expect(link.getAttribute("href")).toBe(
+			"/mock/msp/public/count-aggregator/bicycleSensorTotal/raw-values?stationIds=150&from=2026-06-01&to=2026-06-02&limit=500&order=asc&format=csv",
+		);
+		expect(screen.getByText(/Rohwerte/)).toBeTruthy();
 	});
 
 	it("builds a CSV href when the selection is valid", () => {

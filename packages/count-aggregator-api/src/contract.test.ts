@@ -1,21 +1,9 @@
-import {readFileSync} from "node:fs";
-import path from "node:path";
-import {fileURLToPath} from "node:url";
-
 import {describe, expect, it} from "vitest";
 
+import rawOpenApiDocument from "../openapi/count-aggregator.openapi.json";
 import {schemas} from "./generated/client.js";
 
-const packageRoot = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	"..",
-);
-const openApiDocument = JSON.parse(
-	readFileSync(
-		path.join(packageRoot, "openapi/count-aggregator.openapi.json"),
-		"utf8",
-	),
-) as {
+const openApiDocument = rawOpenApiDocument as {
 	paths: Record<string, unknown>;
 	servers?: unknown;
 	components: {
@@ -83,6 +71,28 @@ describe("OpenAPI contract shape", () => {
 		expect(parameterNames).toContain("stationIds");
 		expect(parameterNames).toContain("metrics");
 		expect(parameterNames).not.toContain("originIds");
+	});
+
+	it("documents raw-values route", () => {
+		const operation = (
+			openApiDocument.paths["/{type}/raw-values"] as
+				{get?: {parameters?: Array<{name: string}>}} | undefined
+		)?.get;
+
+		const parameterNames =
+			operation?.parameters?.map((parameter) => parameter.name) ?? [];
+		expect(parameterNames).toEqual(
+			expect.arrayContaining([
+				"stationIds",
+				"from",
+				"to",
+				"limit",
+				"order",
+				"format",
+			]),
+		);
+		expect(parameterNames).not.toContain("resolution");
+		expect(parameterNames).not.toContain("metrics");
 	});
 
 	it("documents datetime query values route", () => {

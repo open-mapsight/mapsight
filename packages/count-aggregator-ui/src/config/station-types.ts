@@ -64,6 +64,7 @@ function createAppConfigForStationType(
 		resolutions: supportedResolutions,
 		features: {
 			resolutionSelect: true,
+			rawValues: true,
 			chartTypeSelect: isBicycleSensorTotal,
 			metricSelect: uniqueMetrics.length > 1,
 			export: true,

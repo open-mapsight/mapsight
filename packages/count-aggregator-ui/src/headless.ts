@@ -4,6 +4,7 @@ export {
 	useStations,
 	useStationsQuery,
 	useLastValues,
+	useRawValues,
 	useAggregatedValues,
 	useTrafficEvents,
 	usePresets,
@@ -24,6 +25,7 @@ export {dateToYmd, ymdToDate} from "./lib/dates.js";
 export {
 	getCountAggregatorDictionary,
 	getResolutionLabels,
+	getValuesModeLabels,
 	resolveCountAggregatorLocale,
 	type CountAggregatorLocale,
 	type CountAggregatorTranslationKey,
