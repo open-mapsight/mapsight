@@ -16,6 +16,23 @@ export function getDictionary() {
 	return DICTIONARY;
 }
 
+/**
+ * Merge host/app translation catalogs into the shared UI dictionary.
+ *
+ * Later keys overwrite earlier ones for the same language. Prefer calling this
+ * once during app bootstrap rather than mutating `getDictionary()` ad hoc.
+ */
+export function registerTranslations(
+	messages: Record<string, Record<string, string>>,
+) {
+	for (const [language, languageTranslations] of Object.entries(messages)) {
+		DICTIONARY[language] = {
+			...DICTIONARY[language],
+			...languageTranslations,
+		};
+	}
+}
+
 export function setDocumentLanguage(value) {
 	documentLanguage = value;
 }

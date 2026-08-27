@@ -2,7 +2,9 @@ import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 
 import {create} from "..";
 import serverStringRenderer from "../renderer/server-string";
-import type {CreateOptions} from "../types";
+import type {CreateOptions, MapsightUiStore} from "../types";
+import {wrapEmbedFragment} from "./emit-fragment";
+import {sanitizeRehydratedState} from "./sanitize-rehydrated-state";
 
 type Options = {
 	/** style function */
@@ -11,22 +13,28 @@ type Options = {
 	/** base mapsight core config */
 	baseMapsightConfig: object;
 
-	/**create options */
+	/** create options */
 	createOptions: CreateOptions;
 };
 
+export type NodeEmbedEmitFragmentOptions = {
+	id: string;
+	className?: string;
+	attributeName?: string;
+};
+
 type Result = {
-	store: any;
-	// (function(*=): undefined)
-	render(...something: Array<any>): void;
-	// (function(*=): Promise<undefined>)
-	renderAsync(...something: Array<any>): Promise<void>;
+	store: MapsightUiStore | undefined;
+	render(renderProps?: object): string | undefined;
+	renderAsync(renderProps?: object): Promise<string | undefined>;
+	getDehydratedState(): unknown;
+	emitFragment(options: NodeEmbedEmitFragmentOptions): string;
 };
 
 /**
- * Node embed
+ * Node embed — server-side create + render for dehydrated CMS shells.
  *
- * @returns embed reference
+ * @returns embed reference with HTML render and fragment emit helpers
  */
 export default function nodeEmbed(options: Options): Result {
 	const {
@@ -38,20 +46,62 @@ export default function nodeEmbed(options: Options): Result {
 	createOptions.renderer = createOptions.renderer ?? serverStringRenderer;
 
 	const ctx = create(null, styleFunction, baseMapsightConfig, createOptions);
+	let lastHtml: string | undefined;
 
-	function render(renderProps = {}) {
-		if (ctx.render) {
-			ctx.render(renderProps);
+	function captureHtml(value: unknown): string | undefined {
+		if (typeof value === "string") {
+			lastHtml = value;
+			return value;
+		}
+		return undefined;
+	}
+
+	function getDehydratedState(): unknown {
+		const state = ctx.store?.getState();
+		try {
+			const serialized = JSON.parse(JSON.stringify(state));
+			return sanitizeRehydratedState(serialized).state;
+		} catch (cause) {
+			throw new Error(
+				"mapsight ui: store state is not JSON-serializable for dehydration",
+				{cause},
+			);
 		}
 	}
 
-	async function renderAsync(renderProps = {}) {
-		if (ctx.renderAsync) {
-			await ctx.renderAsync(renderProps);
-		}
+	function render(renderProps = {}): string | undefined {
+		return captureHtml(ctx.render?.(renderProps));
 	}
 
-	// for node we do not render but return an object with
-	// references to store and async render function
-	return {store: ctx.store, render, renderAsync};
+	async function renderAsync(renderProps = {}): Promise<string | undefined> {
+		return captureHtml(await ctx.renderAsync?.(renderProps));
+	}
+
+	function emitFragment(
+		fragmentOptions: NodeEmbedEmitFragmentOptions,
+	): string {
+		const html = lastHtml ?? render({}) ?? "";
+		const {
+			id,
+			className = "mapsight-embed",
+			attributeName = createOptions.dehydratedStateAttributeName ??
+				"data-dehydrated-state",
+		} = fragmentOptions;
+
+		return wrapEmbedFragment({
+			id,
+			className,
+			attributeName,
+			html,
+			dehydratedState: getDehydratedState(),
+		});
+	}
+
+	return {
+		store: ctx.store,
+		render,
+		renderAsync,
+		getDehydratedState,
+		emitFragment,
+	};
 }

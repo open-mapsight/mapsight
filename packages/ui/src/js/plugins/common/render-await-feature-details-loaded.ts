@@ -5,6 +5,7 @@ import {LOAD_FEATURE_SOURCE_SUCCESS} from "@mapsight/core/lib/feature-sources/ac
 import {findFeatureInFeatureSourcesById} from "@mapsight/core/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
 
+import {DETAILS_CONTENT_STATE_KEY} from "../../config/constants/app";
 import {
 	FEATURE_SELECTIONS,
 	FEATURE_SOURCES,
@@ -13,10 +14,14 @@ import createActionWatcher from "../../helpers/create-action-watcher";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {
 	FETCH_TEXT_FAILURE,
+	FETCH_TEXT_STATUS_ERROR,
+	FETCH_TEXT_STATUS_LOADING,
+	FETCH_TEXT_STATUS_SUCCESS,
 	FETCH_TEXT_SUCCESS,
 	setFeatureDetailsUrl,
 } from "../../store/actions";
 import type {
+	FetchTextState,
 	MapsightUiContext,
 	MapsightUiFeature,
 	MapsightUiFeatureProperty,
@@ -74,8 +79,8 @@ export default function createFeatureDetailsLoadedPlugin(
 				return Promise.resolve(undefined);
 			}
 
-			const featureId = getSelectedFeatureIdFromConfig(
-				context.baseMapsightConfig,
+			const featureId = getSelectedFeatureId(
+				context,
 				featureSelection,
 				featureSelectionsController,
 			);
@@ -104,8 +109,18 @@ export default function createFeatureDetailsLoadedPlugin(
 						feature as MapsightUiFeature,
 						featurePropertyDetailsUrl,
 					);
-					if (!detailsUrl) {
+					if (!detailsUrl || typeof detailsUrl !== "string") {
 						// no need to wait, because we do not have a details url to load
+						resolve();
+						return;
+					}
+
+					const detailsState = detailsContentState(context);
+					if (
+						detailsState?.url === detailsUrl &&
+						(detailsState.status === FETCH_TEXT_STATUS_SUCCESS ||
+							detailsState.status === FETCH_TEXT_STATUS_ERROR)
+					) {
 						resolve();
 						return;
 					}
@@ -119,14 +134,13 @@ export default function createFeatureDetailsLoadedPlugin(
 							actionWatcherDetails.handler = null;
 						}
 					};
-					context.store.dispatch(
-						setFeatureDetailsUrl(
-							getFeatureProperty(
-								feature as MapsightUiFeature,
-								featurePropertyDetailsUrl,
-							) as string,
-						),
-					);
+					if (
+						detailsState?.url === detailsUrl &&
+						detailsState.status === FETCH_TEXT_STATUS_LOADING
+					) {
+						return;
+					}
+					context.store.dispatch(setFeatureDetailsUrl(detailsUrl));
 				}
 
 				checkSources();
@@ -142,13 +156,29 @@ export default function createFeatureDetailsLoadedPlugin(
 	};
 }
 
-function getSelectedFeatureIdFromConfig(
-	baseMapsightConfig: MapsightUiContext["baseMapsightConfig"],
+function getSelectedFeatureId(
+	context: MapsightUiContext,
 	featureSelection: string,
 	featureSelectionsControllerName: string,
 ) {
-	const baseState = baseMapsightConfig[
+	const fromStore = (
+		context.store?.getState()?.[featureSelectionsControllerName] as
+			FeatureSelectionsState | undefined
+	)?.[featureSelection]?.features?.[0];
+	if (fromStore) {
+		return fromStore;
+	}
+
+	const baseState = context.baseMapsightConfig?.[
 		featureSelectionsControllerName
-	] as FeatureSelectionsState;
-	return baseState[featureSelection]?.features[0];
+	] as FeatureSelectionsState | undefined;
+	return baseState?.[featureSelection]?.features?.[0];
+}
+
+function detailsContentState(
+	context: MapsightUiContext,
+): FetchTextState | undefined {
+	const app = context.store?.getState()?.app as
+		Record<string, FetchTextState | undefined> | undefined;
+	return app?.[DETAILS_CONTENT_STATE_KEY];
 }
