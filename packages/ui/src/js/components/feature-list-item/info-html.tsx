@@ -13,10 +13,7 @@ export type FeatureListInfoHtmlProps = {
  * would reset `innerHTML`, and host lazy-loaders (noscript unwrap) flash
  * contact pictures back in.
  */
-function FeatureListInfoHtml({
-	as: T = "span",
-	html,
-}: FeatureListInfoHtmlProps) {
+function FeatureListInfoHtml({as: T = "span", html}: FeatureListInfoHtmlProps) {
 	return (
 		<T
 			className="ms3-list__info"

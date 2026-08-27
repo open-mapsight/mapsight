@@ -1,6 +1,7 @@
+import {Provider} from "react-redux";
+
 import {configureStore} from "@reduxjs/toolkit";
 import {act, cleanup, render} from "@testing-library/react";
-import {Provider} from "react-redux";
 import {afterEach, describe, expect, it} from "vitest";
 
 import {VIEW_DESKTOP} from "../../config/constants/app";
@@ -109,7 +110,11 @@ describe("FeatureListItem listInformation HTML", () => {
 			store.dispatch({type: "test/highlight", features: ["museum-1"]});
 		});
 
-		expect(container.querySelector(".ms3-list__item--highlight")).not.toBeNull();
-		expect(container.querySelector(".bs-contact__picture__image")).toBe(img);
+		expect(
+			container.querySelector(".ms3-list__item--highlight"),
+		).not.toBeNull();
+		expect(container.querySelector(".bs-contact__picture__image")).toBe(
+			img,
+		);
 	});
 });
