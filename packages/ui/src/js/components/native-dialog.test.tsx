@@ -76,4 +76,35 @@ describe("NativeDialog", () => {
 		expect(host.querySelector("dialog")).toBeNull();
 		expect(document.body.querySelector("dialog")).not.toBeNull();
 	});
+
+	it("names the dialog with aria-label when title is omitted", () => {
+		render(
+			<NativeDialog
+				isOpen
+				aria-label="Search"
+				hideCloseButton
+				onClose={vi.fn()}
+			>
+				field
+			</NativeDialog>,
+		);
+
+		expect(screen.getByRole("dialog", {name: "Search"})).toBeTruthy();
+		expect(screen.queryByRole("heading")).toBeNull();
+	});
+
+	it("names the dialog from labelledBy when title is omitted", () => {
+		render(
+			<NativeDialog
+				isOpen
+				labelledBy="search-heading"
+				hideCloseButton
+				onClose={vi.fn()}
+			>
+				<h2 id="search-heading">Find a place</h2>
+			</NativeDialog>,
+		);
+
+		expect(screen.getByRole("dialog", {name: "Find a place"})).toBeTruthy();
+	});
 });

@@ -9,15 +9,9 @@ import {createPortal} from "react-dom";
 import useNativeDialog from "../hooks/useNativeDialog";
 import CloseOverlayButton from "./close-overlay-button";
 
-export type NativeDialogProps = {
+type NativeDialogBaseProps = {
 	isOpen: boolean;
 	onClose: () => void;
-	/** Visible dialog title (also used for `aria-labelledby` when `labelledBy` is omitted). */
-	title?: ReactNode;
-	/** Explicit `aria-labelledby` id. Defaults to a generated id on the title heading. */
-	labelledBy?: string;
-	/** Accessible name when there is no visible title (`aria-label`). */
-	"aria-label"?: string;
 	closeLabel?: string;
 	/** When true (default), backdrop click dismisses. Escape always dismisses via `onClose`. */
 	dismissOnBackdrop?: boolean;
@@ -37,11 +31,35 @@ export type NativeDialogProps = {
 	hideCloseButton?: boolean;
 };
 
+type NativeDialogNameProps =
+	| {
+			/** Visible dialog title (also used for `aria-labelledby` when `labelledBy` is omitted). */
+			title: ReactNode;
+			/** Explicit `aria-labelledby` id. Defaults to a generated id on the title heading. */
+			labelledBy?: string;
+			/** Accessible name when there is no visible title (`aria-label`). */
+			"aria-label"?: string;
+	  }
+	| {
+			title?: ReactNode;
+			labelledBy: string;
+			"aria-label"?: string;
+	  }
+	| {
+			title?: ReactNode;
+			labelledBy?: string;
+			"aria-label": string;
+	  };
+
+/** At least one of `title`, `labelledBy`, or `aria-label` is required. */
+export type NativeDialogProps = NativeDialogBaseProps & NativeDialogNameProps;
+
 /**
  * Controlled native modal dialog (`<dialog showModal>`).
  *
- * Shell only — hosts supply title, body, and styling. Prefer this for modal
- * drawers/sheets over react-modal when a bottom-sheet layout is needed.
+ * Shell only — hosts supply an accessible name (`title`, `labelledBy`, or
+ * `aria-label`), body, and styling. Prefer this for modal drawers/sheets
+ * over react-modal when a bottom-sheet layout is needed.
  *
  * APG Dialog (Modal): https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
  */
