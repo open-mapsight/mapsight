@@ -129,7 +129,7 @@ describe("ResultStep", () => {
 		});
 
 		expect(link.getAttribute("href")).toBe(
-			"/mock/msp/public/count-aggregator/bicycleSensorTotal/raw-values?stationIds=150&from=2026-06-01&to=2026-06-02&format=csv",
+			"/mock/msp/public/count-aggregator/bicycleSensorTotal/raw-values?stationIds=150&from=2026-06-01&to=2026-06-02&limit=500&order=asc&format=csv",
 		);
 		expect(screen.getByText(/Rohwerte/)).toBeTruthy();
 	});

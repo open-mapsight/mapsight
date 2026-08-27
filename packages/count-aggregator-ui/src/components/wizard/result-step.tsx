@@ -14,6 +14,7 @@ import {normalizeSelectedMetrics} from "../../lib/bucket-metrics.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
 import {getValuesModeLabels} from "../../lib/i18n.js";
+import {RAW_VALUES_RANGE_QUERY} from "../../lib/raw-values.js";
 import {isDefined} from "../../lib/utils.js";
 import {
 	type AggregatedValuesData,
@@ -130,6 +131,7 @@ export function ResultStep({
 				from: dateToYmd(startDate),
 				to: dateToYmd(endDate),
 				stationIds: [...selectedStationIds],
+				...RAW_VALUES_RANGE_QUERY,
 			});
 		}
 

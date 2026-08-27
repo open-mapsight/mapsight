@@ -16,6 +16,7 @@ import {
 	getLastDayOfMonth,
 } from "../../lib/dates.js";
 import {isFeatureEnabled} from "../../lib/features.js";
+import {RAW_VALUES_RANGE_QUERY} from "../../lib/raw-values.js";
 import type {
 	BucketMetric,
 	ChartType,
@@ -244,6 +245,7 @@ export function CountAggregatorWizard({
 			stationIds: selectedStationIds,
 			from: dateToYmd(startDate),
 			to: dateToYmd(endDate),
+			...RAW_VALUES_RANGE_QUERY,
 		},
 		{enabled: valuesEnabled && isRaw},
 	);
