@@ -81,8 +81,11 @@ function postSidecar(string $url, array $payload, float $timeoutSeconds): string
 		throw new RuntimeException('sidecar request failed');
 	}
 
+	$headers = function_exists('http_get_last_response_headers')
+		? (http_get_last_response_headers() ?? [])
+		: ($http_response_header ?? []);
 	$status = 0;
-	if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $m)) {
+	if (isset($headers[0]) && preg_match('/\s(\d{3})\s/', $headers[0], $m)) {
 		$status = (int) $m[1];
 	}
 	if ($status < 200 || $status >= 300) {
