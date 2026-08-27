@@ -30,8 +30,10 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 	const isHighlighted = useSelector(createIsHighlightedSelector(feature.id));
 	const hasSelection = useSelector(hasSelectSelectionSelector);
 
-	return useMemo(
-		() => ({
+	return useMemo(() => {
+		const expandInList = selectionBehavior?.[view] === "expandInList";
+
+		return {
 			selectOnClick: selectOnClick,
 			deselectOnClick: !!deselectOnClick,
 			highlightOnMouse: !!highlightOnMouse,
@@ -42,25 +44,23 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 			isSelected: isSelected,
 			isHighlighted: isHighlighted,
 			isPreselected: isPreselected,
-			showDetails: !!(isSelected && (isMobile || detailsInList)),
-			scrollOnSelection: !!(
-				selectionBehavior?.[view] === "expandInList" &&
-				!showSelectedOnly
-			),
-		}),
-		[
-			deselectOnClick,
-			detailsInList,
-			hasSelection,
-			highlightOnMouse,
-			isHighlighted,
-			isMobile,
-			isPreselected,
-			isSelected,
-			selectOnClick,
-			showSelectedOnly,
-			selectionBehavior,
-			view,
-		],
-	);
+			// Inline details only for expandInList / detailsInList — not when
+			// selection opens mapOnly (showInMapOnlyView) or scrolls to map.
+			showDetails: !!(isSelected && (detailsInList || expandInList)),
+			scrollOnSelection: !!(expandInList && !showSelectedOnly),
+		};
+	}, [
+		deselectOnClick,
+		detailsInList,
+		hasSelection,
+		highlightOnMouse,
+		isHighlighted,
+		isMobile,
+		isPreselected,
+		isSelected,
+		selectOnClick,
+		selectionBehavior,
+		showSelectedOnly,
+		view,
+	]);
 }
