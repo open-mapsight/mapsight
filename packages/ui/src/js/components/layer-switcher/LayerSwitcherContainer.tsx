@@ -29,7 +29,7 @@ export type LayerSwitcherContainerProps = {
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
 	splitBaseLayers?: boolean;
-	/** Opt-in: overlay groups collapse and show visible/total counts. */
+	/** Opt-in: overlay groups collapse and show visible/total counts. Only with `splitBaseLayers`. */
 	collapsibleGroups?: boolean;
 	setFeatureSourceIdPath?: ActionPath | null;
 };

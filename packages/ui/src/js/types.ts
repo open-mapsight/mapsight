@@ -155,7 +155,10 @@ export type LayerSwitcherConfigState = {
 	grouped: boolean;
 	layerIdsSelector: (state: object) => string[];
 	splitBaseLayers?: boolean;
-	/** Opt-in: overlay groups collapse and show visible/total counts. */
+	/**
+	 * When true, overlay groups can collapse and show visible/total counts.
+	 * Only applies when `splitBaseLayers` is also enabled.
+	 */
 	collapsibleGroups?: boolean;
 };
 
