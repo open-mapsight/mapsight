@@ -15,6 +15,7 @@ import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
 import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAndFocus";
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
 import FeatureListIcon from "./icon";
+import FeatureListInfoHtml from "./info-html";
 import getLegacyOverrideListHtml from "./legacy-override-list-html";
 import type {
 	FeatureListItemDistanceLabelProps,
@@ -238,12 +239,13 @@ function FeatureListItemStandard({
 
 	let info: ReactNode = null;
 	if (showFeatureListInfo) {
+		const listInformation = getFeatureProperty(feature, "listInformation");
 		info = (
-			<PartT
-				className="ms3-list__info"
-				dangerouslySetInnerHTML={{
-					__html: getFeatureProperty(feature, "listInformation"),
-				}}
+			<FeatureListInfoHtml
+				as={PartT}
+				html={
+					typeof listInformation === "string" ? listInformation : ""
+				}
 			/>
 		);
 	}
