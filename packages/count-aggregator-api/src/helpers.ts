@@ -1,6 +1,7 @@
 import type {CountAggregatorClient} from "./client.js";
 import type {
 	BucketMetric,
+	RawValuesMapResponse,
 	Resolution,
 	StationListResponse,
 	StationOverviewResponse,
@@ -50,6 +51,15 @@ export interface StationLastValuesRequest {
 	startDate?: string;
 	anchor?: "lastDataAt";
 	metrics?: readonly BucketMetric[];
+}
+
+export interface RawValuesRequest {
+	type: StationType;
+	stationIds: readonly number[];
+	from?: string;
+	to?: string;
+	limit?: number;
+	order?: "asc" | "desc";
 }
 
 function joinStationIds(stationIds: readonly number[]): string {
@@ -115,6 +125,24 @@ export function getValuesQuery(
 			to: request.to,
 			resolution: request.resolution,
 			metrics: joinMetrics(request.metrics),
+		},
+	});
+}
+
+export function getRawValues(
+	client: CountAggregatorClient,
+	request: RawValuesRequest,
+): Promise<RawValuesMapResponse> {
+	return client["count-aggregator.public.type.raw-values"]({
+		params: {
+			type: request.type,
+		},
+		queries: {
+			stationIds: joinStationIds(request.stationIds),
+			from: request.from,
+			to: request.to,
+			limit: request.limit,
+			order: request.order,
 		},
 	});
 }

@@ -11,6 +11,8 @@ import type {
 
 export type DataResolution = Resolution;
 
+export type ValuesMode = Resolution | "raw";
+
 export type ChartType = "line" | "column" | "area";
 
 export interface Station {
@@ -110,6 +112,7 @@ export type UiVariant = "single-page" | "stepped";
 
 export interface CountAggregatorFeatures {
 	resolutionSelect?: boolean;
+	rawValues?: boolean;
 	chartTypeSelect?: boolean;
 	metricSelect?: boolean;
 	export?: boolean;
@@ -131,7 +134,7 @@ export interface CountAggregatorAppConfig {
 	defaultResolution?: Resolution;
 	defaultChartType?: ChartType;
 	resolutions?: readonly Resolution[];
-	resolutionLabels?: Partial<Record<Resolution, string>>;
+	resolutionLabels?: Partial<Record<ValuesMode, string>>;
 	features?: CountAggregatorFeatures;
 	endpoints?: CountAggregatorPlatformEndpoints;
 }

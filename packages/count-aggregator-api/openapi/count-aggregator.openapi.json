@@ -532,6 +532,141 @@
 				}
 			}
 		},
+		"/{type}/raw-values": {
+			"get": {
+				"operationId": "count-aggregator.public.type.raw-values",
+				"tags": ["Typed stations"],
+				"parameters": [
+					{
+						"name": "type",
+						"in": "path",
+						"required": true,
+						"description": "Station type identifier. See `GET /station-types` for currently available types.",
+						"schema": {
+							"type": "string",
+							"enum": [
+								"airQualityCO",
+								"airQualityIndex",
+								"airQualityNO2",
+								"airQualityNO2Index",
+								"airQualityO3",
+								"airQualityO3Index",
+								"airQualityPM10",
+								"airQualityPM10Index",
+								"airQualityPM25",
+								"airQualitySO2",
+								"airQualityStation",
+								"bicycleSensorTotal",
+								"peopleCount",
+								"waterLevelStation",
+								"waterLevelSurface",
+								"waterLevelUnderground",
+								"waterTemp",
+								"weatherAirPressure",
+								"weatherHumidity",
+								"weatherLightingDistance",
+								"weatherLightnings",
+								"weatherRain",
+								"weatherStation",
+								"weatherSun",
+								"weatherTemp",
+								"weatherVaporPressure",
+								"weatherWindDirection",
+								"weatherWindSpeed",
+								"weatherWindSpeedMax"
+							]
+						},
+						"example": "peopleCount"
+					},
+					{
+						"name": "stationIds",
+						"in": "query",
+						"required": true,
+						"description": "Comma-separated MSP station IDs.",
+						"schema": {},
+						"example": "75,15"
+					},
+					{
+						"name": "from",
+						"in": "query",
+						"description": "Start of an optional query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). Must be used together with `to`. When omitted, returns the latest records per station.",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T00:00:00"
+					},
+					{
+						"name": "to",
+						"in": "query",
+						"description": "End of an optional query window in local time (`Y-m-d` or `Y-m-d H:i:s`, `T` separator accepted). Must be used together with `from`.",
+						"schema": {
+							"type": "string",
+							"pattern": "^\\d{4}-\\d{2}-\\d{2}([ T]\\d{2}:\\d{2}:\\d{2})?$"
+						},
+						"example": "2026-06-01T12:00:00"
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of exact telemetry records per station. Defaults to 50. Maximum 500.",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 500
+						},
+						"example": 50
+					},
+					{
+						"name": "order",
+						"in": "query",
+						"description": "Sort order of records by datetime. Defaults to `desc` (newest first).",
+						"schema": {
+							"type": "string",
+							"enum": ["asc", "desc"]
+						},
+						"example": "desc"
+					},
+					{
+						"name": "format",
+						"in": "query",
+						"description": "Response serialization format. Omit this parameter or use `json` for JSON (default). Use `csv` to download multi-station raw telemetry as semicolon-separated CSV.",
+						"schema": {
+							"type": "string",
+							"enum": ["json", "csv"]
+						},
+						"example": "json"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Exact stored telemetry records keyed by MSP station id. No aggregation, no quality flag until a column exists.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"example": {
+										"150": {
+											"id": 150,
+											"stationId": "138969",
+											"values": [
+												{
+													"datetime": "2026-06-01 12:34:56",
+													"value": 67.25
+												}
+											]
+										}
+									},
+									"additionalProperties": {
+										"$ref": "#/components/schemas/RawValuesResponse"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/{type}/values": {
 			"get": {
 				"operationId": "count-aggregator.public.type.values.query",
@@ -1957,6 +2092,55 @@
 				},
 				"title": "DataValuePoint",
 				"required": ["datetime"]
+			},
+			"RawValuePoint": {
+				"type": "object",
+				"example": {
+					"datetime": "2026-06-01 12:34:56",
+					"value": 67.25
+				},
+				"properties": {
+					"datetime": {
+						"type": "string",
+						"description": "Local station datetime in `Y-m-d H:i:s` format (no timezone offset).",
+						"pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"
+					},
+					"value": {
+						"type": "number",
+						"description": "Exact stored numeric measurement. No aggregation."
+					}
+				},
+				"title": "RawValuePoint",
+				"required": ["datetime", "value"]
+			},
+			"RawValuesResponse": {
+				"type": "object",
+				"example": {
+					"id": 150,
+					"stationId": "138969",
+					"values": [
+						{
+							"datetime": "2026-06-01 12:34:56",
+							"value": 67.25
+						}
+					]
+				},
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"stationId": {
+						"type": "string"
+					},
+					"values": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/RawValuePoint"
+						}
+					}
+				},
+				"required": ["id", "stationId", "values"],
+				"title": "RawValuesResponse"
 			},
 			"DetectedDataProblem": {
 				"type": "object",

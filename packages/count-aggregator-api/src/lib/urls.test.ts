@@ -6,6 +6,8 @@ import {
 	buildMultipleLastValuesUrl,
 	buildMultipleValuesQueryUrl,
 	buildMultipleValuesUrl,
+	buildRawValuesCsvExportUrl,
+	buildRawValuesUrl,
 	buildSingleStationLastValuesUrl,
 	buildSingleStationValuesUrl,
 	buildStationSumsUrl,
@@ -142,6 +144,32 @@ describe("count aggregator URL builders", () => {
 		);
 		expect(buildStationsGeoJsonUrl(baseUrl, "bicycleSensorTotal")).toBe(
 			"https://example.test/msp/public/count-aggregator/stations.geojson?type=bicycleSensorTotal",
+		);
+	});
+
+	it("builds a raw-values URL with station ids only", () => {
+		const url = buildRawValuesUrl(baseUrl, {
+			type: "bicycleSensorTotal",
+			stationIds: [150, 151],
+		});
+
+		expect(url).toBe(
+			"https://example.test/msp/public/count-aggregator/bicycleSensorTotal/raw-values?stationIds=150%2C151",
+		);
+	});
+
+	it("builds a range-filtered raw-values CSV URL", () => {
+		const url = buildRawValuesCsvExportUrl(baseUrl, {
+			type: "waterLevelSurface",
+			stationIds: [140],
+			from: "2026-06-01 00:00:00",
+			to: "2026-06-01 12:00:00",
+			limit: 50,
+			order: "desc",
+		});
+
+		expect(url).toBe(
+			"https://example.test/msp/public/count-aggregator/waterLevelSurface/raw-values?stationIds=140&from=2026-06-01+00%3A00%3A00&to=2026-06-01+12%3A00%3A00&limit=50&order=desc&format=csv",
 		);
 	});
 

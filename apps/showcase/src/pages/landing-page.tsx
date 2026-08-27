@@ -11,7 +11,7 @@ const sections = [
 		to: "/count-aggregator",
 		title: "Count aggregator",
 		description:
-			"Embeddable stepped wizard and charts against a mock count-aggregator API — no live tenant required.",
+			"Embeddable stepped wizard and a headless custom-UI demo against a mock count-aggregator API — no live tenant required.",
 	},
 	{
 		to: "/icons",

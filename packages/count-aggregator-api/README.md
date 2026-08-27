@@ -70,6 +70,7 @@ Use these helpers for JSON API calls:
 | `listStationTypes`     | `GET /station-types`                            |
 | `listStations`         | `GET /:type/stations`                           |
 | `getValues`            | `GET /:type/values/:from/:to/:resolution`       |
+| `getRawValues`         | `GET /:type/raw-values`                         |
 | `getLastValues`        | `GET /:type/last-values/:resolution`            |
 | `getStationLastValues` | `GET /:type/:stationId/last-values/:resolution` |
 | `getStationSums`       | `GET /:type/:stationId/sums`                    |
