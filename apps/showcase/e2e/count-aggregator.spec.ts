@@ -36,4 +36,27 @@ test.describe("count-aggregator showcase demo", () => {
 			/\/mock\/msp\/public\/count-aggregator\/bicycleSensorTotal\/values\/.+format=csv/,
 		);
 	});
+
+	test("headless demo loads values with host-owned UI", async ({page}) => {
+		await page.goto("/count-aggregator/headless");
+
+		await expect(
+			page.getByRole("heading", {name: "Count aggregator (headless)"}),
+		).toBeVisible();
+		await expect(
+			page.getByText(/@mapsight\/count-aggregator-ui\/headless/),
+		).toBeVisible();
+
+		const firstStation = page
+			.locator(".count-aggregator-headless__station-list label")
+			.first();
+		await expect(firstStation).toBeVisible();
+		await firstStation.click();
+
+		await page.getByRole("button", {name: "Load daily values"}).click();
+
+		await expect(
+			page.locator(".count-aggregator-headless__table tbody tr").first(),
+		).toBeVisible();
+	});
 });

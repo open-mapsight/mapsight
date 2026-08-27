@@ -127,17 +127,21 @@ Key config fields on each app (`CountAggregatorAppConfig`):
 
 ## Exports
 
-| Entry                                      | Use when                                                            |
-| ------------------------------------------ | ------------------------------------------------------------------- |
-| `@mapsight/count-aggregator-ui`            | Full UI: wizards, charts, provider, hooks                           |
-| `@mapsight/count-aggregator-ui/headless`   | Hooks, date helpers, chart data prep — no CSS, no styled components |
-| `@mapsight/count-aggregator-ui/styles.css` | Required stylesheet (see above)                                     |
+| Entry                                      | Use when                                                                    |
+| ------------------------------------------ | --------------------------------------------------------------------------- |
+| `@mapsight/count-aggregator-ui`            | Full UI: wizards, charts, provider, hooks                                   |
+| `@mapsight/count-aggregator-ui/headless`   | Provider, config helpers, hooks, date/chart prep — no CSS, no wizard/charts |
+| `@mapsight/count-aggregator-ui/styles.css` | Required stylesheet (see above)                                             |
 
 Main exports include `CountAggregatorShell`, `CountAggregatorWizard`, `TimeSeriesChart`, `OverviewChartPanel`,
 `useAggregatedValues`, `createTheme`, and smart-city metric mounts (see below).
 
-The `/headless` entry also exports chart data helpers such as `prepareChartValues` and `mapTimeSeriesToChartPoints` for
-custom UIs that do not use the styled wizard.
+The `/headless` entry also exports `CountAggregatorProvider`, `createStationTypeAppsConfig`, and chart data helpers
+(`prepareChartValues`, `mapTimeSeriesToChartPoints`) for custom UIs that do not use the styled wizard.
+
+**Runnable example:** showcase
+[`/count-aggregator/headless`](https://github.com/open-mapsight/mapsight/blob/main/apps/showcase/src/count-aggregator/count-aggregator-headless-page.tsx)
+(mock API via `pnpm --filter @mapsight/showcase dev`).
 
 ## CMS app-shell embed
 
@@ -167,7 +171,9 @@ pnpm install
 pnpm --filter @mapsight/showcase dev
 ```
 
-Open [http://localhost:5173/count-aggregator](http://localhost:5173/count-aggregator) (default Vite port).
+Open [http://localhost:5173/count-aggregator](http://localhost:5173/count-aggregator) for the styled wizard, or
+[http://localhost:5173/count-aggregator/headless](http://localhost:5173/count-aggregator/headless) for a host-styled
+custom UI using only the `/headless` entry (default Vite port).
 
 The dev server serves JSON and CSV from `/mock/msp/public/count-aggregator`, reusing fixtures from
 `@mapsight/count-aggregator-api`. Implementation: `apps/showcase/count-aggregator-mock/` and
