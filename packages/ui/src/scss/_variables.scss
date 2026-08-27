@@ -58,7 +58,10 @@ $ms3-listIconWidth: 20px !default;
 $ms3-searchHeight: 33px !default;
 $ms3-searchResultMaxHeight: 300px !default;
 $ms3-borderRadius: 3px !default;
-$ms3-fullscreen-top: 0px !default; // NOTE: 0px instead of just 0 so we can use the value in calc()
+// Host chrome above the embed (CMS header, etc.). In-flow chrome such as
+// module tabs should stay in normal flow — a fixed px here breaks text zoom.
+// NOTE: 0px instead of just 0 so we can use the value in calc()
+$ms3-fullscreen-top: 0px !default;
 $ms3-mapOverlayPadding: 10px !default;
 $ms3-mapMaxHeightDefault: 33vh !default;
 $ms3-mapMinHeightDesktop: 500px !default;
