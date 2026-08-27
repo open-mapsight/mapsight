@@ -160,6 +160,11 @@ Mark the paste-ready region in your HTML entry with `<!-- mapsight:snippet:start
   `QueryClientProvider`.
 - Optional theming: `createTheme({ colors: { primary: "#0066cc" } })` passed to `CountAggregatorRoot`.
 - Wizard controls use the `msca:` Tailwind prefix to reduce clashes with host CMS styles.
+- Import **one** package stylesheet (`@mapsight/count-aggregator-ui/styles.css`). Do not `@source` this package from the
+  host Tailwind build.
+- Mount overlays (flatpickr, react-select menus) stay under `.msp-count-aggregator` — do not point portals at
+  `document.body` in CMS embeds.
+- Prefer loading host/CMS CSS first, then Mapsight + count-aggregator styles, so package rules win inside the mount.
 
 ## Run the demo locally
 
