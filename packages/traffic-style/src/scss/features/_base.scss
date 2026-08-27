@@ -4,6 +4,7 @@
 @use "../mixins/icon";
 @use "../mixins/auto-icon";
 @use "../mixins/runtime-icon";
+@use "../mixins/feature-label";
 
 #features {
 	stroke-width: 4;
@@ -110,6 +111,14 @@
 		[geometry|type="MultiLineString"],
 		[geometry|type="MultiPolygon"] {
 			zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX;
+		}
+	}
+
+	:not([cluster]) [markerCaption] {
+		[|js="env.zoom >= #{variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_MIN_ZOOM}"],
+		[state="highlight"],
+		[state="select"] {
+			@include feature-label.featureCaption;
 		}
 	}
 

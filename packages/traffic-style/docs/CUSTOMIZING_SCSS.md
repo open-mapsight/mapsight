@@ -178,21 +178,27 @@ routed to the sheet via `auto-icon` mixins.
 
 ### Global geometry and labels
 
-| Variable                                                  | Default                    | Effect                                        |
-| --------------------------------------------------------- | -------------------------- | --------------------------------------------- |
-| `$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX`                   | `100`                      | Default `zIndex` on `*` selector in `_global` |
-| `$MAPSIGHT_TRAFFIC_STYLE__FILL_COLOR`                     | `rgba(255, 0, 0, 0.46)`    | Default fill                                  |
-| `$MAPSIGHT_TRAFFIC_STYLE__STROKE_COLOR`                   | `rgba(224, 109, 208, 0.9)` | Default stroke                                |
-| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_FONT`                      | `bold`                     | Default label font                            |
-| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_FILL_COLOR`                | `#0c6490`                  | Default label fill                            |
-| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_COLOR`              | `#fff`                     | Default label stroke                          |
-| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_WIDTH`              | `3`                        | Default label stroke width                    |
-| `$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT`                  | `"default"`                | Default feature state name                    |
-| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_X`         | `3`                        | Feature label X offset                        |
-| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_Y`         | `1`                        | Feature label Y offset                        |
-| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_MIN_ZOOM` | `15`                       | Min zoom for default labels                   |
-| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_PREFIX`   | `""`                       | Label text prefix                             |
-| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_SUFFIX`   | `""`                       | Label text suffix                             |
+| Variable                                                  | Default                    | Effect                                                  |
+| --------------------------------------------------------- | -------------------------- | ------------------------------------------------------- |
+| `$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX`                   | `100`                      | Default `zIndex` on `*` selector in `_global`           |
+| `$MAPSIGHT_TRAFFIC_STYLE__FILL_COLOR`                     | `rgba(255, 0, 0, 0.46)`    | Default fill                                            |
+| `$MAPSIGHT_TRAFFIC_STYLE__STROKE_COLOR`                   | `rgba(224, 109, 208, 0.9)` | Default stroke                                          |
+| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_FONT`                      | `bold`                     | Default label font                                      |
+| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_FILL_COLOR`                | `#0c6490`                  | Default label fill                                      |
+| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_COLOR`              | `#fff`                     | Default label stroke                                    |
+| `$MAPSIGHT_TRAFFIC_STYLE__TEXT_STROKE_WIDTH`              | `3`                        | Default label stroke width                              |
+| `$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT`                  | `"default"`                | Default feature state name                              |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_X`         | `3`                        | Feature label X offset                                  |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_OFFSET_Y`         | `1`                        | Feature label Y offset                                  |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_MIN_ZOOM` | `15`                       | Min zoom for default labels                             |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_PREFIX`   | `""`                       | Label text prefix                                       |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_LABEL_DEFAULT_SUFFIX`   | `""`                       | Label text suffix                                       |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_MIN_ZOOM`       | `15`                       | Min zoom for `markerCaption` (also on highlight/select) |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_FONT`           | `bold 15px sans-serif`     | Caption font below the icon                             |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_OFFSET_Y`       | `28`                       | Caption Y offset below the icon                         |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_STROKE_WIDTH`   | `4`                        | Caption outline width                                   |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_COLOR`  | `#0c6490`                  | Caption fill when `markerCaptionColor` is omitted       |
+| `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_HALO`   | `#fff`                     | Caption outline when `markerCaptionHalo` is omitted     |
 
 ---
 

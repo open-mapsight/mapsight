@@ -73,7 +73,10 @@ plugin; feature lists use `useMapsightIcon` automatically.
 ```json
 { "mapsightIconId": "museum" }
 { "mapsightIconId": "museum/#be123c" }
+{ "mapsightIconId": "charging-station", "markerCaption": "150 kW", "markerCaptionColor": "#0095c8" }
 ```
+
+`markerCaption` draws bigger outlined text **below** the icon on `#features` (not clusters). Optional `markerCaptionColor` and `markerCaptionHalo` set fill and outline; defaults are the traffic-style text colors. Captions share a style part (`.iconCaption`) so they can sit next to a side `title` label. Hidden on spread features except highlight/select.
 
 Optional Font Awesome pictograms (`fa-*` ids):
 
