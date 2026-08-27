@@ -1,6 +1,9 @@
 import {Fragment, type ReactElement, useMemo} from "react";
 
-import {buildCsvExportUrl} from "@mapsight/count-aggregator-api";
+import {
+	buildCsvExportUrl,
+	buildRawValuesCsvExportUrl,
+} from "@mapsight/count-aggregator-api";
 import type {BucketMetric} from "@mapsight/count-aggregator-api";
 
 import {
@@ -10,13 +13,14 @@ import {
 import {normalizeSelectedMetrics} from "../../lib/bucket-metrics.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
-import {getResolutionLabels} from "../../lib/i18n.js";
+import {getValuesModeLabels} from "../../lib/i18n.js";
 import {isDefined} from "../../lib/utils.js";
 import {
 	type AggregatedValuesData,
 	type ChartType,
 	type DataResolution,
 	type Station,
+	type ValuesMode,
 } from "../../types";
 import {
 	TimeSeriesChart,
@@ -37,6 +41,7 @@ export function ResultStep({
 	stationsById,
 	chartType = "line",
 	resolution = "daily",
+	valuesMode,
 	showExport = false,
 	showChartTypeSelect = false,
 	onChartTypeChange,
@@ -51,6 +56,7 @@ export function ResultStep({
 	stationsById: Map<number, Station> | undefined;
 	chartType?: ChartType;
 	resolution?: DataResolution;
+	valuesMode?: ValuesMode;
 	selectedMetrics?: readonly BucketMetric[];
 	showExport?: boolean;
 	showChartTypeSelect?: boolean;
@@ -107,13 +113,24 @@ export function ResultStep({
 		[appConfig.defaultMetric, data, metrics, selectedStationIds],
 	);
 
+	const mode = valuesMode ?? resolution;
+	const isRaw = mode === "raw";
+	const chartResolution = isRaw ? "5min" : resolution;
 	const resolutionLabel =
-		appConfig.resolutionLabels?.[resolution] ??
-		getResolutionLabels(t)[resolution];
+		appConfig.resolutionLabels?.[mode] ?? getValuesModeLabels(t)[mode];
 
 	const csvDownloadHref = useMemo(() => {
 		if (!isValid) {
 			return "";
+		}
+
+		if (isRaw) {
+			return buildRawValuesCsvExportUrl(appConfig.apiBaseUrl, {
+				type: appConfig.stationType,
+				from: dateToYmd(startDate),
+				to: dateToYmd(endDate),
+				stationIds: [...selectedStationIds],
+			});
 		}
 
 		return buildCsvExportUrl(appConfig.apiBaseUrl, {
@@ -128,6 +145,7 @@ export function ResultStep({
 		appConfig.apiBaseUrl,
 		appConfig.stationType,
 		endDate,
+		isRaw,
 		isValid,
 		metrics,
 		resolution,
@@ -173,7 +191,7 @@ export function ResultStep({
 							selectedStationIds={selectedStationIds}
 							selectedMetrics={metrics}
 							chartSeries={chartSeries}
-							resolution={resolution}
+							resolution={chartResolution}
 							startDate={startDate}
 							endDate={endDate}
 							stationsById={stationsById}

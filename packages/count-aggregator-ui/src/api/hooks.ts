@@ -3,6 +3,7 @@ import {useMemo} from "react";
 import {
 	createCountAggregatorClient,
 	getLastValues,
+	getRawValues,
 	getValues,
 	listStationTypes,
 	listStations,
@@ -23,7 +24,7 @@ import type {
 	TrafficEventsData,
 	ValuesRequest,
 } from "../types";
-import {mapStationList, mapTimeSeriesMap} from "./mappers.js";
+import {mapRawValuesMap, mapStationList, mapTimeSeriesMap} from "./mappers.js";
 
 const STALE_TIME_MS = 5 * 60 * 1000;
 
@@ -220,6 +221,70 @@ export function useAggregatedValues(
 				metrics: req!.metrics,
 			});
 			return mapTimeSeriesMap(response, req!.metrics);
+		},
+		staleTime: STALE_TIME_MS,
+		enabled: (options?.enabled ?? true) && req !== null,
+	});
+
+	return data;
+}
+
+export function useRawValues(
+	appId: string,
+	request: {
+		stationIds: readonly number[];
+		from?: string;
+		to?: string;
+		limit?: number;
+		order?: "asc" | "desc";
+	},
+	options?: {enabled?: boolean},
+): AggregatedValuesData | undefined {
+	const appConfig = useAppConfig(appId);
+	const metric = appConfig.defaultMetric ?? "sum";
+
+	const req = useMemo(() => {
+		if (request.stationIds.length === 0) {
+			return null;
+		}
+
+		return {
+			stationIds: request.stationIds,
+			from: request.from,
+			to: request.to,
+			limit: request.limit,
+			order: request.order,
+			metric,
+		};
+	}, [
+		request.stationIds,
+		request.from,
+		request.to,
+		request.limit,
+		request.order,
+		metric,
+	]);
+
+	const {data} = useQuery({
+		queryKey: [
+			"count-aggregator",
+			appId,
+			"raw-values",
+			appConfig.apiBaseUrl,
+			appConfig.stationType,
+			req,
+		],
+		queryFn: async () => {
+			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
+			const response = await getRawValues(client, {
+				type: appConfig.stationType,
+				stationIds: req!.stationIds,
+				from: req!.from,
+				to: req!.to,
+				limit: req!.limit,
+				order: req!.order,
+			});
+			return mapRawValuesMap(response, req!.metric);
 		},
 		staleTime: STALE_TIME_MS,
 		enabled: (options?.enabled ?? true) && req !== null,

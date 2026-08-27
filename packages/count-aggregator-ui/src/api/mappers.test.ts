@@ -1,10 +1,11 @@
 import type {
+	RawValuesMapResponse,
 	StationListResponse,
 	TimeSeriesMapResponse,
 } from "@mapsight/count-aggregator-api";
 import {describe, expect, it} from "vitest";
 
-import {mapStationList, mapTimeSeriesMap} from "./mappers.js";
+import {mapRawValuesMap, mapStationList, mapTimeSeriesMap} from "./mappers.js";
 
 describe("mapStationList", () => {
 	it("maps API station summaries by MSP id", () => {
@@ -95,6 +96,31 @@ describe("mapTimeSeriesMap", () => {
 
 	it("handles empty maps", () => {
 		expect(mapTimeSeriesMap({}, ["sum"]).stationsById.size).toBe(0);
+	});
+});
+
+describe("mapRawValuesMap", () => {
+	it("maps exact telemetry points onto the default metric series", () => {
+		const response: RawValuesMapResponse = {
+			"150": {
+				id: 150,
+				stationId: "138969",
+				values: [
+					{datetime: "2026-06-01 12:34:56", value: 67.25},
+					{datetime: "2026-06-01 12:29:56", value: 64.5},
+				],
+			},
+		};
+
+		const result = mapRawValuesMap(response, "sum");
+		const station = result.stationsById.get(150);
+
+		expect(station?.stationId).toBe(150);
+		expect(station?.values).toEqual([
+			{date: new Date(Date.UTC(2026, 5, 1, 12, 34, 56)), value: 67.25},
+			{date: new Date(Date.UTC(2026, 5, 1, 12, 29, 56)), value: 64.5},
+		]);
+		expect(station?.valuesByMetric.sum).toEqual(station?.values);
 	});
 });
 
