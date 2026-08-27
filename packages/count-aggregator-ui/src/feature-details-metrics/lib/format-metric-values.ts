@@ -41,6 +41,7 @@ export function formatMetricDate(date: Date | null): string {
 	}
 
 	return new Intl.DateTimeFormat(getDocumentLocale(), {
+		timeZone: "UTC",
 		day: "2-digit",
 		month: "2-digit",
 		year: "numeric",
