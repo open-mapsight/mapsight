@@ -43,6 +43,7 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 				uiVariant: "stepped",
 				features: {
 					resolutionSelect: true,
+					rawValues: true,
 					chartTypeSelect: true,
 					export: true,
 					presets: false,

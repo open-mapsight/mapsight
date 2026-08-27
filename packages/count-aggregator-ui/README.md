@@ -72,6 +72,7 @@ config.apps.bicycleSensorTotal = {
 	uiVariant: "stepped",
 	features: {
 		resolutionSelect: true,
+		rawValues: true,
 		chartTypeSelect: true,
 		export: true,
 		presets: false,
@@ -122,7 +123,7 @@ Key config fields on each app (`CountAggregatorAppConfig`):
 - `stationType` — API path segment (e.g. `bicycleSensorTotal`)
 - `uiVariant` — `"stepped"` (selection → result) or `"single-page"`
 - `defaultResolution`, `resolutions` — `hourly` … `yearly`
-- `features` — toggles for resolution select, chart type, CSV export, presets, events
+- `features` — toggles for resolution select, Rohwerte, chart type, CSV export, presets, events
 
 ## Exports
 
@@ -226,6 +227,7 @@ Feature flags should be configured via `features` on each app:
 ```ts
 features: {
 	resolutionSelect: true,
+	rawValues: true,
 	chartTypeSelect: true,
 	export: true,
 	presets: false,
