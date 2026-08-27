@@ -34,8 +34,8 @@
 		"@types/react-redux": "catalog:",
 		"autoprefixer": "^10.5.4",
 		"postcss-import": "^16.1.1",
-		"postcss-nested": "^7.0.2",
-		"vite": "^8.1.5"
+		"postcss-nested": "^8.0.1",
+		"vite": "^8.2.1"
 	},
 	"license": "MIT",
 	"repository": {
