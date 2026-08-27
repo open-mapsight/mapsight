@@ -35,14 +35,20 @@ Next.js host).
 
 ## Package layout
 
-| Import                       | Role                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| `@mapsight/ui`               | `create()`, React components, plugins, hooks                                   |
-| `@mapsight/ui/config`        | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
-| `@mapsight/ui/embed/browser` | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
-| `@mapsight/ui/embed/node`    | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
+| Import                                 | Role                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------ |
+| `@mapsight/ui`                         | `create()`, React components, plugins, hooks                                   |
+| `@mapsight/ui/config`                  | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
+| `@mapsight/ui/async-status`            | Loading / error / empty view model + adapters (no Query peer)                  |
+| `@mapsight/ui/async-status/components` | `AsyncStatusRegion`, `AsyncStatusIndicator`                                    |
+| `@mapsight/ui/react-query`             | TanStack Query adapters (`QueryStatusRegion`) — optional peer                  |
+| `@mapsight/ui/embed/browser`           | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
+| `@mapsight/ui/embed/node`              | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
 
-Peer dependency: `react`, `react-dom`.
+Peer dependency: `react`, `react-dom`. Optional peer for Query helpers: `@tanstack/react-query`.
+
+Loading/error presentation architecture:
+[docs/ASYNC_STATUS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/ASYNC_STATUS.md).
 
 ## SCSS (host builds)
 
