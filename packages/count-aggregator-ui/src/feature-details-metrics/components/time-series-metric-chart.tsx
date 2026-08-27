@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {type ReactElement, useMemo} from "react";
 
 import {airQualityIndexBandColor} from "@mapsight/count-aggregator-api";
 import {
@@ -8,6 +8,7 @@ import {
 	Line,
 	LineChart,
 	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
 } from "recharts";
@@ -24,6 +25,8 @@ import {getDocumentLocale} from "../../lib/utils.js";
 import {
 	formatMetricAxisTime,
 	formatMetricAxisValueFromConfig,
+	formatMetricTooltipTime,
+	formatMetricTooltipValue,
 } from "../lib/format-metric-values.js";
 import type {MetricSeriesPoint, MetricWidgetConfig} from "../types.js";
 import AirQualityIndexBadge from "./air-quality-index-badge.js";
@@ -45,6 +48,54 @@ type Props = {
 	points: MetricSeriesPoint[];
 	config: MetricWidgetConfig;
 };
+
+type TooltipPayloadItem = {
+	value?: number;
+	payload?: {
+		timestamp?: number;
+	};
+};
+
+function MetricChartTooltip({
+	active,
+	payload,
+	config,
+}: {
+	active?: boolean;
+	payload?: TooltipPayloadItem[];
+	config: MetricWidgetConfig;
+}): ReactElement | null {
+	if (!active || payload === undefined || payload.length === 0) {
+		return null;
+	}
+
+	const value = payload[0]?.value;
+	const timestamp = payload[0]?.payload?.timestamp;
+
+	if (value === undefined) {
+		return null;
+	}
+
+	return (
+		<div
+			aria-live="polite"
+			className="ms3-smart-city-metric__tooltip"
+			role="tooltip"
+		>
+			{timestamp !== undefined ? (
+				<div className="ms3-smart-city-metric__tooltip-time">
+					{formatMetricTooltipTime(
+						new Date(timestamp),
+						config.resolution,
+					)}
+				</div>
+			) : null}
+			<div className="ms3-smart-city-metric__tooltip-value">
+				{formatMetricTooltipValue(value, config)}
+			</div>
+		</div>
+	);
+}
 
 export default function TimeSeriesMetricChart({points, config}: Props) {
 	const chartData = useMemo(
@@ -145,6 +196,16 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 										})
 									: undefined
 							}
+						/>
+						<Tooltip
+							content={<MetricChartTooltip config={config} />}
+							cursor={{
+								stroke: CHART_TICK_COLOR,
+								strokeDasharray: "3 3",
+								strokeWidth: 1,
+							}}
+							isAnimationActive={false}
+							wrapperStyle={{outline: "none", zIndex: 2}}
 						/>
 						{config.chartType === "line" ? (
 							<Line
