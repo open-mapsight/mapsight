@@ -5,7 +5,9 @@
 
 	.ms3-panel--docked-left & {
 		width: var(--ms3-vertical-panel-content-width);
-		height: calc(100% - 2 * var(--ms3-vertical-panel-padding));
+		height: calc(
+			100% - var(--ms3-vertical-panel-padding) - var(--ms3-vertical-panel-padding)
+		);
 		padding: 0;
 		margin: var(--ms3-vertical-panel-padding);
 
