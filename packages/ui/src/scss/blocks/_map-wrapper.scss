@@ -6,6 +6,7 @@
 	clear: both;
 	flex-grow: 1;
 	height: calc(100vh - #{variables.$ms3-fullscreen-top});
+	height: calc(100svh - #{variables.$ms3-fullscreen-top});
 	max-height: #{variables.$ms3-mapMaxHeightDefault};
 	transition: max-height 200ms ease-out;
 
@@ -17,6 +18,7 @@
 	.ms3-wrapper--fullscreen & {
 		height: auto;
 		max-height: calc(100vh - #{variables.$ms3-fullscreen-top});
+		max-height: calc(100svh - #{variables.$ms3-fullscreen-top});
 	}
 
 	@media print {
