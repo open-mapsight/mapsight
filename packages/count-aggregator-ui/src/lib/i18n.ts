@@ -49,6 +49,7 @@ export type CountAggregatorTranslationKey =
 	| "resolution.daily"
 	| "resolution.hourly"
 	| "resolution.monthly"
+	| "resolution.raw"
 	| "resolution.section"
 	| "resolution.weekly"
 	| "resolution.yearly"
@@ -130,6 +131,7 @@ const de: CountAggregatorTranslations = {
 	"resolution.daily": "Tag",
 	"resolution.hourly": "Stunde",
 	"resolution.monthly": "Monat",
+	"resolution.raw": "Rohwerte",
 	"resolution.section": "Auflösung",
 	"resolution.weekly": "Woche",
 	"resolution.yearly": "Jahr",
@@ -209,6 +211,7 @@ const en: CountAggregatorTranslations = {
 	"resolution.daily": "Day",
 	"resolution.hourly": "Hour",
 	"resolution.monthly": "Month",
+	"resolution.raw": "Raw values",
 	"resolution.section": "Resolution",
 	"resolution.weekly": "Week",
 	"resolution.yearly": "Year",
@@ -269,6 +272,15 @@ export function getResolutionLabels(
 		weekly: translate("resolution.weekly"),
 		monthly: translate("resolution.monthly"),
 		yearly: translate("resolution.yearly"),
+	};
+}
+
+export function getValuesModeLabels(
+	translate: (key: CountAggregatorTranslationKey) => string,
+): Record<Resolution | "raw", string> {
+	return {
+		...getResolutionLabels(translate),
+		raw: translate("resolution.raw"),
 	};
 }
 

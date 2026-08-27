@@ -1,9 +1,29 @@
+/**
+ * Data-layer entry: hooks, config, i18n helpers, chart prep — no CSS and no
+ * styled wizard/chart components. Host apps still wrap with
+ * `CountAggregatorProvider` (exported here) plus their own `QueryClientProvider`.
+ */
+
+export {
+	CountAggregatorProvider,
+	useAppConfig,
+	useCountAggregatorConfig,
+	useCountAggregatorI18n,
+} from "./context/count-aggregator-provider.js";
+
+export {
+	createStationTypeAppsConfig,
+	DEFAULT_PUBLIC_API_BASE_URL,
+	type StationTypeAppsConfigOptions,
+} from "./config/station-types.js";
+
 export {
 	useStationTypes,
 	useStationTypesQuery,
 	useStations,
 	useStationsQuery,
 	useLastValues,
+	useRawValues,
 	useAggregatedValues,
 	useTrafficEvents,
 	usePresets,
@@ -24,6 +44,7 @@ export {dateToYmd, ymdToDate} from "./lib/dates.js";
 export {
 	getCountAggregatorDictionary,
 	getResolutionLabels,
+	getValuesModeLabels,
 	resolveCountAggregatorLocale,
 	type CountAggregatorLocale,
 	type CountAggregatorTranslationKey,
