@@ -70,6 +70,7 @@ export function formatMetricTooltipTime(
 		resolution === "hourly"
 	) {
 		return new Intl.DateTimeFormat(locale, {
+			timeZone: "UTC",
 			day: "2-digit",
 			month: "2-digit",
 			hour: "2-digit",
@@ -79,16 +80,21 @@ export function formatMetricTooltipTime(
 
 	if (resolution === "monthly") {
 		return new Intl.DateTimeFormat(locale, {
+			timeZone: "UTC",
 			month: "long",
 			year: "numeric",
 		}).format(date);
 	}
 
 	if (resolution === "yearly") {
-		return new Intl.DateTimeFormat(locale, {year: "numeric"}).format(date);
+		return new Intl.DateTimeFormat(locale, {
+			timeZone: "UTC",
+			year: "numeric",
+		}).format(date);
 	}
 
 	return new Intl.DateTimeFormat(locale, {
+		timeZone: "UTC",
 		day: "2-digit",
 		month: "2-digit",
 		year: "numeric",

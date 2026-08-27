@@ -77,7 +77,11 @@ function MetricChartTooltip({
 	}
 
 	return (
-		<div className="ms3-smart-city-metric__tooltip">
+		<div
+			aria-live="polite"
+			className="ms3-smart-city-metric__tooltip"
+			role="tooltip"
+		>
 			{timestamp !== undefined ? (
 				<div className="ms3-smart-city-metric__tooltip-time">
 					{formatMetricTooltipTime(
