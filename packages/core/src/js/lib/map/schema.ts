@@ -15,6 +15,8 @@ export const layerMetaDataSchema = z.looseObject({
 	attribution: z.string().optional(),
 	legend: z.string().optional(),
 	miniLegend: z.string().optional(),
+	/** Optional thumbnail URL for compact base-layer entries in the layer switcher. */
+	layerSwitcherPreviewUrl: z.string().optional(),
 	lockedInLayerSwitcher: z.boolean().optional(),
 	visibleInLayerSwitcher: z.boolean().optional(),
 	visibleInExternalLayerSwitcher: z.boolean().optional(),

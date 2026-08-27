@@ -91,18 +91,23 @@ const defaultCreateOptions: CreateOptions = {
 				layerIdsSelector: undefined, // implied default: layer ids of layers viewed in internal Selector
 				grouped: false,
 				splitBaseLayers: false,
+				collapsibleGroups: false,
 			},
 			external: {
 				// FIXME: function in redux state?
 				layerIdsSelector: layerIdsExternalSwitcherSelector,
 				grouped: true,
 				splitBaseLayers: false,
+				collapsibleGroups: false,
 			},
 		},
 		list: {
 			selectionBehavior: {
 				desktop: "scrollToMap", // always 'scrollToMap' for now
-				mobile: "expandInList", // either 'expandInList', 'scrollToMap', 'showInMapOnlyView'
+				// expandInList: inline details in the list
+				// showInMapOnlyView: switch to mapOnly (details panel / sheet)
+				// scrollToMap: keep list view, scroll map into view
+				mobile: "expandInList",
 			},
 			detailsInList: false, // if true details will always be shown in list even if not on mobile
 			showSelectedOnly: false, // don't show list entries, only show the selected one (need some other kind of communication, cyclingControl or icons on the map)
