@@ -27,8 +27,7 @@ export default function WindDirectionDisplay({degrees, locale}: Props) {
 		<div className="ms3-smart-city-metric__wind">
 			<div
 				className="ms3-smart-city-metric__wind-compass"
-				role="img"
-				aria-label={label}
+				aria-hidden={true}
 			>
 				<span className="ms3-smart-city-metric__wind-cardinal ms3-smart-city-metric__wind-cardinal--n">
 					N
