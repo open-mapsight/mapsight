@@ -89,10 +89,20 @@ export {
 	type MetricPlaceholderData,
 	type MetricWidgetConfig,
 	type MetricWidgetKind,
+	type MetricWidgetVariant,
 	type SmartCityMetricsOptions,
 } from "./feature-details-metrics/index.js";
 export {
+	AIR_QUALITY_INDEX_BANDS,
+	airQualityIndexBandColor,
+	airQualityIndexBandLabel,
+	isAirQualityIndexStationType,
+	isAirQualityIndexUnit,
+	resolveAirQualityIndexBand,
 	resolveStationTypeDisplay,
+	type AirQualityIndexBand,
+	type AirQualityIndexBandId,
+	type AirQualityIndexBandKey,
 	type StationTypeDisplay,
 } from "@mapsight/count-aggregator-api";
 

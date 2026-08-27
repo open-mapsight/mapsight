@@ -109,6 +109,124 @@
 	text-decoration: none;
 }
 
+.ms3-smart-city-metric__chart-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-top: 8px;
+}
+
+.ms3-smart-city-metric__aqi-badge {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 8px;
+	margin: 0 4px;
+	border: 1px solid color-mix(in srgb, var(--ms3-aqi-color) 55%, #111827);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--ms3-aqi-color) 28%, #ffffff);
+	padding: 4px 10px 4px 6px;
+	color: var(--ms3-metric-text);
+	font-size: 12px;
+	font-weight: 650;
+	line-height: 1.2;
+	text-transform: lowercase;
+}
+
+.ms3-smart-city-metric__aqi-swatch {
+	width: 14px;
+	height: 14px;
+	border-radius: 999px;
+	background: var(--ms3-aqi-color);
+	box-shadow: inset 0 0 0 1px rgb(17 24 39 / 18%);
+}
+
+.ms3-smart-city-metric__wind {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 140px;
+	padding: 12px;
+}
+
+.ms3-smart-city-metric__wind-compass {
+	position: relative;
+	width: 96px;
+	height: 96px;
+	border: 2px solid #cbd5e1;
+	border-radius: 999px;
+	background:
+		radial-gradient(circle at center, #ffffff 0 38%, transparent 39%),
+		conic-gradient(from 0deg, #f8fafc 0 25%, #eef2ff 25% 50%, #f8fafc 50% 75%, #eef2ff 75% 100%);
+	box-shadow: inset 0 0 0 1px #e2e8f0;
+}
+
+.ms3-smart-city-metric__wind-cardinal {
+	position: absolute;
+	color: var(--ms3-metric-muted);
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.ms3-smart-city-metric__wind-cardinal--n {
+	top: 6px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.ms3-smart-city-metric__wind-cardinal--e {
+	top: 50%;
+	right: 7px;
+	transform: translateY(-50%);
+}
+
+.ms3-smart-city-metric__wind-cardinal--s {
+	bottom: 6px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.ms3-smart-city-metric__wind-cardinal--w {
+	top: 50%;
+	left: 7px;
+	transform: translateY(-50%);
+}
+
+.ms3-smart-city-metric__wind-needle {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 2px;
+	height: 34px;
+	margin: -34px 0 0 -1px;
+	border-radius: 999px;
+	background: linear-gradient(#0f766e 0 58%, #94a3b8 58% 100%);
+	transform-origin: bottom center;
+}
+
+.ms3-smart-city-metric__wind-needle::before {
+	content: "";
+	position: absolute;
+	top: -2px;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-bottom: 8px solid #0f766e;
+	transform: translateX(-50%);
+}
+
+.ms3-smart-city-metric__wind-label {
+	color: var(--ms3-metric-text);
+	font-size: 18px;
+	font-weight: 650;
+	line-height: 1.2;
+}
+
 .ms3-smart-city-metric__chart {
 	height: 140px;
 	min-height: 140px;

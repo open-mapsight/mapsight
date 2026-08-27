@@ -12,6 +12,7 @@ describe("resolveMetricWidgetConfig", () => {
 			limit: 30,
 			chartType: "area",
 			decimals: 0,
+			variant: "default",
 		});
 	});
 
@@ -27,6 +28,7 @@ describe("resolveMetricWidgetConfig", () => {
 			limit: 96,
 			chartType: "area",
 			decimals: 1,
+			variant: "default",
 		});
 	});
 
@@ -44,5 +46,44 @@ describe("resolveMetricWidgetConfig", () => {
 				"Lungenvolumen gefilterte Luft 24h",
 			).kind,
 		).toBe("sumLastDay");
+	});
+
+	it("uses hourly air-quality index widgets with band variant", () => {
+		expect(
+			resolveMetricWidgetConfig(
+				"airQualityPM10Index",
+				"Luftqualitätsindex (PM10)",
+			),
+		).toMatchObject({
+			kind: "timeSeries",
+			resolution: "hourly",
+			limit: 24,
+			variant: "airQualityIndex",
+		});
+	});
+
+	it("uses a compass variant for wind direction", () => {
+		expect(
+			resolveMetricWidgetConfig(
+				"weatherWindDirection",
+				"Windrichtung (°)",
+			),
+		).toMatchObject({
+			variant: "windDirection",
+			resolution: "15min",
+		});
+	});
+
+	it("uses water defaults for underground levels", () => {
+		expect(
+			resolveMetricWidgetConfig(
+				"waterLevelUnderground",
+				"Grundwasserstand",
+			),
+		).toMatchObject({
+			resolution: "hourly",
+			limit: 48,
+			decimals: 2,
+		});
 	});
 });

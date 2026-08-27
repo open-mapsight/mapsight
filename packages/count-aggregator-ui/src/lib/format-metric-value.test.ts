@@ -21,6 +21,16 @@ describe("formatMetricValue", () => {
 			formatMetricValue(128, {displayPrecision: 0, unit: null}, "de-DE"),
 		).toBe("128");
 	});
+
+	it("formats air-quality index units as UBA band labels", () => {
+		expect(
+			formatMetricValue(
+				2.87,
+				{displayPrecision: 0, unit: "index"},
+				"de-DE",
+			),
+		).toBe("gut");
+	});
 });
 
 describe("formatMetricAxisValue", () => {

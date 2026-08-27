@@ -1,3 +1,12 @@
+import {
+	airQualityIndexBandLabel,
+	isAirQualityIndexUnit,
+} from "@mapsight/count-aggregator-api";
+
+import {
+	type CountAggregatorLocale,
+	resolveCountAggregatorLocale,
+} from "./i18n.js";
 import {getDocumentLocale} from "./utils.js";
 
 export interface MetricValueFormat {
@@ -5,11 +14,22 @@ export interface MetricValueFormat {
 	unit?: string | null;
 }
 
+function toBandLocale(locale: string): CountAggregatorLocale {
+	return resolveCountAggregatorLocale(locale);
+}
+
 export function formatMetricValue(
 	value: number,
 	format: MetricValueFormat,
 	locale = getDocumentLocale(),
 ): string {
+	if (isAirQualityIndexUnit(format.unit)) {
+		const bandLabel = airQualityIndexBandLabel(value, toBandLocale(locale));
+		if (bandLabel !== undefined) {
+			return bandLabel;
+		}
+	}
+
 	const formatted = new Intl.NumberFormat(locale, {
 		minimumFractionDigits: format.displayPrecision,
 		maximumFractionDigits: format.displayPrecision,
@@ -27,6 +47,13 @@ export function formatMetricAxisValue(
 	format: MetricValueFormat,
 	locale = getDocumentLocale(),
 ): string {
+	if (isAirQualityIndexUnit(format.unit)) {
+		const bandLabel = airQualityIndexBandLabel(value, toBandLocale(locale));
+		if (bandLabel !== undefined) {
+			return bandLabel;
+		}
+	}
+
 	return new Intl.NumberFormat(locale, {
 		maximumFractionDigits: format.displayPrecision,
 	}).format(value);
