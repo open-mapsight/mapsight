@@ -10,6 +10,7 @@ export {
 } from "./lib/fetch-client.js";
 export {
 	getLastValues,
+	getRawValues,
 	getStationLastValues,
 	getStationSums,
 	getValues,
@@ -18,6 +19,7 @@ export {
 	listStationTypes,
 	type LastValuesRequest,
 	type ListStationsOptions,
+	type RawValuesRequest,
 	type StationLastValuesRequest,
 	type ValuesQueryRequest,
 	type ValuesRequest,
@@ -41,6 +43,8 @@ export {
 	buildMultipleLastValuesUrl,
 	buildMultipleValuesQueryUrl,
 	buildMultipleValuesUrl,
+	buildRawValuesCsvExportUrl,
+	buildRawValuesUrl,
 	buildSingleStationLastValuesUrl,
 	buildSingleStationValuesUrl,
 	buildStationSumsUrl,
@@ -50,6 +54,7 @@ export {
 	type MultipleLastValuesRequest,
 	type MultipleValuesQueryRequest,
 	type MultipleValuesRequest,
+	type MultipleRawValuesRequest,
 	type SingleStationLastValuesRequest,
 	type SingleStationValuesRequest,
 } from "./lib/urls.js";
@@ -62,6 +67,9 @@ export type {
 	LastValuesAnchor,
 	LocalDateTime,
 	ProblemsListResponse,
+	RawValuePoint,
+	RawValuesMapResponse,
+	RawValuesResponse,
 	Resolution,
 	ResponseFormat,
 	StationListResponse,

@@ -47,6 +47,8 @@ const packageSourceRoots = {
 export function createWorkspaceDevAliases(): WorkspaceDevAlias[] {
 	const coreSourceRoot = packageSourceRoots["@mapsight/core"];
 	const uiSourceRoot = packageSourceRoots["@mapsight/ui"];
+	const countAggregatorUiSourceRoot =
+		packageSourceRoots["@mapsight/count-aggregator-ui"];
 
 	return [
 		{
@@ -68,6 +70,10 @@ export function createWorkspaceDevAliases(): WorkspaceDevAlias[] {
 		{
 			find: "@mapsight/ui/react-query",
 			replacement: path.join(uiSourceRoot, "react-query/index.ts"),
+		},
+		{
+			find: "@mapsight/count-aggregator-ui/headless",
+			replacement: path.join(countAggregatorUiSourceRoot, "headless.ts"),
 		},
 		...workspacePackages.map((name) => ({
 			find: name,

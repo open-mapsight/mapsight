@@ -1,6 +1,7 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 
 import {CountAggregatorDemoPage} from "./count-aggregator/count-aggregator-demo-page.tsx";
+import {CountAggregatorHeadlessPage} from "./count-aggregator/count-aggregator-headless-page.tsx";
 import {CatalogPage} from "./icons/catalog-page.tsx";
 import {EditorPage} from "./icons/editor-page.tsx";
 import {ShowcaseLayout} from "./layout/showcase-layout.tsx";
@@ -41,6 +42,10 @@ export function App() {
 					<Route
 						path="count-aggregator"
 						element={<CountAggregatorDemoPage />}
+					/>
+					<Route
+						path="count-aggregator/headless"
+						element={<CountAggregatorHeadlessPage />}
 					/>
 					<Route path="imprint" element={<ImprintPage />} />
 					<Route path="privacy" element={<PrivacyPage />} />

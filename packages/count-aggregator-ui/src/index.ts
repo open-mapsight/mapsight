@@ -41,6 +41,7 @@ export {
 	useStations,
 	useStationsQuery,
 	useLastValues,
+	useRawValues,
 	useAggregatedValues,
 	useTrafficEvents,
 	usePresets,

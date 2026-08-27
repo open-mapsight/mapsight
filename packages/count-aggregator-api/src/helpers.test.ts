@@ -2,11 +2,13 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {createCountAggregatorClient} from "./client.js";
 import lastValuesMapFixture from "./fixtures/last-values-map.json";
+import rawValuesMapFixture from "./fixtures/raw-values-map.json";
 import stationListFixture from "./fixtures/station-list.json";
 import stationSumsFixture from "./fixtures/station-sums.json";
 import valuesMapFixture from "./fixtures/values-map.json";
 import {
 	getLastValues,
+	getRawValues,
 	getStationLastValues,
 	getStationSums,
 	getValues,
@@ -182,6 +184,28 @@ describe("typed endpoint helpers", () => {
 			stationIds: [140],
 			metrics: ["mean"],
 		});
+	});
+
+	it("gets raw values with optional range filters", async () => {
+		const fetchFn = createMockFetch((url) => {
+			expect(url).toBe(
+				`${baseUrl}/waterLevelSurface/raw-values?stationIds=140&from=2026-06-01+00%3A00%3A00&to=2026-06-01+12%3A00%3A00&limit=50&order=desc`,
+			);
+			return rawValuesMapFixture;
+		});
+
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		const result = await getRawValues(client, {
+			type: "waterLevelSurface",
+			stationIds: [140],
+			from: "2026-06-01 00:00:00",
+			to: "2026-06-01 12:00:00",
+			limit: 50,
+			order: "desc",
+		});
+
+		expect(result["150"]?.id).toBe(150);
+		expect(result["150"]?.values[0]?.value).toBe(67.25);
 	});
 
 	it("gets last values", async () => {

@@ -66,6 +66,16 @@ export function getTooltipDateFormat(
 	resolution: DataResolution,
 ): Intl.DateTimeFormatOptions {
 	switch (resolution) {
+		case "5min":
+		case "15min":
+			return {
+				weekday: "long",
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+				hour: "numeric",
+				minute: "2-digit",
+			};
 		case "hourly":
 			return {
 				weekday: "long",
@@ -108,6 +118,8 @@ export function formatChartAxisDate(
 			});
 		case "yearly":
 			return date.getFullYear().toString();
+		case "5min":
+		case "15min":
 		case "hourly":
 			return date.toLocaleTimeString(undefined, {
 				hour: "2-digit",
