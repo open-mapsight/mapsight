@@ -142,14 +142,14 @@ stateDiagram-v2
     Error --> PendingHidden: retry / refetch
 ```
 
-| Display phase | Condition                                  | UI                                         |
-| ------------- | ------------------------------------------ | ------------------------------------------ |
-| `hidden`      | Initial load, delay not elapsed            | Render nothing (or optional skeleton slot) |
-| `loading`     | `showInitialLoading` (delayed `isLoading`) | Full placeholder spinner + message         |
-| `error`       | `status === 'error'`                       | Error block + retry if `refetch` provided  |
-| `empty`       | `status === 'success'` && empty data       | Empty message                              |
-| `refreshing`  | `isRefetching` && has content              | Children + subtle badge/bar                |
-| `content`     | `status === 'success'` && has data         | Children only                              |
+| Display phase | Condition                                                                                 | UI                                        |
+| ------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `hidden`      | Initial load, delay not elapsed                                                           | Render nothing (`AsyncStatusRegion` is `null`) |
+| `loading`     | `showInitialLoading` (delayed `isLoading`)                                                | Full placeholder spinner + message        |
+| `error`       | `status === 'error'` and no stale data (or `errorWithStaleData: "replace"`)               | Error block + retry if `refetch` provided |
+| `empty`       | `status === 'success'` && empty data                                                      | Empty message                             |
+| `refreshing`  | `isRefetching` && has content, or `status === 'error'` with stale data and default banner | Children + subtle badge/bar               |
+| `content`     | `status === 'success'` && has data                                                        | Children only                             |
 
 ### Delay rules
 
