@@ -4,8 +4,6 @@ Tracking plan for reusable dialog / sheet / popover shells extracted from host
 apps. No customer branding, module names, or hard-coded locale copy in these
 APIs — hosts pass labels, children, and `className`.
 
-Branch: `feature/ui-a11y-primitives`
-
 ## Status
 
 | Primitive                         | Status   | Entry                                           |
