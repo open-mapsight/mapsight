@@ -1,11 +1,10 @@
-@use "../variables";
 
 .ms3-region-selector {
 	display: inline-block;
 	padding: 0;
-	margin: variables.$ms3-mapOverlayPadding 0 0 variables.$ms3-mapOverlayPadding;
-	background: variables.$ms3-backgroundColor;
-	border-radius: variables.$ms3-borderRadius;
+	margin: var(--ms3-map-overlay-padding) 0 0 var(--ms3-map-overlay-padding);
+	background: var(--ms3-background-color);
+	border-radius: var(--ms3-border-radius);
 	list-style: none;
 	pointer-events: auto;
 
@@ -13,17 +12,17 @@
 		display: block;
 		padding: 0;
 		margin: 0;
-		border-bottom: 1px solid variables.$ms3-borderColor;
+		border-bottom: 1px solid var(--ms3-border-color);
 
 		&:first-child {
-			border-top-left-radius: variables.$ms3-borderRadius;
-			border-top-right-radius: variables.$ms3-borderRadius;
+			border-top-left-radius: var(--ms3-border-radius);
+			border-top-right-radius: var(--ms3-border-radius);
 		}
 
 		&:last-child {
 			border-bottom: 0;
-			border-bottom-left-radius: variables.$ms3-borderRadius;
-			border-bottom-right-radius: variables.$ms3-borderRadius;
+			border-bottom-left-radius: var(--ms3-border-radius);
+			border-bottom-right-radius: var(--ms3-border-radius);
 		}
 	}
 
@@ -32,8 +31,8 @@
 		width: 100%;
 		padding: 4px 10px;
 		border: 0;
-		background: variables.$ms3-backgroundColor;
-		color: variables.$ms3-foregroundColor;
+		background: var(--ms3-background-color);
+		color: var(--ms3-foreground-color);
 		text-align: left;
 	}
 

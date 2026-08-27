@@ -69,9 +69,9 @@
 		}
 		padding: 0;
 		margin: 5px 15px;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 		border: 0;
-		border-radius: variables.$ms3-borderRadius;
+		border-radius: var(--ms3-border-radius);
 		pointer-events: auto;
 
 		transition: margin 300ms ease-in-out;

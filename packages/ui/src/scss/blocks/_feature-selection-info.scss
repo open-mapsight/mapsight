@@ -3,7 +3,7 @@
 .ms3-feature-selection-info {
 	position: relative;
 	transition: height 300ms linear;
-	background: variables.$ms3-backgroundColor;
+	background: var(--ms3-background-color);
 
 	&__headline {
 		margin-top: 0;
@@ -21,7 +21,7 @@
 	&__wrapper {
 		.ms3-wrapper--desktop &,
 		.ms3-wrapper--fullscreen & {
-			width: variables.$ms3-verticalPanelWidth - 1px;
+			width: calc(var(--ms3-vertical-panel-width) - 1px);
 			height: 100%;
 
 			@if (variables.$ms3-option-featureSelectionInfoOverflowScrollContent) {
@@ -40,7 +40,7 @@
 		}
 
 		.ms3-wrapper--mapOnly & {
-			height: variables.$ms3-mobileFeatureSelectInfoHeight;
+			height: var(--ms3-mobile-feature-select-info-height);
 		}
 	}
 
@@ -69,7 +69,7 @@
 			display: block;
 			width: 20px;
 			height: 3px;
-			background: variables.$ms3-themeColorA;
+			background: var(--ms3-theme-color-a);
 			border-radius: 2px;
 			transform: rotate(-45deg);
 		}
@@ -82,7 +82,7 @@
 		&:focus {
 			&::before,
 			&::after {
-				background: variables.$ms3-themeColorB;
+				background: var(--ms3-theme-color-b);
 			}
 		}
 
@@ -101,7 +101,7 @@
 	.ms3-wrapper--mapOnly &--select {
 		height: 100%;
 		padding: 0;
-		border-radius: variables.$ms3-borderRadius;
+		border-radius: var(--ms3-border-radius);
 		overflow: hidden;
 	}
 }

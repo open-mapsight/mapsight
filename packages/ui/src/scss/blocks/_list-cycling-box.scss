@@ -33,8 +33,8 @@
 			left: 50%;
 			top: 50%;
 
-			border-top: 2px solid variables.$ms3-primaryColor;
-			border-left: 2px solid variables.$ms3-primaryColor;
+			border-top: 2px solid var(--ms3-primary-color);
+			border-left: 2px solid var(--ms3-primary-color);
 
 			transform-origin: center center;
 		}
@@ -54,8 +54,8 @@
 				background-color: transparent;
 
 				&::before {
-					border-top: 2px solid variables.$ms3-themeColorB;
-					border-left: 2px solid variables.$ms3-themeColorB;
+					border-top: 2px solid var(--ms3-theme-color-b);
+					border-left: 2px solid var(--ms3-theme-color-b);
 				}
 			}
 		}
@@ -77,17 +77,17 @@
 			pointer-events: none;
 			z-index: 1;
 			opacity: 0;
-			transition: opacity variables.$ms3-transition-fast variables.$ms3-easing-default;
+			transition: opacity var(--ms3-transition-fast) var(--ms3-easing-default);
 		}
 
 		&::before {
 			left: 0;
-			box-shadow: inset 20px 0 20px -20px variables.$ms3-dotsShadowColor;
+			box-shadow: inset 20px 0 20px -20px var(--ms3-dots-shadow-color);
 		}
 
 		&::after {
 			right: 0;
-			box-shadow: inset -20px 0 20px -20px variables.$ms3-dotsShadowColor;
+			box-shadow: inset -20px 0 20px -20px var(--ms3-dots-shadow-color);
 		}
 
 		&--overflow-left::before {
@@ -119,14 +119,14 @@
 			display: block;
 			height: 1em;
 			width: 1em;
-			background-color: variables.$ms3-primaryColor;
+			background-color: var(--ms3-primary-color);
 			border-radius: 50%;
 			box-sizing: border-box;
 		}
 
 		&--selected {
 			&::before {
-				background-color: variables.$ms3-themeColorB;
+				background-color: var(--ms3-theme-color-b);
 			}
 		}
 
@@ -135,7 +135,7 @@
 			&--highlight:nth-child(odd),
 			&--highlight:nth-child(even) {
 				&::before {
-					background-color: variables.$ms3-themeColorB;
+					background-color: var(--ms3-theme-color-b);
 				}
 			}
 		}

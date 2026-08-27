@@ -18,6 +18,11 @@ Server (or build-time SSR) emits:
 Client [`browserEmbed`](../../packages/ui/src/js/embed/browser.ts) reads the attribute when `reHydratedState` is not
 passed explicitly, merges into create options, and runs the initial render.
 
+In-flight work does not survive the process boundary. `isLoading` / fetch
+`status: "loading"` is cleared on emit and again on rehydrate; unfinished
+feature sources are loaded on the client. Otherwise the client would see
+`isLoading: true` with empty data and never start a new request.
+
 ```html
 <div
 	id="mapsight-embed-1"
@@ -53,10 +58,16 @@ Pages must never hard-depend on SSR uptime. This pattern is proven in reference 
 Monorepo entry points today:
 
 - Client: [`packages/ui/src/js/embed/browser.ts`](../../packages/ui/src/js/embed/browser.ts)
-- Server: [`packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js), [
-  `packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts)
+- Server: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts) —
+  `render()` / `renderAsync()` return the HTML shell; `getDehydratedState()` /
+  `emitFragment({ id })` build the container fragment with `data-dehydrated-state`
+- Optional Express-style middleware: [
+  `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js) —
+  POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
+  `text/html` fragment
 
-**Not decided:** primary server runtime (Node LTS vs Bun), unified render API vs per-framework adapters.
+**Maintainer CMS path for this phase:** PHP → **Node LTS** sidecar (Decision 006 still
+lists Bun/framework alternatives as open for other hosts).
 
 ---
 
@@ -115,6 +126,22 @@ Same snippet imports `browserEmbed` — it reads `data-dehydrated-state` automat
 
 Monorepo server entry points: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts), [
 `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js).
+
+### PHP → Node smoke (generic CMS)
+
+A fixture host under [`e2e/php-ssr-smoke/`](../../e2e/php-ssr-smoke/) checks the wiring seam
+(not a specific host app):
+
+1. Node sidecar returns an HTML fragment with `data-dehydrated-state`
+2. PHP success path accepts that fragment
+3. PHP fallback path emits client-only markup when the sidecar is unreachable
+
+```bash
+pnpm run test:php-ssr-smoke
+```
+
+Uses native `php` when `php -v` works; otherwise `docker run php:8.3-cli`. Set
+`SKIP_PHP_SSR_SMOKE=1` to skip. Optional — not part of the default CI matrix yet.
 
 ---
 

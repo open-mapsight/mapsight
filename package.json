@@ -69,6 +69,7 @@
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
 		"test": "turbo test",
 		"test:configs": "node --test configs/lint-staged.test.mts",
+		"test:php-ssr-smoke": "node e2e/php-ssr-smoke/run.mts",
 		"test:starters:copy-out": "node scripts/smoke-starter-copy-out.mts",
 		"test:starters:e2e": "playwright test -c e2e/starters/playwright.config.ts",
 		"typecheck": "turbo run typecheck //#typecheck:scripts",

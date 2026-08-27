@@ -12,7 +12,7 @@
  */
 
 .ms3-marginal {
-	font-size: variables.$ms3-fontSizeBase;
+	font-size: var(--ms3-font-size-base);
 
 	&:empty {
 		display: none;
@@ -22,11 +22,11 @@
 		width: 25%;
 
 		&--left {
-			margin-right: variables.$ms3-marginalGap;
+			margin-right: var(--ms3-marginal-gap);
 		}
 
 		&--right {
-			margin-right: variables.$ms3-marginalGap;
+			margin-right: var(--ms3-marginal-gap);
 		}
 	}
 }

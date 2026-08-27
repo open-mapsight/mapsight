@@ -1,4 +1,3 @@
-@use "../variables";
 
 $buttonWidth: 25px;
 $buttonHeight: 70px;
@@ -12,9 +11,9 @@ $transitionTime: 400ms;
 	height: $buttonHeight;
 	margin: 0 (-$buttonWidth) 80px 0;
 	border: 0;
-	border-radius: 0 variables.$ms3-borderRadius variables.$ms3-borderRadius 0;
-	z-index: variables.$ms3-zIndexListToggleButton;
-	background-color: variables.$ms3-backgroundColor;
+	border-radius: 0 var(--ms3-border-radius) var(--ms3-border-radius) 0;
+	z-index: var(--ms3-z-index-list-toggle-button);
+	background-color: var(--ms3-background-color);
 	transition: margin-left $transitionTime ease-out;
 	box-shadow: 3px 4px 4px -2px rgba(0, 0, 0, 0.4);
 
@@ -22,7 +21,7 @@ $transitionTime: 400ms;
 		// arrow
 		content: "";
 		border: 7px solid transparent;
-		border-left-color: variables.$ms3-themeColorA;
+		border-left-color: var(--ms3-theme-color-a);
 		display: block;
 		left: 2px;
 		position: relative;
@@ -30,28 +29,28 @@ $transitionTime: 400ms;
 
 	&:hover,
 	&:focus {
-		background: variables.$ms3-backgroundHighlightColor;
-		color: variables.$ms3-themeColorB;
+		background: var(--ms3-background-highlight-color);
+		color: var(--ms3-theme-color-b);
 		outline: 0;
 	}
 
 	&:hover::after {
 		// arrow
-		border-left-color: variables.$ms3-themeColorB;
+		border-left-color: var(--ms3-theme-color-b);
 	}
 
 	&--active {
 		&::after {
 			// arrow
 			left: -6px;
-			border-right-color: variables.$ms3-themeColorA;
+			border-right-color: var(--ms3-theme-color-a);
 			border-left-color: transparent;
 		}
 
 		&:hover::after {
 			// arrow
 			border-left-color: transparent;
-			border-right-color: variables.$ms3-themeColorB;
+			border-right-color: var(--ms3-theme-color-b);
 		}
 	}
 }

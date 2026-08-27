@@ -1,0 +1,44 @@
+/// Thin, low-contrast scrollbar chrome for overflow panels.
+/// Optional `$track-color` overrides `--ms3-scrollbar-track-color` on the element.
+@mixin minimal-scrollbar($track-color: null) {
+	@if $track-color != null {
+		--ms3-scrollbar-track-color: #{$track-color};
+	}
+
+	scrollbar-width: thin;
+	scrollbar-color: var(--ms3-scrollbar-thumb-firefox) transparent;
+
+	&::-webkit-scrollbar {
+		width: var(--ms3-scrollbar-size);
+		height: var(--ms3-scrollbar-size);
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--ms3-scrollbar-thumb);
+		border: 2px solid var(--ms3-scrollbar-track-color);
+		border-radius: 999px;
+	}
+
+	&:hover {
+		scrollbar-color: var(--ms3-scrollbar-thumb-firefox-hover) transparent;
+	}
+
+	&:hover::-webkit-scrollbar-thumb {
+		background-color: var(--ms3-scrollbar-thumb-hover);
+	}
+}
+
+/// Flex child that scrolls vertically with minimal scrollbar chrome.
+@mixin scroll-container {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+
+	@include minimal-scrollbar;
+}

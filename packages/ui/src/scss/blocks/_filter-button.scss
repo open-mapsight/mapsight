@@ -4,10 +4,10 @@
 .ms3-filter-button {
 	padding: 10px 16px;
 	border: 0;
-	background: variables.$ms3-themeColorA;
-	color: variables.$ms3-invertedPrimaryColor;
+	background: var(--ms3-theme-color-a);
+	color: var(--ms3-inverted-primary-color);
 	font-weight: bold;
-	font-size: variables.$ms3-fontSizeSmaller;
+	font-size: var(--ms3-font-size-smaller);
 	text-transform: uppercase;
 	line-height: 1;
 	text-align: left;
@@ -18,13 +18,13 @@
 	}
 
 	&--secondary {
-		background-color: variables.$ms3-tertiaryColor;
+		background-color: var(--ms3-tertiary-color);
 	}
 
 	&:hover,
 	&:focus {
-		background-color: variables.$ms3-primaryColor;
-		color: variables.$ms3-invertedPrimaryColor;
+		background-color: var(--ms3-primary-color);
+		color: var(--ms3-inverted-primary-color);
 	}
 
 	&--full-width {

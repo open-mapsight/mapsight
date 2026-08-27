@@ -1,17 +1,16 @@
-@use "../variables";
 @use "async-status";
 
 .ms3-search-result {
 	$b: &;
 
 	position: relative;
-	border-top: 1px solid variables.$ms3-borderColor;
-	max-height: variables.$ms3-searchResultMaxHeight;
+	border-top: 1px solid var(--ms3-border-color);
+	max-height: var(--ms3-search-result-max-height);
 	overflow-x: hidden;
 	overflow-y: auto;
 
 	&__group {
-		max-height: variables.$ms3-searchResultMaxHeight - 50px;
+		max-height: calc(var(--ms3-search-result-max-height) - 50px);
 	}
 
 	&__group-head {
@@ -21,12 +20,12 @@
 		position: sticky;
 		top: 0;
 
-		background: variables.$ms3-backgroundColorOffset;
-		border-bottom: 1px solid variables.$ms3-borderColor;
+		background: var(--ms3-background-color-offset);
+		border-bottom: 1px solid var(--ms3-border-color);
 		font-size: inherit;
 
 		#{$b}__group:not(:first-child) & {
-			border-top: 1px solid variables.$ms3-borderColor;
+			border-top: 1px solid var(--ms3-border-color);
 		}
 	}
 
@@ -39,26 +38,26 @@
 		text-align: left;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 
 		&__subline {
 			display: block;
 			margin-left: 1px;
 			margin-top: -2px;
-			font-size: variables.$ms3-fontSizeSmallest;
-			color: variables.$ms3-secondaryColor;
+			font-size: var(--ms3-font-size-smallest);
+			color: var(--ms3-secondary-color);
 		}
 
 		&:hover,
 		&:focus {
-			background: variables.$ms3-backgroundHighlightColor;
-			color: variables.$ms3-themeColorB;
+			background: var(--ms3-background-highlight-color);
+			color: var(--ms3-theme-color-b);
 
 			// show overflow text on hover/focus
 			overflow: visible;
 			text-shadow:
-				1px 1px 2px variables.$ms3-backgroundHighlightColor,
-				-1px -1px 2px variables.$ms3-backgroundHighlightColor;
+				1px 1px 2px var(--ms3-background-highlight-color),
+				-1px -1px 2px var(--ms3-background-highlight-color);
 		}
 	}
 
@@ -69,7 +68,7 @@
 	}
 
 	&__list-item:not(:first-child) {
-		border-top: 1px solid variables.$ms3-borderColor;
+		border-top: 1px solid var(--ms3-border-color);
 	}
 
 	&__empty-message,
@@ -116,7 +115,7 @@
 	}
 
 	.ms3-search-overlay & {
-		background: variables.$ms3-backgroundColor;
+		background: var(--ms3-background-color);
 
 		&--empty,
 		&--loading,

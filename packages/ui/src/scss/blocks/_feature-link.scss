@@ -6,15 +6,15 @@
 	height: 40px;
 	padding: 0;
 	margin: 7px 10px 15px 0;
-	border: 1px solid variables.$ms3-tableLineColor;
-	border-radius: variables.$ms3-borderRadius;
+	border: 1px solid var(--ms3-table-line-color);
+	border-radius: var(--ms3-border-radius);
 	float: left;
 	background: transparent no-repeat center center;
 	transition: background 300ms ease-in-out;
 
 	&:hover,
 	&:focus {
-		background-color: variables.$ms3-pageBackgroundColor;
+		background-color: var(--ms3-page-background-color);
 	}
 
 	&--map {

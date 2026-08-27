@@ -1,22 +1,20 @@
-@use "../variables";
-
 .ms3-wrapper {
 	background: white;
-	z-index: variables.$ms3-zIndexWrapper;
+	z-index: var(--ms3-z-index-wrapper);
 
 	&--mapOnly,
 	&--fullscreen {
 		background: white;
 		position: fixed;
-		top: variables.$ms3-fullscreen-top;
+		top: var(--ms3-fullscreen-top);
 		left: 0;
 		right: 0;
 		// Fallback when `svh` is unsupported; ignored once `height` below applies.
 		bottom: 0;
 		// Small viewport so iOS browser chrome is not counted. Host chrome above
-		// the embed still subtracts via `$ms3-fullscreen-top`.
-		height: calc(100svh - #{variables.$ms3-fullscreen-top});
-		z-index: variables.$ms3-fullscreen-zIndexWrapper;
+		// the embed still subtracts via `--ms3-fullscreen-top`.
+		height: calc(100svh - var(--ms3-fullscreen-top));
+		z-index: var(--ms3-fullscreen-z-index-wrapper);
 		overflow: hidden;
 
 		.ms3-marginal {
