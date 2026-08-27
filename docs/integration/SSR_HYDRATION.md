@@ -122,6 +122,22 @@ Same snippet imports `browserEmbed` — it reads `data-dehydrated-state` automat
 Monorepo server entry points: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts), [
 `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js).
 
+### PHP → Node smoke (generic CMS)
+
+A fixture host under [`e2e/php-ssr-smoke/`](../../e2e/php-ssr-smoke/) checks the wiring seam
+(not a specific host app):
+
+1. Node sidecar returns an HTML fragment with `data-dehydrated-state`
+2. PHP success path accepts that fragment
+3. PHP fallback path emits client-only markup when the sidecar is unreachable
+
+```bash
+pnpm run test:php-ssr-smoke
+```
+
+Uses native `php` when `php -v` works; otherwise `docker run php:8.3-cli`. Set
+`SKIP_PHP_SSR_SMOKE=1` to skip. Optional — not part of the default CI matrix yet.
+
 ---
 
 ## CMS embed flow (reference)
