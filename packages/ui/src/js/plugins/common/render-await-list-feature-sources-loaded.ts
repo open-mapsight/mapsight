@@ -1,11 +1,13 @@
 import {compose} from "@reduxjs/toolkit";
 
+import {async} from "@mapsight/core/lib/base/actions";
 import type {LoadOptions} from "@mapsight/core/lib/feature-sources/actions";
 import {
 	LOAD_FEATURE_SOURCE_ERROR,
 	LOAD_FEATURE_SOURCE_SUCCESS,
 	load,
 } from "@mapsight/core/lib/feature-sources/actions";
+import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
 
 import get from "@mapsight/lib-js/object/getPath";
 
@@ -57,52 +59,120 @@ export default function createPlugin(
 				return Promise.resolve(undefined);
 			}
 
-			return new Promise<void>(function (resolve) {
-				let featureSourcesToBeLoaded =
-					getFeatureSourcesToBeLoadedFromConfig(
-						context.baseMapsightConfig,
-						listControllerName,
-					);
+			const listFeatureSourceId = getListFeatureSourceId(
+				context,
+				listControllerName,
+			);
+			if (!listFeatureSourceId) {
+				return Promise.resolve(undefined);
+			}
 
-				if (!featureSourcesToBeLoaded.length) {
-					resolve();
+			const memberIds = getCombinedMemberIds(
+				context,
+				listFeatureSourceId,
+			);
+
+			// Combined sources only aggregate already-loaded members. Load
+			// members first, then force-refresh the combined id so its loader
+			// (and list markup) see real features before SSR emit.
+			const initialIds =
+				memberIds.length > 0 ? memberIds : [listFeatureSourceId];
+
+			return waitForFeatureSourceLoads(
+				context,
+				actionWatcher,
+				initialIds,
+				loadOptions,
+			).then(() => {
+				if (memberIds.length === 0) {
 					return;
 				}
-
-				actionWatcher.handler = (action) => {
-					// wait for feature sources to be loaded
-					if (
-						action.type === LOAD_FEATURE_SOURCE_SUCCESS ||
-						action.type === LOAD_FEATURE_SOURCE_ERROR
-					) {
-						if (featureSourcesToBeLoaded.indexOf(action.id) > -1) {
-							featureSourcesToBeLoaded =
-								featureSourcesToBeLoaded.filter(
-									(f) => f !== action.id,
-								);
-						}
-
-						if (!featureSourcesToBeLoaded.length) {
-							resolve();
-						}
-					}
-				};
-				featureSourcesToBeLoaded.forEach((featureSourceId) =>
-					context.store?.dispatch(
-						load(FEATURE_SOURCES, featureSourceId, loadOptions),
-					),
+				return waitForFeatureSourceLoads(
+					context,
+					actionWatcher,
+					[listFeatureSourceId],
+					{...loadOptions, forceRefresh: true},
 				);
 			});
 		},
 	};
 }
 
-function getFeatureSourcesToBeLoadedFromConfig(
-	baseMapsightConfig: MapsightUiContext["baseMapsightConfig"],
+function waitForFeatureSourceLoads(
+	context: MapsightUiContext,
+	actionWatcher: ReturnType<typeof createActionWatcher>,
+	featureSourceIds: string[],
+	loadOptions: LoadOptions,
+): Promise<void> {
+	if (!featureSourceIds.length) {
+		return Promise.resolve();
+	}
+
+	return new Promise<void>(function (resolve) {
+		let remaining = [...featureSourceIds];
+
+		actionWatcher.handler = (action) => {
+			if (
+				action.type === LOAD_FEATURE_SOURCE_SUCCESS ||
+				action.type === LOAD_FEATURE_SOURCE_ERROR
+			) {
+				if (remaining.indexOf(action.id) > -1) {
+					remaining = remaining.filter((f) => f !== action.id);
+				}
+
+				if (!remaining.length) {
+					actionWatcher.handler = null;
+					resolve();
+				}
+			}
+		};
+
+		featureSourceIds.forEach((featureSourceId) =>
+			context.store?.dispatch(
+				async(load(FEATURE_SOURCES, featureSourceId, loadOptions)),
+			),
+		);
+	});
+}
+
+function getListFeatureSourceId(
+	context: MapsightUiContext,
 	listControllerName: string,
-) {
-	return [
-		get(baseMapsightConfig, [listControllerName, "featureSource"]) as
-			string | undefined,
-	].filter((a): a is string => typeof a === "string");
+): string | undefined {
+	const listFeatureSourceId = get(context.baseMapsightConfig, [
+		listControllerName,
+		"featureSource",
+	]) as string | undefined;
+
+	return typeof listFeatureSourceId === "string"
+		? listFeatureSourceId
+		: undefined;
+}
+
+/**
+ * Member ids when `list.featureSource` is `combined`. Member names often live
+ * on the store after plugins like combined-visible-layers run in afterCreate.
+ */
+function getCombinedMemberIds(
+	context: MapsightUiContext,
+	listFeatureSourceId: string,
+): string[] {
+	const sources =
+		(context.store?.getState()?.[FEATURE_SOURCES] as
+			FeatureSourcesState | undefined) ??
+		(get(context.baseMapsightConfig, ["featureSources"]) as
+			FeatureSourcesState | undefined);
+
+	const listSource = sources?.[listFeatureSourceId];
+	if (
+		listSource?.type !== "combined" ||
+		!Array.isArray(listSource.featureSourceNames)
+	) {
+		return [];
+	}
+
+	return listSource.featureSourceNames.filter(
+		(memberId): memberId is string =>
+			typeof memberId === "string" && memberId !== "",
+	);
 }

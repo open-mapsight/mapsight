@@ -3,6 +3,8 @@ import merge from "lodash/merge";
 import {thunk} from "redux-thunk";
 
 import {createMapsightStore} from "@mapsight/core";
+import {async} from "@mapsight/core/lib/base/actions";
+import {load} from "@mapsight/core/lib/feature-sources/actions";
 import {isDevelopment} from "@mapsight/core/lib/helpers";
 import {layerIdsExternalSwitcherSelector} from "@mapsight/core/lib/map/selectors";
 
@@ -15,6 +17,7 @@ import * as c from "./config/constants/controllers";
 import type {MapsightConfig} from "./config/schema";
 import {validateMapsightConfig} from "./config/schema/validate";
 import {createDefaultControllers} from "./controllers/defaults";
+import {sanitizeRehydratedState} from "./embed/sanitize-rehydrated-state";
 import uiReducers from "./store/reducers";
 import type {
 	CreateOptions,
@@ -192,9 +195,14 @@ export function create(
 
 	// override initial state by re-hydration
 	context.isStateReHydrated = false;
+	let resumeFeatureSourceIds: string[] = [];
 	if (context.createOptions.reHydratedState !== undefined) {
 		context.isStateReHydrated = true;
-		merge(context.initialState, context.createOptions.reHydratedState);
+		const sanitized = sanitizeRehydratedState(
+			context.createOptions.reHydratedState,
+		);
+		merge(context.initialState, sanitized.state);
+		resumeFeatureSourceIds = sanitized.resumeFeatureSourceIds;
 	}
 
 	// setup controllers
@@ -272,6 +280,16 @@ export function create(
 
 	// plugin: afterCreate
 	callAndForgetPlugins(context, "afterCreate");
+
+	// SSR may dehydrate isLoading with no data (await timed out). Load those
+	// sources on the client after plugins have had a chance to start their own.
+	if (resumeFeatureSourceIds.length > 0 && context.store) {
+		for (const featureSourceId of resumeFeatureSourceIds) {
+			context.store.dispatch(
+				async(load(c.FEATURE_SOURCES, featureSourceId)),
+			);
+		}
+	}
 
 	return context;
 }
