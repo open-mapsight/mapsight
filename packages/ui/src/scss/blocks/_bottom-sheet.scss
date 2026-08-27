@@ -1,0 +1,38 @@
+// Structural BottomSheet layout. Visual chrome (handle, shadows, host clearance)
+// belongs in a theme or host stylesheet.
+
+.ms3-bottom-sheet {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+
+	&--dragging {
+		user-select: none;
+		touch-action: none;
+	}
+
+	&__header {
+		flex: 0 0 auto;
+		position: relative;
+	}
+
+	&__move {
+		touch-action: none;
+	}
+
+	&__body {
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+
+	&--expand-on-scroll &__body {
+		overflow: hidden;
+		touch-action: none;
+	}
+
+	&--scrollable &__body {
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+}
