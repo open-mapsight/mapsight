@@ -1,19 +1,28 @@
 import {type FormEvent, type ReactElement, useCallback, useState} from "react";
 
-import {useAggregatedValues, useStations} from "../../api/hooks.js";
+import {
+	useAggregatedValues,
+	useRawValues,
+	useStations,
+} from "../../api/hooks.js";
 import {applyPresetDateRanges} from "../../config/platform.js";
 import {
 	useAppConfig,
 	useCountAggregatorI18n,
 } from "../../context/count-aggregator-provider.js";
-import {getFirstDayOfMonth, getLastDayOfMonth} from "../../lib/dates.js";
+import {
+	dateToYmd,
+	getFirstDayOfMonth,
+	getLastDayOfMonth,
+} from "../../lib/dates.js";
 import {isFeatureEnabled} from "../../lib/features.js";
+import {RAW_VALUES_RANGE_QUERY} from "../../lib/raw-values.js";
 import type {
 	BucketMetric,
 	ChartType,
-	DataResolution,
 	PresetData,
 	Station,
+	ValuesMode,
 } from "../../types";
 import {Events} from "../wizard/events.js";
 import {MetricSelect} from "../wizard/metric-select.js";
@@ -61,8 +70,8 @@ function SelectionPanel({
 	endDate: Date;
 	onStartDateChange: (date: Date) => void;
 	onEndDateChange: (date: Date) => void;
-	resolution: DataResolution;
-	onResolutionChange: (resolution: DataResolution) => void;
+	resolution: ValuesMode;
+	onResolutionChange: (resolution: ValuesMode) => void;
 	onPresetChange: (preset: PresetData | null) => void;
 	showPresets: boolean;
 	showResolutionSelect: boolean;
@@ -71,8 +80,8 @@ function SelectionPanel({
 	availableMetrics: readonly BucketMetric[];
 	selectedMetrics: readonly BucketMetric[];
 	onSelectedMetricsChange: (metrics: readonly BucketMetric[]) => void;
-	resolutions: readonly DataResolution[];
-	resolutionLabels?: Partial<Record<DataResolution, string>>;
+	resolutions: readonly ValuesMode[];
+	resolutionLabels?: Partial<Record<ValuesMode, string>>;
 }): ReactElement {
 	const {t} = useCountAggregatorI18n();
 	const handleSelectAll = useCallback(() => {
@@ -181,16 +190,15 @@ export function CountAggregatorWizard({
 	const isStepped = appConfig.uiVariant === "stepped";
 	const showPresets = isFeatureEnabled(appConfig, "presets");
 	const showEvents = isFeatureEnabled(appConfig, "events");
-	const showResolutionSelect = isFeatureEnabled(
-		appConfig,
-		"resolutionSelect",
-	);
+	const showRawValues = isFeatureEnabled(appConfig, "rawValues");
+	const showResolutionSelect =
+		isFeatureEnabled(appConfig, "resolutionSelect") || showRawValues;
 	const showExport = isFeatureEnabled(appConfig, "export");
 	const showChartTypeSelect = isFeatureEnabled(appConfig, "chartTypeSelect");
-
-	const showMetricSelect = isFeatureEnabled(appConfig, "metricSelect");
-
-	const resolutions = appConfig.resolutions ?? (["daily"] as const);
+	const aggregatedResolutions = appConfig.resolutions ?? (["daily"] as const);
+	const resolutions: readonly ValuesMode[] = showRawValues
+		? [...aggregatedResolutions, "raw"]
+		: aggregatedResolutions;
 	const availableMetrics = appConfig.availableMetrics ?? [
 		appConfig.defaultMetric ?? "sum",
 	];
@@ -204,7 +212,7 @@ export function CountAggregatorWizard({
 	>(initialSelectedStationIds);
 	const [startDate, setStartDate] = useState(getFirstDayOfMonth);
 	const [endDate, setEndDate] = useState(getLastDayOfMonth);
-	const [resolution, setResolution] = useState<DataResolution>(
+	const [resolution, setResolution] = useState<ValuesMode>(
 		appConfig.defaultResolution ?? "daily",
 	);
 	const [chartType, setChartType] = useState<ChartType>(
@@ -213,19 +221,35 @@ export function CountAggregatorWizard({
 	const [selectedMetrics, setSelectedMetrics] =
 		useState<readonly BucketMetric[]>(defaultChartMetrics);
 
+	const isRaw = resolution === "raw";
+	const showMetricSelect =
+		isFeatureEnabled(appConfig, "metricSelect") && !isRaw;
 	const stationsById = useStations(appId);
 	const valuesEnabled = !isStepped || step === 1;
-	const data = useAggregatedValues(
+	const aggregatedData = useAggregatedValues(
 		appId,
 		{
 			stationIds: selectedStationIds,
 			startDate,
 			endDate,
-			resolution,
+			resolution: isRaw
+				? (appConfig.defaultResolution ?? "daily")
+				: resolution,
 			metrics: selectedMetrics,
 		},
-		{enabled: valuesEnabled},
+		{enabled: valuesEnabled && !isRaw},
 	);
+	const rawData = useRawValues(
+		appId,
+		{
+			stationIds: selectedStationIds,
+			from: dateToYmd(startDate),
+			to: dateToYmd(endDate),
+			...RAW_VALUES_RANGE_QUERY,
+		},
+		{enabled: valuesEnabled && isRaw},
+	);
+	const data = isRaw ? rawData : aggregatedData;
 
 	const handlePresetChange = useCallback((preset: PresetData | null) => {
 		if (preset === null) {
@@ -267,8 +291,11 @@ export function CountAggregatorWizard({
 			endDate={endDate}
 			stationsById={stationsById}
 			chartType={chartType}
-			resolution={resolution}
-			selectedMetrics={selectedMetrics}
+			resolution={isRaw ? "5min" : resolution}
+			valuesMode={resolution}
+			selectedMetrics={
+				isRaw ? [appConfig.defaultMetric ?? "sum"] : selectedMetrics
+			}
 			showExport={showExport}
 			showChartTypeSelect={showChartTypeSelect}
 			onChartTypeChange={setChartType}

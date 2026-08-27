@@ -55,6 +55,16 @@ export interface SingleStationLastValuesRequest {
 	metrics?: readonly BucketMetric[];
 }
 
+export interface MultipleRawValuesRequest {
+	type: StationType;
+	stationIds: readonly number[];
+	from?: string;
+	to?: string;
+	limit?: number;
+	order?: "asc" | "desc";
+	format?: ResponseFormat;
+}
+
 function trimTrailingSlash(baseUrl: string): string {
 	return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 }
@@ -159,6 +169,29 @@ export function buildStationSumsUrl(
 	stationId: number,
 ): string {
 	return `${trimTrailingSlash(baseUrl)}/${type}/${stationId}/sums`;
+}
+
+export function buildRawValuesUrl(
+	baseUrl: string,
+	request: MultipleRawValuesRequest,
+): string {
+	const path = `${trimTrailingSlash(baseUrl)}/${request.type}/raw-values`;
+
+	return appendQueryString(path, {
+		stationIds: request.stationIds.join(","),
+		from: request.from,
+		to: request.to,
+		limit: request.limit,
+		order: request.order,
+		format: request.format,
+	});
+}
+
+export function buildRawValuesCsvExportUrl(
+	baseUrl: string,
+	request: Omit<MultipleRawValuesRequest, "format">,
+): string {
+	return buildRawValuesUrl(baseUrl, {...request, format: "csv"});
 }
 
 export function buildCsvExportUrl(

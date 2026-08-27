@@ -4,6 +4,7 @@ import type {
 	ValuesRequest as ApiValuesRequest,
 	CountAggregatorClient,
 	LastValuesRequest,
+	RawValuesRequest,
 	StationListResponse,
 	StationTypeListResponse,
 	TimeSeriesMapResponse,
@@ -17,6 +18,7 @@ import type {CountAggregatorConfig} from "../types/index.js";
 import {
 	useAggregatedValues,
 	useLastValues,
+	useRawValues,
 	useStationTypeCounts,
 	useStations,
 } from "./hooks.js";
@@ -29,6 +31,7 @@ const mocks = vi.hoisted(() => {
 		listStationTypes: vi.fn(),
 		listStations: vi.fn(),
 		getLastValues: vi.fn(),
+		getRawValues: vi.fn(),
 		getValues: vi.fn(),
 	};
 });
@@ -43,6 +46,7 @@ vi.mock("@mapsight/count-aggregator-api", async (importActual) => {
 		listStationTypes: mocks.listStationTypes,
 		listStations: mocks.listStations,
 		getLastValues: mocks.getLastValues,
+		getRawValues: mocks.getRawValues,
 		getValues: mocks.getValues,
 	};
 });
@@ -164,6 +168,13 @@ describe("count-aggregator hooks", () => {
 		mocks.listStations.mockResolvedValue(stationListResponse);
 		mocks.listStationTypes.mockResolvedValue(stationTypeListResponse);
 		mocks.getLastValues.mockResolvedValue(valuesResponse);
+		mocks.getRawValues.mockResolvedValue({
+			"150": {
+				id: 150,
+				stationId: "138969",
+				values: [{datetime: "2026-06-01 12:34:56", value: 67.25}],
+			},
+		});
 		mocks.getValues.mockResolvedValue(valuesResponse);
 	});
 
@@ -280,5 +291,41 @@ describe("count-aggregator hooks", () => {
 			stationIds: [150],
 			metrics: ["sum"],
 		} satisfies ApiValuesRequest);
+	});
+
+	it("useRawValues loads exact telemetry without a resolution", async () => {
+		const {queryClient, wrapper} = createWrapper();
+		const request = {
+			stationIds: [150],
+			from: "2026-06-01",
+			to: "2026-06-02",
+			limit: 50,
+			order: "desc" as const,
+		};
+
+		const {result} = renderHook(() => useRawValues(appId, request), {
+			wrapper,
+		});
+
+		await waitFor(() =>
+			expect(
+				result.current?.stationsById.get(150)?.values[0]?.value,
+			).toBe(67.25),
+		);
+
+		expect(mocks.getRawValues).toHaveBeenCalledWith(mocks.mockClient, {
+			type: "bicycleSensorTotal",
+			...request,
+		} satisfies RawValuesRequest);
+		expect(
+			queryClient.getQueryData([
+				"count-aggregator",
+				appId,
+				"raw-values",
+				apiBaseUrl,
+				"bicycleSensorTotal",
+				{...request, metric: "sum"},
+			]),
+		).toBe(result.current);
 	});
 });

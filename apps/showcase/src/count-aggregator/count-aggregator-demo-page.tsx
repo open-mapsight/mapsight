@@ -1,6 +1,7 @@
 import "@mapsight/count-aggregator-ui/styles.css";
 
 import {type ReactElement, useMemo} from "react";
+import {Link} from "react-router-dom";
 
 import {
 	CountAggregatorShell,
@@ -42,6 +43,7 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 				uiVariant: "stepped",
 				features: {
 					resolutionSelect: true,
+					rawValues: true,
 					chartTypeSelect: true,
 					export: true,
 					presets: false,
@@ -90,6 +92,10 @@ export function CountAggregatorDemoPage(): ReactElement {
 					Explore an embeddable reporting flow for public time series
 					data. Pick stations, choose a time range, compare daily
 					values, and export the result as a chart, table, or CSV.
+				</p>
+				<p className="count-aggregator-demo__eyebrow">
+					Building your own UI? See the{" "}
+					<Link to="/count-aggregator/headless">headless demo</Link>.
 				</p>
 			</div>
 
