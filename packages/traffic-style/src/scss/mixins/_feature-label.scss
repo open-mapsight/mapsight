@@ -37,3 +37,47 @@
 		}
 	}
 }
+
+/// Bigger outlined label below the icon. Lives on `.iconCaption` so it can
+/// sit next to a side `title` label on the same feature.
+@mixin featureCaption(
+	$text: "attr(markerCaption)",
+	$fillColor: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_COLOR
+) {
+	.iconCaption {
+		text: {
+			font: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_FONT;
+			offsetX: 0;
+			offsetY: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_OFFSET_Y;
+			textAlign: center;
+			fill-color: $fillColor;
+			stroke-color: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_HALO;
+			stroke-width: variables.$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_STROKE_WIDTH;
+			text: $text;
+		}
+
+		zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 3;
+
+		[state="highlight"] {
+			zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 5 + 3;
+		}
+
+		[state="select"] {
+			zIndex: variables.$MAPSIGHT_TRAFFIC_STYLE__BASE_Z_INDEX + 205 + 3;
+		}
+	}
+
+	[markerCaptionColor] .iconCaption {
+		text-fill-color: attr(markerCaptionColor);
+	}
+
+	[markerCaptionHalo] .iconCaption {
+		text-stroke-color: attr(markerCaptionHalo);
+	}
+
+	[spread] :not([state="highlight"]) :not([state="select"]) {
+		.iconCaption {
+			text: unset;
+		}
+	}
+}
