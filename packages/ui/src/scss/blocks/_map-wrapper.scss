@@ -6,8 +6,9 @@
 	flex-grow: 1;
 	height: calc(100vh - var(--ms3-fullscreen-top));
 	height: calc(100svh - var(--ms3-fullscreen-top));
+	// No max-height transition: Safari cannot interpolate `33vh` ↔
+	// `calc(100svh - var(--ms3-fullscreen-top))` and stays on the from-value.
 	max-height: var(--ms3-map-max-height-default);
-	transition: max-height 200ms ease-out;
 
 	.ms3-wrapper--desktop & {
 		min-height: var(--ms3-map-min-height-desktop);
