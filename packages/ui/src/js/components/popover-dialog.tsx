@@ -18,6 +18,10 @@ export type PopoverDialogProps = {
 	onClose: () => void;
 	triggerRef: RefObject<Element | null>;
 	title?: ReactNode;
+	/** Explicit `aria-labelledby` id. Defaults to a generated id on the title heading. */
+	labelledBy?: string;
+	/** Accessible name when there is no visible title (`aria-label`). */
+	"aria-label"?: string;
 	/** Explicit id for the panel (also used for trigger `aria-controls`). */
 	id?: string;
 	placement?: PopoverDialogPlacement;
@@ -48,6 +52,8 @@ export default function PopoverDialog({
 	onClose,
 	triggerRef,
 	title,
+	labelledBy,
+	"aria-label": ariaLabel,
 	id: idProp,
 	placement,
 	offset,
@@ -75,6 +81,9 @@ export default function PopoverDialog({
 		shouldCloseOnBlur,
 		shouldFlip,
 		popoverId,
+		labelledBy,
+		"aria-label":
+			labelledBy != null || title != null ? undefined : ariaLabel,
 	});
 
 	if (!isOpen) {
@@ -95,6 +104,7 @@ export default function PopoverDialog({
 						{title != null ? (
 							<h3
 								{...titleProps}
+								id={labelledBy ?? titleProps.id}
 								className="ms3-popover-dialog__title"
 							>
 								{title}

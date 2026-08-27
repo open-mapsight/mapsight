@@ -12,8 +12,16 @@ vi.mock("react-aria", async (importOriginal) => {
 		useOverlay: () => ({
 			overlayProps: {"data-overlay": "true"},
 		}),
-		useDialog: () => ({
-			dialogProps: {role: "dialog"},
+		useDialog: (props: Record<string, unknown> = {}) => ({
+			dialogProps: {
+				role: "dialog",
+				...(props["aria-label"] != null
+					? {"aria-label": props["aria-label"]}
+					: {}),
+				...(props["aria-labelledby"] != null
+					? {"aria-labelledby": props["aria-labelledby"]}
+					: {}),
+			},
 			titleProps: {id: "title"},
 		}),
 		useOverlayPosition: () => ({
@@ -86,5 +94,35 @@ describe("usePopoverDialog", () => {
 			"aria-haspopup": "dialog",
 			"aria-controls": "opts",
 		});
+	});
+
+	it("threads aria-label and labelledBy through useDialog", () => {
+		const triggerRef = createRef<HTMLButtonElement>();
+		const popoverRef = createRef<HTMLDivElement>();
+		const {result, rerender} = renderHook(
+			({
+				labelledBy,
+				ariaLabel,
+			}: {
+				labelledBy?: string;
+				ariaLabel?: string;
+			}) =>
+				usePopoverDialog({
+					isOpen: true,
+					onClose: vi.fn(),
+					triggerRef,
+					popoverRef,
+					labelledBy,
+					"aria-label": ariaLabel,
+				}),
+			{initialProps: {ariaLabel: "Filters"}},
+		);
+
+		expect(result.current.popoverProps["aria-label"]).toBe("Filters");
+
+		rerender({labelledBy: "external-title"});
+		expect(result.current.popoverProps["aria-labelledby"]).toBe(
+			"external-title",
+		);
 	});
 });

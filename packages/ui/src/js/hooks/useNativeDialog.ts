@@ -82,6 +82,16 @@ export default function useNativeDialog({
 		[dismissOnBackdrop, onClose],
 	);
 
+	const onNativeClose = useCallback(() => {
+		// Host-driven close (`isOpen` → effect → `dialog.close()`) also fires
+		// the native `close` event. Ignore that echo; still notify for
+		// user-initiated closes (e.g. `<form method="dialog">`).
+		if (!isOpen) {
+			return;
+		}
+		onClose();
+	}, [isOpen, onClose]);
+
 	// Backdrop `onClick` is pointer-only; Escape uses `onCancel`. jsx-a11y may
 	// flag the spread site — that is expected for native <dialog> dismiss.
 	// https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
@@ -89,7 +99,7 @@ export default function useNativeDialog({
 		dialogRef,
 		dialogProps: {
 			onCancel,
-			onClose,
+			onClose: onNativeClose,
 			...(dismissOnBackdrop ? {onClick} : {}),
 		},
 	};

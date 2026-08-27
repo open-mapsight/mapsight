@@ -48,6 +48,10 @@ export type UsePopoverDialogOptions = {
 	shouldFlip?: boolean;
 	/** Optional id for `aria-controls` on the trigger. */
 	popoverId?: string;
+	/** Explicit `aria-labelledby` when the title lives outside `titleProps`. */
+	labelledBy?: string;
+	/** Accessible name when there is no visible title (`aria-label`). */
+	"aria-label"?: string;
 };
 
 export type UsePopoverDialogResult = {
@@ -86,6 +90,8 @@ export default function usePopoverDialog({
 	shouldCloseOnBlur = false,
 	shouldFlip = true,
 	popoverId,
+	labelledBy,
+	"aria-label": ariaLabel,
 }: UsePopoverDialogOptions): UsePopoverDialogResult {
 	const {overlayProps} = useOverlay(
 		{
@@ -96,7 +102,13 @@ export default function usePopoverDialog({
 		},
 		popoverRef,
 	);
-	const {dialogProps, titleProps} = useDialog({}, popoverRef);
+	const {dialogProps, titleProps} = useDialog(
+		{
+			"aria-label": ariaLabel,
+			"aria-labelledby": labelledBy,
+		},
+		popoverRef,
+	);
 	const overlayPosition = useOverlayPosition({
 		targetRef: triggerRef,
 		overlayRef: popoverRef,

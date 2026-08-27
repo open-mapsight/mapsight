@@ -78,6 +78,18 @@ describe("useNativeDialog", () => {
 
 		rerender(<DialogHarness isOpen={false} onClose={onClose} />);
 		expect(screen.getByTestId("dlg").hasAttribute("open")).toBe(false);
+		expect(onClose).not.toHaveBeenCalled();
+	});
+
+	it("calls onClose once when the dialog closes while still open", () => {
+		const onClose = vi.fn();
+		render(<DialogHarness isOpen={true} onClose={onClose} />);
+
+		act(() => {
+			screen.getByTestId("dlg").dispatchEvent(new Event("close"));
+		});
+
+		expect(onClose).toHaveBeenCalledTimes(1);
 	});
 
 	it("calls onClose on cancel and prevents the default close", () => {

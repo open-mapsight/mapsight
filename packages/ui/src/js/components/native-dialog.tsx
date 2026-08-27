@@ -14,7 +14,7 @@ export type NativeDialogProps = {
 	onClose: () => void;
 	/** Visible dialog title (also used for `aria-labelledby` when `labelledBy` is omitted). */
 	title?: ReactNode;
-	/** Explicit `aria-labelledby` id. Defaults to an generated id on the title heading. */
+	/** Explicit `aria-labelledby` id. Defaults to a generated id on the title heading. */
 	labelledBy?: string;
 	/** Accessible name when there is no visible title (`aria-label`). */
 	"aria-label"?: string;

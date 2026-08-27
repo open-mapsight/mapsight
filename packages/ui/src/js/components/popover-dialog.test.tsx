@@ -20,9 +20,17 @@ vi.mock("react-aria", async (importOriginal) => {
 	return {
 		...actual,
 		useOverlay: () => ({overlayProps: {}}),
-		useDialog: () => ({
-			dialogProps: {role: "dialog"},
-			titleProps: {},
+		useDialog: (props: Record<string, unknown> = {}) => ({
+			dialogProps: {
+				role: "dialog",
+				...(props["aria-label"] != null
+					? {"aria-label": props["aria-label"]}
+					: {}),
+				...(props["aria-labelledby"] != null
+					? {"aria-labelledby": props["aria-labelledby"]}
+					: {}),
+			},
+			titleProps: {id: "title"},
 		}),
 		useOverlayPosition: () => ({
 			overlayProps: {style: {position: "absolute" as const}},
@@ -81,5 +89,47 @@ describe("PopoverDialog", () => {
 		expect(screen.getByRole("dialog")).toBeTruthy();
 		expect(screen.getByRole("heading", {name: "Options"})).toBeTruthy();
 		expect(screen.getByText("body-content")).toBeTruthy();
+	});
+
+	it("names the dialog with aria-label when title is omitted", () => {
+		const triggerRef = createRef<HTMLButtonElement>();
+		render(
+			<PopoverDialog
+				isOpen
+				onClose={vi.fn()}
+				triggerRef={triggerRef}
+				aria-label="Filters"
+				hideCloseButton
+				portal={false}
+			>
+				<div>body-content</div>
+			</PopoverDialog>,
+		);
+
+		expect(screen.getByRole("dialog", {name: "Filters"})).toBeTruthy();
+		expect(screen.queryByRole("heading")).toBeNull();
+	});
+
+	it("uses labelledBy as the heading id when both are provided", () => {
+		const triggerRef = createRef<HTMLButtonElement>();
+		render(
+			<PopoverDialog
+				isOpen
+				onClose={vi.fn()}
+				triggerRef={triggerRef}
+				title="Options"
+				labelledBy="opts-title"
+				portal={false}
+			>
+				<div>body-content</div>
+			</PopoverDialog>,
+		);
+
+		expect(screen.getByRole("heading", {name: "Options"}).id).toBe(
+			"opts-title",
+		);
+		expect(screen.getByRole("dialog").getAttribute("aria-labelledby")).toBe(
+			"opts-title",
+		);
 	});
 });
