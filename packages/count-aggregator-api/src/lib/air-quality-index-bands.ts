@@ -67,10 +67,10 @@ const BAND_BY_ID = new Map<AirQualityIndexBandId, AirQualityIndexBand>(
 	AIR_QUALITY_INDEX_BANDS.map((band) => [band.id, band]),
 );
 
-const INDEX_STATION_TYPE_PATTERN = /^(airQualityIndex|.+Index)$/;
-
 export function isAirQualityIndexStationType(stationType: string): boolean {
-	return INDEX_STATION_TYPE_PATTERN.test(stationType);
+	return (
+		stationType.startsWith("airQuality") && stationType.endsWith("Index")
+	);
 }
 
 export function isAirQualityIndexUnit(

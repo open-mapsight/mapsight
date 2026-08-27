@@ -142,10 +142,7 @@ function matchesAny(haystack: string, needles: readonly string[]): boolean {
 }
 
 function variantForStationType(stationType: StationType): MetricWidgetVariant {
-	if (
-		isAirQualityIndexStationType(stationType) ||
-		stationType.endsWith("Index")
-	) {
+	if (isAirQualityIndexStationType(stationType)) {
 		return "airQualityIndex";
 	}
 

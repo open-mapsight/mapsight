@@ -38,7 +38,10 @@ export default function AirQualityIndexBadge({value, locale}: Props) {
 			data-aqi-band={band.id}
 			data-aqi-key={band.key}
 		>
-			<span className="ms3-smart-city-metric__aqi-swatch" aria-hidden />
+			<span
+				className="ms3-smart-city-metric__aqi-swatch"
+				aria-hidden={true}
+			/>
 			<span className="ms3-smart-city-metric__aqi-label">{label}</span>
 		</div>
 	);

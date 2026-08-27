@@ -22,6 +22,7 @@ describe("air quality index bands", () => {
 		expect(isAirQualityIndexStationType("airQualityIndex")).toBe(true);
 		expect(isAirQualityIndexStationType("airQualityPM10Index")).toBe(true);
 		expect(isAirQualityIndexStationType("airQualityPM10")).toBe(false);
+		expect(isAirQualityIndexStationType("trafficIndex")).toBe(false);
 		expect(isAirQualityIndexUnit("index")).toBe(true);
 		expect(isAirQualityIndexUnit("µg/m³")).toBe(false);
 	});
