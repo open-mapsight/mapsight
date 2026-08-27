@@ -1,3 +1,6 @@
+const DEFAULT_DEHYDRATED_STATE_ATTRIBUTE = "data-dehydrated-state";
+const DATA_ATTRIBUTE_NAME = /^data-[a-z][\w-]*$/i;
+
 export type WrapEmbedFragmentOptions = {
 	id: string;
 	html: string;
@@ -16,7 +19,7 @@ export function wrapEmbedFragment(options: WrapEmbedFragmentOptions): string {
 		html,
 		dehydratedState,
 		className = "mapsight-embed",
-		attributeName = "data-dehydrated-state",
+		attributeName = DEFAULT_DEHYDRATED_STATE_ATTRIBUTE,
 	} = options;
 
 	const stateJson = JSON.stringify(dehydratedState);
@@ -31,7 +34,11 @@ export function wrapEmbedFragment(options: WrapEmbedFragmentOptions): string {
 		? ` class="${escapeHtmlAttribute(className)}"`
 		: "";
 
-	return `<div id="${escapeHtmlAttribute(id)}"${classAttr} ${attributeName}='${escapedState}'>${html}</div>`;
+	const safeAttributeName = DATA_ATTRIBUTE_NAME.test(attributeName)
+		? attributeName
+		: DEFAULT_DEHYDRATED_STATE_ATTRIBUTE;
+
+	return `<div id="${escapeHtmlAttribute(id)}"${classAttr} ${safeAttributeName}='${escapedState}'>${html}</div>`;
 }
 
 function escapeHtmlAttribute(value: string): string {
