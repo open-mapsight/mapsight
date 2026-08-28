@@ -133,11 +133,15 @@
 			background: var(--ms3-background-highlight-color);
 		}
 
-		&:hover,
-		&:focus {
+		&:hover:not(:disabled),
+		&:focus:not(:disabled) {
 			background: var(--ms3-background-color-offset-2);
 			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
 			outline: 0;
+		}
+
+		&:disabled {
+			cursor: default;
 		}
 	}
 }

@@ -109,6 +109,8 @@ const en: Record<string, string> = {
 	"ui.layer-switcher.overlayLayers": "Data layers",
 	"ui.layer-switcher.expandGroup": "Expand group",
 	"ui.layer-switcher.collapseGroup": "Collapse group",
+	"ui.layer-switcher.cannotDeselectBaseLayer":
+		"A base map must remain selected.",
 
 	"ui.map.usage.heading": "Keyboard shortcuts for map usage",
 	"ui.map.usage.html":

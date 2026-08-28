@@ -46,7 +46,11 @@ function LayerSwitcherContainer({
 	...attributes
 }: LayerSwitcherContainerProps) {
 	const createLayerEntry = useCallback(
-		(id: string, entrySetFeatureSourceIdPath?: ActionPath | null) => (
+		(
+			id: string,
+			entrySetFeatureSourceIdPath?: ActionPath | null,
+			exclusive = false,
+		) => (
 			<LayerSwitcherEntry
 				key={id}
 				layerId={id}
@@ -58,6 +62,7 @@ function LayerSwitcherContainer({
 					id,
 				)}
 				setFeatureSourceIdPath={entrySetFeatureSourceIdPath}
+				exclusive={exclusive}
 			/>
 		),
 		[],
@@ -67,7 +72,7 @@ function LayerSwitcherContainer({
 		[createLayerEntry, setFeatureSourceIdPath],
 	);
 	const renderBaseLayerEntry = useCallback(
-		(id: string) => createLayerEntry(id, null),
+		(id: string) => createLayerEntry(id, null, true),
 		[createLayerEntry],
 	);
 
