@@ -20,6 +20,11 @@ export const layerMetaDataSchema = z.looseObject({
 	lockedInLayerSwitcher: z.boolean().optional(),
 	visibleInLayerSwitcher: z.boolean().optional(),
 	visibleInExternalLayerSwitcher: z.boolean().optional(),
+	/**
+	 * Derived visibility: this layer is shown only while every listed layer
+	 * is visible (AND).
+	 */
+	visibleWhenLayerIds: z.array(z.string().min(1)).optional(),
 });
 
 export const vectorFeatureSourceOptionsSchema = z.looseObject({

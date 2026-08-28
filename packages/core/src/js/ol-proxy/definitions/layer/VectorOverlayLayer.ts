@@ -2,6 +2,7 @@ import Collection from "ol/Collection";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
+import {Z_INDEX_OVERLAY} from "@/lib/map/z-index";
 import type {Definition} from "@/ol-proxy";
 import {OPTION_SKIP} from "@/ol-proxy";
 
@@ -21,7 +22,7 @@ export default {
 			layer.set("updateWhileAnimating", true);
 			layer.set("updateWhileInteracting", true);
 			layer.setSource(source);
-			layer.setZIndex(1000); // TODO
+			layer.setZIndex(Z_INDEX_OVERLAY);
 		},
 	},
 	optionMap: {

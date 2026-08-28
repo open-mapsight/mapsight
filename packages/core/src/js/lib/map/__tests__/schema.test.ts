@@ -63,6 +63,23 @@ describe("map config schema", () => {
 		expect(result.success).toBe(false);
 	});
 
+	it("parses visibleWhenLayerIds on layer metadata", () => {
+		const result = layerConfigSchema.safeParse({
+			type: "TileLayer",
+			metaData: {
+				visibleWhenLayerIds: ["base", "theme"],
+			},
+			options: {visible: false},
+		});
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.metaData?.visibleWhenLayerIds).toEqual([
+				"base",
+				"theme",
+			]);
+		}
+	});
+
 	it("parses stadtplan-style map config with cluster options", () => {
 		const result = mapConfigSchema.safeParse({
 			layers: {
