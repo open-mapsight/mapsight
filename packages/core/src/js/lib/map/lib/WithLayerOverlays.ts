@@ -5,12 +5,13 @@ import forEach from "lodash/forEach";
 
 import type {LayerDefinition} from "@/lib/map/lib/WithLayers";
 import type {VectorFeatureSourceLayer} from "@/lib/map/types";
+import {Z_INDEX_OVERLAY} from "@/lib/map/z-index";
 import {di, updateProxyObject} from "@/ol-proxy";
 
 import WithMap from "./WithMap";
 import {getIdForLayer, tagLayer} from "./tagLayer";
 
-export const Z_INDEX_OVERLAY = 2;
+export {Z_INDEX_OVERLAY};
 export const LAYER_GROUP_DEFAULT = "default";
 export const LAYER_TYPE = "VectorOverlayLayer";
 
@@ -37,8 +38,8 @@ export default class WithLayerOverlays extends WithMap {
 		) => {
 			const oldDefinition = oldDefinitions[id];
 			const overlayDefinition = newDefinition && {
-				zIndex: Z_INDEX_OVERLAY,
 				...newDefinition,
+				zIndex: Z_INDEX_OVERLAY,
 			};
 
 			// update overlay

@@ -8,17 +8,19 @@ import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 import matchesPath from "@mapsight/lib-redux/matchesPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
+import {ACTION_SET} from "@/lib/base/reducer";
 import type {MapController} from "@/lib/map/controller";
-import type {LayerState} from "@/lib/map/types";
+import type {LayerState, MapState} from "@/lib/map/types";
 import {di, updateProxyObject} from "@/ol-proxy";
+import type {Action, State} from "@/types";
 
-import {ACTION_SET} from "../../base/reducer";
 import {
 	FIT_MAP_VIEW_TO_LAYER_FEATURE,
 	FIT_MAP_VIEW_TO_LAYER_SOURCE_EXTENT,
 } from "../actions";
 import WithAnimations from "./WithAnimations";
 import proxyPassOpenLayersEventsToMapController from "./proxyPassOpenLayersEventsToMapController";
+import {syncDependentLayerVisibility} from "./syncDependentLayerVisibility";
 import {getGroupForLayer, tagLayer} from "./tagLayer";
 
 export type LayerDefinition = LayerState;
@@ -185,5 +187,18 @@ export default class WithLayers extends WithAnimations {
 
 			return state;
 		});
+	}
+
+	override reduce(
+		state: MapState = {} as MapState,
+		action: Action,
+		_globalState?: State,
+	): MapState {
+		const next = super.reduce(state, action, _globalState);
+		if (!next.layers) {
+			return next;
+		}
+		const layers = syncDependentLayerVisibility(next.layers);
+		return layers === next.layers ? next : {...next, layers};
 	}
 }
