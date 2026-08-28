@@ -1,5 +1,37 @@
 # @mapsight/ui
 
+## 7.5.0
+
+### Minor Changes
+
+- e2ce340: Add `BottomSheet` with snap points and an accessible resize separator
+- b5c43bb: Emit `--ms3-*` design tokens from configured Sass variables (mixin + `$ms3-tokens-selector`), use them for easy color/size/z-index values, and add minimal scrollbar utilities
+- 676a9fe: Add `FeatureListOptionsPopover` with list options controller hook, i18n labels, and structural list-options SCSS (theme chrome in 2022-03)
+- 08f8e3f: Add collapsible layer-switcher groups with visible/total counts and optional base-layer preview thumbnails
+- 1153f61: Add `useMapViewportSyncForBottomSheet` for map resize/recenter and selection dismiss with in-flow bottom sheets
+- e2ce340: Add `useNativeDialog` and `NativeDialog` for controlled native `<dialog showModal>` drawers
+- e2ce340: Add `usePopoverDialog` and `PopoverDialog` for non-modal positioned dialog popovers
+- a6a21d5: Add `nodeEmbed.emitFragment` / `getDehydratedState` and fix the SSR server-handler to return an HTML embed fragment with `data-dehydrated-state`
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+- 1153f61: Add structural BottomSheet SCSS for `ms3-bottom-sheet` layout states
+- 3fb5686: Size mapOnly/fullscreen chrome with `svh` so iOS browser chrome is excluded from the viewport height
+- b443c6e: Keep exactly one split-switcher base layer selected by disabling the active button
+- aa41f30: Add missing German and English strings for collapsible layer-switcher groups
+- 71791b4: Keep AppWrapper className when spreading attributes, show list-item details only for expandInList, and remove feature-selection close-button debug logs
+- 7be56da: Keep feature-list `listInformation` HTML mounted across highlight selection changes so CMS contact pictures do not remount and flicker on hover.
+- b267418: Export `registerTranslations` so hosts can merge catalogs into the shared UI dictionary
+- a6a21d5: Clear in-flight loading flags on SSR dehydrate/rehydrate, and let the server feature deep-link select `?feature=` (including mapOnly on mobile).
+- a6a21d5: Include list/details render-await plugins in default server plugins so `renderAsync` can delay SSR until feature data is loaded
+- 3f4ba18: Add remount-safe `useOlSingleClick` option to the toggle-mobile-views plugin
+- Updated dependencies [`bd11b3b`, `8666339`, `9eb9ff8`, `e99fbdb`, `08f8e3f`]:
+    - `@mapsight/core@14.5.1 → 14.6.0` (minor)
+    - `@mapsight/lib-js@3.0.7 → 3.0.8` (patch)
+    - `@mapsight/lib-ol@4.2.2 → 4.2.3` (patch)
+    - `@mapsight/traffic-style@5.4.0 → 5.5.0` (minor)
+
 ## 7.4.2
 
 ### Patch Changes

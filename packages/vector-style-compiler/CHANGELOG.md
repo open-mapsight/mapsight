@@ -1,5 +1,15 @@
 # @mapsight/vector-style-compiler
 
+## 13.0.2
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+- Updated dependencies [`bd11b3b`, `8666339`, `08f8e3f`]:
+    - `@mapsight/core@14.5.1 → 14.6.0` (minor)
+    - `@mapsight/lib-js@3.0.7 → 3.0.8` (patch)
+    - `@mapsight/lib-ol@4.2.2 → 4.2.3` (patch)
+
 ## 13.0.1
 
 ### Patch Changes

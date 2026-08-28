@@ -1,5 +1,11 @@
 # @mapsight/vite-host-embed
 
+## 1.1.4
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+
 ## 1.1.3
 
 ### Patch Changes
