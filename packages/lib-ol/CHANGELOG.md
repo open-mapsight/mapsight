@@ -1,5 +1,13 @@
 # @mapsight/lib-ol
 
+## 4.2.3
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+- Updated dependencies [`8666339`]:
+    - `@mapsight/lib-js@3.0.7 → 3.0.8` (patch)
+
 ## 4.2.2
 
 ### Patch Changes

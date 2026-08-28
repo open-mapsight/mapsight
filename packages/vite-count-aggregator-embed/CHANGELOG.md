@@ -1,5 +1,13 @@
 # @mapsight/vite-count-aggregator-embed
 
+## 0.2.2
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+- Updated dependencies [`8666339`]:
+    - `@mapsight/vite-host-embed@1.1.3 → 1.1.4` (patch)
+
 ## 0.2.1
 
 ### Patch Changes

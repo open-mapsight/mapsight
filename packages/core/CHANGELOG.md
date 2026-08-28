@@ -1,5 +1,19 @@
 # @mapsight/core
 
+## 14.6.0
+
+### Minor Changes
+
+- bd11b3b: Derive layer visibility from `visibleWhenLayerIds` after each map reduce
+
+### Patch Changes
+
+- 8666339: Bump dependencies from Dependabot updates and security overrides.
+- 08f8e3f: Add collapsible layer-switcher groups with visible/total counts and optional base-layer preview thumbnails
+- Updated dependencies [`8666339`]:
+    - `@mapsight/lib-js@3.0.7 → 3.0.8` (patch)
+    - `@mapsight/lib-ol@4.2.2 → 4.2.3` (patch)
+
 ## 14.5.1
 
 ### Patch Changes

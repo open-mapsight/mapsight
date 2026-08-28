@@ -1,5 +1,12 @@
 # @mapsight/count-aggregator-api
 
+## 1.4.0
+
+### Minor Changes
+
+- 3d7f91a: Add `GET /{type}/raw-values` to the OpenAPI contract, typed client, and URL helpers.
+- 9eb9ff8: Add UBA Luftqualitätsindex band helpers, citizen-facing AQI badges and wind-direction compass widgets, and expand smart-city icon aliases for the new station types.
+
 ## 1.3.0
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.0
+
+### Minor Changes
+
+- 3d7f91a: Add wizard Rohwerte mode (`features.rawValues`) that fetches unaggregated raw values and CSV.
+- 9eb9ff8: Add UBA Luftqualitätsindex band helpers, citizen-facing AQI badges and wind-direction compass widgets, and expand smart-city icon aliases for the new station types.
+
+### Patch Changes
+
+- 72a1544: Export `CountAggregatorProvider` and `createStationTypeAppsConfig` from the `/headless` entry for custom UIs.
+- 4506976: Show formatted value and time when hovering feature-detail metric charts
+- 4903225: Format metric widget last-updated dates in UTC so end-of-day `lastDateTime` stamps keep the API calendar day in timezones ahead of UTC.
+- 6dba896: Export `cn`, typecheck tests from the package `tsconfig.json`, and document CMS stylesheet load order
+- Updated dependencies [`3d7f91a`, `8666339`, `9eb9ff8`, `1153f61`, `e2ce340`, `b5c43bb`, `676a9fe`, `3fb5686`, `08f8e3f`, `b443c6e`, `aa41f30`, `71791b4`, `7be56da`, `b267418`, `a6a21d5`, `3f4ba18`]:
+    - `@mapsight/count-aggregator-api@1.3.0 → 1.4.0` (minor)
+    - `@mapsight/ui@7.4.2 → 7.5.0` (minor)
+
 ## 3.0.0
 
 ### Patch Changes

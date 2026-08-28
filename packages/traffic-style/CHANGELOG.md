@@ -1,5 +1,17 @@
 # @mapsight/traffic-style
 
+## 5.5.0
+
+### Minor Changes
+
+- e99fbdb: Add a generic `markerCaption` style on normal `#features` POIs: bigger outlined text below the icon, with optional `markerCaptionColor` and `markerCaptionHalo`.
+
+### Patch Changes
+
+- 9eb9ff8: Add UBA Luftqualitätsindex band helpers, citizen-facing AQI badges and wind-direction compass widgets, and expand smart-city icon aliases for the new station types.
+- Updated dependencies [`8666339`]:
+    - `@mapsight/lib-ol@4.2.2 → 4.2.3` (patch)
+
 ## 5.4.0
 
 ### Minor Changes
