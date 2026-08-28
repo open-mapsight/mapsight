@@ -111,6 +111,8 @@ const de: Record<string, string> = {
 	"ui.layer-switcher.overlayLayers": "Datenebenen",
 	"ui.layer-switcher.expandGroup": "Gruppe ausklappen",
 	"ui.layer-switcher.collapseGroup": "Gruppe einklappen",
+	"ui.layer-switcher.cannotDeselectBaseLayer":
+		"Eine Basiskarte muss ausgewählt bleiben.",
 
 	// HOWTO: wrap the metadata one base layer of the project with something like
 	// 		withLegend(_metadata, `<article><h1>${translate('ui.map.usage.heading')}</h1>${translate('ui.map.usage.html')}</article>`)

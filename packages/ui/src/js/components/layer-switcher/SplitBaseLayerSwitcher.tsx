@@ -146,6 +146,7 @@ function SplitBaseLayerSwitcher({
 	renderEntry,
 	collapsibleGroups = false,
 }: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
+	const baseLayersHeadingId = useId();
 	const hasOverlayLayers = groups.length > 0 || ungroupedLayerIds.length > 0;
 	/** Explicit user overrides; unset keys use the default (collapsed when none visible). */
 	const [collapsedByGroup, setCollapsedByGroup] = useState<
@@ -185,10 +186,17 @@ function SplitBaseLayerSwitcher({
 		>
 			{baseLayerIds.length > 0 ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--base-layers">
-					<h3 className="ms3-layer-switcher__section-title">
+					<h3
+						id={baseLayersHeadingId}
+						className="ms3-layer-switcher__section-title"
+					>
 						{translate("ui.layer-switcher.baseLayers")}
 					</h3>
-					<ul className="ms3-layer-switcher__entries ms3-layer-switcher__entries--base-layers">
+					<ul
+						className="ms3-layer-switcher__entries ms3-layer-switcher__entries--base-layers"
+						role="radiogroup"
+						aria-labelledby={baseLayersHeadingId}
+					>
 						{baseLayerIds.map((layerId) =>
 							renderBaseLayerEntry(layerId, null),
 						)}

@@ -5,15 +5,21 @@ function SwitcherButton(props) {
 		toggleActive,
 		status,
 		active,
+		disabled = false,
+		role = "checkbox",
+		"aria-label": ariaLabel,
 	} = props;
 
 	return (
 		<button
 			type="button"
-			role="checkbox"
+			role={role}
 			aria-checked={active ? "true" : "false"}
+			aria-label={ariaLabel}
+			aria-disabled={disabled ? "true" : undefined}
+			disabled={disabled}
 			className={`${baseClass} ${baseClass}--${status}`}
-			onClick={toggleActive}
+			onClick={disabled ? undefined : toggleActive}
 		>
 			{children}
 		</button>

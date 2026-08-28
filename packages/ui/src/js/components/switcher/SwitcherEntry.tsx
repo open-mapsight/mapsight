@@ -53,6 +53,11 @@ export type SwitcherEntryProps = {
 	activeText?: boolean;
 	status?: FeatureSourceStatus;
 	locked?: boolean;
+	/**
+	 * Exclusive choice (e.g. split-switcher base layers): exactly one stays
+	 * active. The current entry is disabled and cannot be toggled off.
+	 */
+	exclusive?: boolean;
 	/** Optional preview thumbnail (e.g. base-layer map tile). */
 	previewUrl?: string | null;
 };
@@ -71,6 +76,7 @@ function SwitcherEntry({
 	activeText: _activeText,
 	status,
 	locked = false,
+	exclusive = false,
 	previewUrl = null,
 	...attributes
 }: SwitcherEntryProps) {
@@ -89,6 +95,14 @@ function SwitcherEntry({
 	);
 	const checkboxStatusClass = mapStatusClassName(checkboxDisplayStatus);
 	const checkboxStatusLabel = mapStatusLabel(checkboxDisplayStatus);
+	const cannotDeselect = exclusive && (active ?? false);
+	const exclusiveLabel = exclusive
+		? cannotDeselect
+			? `${title}, ${checkboxStatusLabel}. ${translate(
+					"ui.layer-switcher.cannotDeselectBaseLayer",
+				)}`
+			: `${title}, ${checkboxStatusLabel}`
+		: undefined;
 
 	const checkbox = (
 		<SwitcherStatusIcon
@@ -132,8 +146,9 @@ function SwitcherEntry({
 			className={`${className} [ ${baseClassName} ${baseClassName}--${checkboxStatusClass} ${baseClassName}--${
 				isSplit ? "split" : "joint"
 			} ${locked ? `${baseClassName}--locked` : ""} ${
-				previewUrl ? `${baseClassName}--with-preview` : ""
-			} ]`}
+				cannotDeselect ? `${baseClassName}--cannot-deselect` : ""
+			} ${previewUrl ? `${baseClassName}--with-preview` : ""} ]`}
+			role={exclusive ? "none" : undefined}
 			{...attributes}
 		>
 			{(() => {
@@ -141,8 +156,13 @@ function SwitcherEntry({
 					return (
 						<SwitcherButton
 							status={checkboxStatusClass}
-							toggleActive={toggleActive}
+							toggleActive={
+								cannotDeselect ? undefined : toggleActive
+							}
 							active={active}
+							disabled={cannotDeselect}
+							role={exclusive ? "radio" : "checkbox"}
+							aria-label={exclusiveLabel}
 						>
 							{preview}
 							{checkbox}

@@ -23,9 +23,11 @@ function getActiveProps({
 	layerId,
 	visibility,
 	locked,
+	exclusive,
 }: {
 	locked: boolean;
 	visibility: boolean;
+	exclusive?: boolean;
 	featureSourceId: string | undefined;
 	currentlySetFeatureSourceId: string | undefined;
 	dispatch: Dispatch;
@@ -63,10 +65,18 @@ function getActiveProps({
 
 	return {
 		active: visibility,
+		exclusive,
 		toggleActive: function toggleActive() {
-			if (!locked) {
-				dispatch(setLayerVisibility(MAP, layerId, !visibility));
+			if (locked || (exclusive && visibility)) {
+				return;
 			}
+			dispatch(
+				setLayerVisibility(
+					MAP,
+					layerId,
+					exclusive ? true : !visibility,
+				),
+			);
 		},
 	};
 }
@@ -82,6 +92,8 @@ export type LayerSwitcherEntryProps = {
 	) => FeatureSourceState | null;
 	featureSourceIdSelector: (state: MapState) => string | undefined;
 	setFeatureSourceIdPath?: ActionPath | null;
+	/** When true, this entry cannot be toggled off (exactly one must stay active). */
+	exclusive?: boolean;
 };
 
 const mapStateToProps = (
@@ -123,6 +135,7 @@ const LayerSwitcherEntry = connect(
 			// used for active props:
 			layerId,
 			setFeatureSourceIdPath,
+			exclusive,
 
 			// Need to list the selectors here so they do not get passed as attribute props to the element but get filtered:
 			lockedSelector: _1,
@@ -145,6 +158,7 @@ const LayerSwitcherEntry = connect(
 			featureSourceId: stateProps.featureSourceId ?? "",
 			currentlySetFeatureSourceId: stateProps.currentlySetFeatureSourceId,
 			locked: stateProps.locked,
+			exclusive,
 			dispatch,
 			layerId,
 			setFeatureSourceIdPath,
