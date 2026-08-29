@@ -279,7 +279,7 @@ function Website({
 				"ms3-place-actions__website",
 				className,
 			)}
-			rel="external noreferrer"
+			rel="external noreferrer noopener"
 			target="_blank"
 		>
 			{icon ? (

@@ -134,7 +134,7 @@ describe("PlaceActions", () => {
 		expect(link.getAttribute("href")).toBe(
 			"https://www.example.de/schlosspark",
 		);
-		expect(link.getAttribute("rel")).toBe("external noreferrer");
+		expect(link.getAttribute("rel")).toBe("external noreferrer noopener");
 		expect(link.getAttribute("target")).toBe("_blank");
 	});
 

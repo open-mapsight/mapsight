@@ -27,6 +27,22 @@ function asNonEmptyString(value: unknown): string | null {
 	return trimmed.length > 0 ? trimmed : null;
 }
 
+function asHttpOrHttpsUrl(value: unknown): string | null {
+	const href = asNonEmptyString(value);
+	if (!href) {
+		return null;
+	}
+	try {
+		const protocol = new URL(href).protocol;
+		if (protocol === "http:" || protocol === "https:") {
+			return href;
+		}
+	} catch {
+		return null;
+	}
+	return null;
+}
+
 function readRawSchema(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig | undefined,
@@ -347,7 +363,7 @@ function resolveWebsite(
 	config: PlaceActionsConfig | undefined,
 ): WebsitePlaceAction | null {
 	const schema = resolveFeatureSchema(feature, config);
-	const href = asNonEmptyString(schema.url);
+	const href = asHttpOrHttpsUrl(schema.url);
 	if (!href) {
 		return null;
 	}

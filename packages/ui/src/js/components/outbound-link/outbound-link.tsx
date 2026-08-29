@@ -18,7 +18,7 @@ export type OutboundLinkProps = {
 
 /**
  * Real `<a>` for leaving the current document (website, maps, related hops).
- * Defaults: new tab, `rel="external noreferrer"`. Renders nothing without href.
+ * Defaults: new tab, `rel="external noreferrer noopener"`. Renders nothing without href.
  */
 export default function OutboundLink({
 	href,
@@ -27,7 +27,7 @@ export default function OutboundLink({
 	children,
 	label,
 	icon,
-	rel = "external noreferrer",
+	rel = "external noreferrer noopener",
 	target = "_blank",
 	...rest
 }: OutboundLinkProps): ReactElement | null {

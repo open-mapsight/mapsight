@@ -135,6 +135,29 @@ describe("resolvePlaceActions", () => {
 		expect(actions).toEqual([]);
 	});
 
+	it("omits website when schema.url is not http(s)", () => {
+		for (const url of [
+			"javascript:alert(1)",
+			"data:text/html,hi",
+			"mailto:info@example.de",
+			"/relative/path",
+		]) {
+			const actions = resolvePlaceActions(
+				feature({
+					properties: {
+						id: "schlosspark",
+						schema: {url},
+					},
+				}),
+				{permalink: () => null, navigation: {fromGeometry: false}},
+			);
+
+			expect(
+				actions.find((action) => action.kind === "website"),
+			).toBeUndefined();
+		}
+	});
+
 	it("never treats detailsUrl as a website", () => {
 		const actions = resolvePlaceActions(
 			feature({
