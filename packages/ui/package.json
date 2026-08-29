@@ -92,6 +92,14 @@
 			"types": "./dist/components/feature-list/index.d.ts",
 			"default": "./dist/components/feature-list/index.js"
 		},
+		"./components/place-actions": {
+			"types": "./dist/components/place-actions/index.d.ts",
+			"default": "./dist/components/place-actions/index.js"
+		},
+		"./components/outbound-link": {
+			"types": "./dist/components/outbound-link/index.d.ts",
+			"default": "./dist/components/outbound-link/index.js"
+		},
 		"./components/bottom-sheet": {
 			"types": "./dist/components/bottom-sheet/index.d.ts",
 			"default": "./dist/components/bottom-sheet/index.js"

@@ -1,0 +1,21 @@
+// Structural place-actions layout. Visual chrome belongs in a theme or host stylesheet.
+
+.ms3-place-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--ms3-place-actions-gap, 0.5rem);
+	color: var(--ms3-place-actions-fg, inherit);
+	background: var(--ms3-place-actions-bg, transparent);
+
+	&__icon {
+		inline-size: var(--ms3-place-actions-icon-size, 1.25em);
+		block-size: var(--ms3-place-actions-icon-size, 1.25em);
+	}
+
+	&__navigate-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+}

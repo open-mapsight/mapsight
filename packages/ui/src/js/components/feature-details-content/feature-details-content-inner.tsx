@@ -13,6 +13,8 @@ export type Props = PropsWithChildren<{
 	hasError: boolean;
 	html?: string;
 	handleContentChange?: (element: HTMLElement | null) => void;
+	/** Pass `null` to hide actions on this surface. Omit to use `FeaturePlaceActions`. */
+	actions?: ReactNode;
 }>;
 
 function FeatureDetailsContentInner({
@@ -21,6 +23,7 @@ function FeatureDetailsContentInner({
 	hasError,
 	html,
 	handleContentChange,
+	actions,
 }: Props) {
 	const comps = useContext(ComponentsContext);
 
@@ -110,7 +113,24 @@ function FeatureDetailsContentInner({
 		);
 	}
 
-	return content;
+	const Actions = comps.FeaturePlaceActions;
+	const actionsNode =
+		actions !== undefined ? (
+			actions
+		) : Actions ? (
+			<Actions feature={feature} />
+		) : null;
+
+	if (!actionsNode && !content) {
+		return null;
+	}
+
+	return (
+		<>
+			{actionsNode}
+			{content}
+		</>
+	);
 }
 
 export default memo(FeatureDetailsContentInner);

@@ -69,6 +69,13 @@
 	--ms3-z-index-wrapper: #{variables.$ms3-zIndexWrapper};
 	--ms3-fullscreen-z-index-wrapper: #{variables.$ms3-fullscreen-zIndexWrapper};
 
+	// place actions / outbound links
+	--ms3-place-actions-gap: 0.5rem;
+	--ms3-place-actions-icon-size: 1.25em;
+	--ms3-place-actions-fg: #{variables.$ms3-foregroundColor};
+	--ms3-place-actions-bg: transparent;
+	--ms3-outbound-fg: #{variables.$ms3-foregroundColor};
+
 	// scrollbar utility
 	--ms3-scrollbar-size: 8px;
 	--ms3-scrollbar-thumb: rgb(55 65 81 / 28%);
