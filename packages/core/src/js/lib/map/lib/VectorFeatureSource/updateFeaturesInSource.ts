@@ -1,36 +1,54 @@
 import type OlFeature from "ol/Feature";
 import type VectorSource from "ol/source/Vector";
 
+import {DEFAULT_CORE_PROPERTY_KEYS} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
+import geometriesEqual from "@mapsight/lib-ol/geometry/geometriesEqual";
+
 import {getOlFeatureId} from "@/lib/helpers/ol";
 
 /**
  * Modifies the openlayers feature with the given properties.
  * Will trigger openlayers observe events when appropriate. Changes to geometry will trigger an change:geometry event otherwise
- * only one change event will be triggered if any of the props changed. Equality is checked strictly (===).
- * Does NOT remove old properties not defined in new props.
+ * only one change event will be triggered if any of the props changed.
+ *
+ * Geometry is compared by value (type, layout, flat coordinates). Other keys
+ * are applied only when they are in the core / style / identity set; UI-only
+ * keys stay on the existing feature. Does NOT remove old properties not
+ * defined in new props.
  *
  * TODO: Move to @mapsight/lib-ol?
  *
  * @param baseFeature base feature to modify
  * @param newProps properties to set
+ * @param coreKeys style / identity keys to apply (plus geometry)
  * @returns true if changed, false otherwise
  */
 function modifyFeature(
 	baseFeature: OlFeature,
 	newProps: Record<string, unknown>,
+	coreKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 ) {
 	const oldProps = baseFeature.getProperties();
 
 	// TODO: Should we remove old properties not existing in new properties?
 	let featureChanged = false;
-	Object.keys(newProps).forEach(function updateFeatureProperty(key) {
-		const newValue = newProps[key];
-		if (oldProps[key] !== newValue) {
-			featureChanged = true;
-			const silent = key !== "geometry";
-			baseFeature.set(key, newValue, silent);
+	for (const key of Object.keys(newProps)) {
+		if (key !== "geometry" && !coreKeys.has(key)) {
+			continue;
 		}
-	});
+
+		const newValue = newProps[key];
+		if (oldProps[key] === newValue) {
+			continue;
+		}
+
+		if (key === "geometry" && geometriesEqual(oldProps[key], newValue)) {
+			continue;
+		}
+
+		featureChanged = true;
+		baseFeature.set(key, newValue, key !== "geometry");
+	}
 
 	if (featureChanged) {
 		baseFeature.changed();
@@ -46,11 +64,13 @@ function modifyFeature(
  *
  * @param source source to update
  * @param nextFeatures next features
+ * @param coreKeys style / identity keys to apply on matching features
  * @returns flags that indicate the what changes have occurred
  */
 export function updateFeaturesInSource(
 	source: VectorSource,
 	nextFeatures: Array<OlFeature>,
+	coreKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 ) {
 	const features = source.getFeatures();
 
@@ -84,6 +104,7 @@ export function updateFeaturesInSource(
 				const hasFeatureChanged = modifyFeature(
 					prevFeature,
 					nextFeature.getProperties(),
+					coreKeys,
 				);
 				if (hasFeatureChanged) {
 					hasChanged = true;
