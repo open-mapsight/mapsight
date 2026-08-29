@@ -1,0 +1,34 @@
+import type {BuildCacheKeyInput} from "@/lib/feature-sources/cache/types";
+
+/**
+ * Document identity for xhr-json bodies: URL + revision.
+ *
+ * Placement ids (`controllerName` / `featureSourceId`) differ per embed; two
+ * presets that share one GeoJSON must share one entry.
+ */
+export function buildDocumentCacheKey(input: {
+	url: string;
+	revision?: string;
+}): string {
+	const revision = input.revision ?? "";
+	return `doc:${revision}:${input.url}`;
+}
+
+/**
+ * Cache key for a feature source load.
+ *
+ * When `url` is present (xhr-json), key by document identity so the sidecar
+ * warm set and client L1/L2 share one bust protocol. Local / embedded sources
+ * without a URL fall back to placement identity.
+ */
+export function buildCacheKey(input: BuildCacheKeyInput): string {
+	if (input.url) {
+		return buildDocumentCacheKey({
+			url: input.url,
+			revision: input.appVersion,
+		});
+	}
+
+	const revision = input.appVersion ?? "";
+	return `src:${revision}:${input.controllerName}:${input.featureSourceId}`;
+}

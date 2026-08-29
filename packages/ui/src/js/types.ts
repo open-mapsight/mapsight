@@ -10,6 +10,7 @@ import type {
 import type {BatchAction} from "redux-batched-actions";
 
 import type {BaseController} from "@mapsight/core/lib/base/controller";
+import type {FeatureSourceCache} from "@mapsight/core/lib/feature-sources/cache";
 import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
 import type {EnhancedStore, Feature, State} from "@mapsight/core/types";
 
@@ -395,6 +396,14 @@ export type CreateOptions = {
 	partialChangeHandler?: EventListener;
 
 	appChannelListeners?: AppChannelListenerDefinition[];
+
+	/**
+	 * Optional xhr-json document cache (process memory on SSR, later IDB in the browser).
+	 * Injected into `load()` via the store extra argument. Opt-in: missing = today’s fetch path.
+	 */
+	featureSourceCache?: FeatureSourceCache;
+	/** Revision token included in document cache keys (`url` + revision). */
+	featureSourceRevision?: string;
 } & Partial<SiteConfig>;
 
 export type MapsightUiFeatureProperty =

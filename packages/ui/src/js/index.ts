@@ -237,6 +237,13 @@ export function create(
 		),
 		context.initialState,
 		context.storeEnhancer,
+		{
+			extraArgument: {
+				featureSourceCache: context.createOptions.featureSourceCache,
+				featureSourceRevision:
+					context.createOptions.featureSourceRevision,
+			},
+		},
 	);
 
 	// render

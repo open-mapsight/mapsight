@@ -1,4 +1,8 @@
 import {async, controlled, withPath} from "@/lib/base/actions";
+import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
+import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
+import {singleFlight} from "@/lib/feature-sources/cache/single-flight";
+import type {FeatureSourceCacheExtra} from "@/lib/feature-sources/cache/types";
 import * as combined from "@/lib/feature-sources/loaders/combined-loader";
 import * as local from "@/lib/feature-sources/loaders/local-state-loader";
 import type {LocalStateLoaderOptions} from "@/lib/feature-sources/loaders/local-state-loader";
@@ -10,6 +14,7 @@ import {
 	hasFeatureSourceLoadError,
 } from "@/lib/feature-sources/selectors";
 import type {
+	FeatureSourceData,
 	FeatureSourceState,
 	FeatureSourceType,
 	FeatureSourcesState,
@@ -326,7 +331,7 @@ export const load = (
 	id: string,
 	options?: LoadOptions,
 ) => {
-	const handleLoad: ThunkAction = (dispatch, getState) => {
+	const handleLoad: ThunkAction = (dispatch, getState, extraArgument) => {
 		const state = getState()[controllerName] as FeatureSourcesState;
 		const currentState = state[id] || ({} as FeatureSourceState);
 		const {requestId = 0, isLoading} = currentState || {};
@@ -361,6 +366,7 @@ export const load = (
 				id,
 				controllerName,
 				options,
+				asFeatureSourceCacheExtra(extraArgument),
 			).then(
 				function handleLoadResolved(data) {
 					dispatch(loadSuccess(controllerName, id, data));
@@ -429,12 +435,74 @@ function refreshByTimer(state: FeatureSourceState) {
 	return Promise.resolve(false);
 }
 
+function isFeatureSourceCacheDebugEnabled() {
+	return (
+		typeof process !== "undefined" &&
+		process.env?.MAPSIGHT_FEATURE_SOURCE_CACHE_DEBUG === "1"
+	);
+}
+
+function asFeatureSourceCacheExtra(
+	extraArgument: unknown,
+): FeatureSourceCacheExtra | undefined {
+	if (!extraArgument || typeof extraArgument !== "object") {
+		return undefined;
+	}
+	return extraArgument;
+}
+
+function shouldUseDocumentCache(state: FeatureSourceState): boolean {
+	return state.type === "xhr-json" && typeof state.url === "string";
+}
+
+async function loadFromLoader(
+	state: FeatureSourceState,
+	getState: () => unknown,
+	id: string,
+	controllerName: string,
+	loaderOptions: object,
+): Promise<FeatureSourceData | undefined> {
+	return getLoader(state.type).load(
+		state,
+		{...loaderOptions, controllerName},
+		id,
+		getState,
+	);
+}
+
+async function writeThroughDocumentCache(
+	state: FeatureSourceState,
+	id: string,
+	controllerName: string,
+	data: FeatureSourceData | undefined,
+	extra: FeatureSourceCacheExtra | undefined,
+) {
+	const cache = extra?.featureSourceCache;
+	if (!cache || !data || !shouldUseDocumentCache(state) || !state.url) {
+		return;
+	}
+
+	const key = buildCacheKey({
+		controllerName,
+		featureSourceId: id,
+		url: state.url,
+		appVersion: extra.featureSourceRevision,
+	});
+	await cache.put(key, {
+		key,
+		data,
+		fetchedAt: Date.now(),
+		bytes: estimateFeatureSourceBytes(data),
+	});
+}
+
 async function loadWithCache(
 	state: FeatureSourceState,
 	getState: () => unknown,
 	id: string,
 	controllerName: string,
 	options: LoadOptions = {},
+	extra?: FeatureSourceCacheExtra,
 ) {
 	const {
 		forceRefresh = false,
@@ -442,20 +510,74 @@ async function loadWithCache(
 		...loaderOptions
 	} = options;
 
-	const canUseCache = !forceRefresh && state.data;
-	if (useCache === USE_CACHE_ONLY && !canUseCache) {
+	const canUseReduxCache = !forceRefresh && state.data;
+	if (useCache !== USE_CACHE_NO && canUseReduxCache) {
+		return Promise.resolve(state.data);
+	}
+
+	const cache = extra?.featureSourceCache;
+	const canUseDocumentCache =
+		!forceRefresh &&
+		useCache !== USE_CACHE_NO &&
+		cache &&
+		shouldUseDocumentCache(state);
+
+	if (canUseDocumentCache && state.url) {
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: id,
+			url: state.url,
+			appVersion: extra?.featureSourceRevision,
+		});
+		const entry = await cache.get(key);
+		if (entry) {
+			if (isFeatureSourceCacheDebugEnabled()) {
+				console.info("[mapsight-feature-source-cache] hit", key);
+			}
+			return entry.data;
+		}
+	}
+
+	if (useCache === USE_CACHE_ONLY) {
 		await Promise.resolve();
 		throw new Error(ERROR_COLD_CACHE);
 	}
 
-	if (useCache !== USE_CACHE_NO && canUseCache) {
-		return Promise.resolve(state.data);
+	if (
+		useCache === USE_CACHE_NO ||
+		!cache ||
+		!shouldUseDocumentCache(state) ||
+		!state.url
+	) {
+		return loadFromLoader(
+			state,
+			getState,
+			id,
+			controllerName,
+			loaderOptions,
+		);
 	}
 
-	return getLoader(state.type).load(
-		state,
-		{...loaderOptions, controllerName},
-		id,
-		getState,
-	);
+	const key = buildCacheKey({
+		controllerName,
+		featureSourceId: id,
+		url: state.url,
+		appVersion: extra?.featureSourceRevision,
+	});
+
+	return singleFlight(cache, key, async () => {
+		const replay = !forceRefresh ? await cache.get(key) : null;
+		if (replay) {
+			return replay.data;
+		}
+		const data = await loadFromLoader(
+			state,
+			getState,
+			id,
+			controllerName,
+			loaderOptions,
+		);
+		await writeThroughDocumentCache(state, id, controllerName, data, extra);
+		return data;
+	});
 }
