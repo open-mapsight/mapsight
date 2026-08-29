@@ -48,13 +48,15 @@ function featureTitle(feature: MapsightUiFeature): string {
 }
 
 function stripTags(html: string): string {
-	return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+	return html
+		.replace(/<[^>]*>/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
 }
 
 function ogDescription(feature: MapsightUiFeature, title: string): string {
 	const raw = getFeatureProperty(feature, "description");
-	const stripped =
-		typeof raw === "string" ? stripTags(raw) : "";
+	const stripped = typeof raw === "string" ? stripTags(raw) : "";
 	const text = stripped.length > 0 ? stripped : title;
 	if (text.length <= OG_DESCRIPTION_MAX) {
 		return text;
