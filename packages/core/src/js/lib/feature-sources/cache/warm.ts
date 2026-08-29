@@ -1,7 +1,8 @@
 import {buildDocumentCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
+import {shouldPersistDocumentCache} from "@/lib/feature-sources/cache/http-freshness";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
-import {load as loadXhrJson} from "@/lib/feature-sources/loaders/xhr-json-loader";
+import {fetchXhrJson} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
 /**
  * Fetch one xhr-json URL through the shared loader and `cache.put`.
@@ -18,15 +19,25 @@ export async function warmFeatureSourceUrl(
 	}
 
 	try {
-		const data = await loadXhrJson({url});
-		if (!data) {
+		const result = await fetchXhrJson(url);
+		if (
+			!result.data ||
+			!shouldPersistDocumentCache({
+				cacheControl: result.cacheControl,
+				expires: result.expires,
+			})
+		) {
 			return false;
 		}
 		await cache.put(key, {
 			key,
-			data,
+			data: result.data,
 			fetchedAt: Date.now(),
-			bytes: estimateFeatureSourceBytes(data),
+			bytes: estimateFeatureSourceBytes(result.data),
+			etag: result.etag,
+			lastModified: result.lastModified,
+			cacheControl: result.cacheControl,
+			expires: result.expires,
 		});
 		return true;
 	} catch {

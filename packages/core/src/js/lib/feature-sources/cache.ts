@@ -7,6 +7,17 @@ export {
 	createMemoryFeatureSourceCache,
 	type MemoryFeatureSourceCache,
 } from "./cache/memory-cache";
+export {
+	allowsStaleOnError,
+	DEFAULT_CACHE_TTL,
+	evaluateFreshness,
+	parseCacheControl,
+	resolveCacheTtlPolicy,
+	shouldPersistDocumentCache,
+	type CacheControlDirectives,
+	type CacheTtlPolicy,
+	type FreshnessDecision,
+} from "./cache/http-freshness";
 export {singleFlight} from "./cache/single-flight";
 export {warmFeatureSourceUrl} from "./cache/warm";
 export type {

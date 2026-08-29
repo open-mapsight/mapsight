@@ -1,8 +1,16 @@
 import {async, controlled, withPath} from "@/lib/base/actions";
 import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
+import {
+	allowsStaleOnError,
+	evaluateFreshness,
+	shouldPersistDocumentCache,
+} from "@/lib/feature-sources/cache/http-freshness";
 import {singleFlight} from "@/lib/feature-sources/cache/single-flight";
-import type {FeatureSourceCacheExtra} from "@/lib/feature-sources/cache/types";
+import type {
+	FeatureSourceCacheEntry,
+	FeatureSourceCacheExtra,
+} from "@/lib/feature-sources/cache/types";
 import * as combined from "@/lib/feature-sources/loaders/combined-loader";
 import * as local from "@/lib/feature-sources/loaders/local-state-loader";
 import type {LocalStateLoaderOptions} from "@/lib/feature-sources/loaders/local-state-loader";
@@ -455,6 +463,27 @@ function shouldUseDocumentCache(state: FeatureSourceState): boolean {
 	return state.type === "xhr-json" && typeof state.url === "string";
 }
 
+function isSharedDocumentCache(extra?: FeatureSourceCacheExtra): boolean {
+	if (extra?.sharedCache !== undefined) {
+		return extra.sharedCache;
+	}
+	return typeof window === "undefined";
+}
+
+function documentCacheKey(
+	state: FeatureSourceState,
+	id: string,
+	controllerName: string,
+	extra?: FeatureSourceCacheExtra,
+): string {
+	return buildCacheKey({
+		controllerName,
+		featureSourceId: id,
+		url: state.url,
+		appVersion: extra?.featureSourceRevision,
+	});
+}
+
 async function loadFromLoader(
 	state: FeatureSourceState,
 	getState: () => unknown,
@@ -470,30 +499,70 @@ async function loadFromLoader(
 	);
 }
 
-async function writeThroughDocumentCache(
-	state: FeatureSourceState,
-	id: string,
-	controllerName: string,
-	data: FeatureSourceData | undefined,
-	extra: FeatureSourceCacheExtra | undefined,
+async function putDocumentCacheEntry(
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	data: FeatureSourceData,
+	meta: {
+		etag?: string;
+		lastModified?: string;
+		cacheControl?: string;
+		expires?: string;
+	},
 ) {
-	const cache = extra?.featureSourceCache;
-	if (!cache || !data || !shouldUseDocumentCache(state) || !state.url) {
+	const cache = extra.featureSourceCache;
+	if (
+		!cache ||
+		!shouldPersistDocumentCache({
+			cacheControl: meta.cacheControl,
+			expires: meta.expires,
+			shared: isSharedDocumentCache(extra),
+			ttl: extra.cacheTtl,
+		})
+	) {
+		await cache?.delete(key);
 		return;
 	}
-
-	const key = buildCacheKey({
-		controllerName,
-		featureSourceId: id,
-		url: state.url,
-		appVersion: extra.featureSourceRevision,
-	});
 	await cache.put(key, {
 		key,
 		data,
 		fetchedAt: Date.now(),
 		bytes: estimateFeatureSourceBytes(data),
+		etag: meta.etag,
+		lastModified: meta.lastModified,
+		cacheControl: meta.cacheControl,
+		expires: meta.expires,
 	});
+}
+
+async function revalidateDocumentCache(
+	state: FeatureSourceState,
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	entry: FeatureSourceCacheEntry | null,
+	forceRefresh: boolean,
+): Promise<FeatureSourceData | undefined> {
+	const result = await xhrJson.fetchXhrJson(state.url ?? "", {
+		ifNoneMatch: forceRefresh ? undefined : entry?.etag,
+		ifModifiedSince: forceRefresh ? undefined : entry?.lastModified,
+	});
+
+	if (result.notModified && entry) {
+		await putDocumentCacheEntry(extra, key, entry.data, {
+			etag: result.etag ?? entry.etag,
+			lastModified: result.lastModified ?? entry.lastModified,
+			cacheControl: result.cacheControl ?? entry.cacheControl,
+			expires: result.expires ?? entry.expires,
+		});
+		return entry.data;
+	}
+
+	if (!result.data) {
+		return entry?.data;
+	}
+
+	await putDocumentCacheEntry(extra, key, result.data, result);
+	return result.data;
 }
 
 async function loadWithCache(
@@ -517,25 +586,66 @@ async function loadWithCache(
 
 	const cache = extra?.featureSourceCache;
 	const canUseDocumentCache =
-		!forceRefresh &&
-		useCache !== USE_CACHE_NO &&
-		cache &&
-		shouldUseDocumentCache(state);
+		useCache !== USE_CACHE_NO && cache && shouldUseDocumentCache(state);
 
-	if (canUseDocumentCache && state.url) {
-		const key = buildCacheKey({
-			controllerName,
-			featureSourceId: id,
-			url: state.url,
-			appVersion: extra?.featureSourceRevision,
-		});
-		const entry = await cache.get(key);
-		if (entry) {
-			if (isFeatureSourceCacheDebugEnabled()) {
-				console.info("[mapsight-feature-source-cache] hit", key);
-			}
+	if (canUseDocumentCache && state.url && extra) {
+		const key = documentCacheKey(state, id, controllerName, extra);
+		const entry = !forceRefresh ? await cache.get(key) : null;
+
+		if (entry && useCache === USE_CACHE_ONLY) {
 			return entry.data;
 		}
+
+		if (entry && !forceRefresh) {
+			const decision = evaluateFreshness({
+				fetchedAt: entry.fetchedAt,
+				cacheControl: entry.cacheControl,
+				expires: entry.expires,
+				shared: isSharedDocumentCache(extra),
+				ttl: extra.cacheTtl,
+			});
+			if (isFeatureSourceCacheDebugEnabled()) {
+				console.info("[mapsight-feature-source-cache]", decision, key);
+			}
+			if (decision === "fresh") {
+				return entry.data;
+			}
+			if (decision === "stale-while-revalidate") {
+				void singleFlight(cache, key, () =>
+					revalidateDocumentCache(state, extra, key, entry, false),
+				).catch(() => undefined);
+				return entry.data;
+			}
+			try {
+				return await singleFlight(cache, key, () =>
+					revalidateDocumentCache(state, extra, key, entry, false),
+				);
+			} catch (error) {
+				if (allowsStaleOnError(entry.cacheControl, entry.fetchedAt)) {
+					return entry.data;
+				}
+				throw error;
+			}
+		}
+
+		if (useCache === USE_CACHE_ONLY) {
+			await Promise.resolve();
+			throw new Error(ERROR_COLD_CACHE);
+		}
+
+		return singleFlight(cache, key, async () => {
+			const replay = !forceRefresh ? await cache.get(key) : null;
+			if (replay) {
+				return replay.data;
+			}
+			return revalidateDocumentCache(
+				state,
+				extra,
+				key,
+				null,
+				forceRefresh,
+			);
+		});
 	}
 
 	if (useCache === USE_CACHE_ONLY) {
@@ -543,41 +653,5 @@ async function loadWithCache(
 		throw new Error(ERROR_COLD_CACHE);
 	}
 
-	if (
-		useCache === USE_CACHE_NO ||
-		!cache ||
-		!shouldUseDocumentCache(state) ||
-		!state.url
-	) {
-		return loadFromLoader(
-			state,
-			getState,
-			id,
-			controllerName,
-			loaderOptions,
-		);
-	}
-
-	const key = buildCacheKey({
-		controllerName,
-		featureSourceId: id,
-		url: state.url,
-		appVersion: extra?.featureSourceRevision,
-	});
-
-	return singleFlight(cache, key, async () => {
-		const replay = !forceRefresh ? await cache.get(key) : null;
-		if (replay) {
-			return replay.data;
-		}
-		const data = await loadFromLoader(
-			state,
-			getState,
-			id,
-			controllerName,
-			loaderOptions,
-		);
-		await writeThroughDocumentCache(state, id, controllerName, data, extra);
-		return data;
-	});
+	return loadFromLoader(state, getState, id, controllerName, loaderOptions);
 }

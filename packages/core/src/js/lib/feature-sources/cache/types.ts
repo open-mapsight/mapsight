@@ -1,3 +1,4 @@
+import type {CacheTtlPolicy} from "@/lib/feature-sources/cache/http-freshness";
 import type {FeatureSourceData} from "@/lib/feature-sources/types";
 import type {Feature, FeatureId} from "@/types";
 
@@ -10,6 +11,9 @@ export type FeatureSourceCacheEntry = {
 	featuresById?: Record<FeatureId, Feature>;
 	fetchedAt: number;
 	etag?: string;
+	lastModified?: string;
+	cacheControl?: string;
+	expires?: string;
 	bytes: number;
 	tier: FeatureSourceCacheTier;
 };
@@ -36,6 +40,13 @@ export type FeatureSourceCacheExtra = {
 	featureSourceCache?: FeatureSourceCache;
 	/** Shared revision token (`appVersion` / CMS publish id) used in document keys. */
 	featureSourceRevision?: string;
+	/**
+	 * Shared HTTP cache (SSR sidecar). Honors `s-maxage` and `proxy-revalidate`.
+	 * Defaults to `true` when `window` is undefined.
+	 */
+	sharedCache?: boolean;
+	/** Clamp / skip-persist policy. Defaults: 10s min, 5min default, 1h max. */
+	cacheTtl?: Partial<CacheTtlPolicy>;
 };
 
 export type BuildCacheKeyInput = {

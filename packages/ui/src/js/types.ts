@@ -10,7 +10,10 @@ import type {
 import type {BatchAction} from "redux-batched-actions";
 
 import type {BaseController} from "@mapsight/core/lib/base/controller";
-import type {FeatureSourceCache} from "@mapsight/core/lib/feature-sources/cache";
+import type {
+	CacheTtlPolicy,
+	FeatureSourceCache,
+} from "@mapsight/core/lib/feature-sources/cache";
 import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
 import type {EnhancedStore, Feature, State} from "@mapsight/core/types";
 
@@ -404,6 +407,8 @@ export type CreateOptions = {
 	featureSourceCache?: FeatureSourceCache;
 	/** Revision token included in document cache keys (`url` + revision). */
 	featureSourceRevision?: string;
+	/** Clamp document-cache freshness (min / default / max). */
+	featureSourceCacheTtl?: Partial<CacheTtlPolicy>;
 } & Partial<SiteConfig>;
 
 export type MapsightUiFeatureProperty =

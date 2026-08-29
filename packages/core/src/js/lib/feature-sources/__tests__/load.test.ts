@@ -103,6 +103,10 @@ const schoolsCollection = {
 	],
 };
 
+function emptyHeaders() {
+	return {get: () => null};
+}
+
 function xhrJsonState(
 	overrides: Partial<FeatureSourcesState[string]> = {},
 ): Record<string, FeatureSourcesState> {
@@ -137,7 +141,7 @@ describe("load with FeatureSourceCache", () => {
 		await cache.put(key, {
 			key,
 			data: schoolsCollection,
-			fetchedAt: 1,
+			fetchedAt: Date.now(),
 			bytes: 10,
 		});
 
@@ -167,6 +171,8 @@ describe("load with FeatureSourceCache", () => {
 			"fetch",
 			vi.fn(() => ({
 				ok: true,
+				status: 200,
+				headers: emptyHeaders(),
 				json: () => Promise.resolve(schoolsCollection),
 			})),
 		);
@@ -204,6 +210,8 @@ describe("load with FeatureSourceCache", () => {
 
 		const fetchMock = vi.fn(() => ({
 			ok: true,
+			status: 200,
+			headers: emptyHeaders(),
 			json: () =>
 				Promise.resolve({
 					type: "FeatureCollection",
@@ -247,6 +255,8 @@ describe("load with FeatureSourceCache", () => {
 		const cache = createMemoryFeatureSourceCache();
 		let resolveFetch: (value: {
 			ok: boolean;
+			status: number;
+			headers: {get: () => null};
 			json: () => Promise<typeof schoolsCollection>;
 		}) => void;
 		const fetchStarted = new Promise<void>((resolveStarted) => {
@@ -280,10 +290,122 @@ describe("load with FeatureSourceCache", () => {
 
 		resolveFetch!({
 			ok: true,
+			status: 200,
+			headers: emptyHeaders(),
 			json: () => Promise.resolve(schoolsCollection),
 		});
 		await Promise.all([first, second]);
 
 		expect(fetch).toHaveBeenCalledOnce();
+	});
+
+	it("serves stale-while-revalidate immediately and revalidates in the background", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			key,
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 1000,
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "max-age=0, stale-while-revalidate=60",
+		});
+
+		let resolveFetch: (value: unknown) => void = () => undefined;
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise((resolve) => {
+							resolveStarted();
+							resolveFetch = resolve;
+						}),
+				),
+			);
+		});
+
+		const dispatch = vi.fn();
+		const loaded = load(controllerName, "schools")(
+			dispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache},
+		);
+		await loaded;
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+
+		await fetchStarted;
+		resolveFetch({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "ETag" ? '"v2"' : null;
+				},
+			},
+			json: () =>
+				Promise.resolve({
+					type: "FeatureCollection",
+					features: [],
+				}),
+		});
+		await vi.waitFor(async () => {
+			expect((await cache.get(key))?.etag).toBe('"v2"');
+		});
+	});
+
+	it("blocks on must-revalidate and sends If-None-Match", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			key,
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 1000,
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "max-age=0, must-revalidate",
+		});
+
+		const fetchMock = vi.fn(() => ({
+			ok: false,
+			status: 304,
+			headers: {
+				get(name: string) {
+					return name === "ETag" ? '"v1"' : null;
+				},
+			},
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+
+		expect(fetchMock).toHaveBeenCalledWith(
+			expect.stringContaining("/geojson/schools.geojson"),
+			expect.objectContaining({
+				headers: {"If-None-Match": '"v1"'},
+			}),
+		);
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
 	});
 });
