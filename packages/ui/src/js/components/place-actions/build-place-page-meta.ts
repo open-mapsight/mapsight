@@ -1,6 +1,7 @@
 import getFeatureProperty from "../../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../../types";
 import {
+	lonLatFromGeometry,
 	resolveFeaturePermalink,
 	resolveFeatureSchema,
 } from "./resolve-place-actions";
@@ -62,22 +63,6 @@ function ogDescription(feature: MapsightUiFeature, title: string): string {
 		return text;
 	}
 	return `${text.slice(0, OG_DESCRIPTION_MAX - 1).trimEnd()}…`;
-}
-
-function lonLatFromGeometry(
-	feature: MapsightUiFeature,
-): {lon: number; lat: number} | null {
-	const geometry = feature.geometry as
-		{type?: string; coordinates?: unknown} | undefined;
-	const coordinates = geometry?.coordinates;
-	if (geometry?.type === "Point" && Array.isArray(coordinates)) {
-		const lon = coordinates[0];
-		const lat = coordinates[1];
-		if (typeof lon === "number" && typeof lat === "number") {
-			return {lon, lat};
-		}
-	}
-	return null;
 }
 
 function sameAsList(schema: FeatureSchema): string[] {

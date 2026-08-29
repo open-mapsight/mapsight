@@ -104,6 +104,36 @@ describe("buildPlacePageMeta", () => {
 		expect(meta?.description.includes("<")).toBe(false);
 	});
 
+	it("uses bbox midpoint for JSON-LD geo when geometry is not a Point", () => {
+		const meta = buildPlacePageMeta(
+			feature({
+				geometry: {
+					type: "Polygon",
+					coordinates: [
+						[
+							[10.5, 52.2],
+							[10.6, 52.2],
+							[10.6, 52.3],
+							[10.5, 52.3],
+							[10.5, 52.2],
+						],
+					],
+				},
+				bbox: [10.5, 52.2, 10.6, 52.3],
+			}),
+			{
+				location,
+				ogImage: "https://www.example.de/plan/img/og-default.png",
+			},
+		);
+
+		expect(meta?.jsonLd.geo).toEqual({
+			"@type": "GeoCoordinates",
+			latitude: 52.25,
+			longitude: 10.55,
+		});
+	});
+
 	it("returns null when the feature has no title", () => {
 		expect(
 			buildPlacePageMeta(

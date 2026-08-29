@@ -181,7 +181,7 @@ function resolveShareTitle(
 	return featureTitle(feature);
 }
 
-function lonLatFromGeometry(
+export function lonLatFromGeometry(
 	feature: MapsightUiFeature,
 ): {lon: number; lat: number} | null {
 	const geometry = feature.geometry as
