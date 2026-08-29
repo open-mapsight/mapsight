@@ -181,7 +181,7 @@ function resolveShareTitle(
 	return featureTitle(feature);
 }
 
-function lonLatFromGeometry(
+export function lonLatFromGeometry(
 	feature: MapsightUiFeature,
 ): {lon: number; lat: number} | null {
 	const geometry = feature.geometry as
@@ -384,6 +384,15 @@ function resolveCall(
 		href: telHref(telephone),
 		telephone,
 	};
+}
+
+export function resolveFeaturePermalink(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig = {},
+): string | null {
+	return resolvePermalink(feature, config, {
+		location: currentLocation(config),
+	});
 }
 
 export function resolvePlaceActions(
