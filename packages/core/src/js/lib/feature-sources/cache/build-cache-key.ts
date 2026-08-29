@@ -14,6 +14,14 @@ export function buildDocumentCacheKey(input: {
 	return `doc:${revision}:${input.url}`;
 }
 
+/** True when `key` is a document entry for `url`, any revision. */
+export function documentCacheKeyMatchesUrl(key: string, url: string): boolean {
+	if (url === "" || !key.startsWith("doc:")) {
+		return false;
+	}
+	return key.endsWith(`:${url}`);
+}
+
 /**
  * Cache key for a feature source load.
  *

@@ -1,4 +1,12 @@
-export {buildCacheKey, buildDocumentCacheKey} from "./cache/build-cache-key";
+export {
+	buildCacheKey,
+	buildDocumentCacheKey,
+	documentCacheKeyMatchesUrl,
+} from "./cache/build-cache-key";
+export {
+	purgeDocumentCacheEntries,
+	type PurgeableFeatureSourceCache,
+} from "./cache/purge";
 export {
 	estimateFeatureSourceBytes,
 	estimateFeatureSourcesStateBytes,

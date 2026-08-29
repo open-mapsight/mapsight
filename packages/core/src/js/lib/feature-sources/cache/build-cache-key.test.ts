@@ -1,6 +1,10 @@
 import {describe, expect, it} from "vitest";
 
-import {buildCacheKey, buildDocumentCacheKey} from "./build-cache-key";
+import {
+	buildCacheKey,
+	buildDocumentCacheKey,
+	documentCacheKeyMatchesUrl,
+} from "./build-cache-key";
 
 describe("buildDocumentCacheKey", () => {
 	it("keys by url and revision so placements share one document", () => {
@@ -18,6 +22,30 @@ describe("buildDocumentCacheKey", () => {
 				url: "/geojson/schools.geojson",
 			}),
 		).toBe("doc::/geojson/schools.geojson");
+	});
+
+	it("matches a document key for the same url under any revision", () => {
+		const url = "https://example.test/geojson/schools.geojson";
+		expect(
+			documentCacheKeyMatchesUrl(
+				buildDocumentCacheKey({url, revision: "pub-12"}),
+				url,
+			),
+		).toBe(true);
+		expect(
+			documentCacheKeyMatchesUrl(buildDocumentCacheKey({url}), url),
+		).toBe(true);
+		expect(
+			documentCacheKeyMatchesUrl(
+				buildDocumentCacheKey({
+					url: "https://example.test/geojson/other.geojson",
+				}),
+				url,
+			),
+		).toBe(false);
+		expect(
+			documentCacheKeyMatchesUrl("src:v1:featureSources:schools", url),
+		).toBe(false);
 	});
 });
 
