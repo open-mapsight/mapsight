@@ -1,0 +1,5 @@
+// Structural outbound link. Related destinations reuse this primitive.
+
+.ms3-outbound-link {
+	color: var(--ms3-outbound-fg, inherit);
+}

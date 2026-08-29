@@ -10,6 +10,12 @@ export default defineConfig([
 	{
 		name: "todos",
 		rules: {
+			// Browser API; eslint-plugin-n treats `navigator` as a Node experimental builtin.
+			"n/no-unsupported-features/node-builtins": [
+				"error",
+				{version: ">=24.0.0", ignores: ["navigator"]},
+			],
+
 			// FIXME:
 			"react/prop-types": "warn",
 			"react-hooks/refs": "warn",

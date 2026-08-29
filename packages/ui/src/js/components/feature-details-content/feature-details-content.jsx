@@ -27,7 +27,13 @@ import FeatureDetailsContentInner from "./feature-details-content-inner";
 
 import ShareFeatureLinkModal from "./share-feature-link-modal";
 
-function FeatureDetailsContent({feature, html, hasError, isEmbeddedMap}) {
+function FeatureDetailsContent({
+	feature,
+	html,
+	hasError,
+	isEmbeddedMap,
+	actions = undefined,
+}) {
 	const dispatch = useDispatch();
 	const view = useSelector(viewSelector);
 
@@ -171,6 +177,7 @@ function FeatureDetailsContent({feature, html, hasError, isEmbeddedMap}) {
 				html={html}
 				hasError={hasError}
 				handleContentChange={handleContentChange}
+				actions={actions}
 			/>
 
 			<ShareFeatureLinkModal
