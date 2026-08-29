@@ -386,6 +386,15 @@ function resolveCall(
 	};
 }
 
+export function resolveFeaturePermalink(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig = {},
+): string | null {
+	return resolvePermalink(feature, config, {
+		location: currentLocation(config),
+	});
+}
+
 export function resolvePlaceActions(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig = {},

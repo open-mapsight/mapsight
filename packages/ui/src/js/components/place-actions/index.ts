@@ -2,9 +2,11 @@ export {default} from "./place-actions";
 export {default as PlaceActions} from "./place-actions";
 export {default as FeaturePlaceActions} from "./feature-place-actions";
 export {
+	resolveFeaturePermalink,
 	resolveFeatureSchema,
 	resolvePlaceActions,
 } from "./resolve-place-actions";
+export {buildPlacePageMeta} from "./build-place-page-meta";
 export {
 	readGeoProtocolSupportEnv,
 	supportsGeoProtocol,
@@ -15,6 +17,11 @@ export type {
 	PlaceActionsRootProps,
 	PlaceActionPartProps,
 } from "./place-actions";
+export type {
+	BuildPlacePageMetaConfig,
+	PlacePageMeta,
+	PlacePageMetaOg,
+} from "./build-place-page-meta";
 export type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
