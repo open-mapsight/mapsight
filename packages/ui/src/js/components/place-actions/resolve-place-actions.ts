@@ -3,6 +3,7 @@ import {translate} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
 import {supportsGeoProtocol} from "./supports-geo-protocol";
 import type {
+	BuiltInNavTargetId,
 	CallPlaceAction,
 	CustomNavTarget,
 	FeatureSchema,
@@ -13,10 +14,15 @@ import type {
 	PlaceActionsResolveContext,
 	ResolvedNavTarget,
 	SharePlaceAction,
+	ShowOnMapPlaceAction,
 	WebsitePlaceAction,
 } from "./types";
 
 const DEFAULT_NAV_TARGETS = ["geo", "google", "apple"] as const;
+
+function isBuiltInNavTargetId(target: unknown): target is BuiltInNavTargetId {
+	return target === "geo" || target === "google" || target === "apple";
+}
 const DEFAULT_SCHEMA_TYPE = "Place";
 
 function asNonEmptyString(value: unknown): string | null {
@@ -234,7 +240,7 @@ function resolveAddress(
 }
 
 function builtInNavHref(
-	id: "geo" | "google" | "apple",
+	id: BuiltInNavTargetId,
 	lon: number | null,
 	lat: number | null,
 	address: string | null,
@@ -261,7 +267,7 @@ function builtInNavHref(
 	return `https://maps.apple.com/?daddr=${query}`;
 }
 
-function builtInNavLabel(id: "geo" | "google" | "apple"): string {
+function builtInNavLabel(id: BuiltInNavTargetId): string {
 	return translate(`ui.place-actions.navigate.${id}`);
 }
 
@@ -292,7 +298,7 @@ function resolveNavTargets(
 	const targets: ResolvedNavTarget[] = [];
 
 	for (const target of configured) {
-		if (target === "geo" || target === "google" || target === "apple") {
+		if (isBuiltInNavTargetId(target)) {
 			if (target === "geo" && !geoProtocolSupported(config)) {
 				continue;
 			}
@@ -345,6 +351,19 @@ function resolveShare(
 		href,
 		title: resolveShareTitle(feature, config),
 	};
+}
+
+function resolveShowOnMap(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+): ShowOnMapPlaceAction | null {
+	if (config?.showOnMap === false) {
+		return null;
+	}
+	if (!lonLatFromGeometry(feature)) {
+		return null;
+	}
+	return {kind: "showOnMap"};
 }
 
 function resolveNavigate(
@@ -406,6 +425,10 @@ export function resolvePlaceActions(
 	const share = resolveShare(feature, config, ctx);
 	if (share) {
 		actions.push(share);
+	}
+	const showOnMap = resolveShowOnMap(feature, config);
+	if (showOnMap) {
+		actions.push(showOnMap);
 	}
 	const navigate = resolveNavigate(feature, config);
 	if (navigate) {
