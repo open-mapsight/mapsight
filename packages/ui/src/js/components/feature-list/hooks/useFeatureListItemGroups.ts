@@ -47,7 +47,27 @@ function determineFeatureGroups(
 		groups.shift();
 	}
 
-	return groups;
+	return sortListGroups(groups);
+}
+
+/** Leading digits (`1) Parkhäuser`) pin section order; other names keep first-seen order. */
+function listGroupRank(name: string): number {
+	const match = /^(\d+)/.exec(name);
+	return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
+}
+
+function sortListGroups(groups: MapsightUiListGroup[]): MapsightUiListGroup[] {
+	return groups
+		.map((group, index) => ({group, index}))
+		.sort((a, b) => {
+			const rankDelta =
+				listGroupRank(a.group.name) - listGroupRank(b.group.name);
+			if (rankDelta !== 0) {
+				return rankDelta;
+			}
+			return a.index - b.index;
+		})
+		.map(({group}) => group);
 }
 
 function createGroup(name: string): MapsightUiListGroup {
