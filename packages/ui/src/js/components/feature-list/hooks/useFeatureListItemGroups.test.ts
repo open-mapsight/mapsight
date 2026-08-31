@@ -81,6 +81,7 @@ describe("useFeatureListItemGroups", () => {
 	it("keeps first-seen order when group names are not numbered", () => {
 		const features = [
 			feature("b", "B", "Innovationsorte"),
+			feature("c", "C", "Glasfaserausbau"),
 			feature("a", "A", "Infrastruktur"),
 		];
 		const {result} = renderHook(() =>
@@ -92,6 +93,7 @@ describe("useFeatureListItemGroups", () => {
 
 		expect(groupedNames(result.current)).toEqual([
 			"Innovationsorte",
+			"Glasfaserausbau",
 			"Infrastruktur",
 		]);
 	});

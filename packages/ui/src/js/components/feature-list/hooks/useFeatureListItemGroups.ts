@@ -60,10 +60,12 @@ function sortListGroups(groups: MapsightUiListGroup[]): MapsightUiListGroup[] {
 	return groups
 		.map((group, index) => ({group, index}))
 		.sort((a, b) => {
-			const rankDelta =
-				listGroupRank(a.group.name) - listGroupRank(b.group.name);
-			if (rankDelta !== 0) {
-				return rankDelta;
+			const rankA = listGroupRank(a.group.name);
+			const rankB = listGroupRank(b.group.name);
+			// Compare ranks first: Infinity - Infinity is NaN, so two
+			// unnumbered groups must not subtract.
+			if (rankA !== rankB) {
+				return rankA - rankB;
 			}
 			return a.index - b.index;
 		})
