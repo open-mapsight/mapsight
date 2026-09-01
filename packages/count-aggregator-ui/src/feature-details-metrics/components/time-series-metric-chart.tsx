@@ -106,6 +106,10 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 			})),
 		[points],
 	);
+	const timestamps = useMemo(
+		() => chartData.map((point) => point.timestamp),
+		[chartData],
+	);
 	const latestValue = points.at(-1)?.value;
 	const locale = resolveCountAggregatorLocale(getDocumentLocale());
 
@@ -162,7 +166,11 @@ export default function TimeSeriesMetricChart({points, config}: Props) {
 							scale="time"
 							domain={["dataMin", "dataMax"]}
 							tickFormatter={(value: number) =>
-								formatMetricAxisTime(new Date(value))
+								formatMetricAxisTime(
+									new Date(value),
+									config.resolution,
+									timestamps,
+								)
 							}
 							tick={chartTickStyle}
 							tickLine={false}
