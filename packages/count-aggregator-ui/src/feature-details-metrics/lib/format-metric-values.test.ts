@@ -2,9 +2,11 @@ import {parseLocalDateTime} from "@mapsight/count-aggregator-api";
 import {afterEach, describe, expect, it} from "vitest";
 
 import {
+	formatMetricAxisTime,
 	formatMetricDate,
 	formatMetricTooltipTime,
 	formatMetricTooltipValue,
+	resolveMetricAxisTimeKind,
 } from "./format-metric-values.js";
 
 const originalLang = document.documentElement.lang;
@@ -20,6 +22,66 @@ describe("formatMetricDate", () => {
 		expect(
 			formatMetricDate(parseLocalDateTime("2026-08-27 23:59:59")),
 		).toBe("27.08.2026");
+	});
+});
+
+describe("formatMetricAxisTime", () => {
+	it("uses clock time for short-interval resolutions", () => {
+		document.documentElement.lang = "de";
+
+		expect(formatMetricAxisTime(new Date(2026, 7, 27, 14, 15), "15min")).toBe(
+			"14:15",
+		);
+	});
+
+	it("uses a date label for daily midnight UTC instead of local 02:00", () => {
+		document.documentElement.lang = "de";
+
+		expect(
+			formatMetricAxisTime(
+				parseLocalDateTime("2026-08-27 00:00:00"),
+				"daily",
+			),
+		).toBe("27.08.");
+	});
+
+	it("uses a month label for monthly series", () => {
+		document.documentElement.lang = "de";
+
+		expect(
+			formatMetricAxisTime(
+				parseLocalDateTime("2026-08-01 00:00:00"),
+				"monthly",
+			),
+		).toMatch(/Aug/i);
+	});
+
+	it("treats evenly spaced day buckets as dates even without a resolution", () => {
+		document.documentElement.lang = "de";
+		const timestamps = [
+			Date.UTC(2026, 7, 1),
+			Date.UTC(2026, 7, 2),
+			Date.UTC(2026, 7, 3),
+		];
+
+		expect(resolveMetricAxisTimeKind(undefined, timestamps)).toBe("date");
+		expect(
+			formatMetricAxisTime(
+				new Date(timestamps[0]!),
+				undefined,
+				timestamps,
+			),
+		).toBe("01.08.");
+	});
+
+	it("keeps clock labels for intra-day spacing without a resolution", () => {
+		const timestamps = [
+			Date.UTC(2026, 7, 27, 12, 0),
+			Date.UTC(2026, 7, 27, 12, 15),
+			Date.UTC(2026, 7, 27, 12, 30),
+		];
+
+		expect(resolveMetricAxisTimeKind(undefined, timestamps)).toBe("clock");
 	});
 });
 
