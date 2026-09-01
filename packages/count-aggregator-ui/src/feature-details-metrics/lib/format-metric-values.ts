@@ -79,7 +79,9 @@ function medianPositiveDelta(timestamps: readonly number[]): number | null {
 	return deltas[Math.floor(deltas.length / 2)] ?? null;
 }
 
-function looksLikeCoarseSeries(timestamps: readonly number[] | undefined): boolean {
+function looksLikeCoarseSeries(
+	timestamps: readonly number[] | undefined,
+): boolean {
 	if (timestamps === undefined || timestamps.length < 2) {
 		return false;
 	}

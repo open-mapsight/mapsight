@@ -29,9 +29,9 @@ describe("formatMetricAxisTime", () => {
 	it("uses clock time for short-interval resolutions", () => {
 		document.documentElement.lang = "de";
 
-		expect(formatMetricAxisTime(new Date(2026, 7, 27, 14, 15), "15min")).toBe(
-			"14:15",
-		);
+		expect(
+			formatMetricAxisTime(new Date(2026, 7, 27, 14, 15), "15min"),
+		).toBe("14:15");
 	});
 
 	it("uses a date label for daily midnight UTC instead of local 02:00", () => {
