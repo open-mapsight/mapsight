@@ -34,6 +34,17 @@ describe("formatMetricAxisTime", () => {
 		).toBe("14:15");
 	});
 
+	it("keeps clock labels for sparse short-interval series", () => {
+		const timestamps = [
+			Date.UTC(2026, 7, 1, 14, 15),
+			Date.UTC(2026, 7, 3, 14, 15),
+			Date.UTC(2026, 7, 5, 14, 15),
+		];
+
+		expect(resolveMetricAxisTimeKind("15min", timestamps)).toBe("clock");
+		expect(resolveMetricAxisTimeKind("hourly", timestamps)).toBe("clock");
+	});
+
 	it("uses a date label for daily midnight UTC instead of local 02:00", () => {
 		document.documentElement.lang = "de";
 

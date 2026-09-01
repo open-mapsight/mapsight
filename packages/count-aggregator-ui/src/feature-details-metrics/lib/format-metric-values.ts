@@ -112,7 +112,7 @@ export function resolveMetricAxisTimeKind(
 		resolution === "15min" ||
 		resolution === "hourly"
 	) {
-		return looksLikeCoarseSeries(timestamps) ? "date" : "clock";
+		return "clock";
 	}
 
 	return looksLikeCoarseSeries(timestamps) ? "date" : "clock";
