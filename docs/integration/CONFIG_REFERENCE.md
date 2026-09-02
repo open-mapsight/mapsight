@@ -99,6 +99,23 @@ Preset factories in host apps (e.g. `simpleMap()`) return this object. The stabl
 `browserEmbed` and pulls in stylesheet side effects — see [
 `starters/mapsight-host-starter`](../../starters/mapsight-host-starter).
 
+### `createOptions.future`
+
+Opt into the next major’s behavior without changing today’s default. Flags are booleans (`true` means next-major
+behavior now; omitted or `false` keeps current behavior). Names look like `v8_*` and are removed when that major
+ships. See [Decision 012](../architecture/decisions/012-future-flags-for-next-major-ui.md).
+
+```ts
+createOptions: {
+	future: {
+		v8_ariaControlTooltip: true,
+	},
+}
+```
+
+A project can set a flag to try an upcoming behavior flip before that major ships. New UI is not hidden behind
+flags; only leftover behavior that must stay dual-path in this major.
+
 ---
 
 ## Validation (Zod)
