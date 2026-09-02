@@ -100,6 +100,10 @@
 			"types": "./dist/components/outbound-link/index.d.ts",
 			"default": "./dist/components/outbound-link/index.js"
 		},
+		"./components/tooltip": {
+			"types": "./dist/components/tooltip.d.ts",
+			"default": "./dist/components/tooltip.js"
+		},
 		"./components/bottom-sheet": {
 			"types": "./dist/components/bottom-sheet/index.d.ts",
 			"default": "./dist/components/bottom-sheet/index.js"
