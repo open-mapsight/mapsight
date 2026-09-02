@@ -110,6 +110,7 @@ export type InternalMapsightUiRendererProps = {
 	store: Store<State>;
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
+	future?: FutureFlags;
 };
 
 export type ExternalMapsightUiRendererProps = {
@@ -338,9 +339,22 @@ export type MapsightCoreReducer<
 
 export type MapsightUiAppReducer = MapsightCoreReducer<UiState>;
 
+/**
+ * Opt-in switches for the next major of `@mapsight/ui`.
+ * `true` is next-major behavior now; omitted/`false` is today’s default.
+ * Keys are added only when a leftover behavior must stay dual-path in this major.
+ * Flags are removed when that major ships. See Decision 012.
+ */
+export type FutureFlags = Record<string, never>;
+
 export type CreateOptions = {
 	/** Validate Mapsight config ingress in development (default: true in dev). */
 	validateConfig?: boolean;
+
+	/**
+	 * Opt into next-major behavior. See Decision 012.
+	 */
+	future?: FutureFlags;
 
 	// store
 	storeEnhancer?: StoreEnhancer;

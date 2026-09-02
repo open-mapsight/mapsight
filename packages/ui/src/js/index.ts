@@ -249,6 +249,7 @@ export function create(
 			store: context.store,
 			components: context.createOptions.components || {},
 			appChannelListeners: context.appChannelListeners,
+			future: context.createOptions.future,
 			...context.rendererProps,
 		};
 		context.renderRef = context.createOptions.renderer(

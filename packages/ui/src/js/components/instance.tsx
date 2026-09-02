@@ -31,7 +31,7 @@ function MapsightUi({
 			),
 		[baseMapsightConfig, createOptions, styleFunction],
 	);
-	const {components = {}, appChannelListeners = []} = createOptions;
+	const {components = {}, appChannelListeners = [], future} = createOptions;
 	const {store} = context;
 
 	return (
@@ -39,6 +39,7 @@ function MapsightUi({
 			components={components}
 			store={store as EnhancedStore}
 			appChannelListeners={appChannelListeners}
+			future={future}
 		>
 			{children}
 		</AppContext>
