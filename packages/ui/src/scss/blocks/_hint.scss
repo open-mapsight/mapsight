@@ -1,5 +1,10 @@
 @use "../variables";
 
+// @deprecated hint.css / `ms3-hint--*` tooltips. Prefer `Tooltip`
+// (`@mapsight/ui/components/tooltip`) or `HintTooltip` with
+// `createOptions.future.v8_ariaControlTooltip`. Removed in the next major
+// of `@mapsight/ui`. See Decision 012.
+
 // Prefix for all classes
 $hintPrefix: variables.$ms3-hintPrefix;
 

@@ -26,7 +26,7 @@ Add a `future` object on `CreateOptions`, following the Remix / React Router **f
 ```ts
 createOptions: {
   future: {
-    // v{major}_{behavior}: true
+    v8_ariaControlTooltip: true,
   },
 }
 ```
@@ -41,8 +41,8 @@ Rules:
 - Add a key to `FutureFlags` only in the same change that reads it. An unused flag is a public no-op.
 - When that major ships, the flagged behavior becomes the only behavior and the key is deleted.
 
-The first planned consumer is leftover hint.css control tooltips (RegionSelector vs the ARIA `Tooltip`). That key
-lands with the adapter that honors it, not with this empty bag.
+The first flag is `v8_ariaControlTooltip`: leftover hint.css call sites (today: RegionSelector) keep CSS tooltips
+by default; hosts set the flag to use the ARIA `Tooltip` now.
 
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 

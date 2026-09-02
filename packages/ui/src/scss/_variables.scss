@@ -73,7 +73,7 @@ $ms3-verticalPanelContentWidth: $ms3-verticalPanelWidth -
 	(2 * $ms3-verticalPanelPadding) !default;
 $ms3-marginalGap: 2% !default;
 
-// hint.css tooltips
+// @deprecated hint.css tooltips — removed in the next major of `@mapsight/ui`
 $ms3-hintPrefix: "ms3-hint--" !default;
 $ms3-hintFontFamily: PTSansRegular, Helvetica, Arial, sans-serif !default;
 $ms3-hintDefaultColor: #165a7e !default;
