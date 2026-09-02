@@ -22,6 +22,7 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 | [009](009-native-css-over-scss.md)                | Native CSS over Sass/SCSS                        | Open notes; feasibility TBD              |
 | [010](010-audience-scope.md)                      | Communicative embed-first audience scope         | Documented                               |
 | [011](011-license-and-brand-strategy.md)          | License and brand strategy                       | Documented                               |
+| [012](012-future-flags-for-next-major-ui.md)      | Future flags for next-major UI behavior          | Documented                               |
 
 ---
 
