@@ -20,6 +20,7 @@
 		"ol": "catalog:",
 		"proj4": "catalog:",
 		"react-aria": "^3.51.0",
+		"react-aria-components": "^1.21.0",
 		"react-intersection-observer": "^11.0.0",
 		"react-modal": "^3.16.3",
 		"react-paginate": "^8.3.0",
@@ -99,6 +100,10 @@
 		"./components/outbound-link": {
 			"types": "./dist/components/outbound-link/index.d.ts",
 			"default": "./dist/components/outbound-link/index.js"
+		},
+		"./components/tooltip": {
+			"types": "./dist/components/tooltip.d.ts",
+			"default": "./dist/components/tooltip.js"
 		},
 		"./components/bottom-sheet": {
 			"types": "./dist/components/bottom-sheet/index.d.ts",
