@@ -1,3 +1,4 @@
+import type {ReactNode} from "react";
 import {connect} from "react-redux";
 
 import type {Dispatch} from "@reduxjs/toolkit";
@@ -94,6 +95,8 @@ export type LayerSwitcherEntryProps = {
 	setFeatureSourceIdPath?: ActionPath | null;
 	/** When true, this entry cannot be toggled off (exactly one must stay active). */
 	exclusive?: boolean;
+	/** Host content after the title (e.g. presentational badges). */
+	end?: ReactNode;
 };
 
 const mapStateToProps = (

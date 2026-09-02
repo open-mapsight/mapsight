@@ -70,6 +70,12 @@
 			height: auto;
 		}
 
+		&__end {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+		}
+
 		&:first-child {
 			border-top: 0;
 		}

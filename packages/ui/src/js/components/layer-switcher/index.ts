@@ -1,3 +1,4 @@
+import type {ReactNode} from "react";
 import {connect} from "react-redux";
 
 import type {Selector} from "@mapsight/core/types";
@@ -12,6 +13,8 @@ const TRUE_SET_FEATURE_SOURCE_PATH = [FEATURE_LIST, "featureSource"];
 
 type Props = {
 	configSelector?: Selector<LayerSwitcherConfigState | undefined>;
+	onClose?: () => void;
+	renderEntryEnd?: (layerId: string) => ReactNode;
 };
 
 export default connect(

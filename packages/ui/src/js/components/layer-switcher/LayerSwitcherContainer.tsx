@@ -1,4 +1,4 @@
-import type {ElementType} from "react";
+import type {ElementType, ReactNode} from "react";
 import {memo, useCallback} from "react";
 
 import type {ActionPath} from "@mapsight/core/lib/base/actions";
@@ -32,6 +32,8 @@ export type LayerSwitcherContainerProps = {
 	/** Opt-in: overlay groups collapse and show visible/total counts. Only with `splitBaseLayers`. */
 	collapsibleGroups?: boolean;
 	setFeatureSourceIdPath?: ActionPath | null;
+	/** Optional host content after each overlay-layer title. */
+	renderEntryEnd?: (layerId: string) => ReactNode;
 };
 
 function LayerSwitcherContainer({
@@ -43,6 +45,7 @@ function LayerSwitcherContainer({
 	splitBaseLayers = false,
 	collapsibleGroups = false,
 	setFeatureSourceIdPath,
+	renderEntryEnd,
 	...attributes
 }: LayerSwitcherContainerProps) {
 	const createLayerEntry = useCallback(
@@ -63,9 +66,10 @@ function LayerSwitcherContainer({
 				)}
 				setFeatureSourceIdPath={entrySetFeatureSourceIdPath}
 				exclusive={exclusive}
+				end={renderEntryEnd?.(id)}
 			/>
 		),
-		[],
+		[renderEntryEnd],
 	);
 	const renderLayerEntry = useCallback(
 		(id: string) => createLayerEntry(id, setFeatureSourceIdPath),
