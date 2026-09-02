@@ -49,14 +49,14 @@ jobs:
           GH_TOKEN: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          if git diff --quiet -- .changeset; then
+          git add .changeset
+          if git diff --cached --quiet -- .changeset; then
             echo "No changeset updates needed."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .changeset
           git commit -m "chore: add changeset for dependabot update"
           gh auth setup-git
           git push origin "HEAD:${HEAD_REF}"
