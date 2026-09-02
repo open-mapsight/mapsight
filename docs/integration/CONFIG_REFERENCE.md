@@ -108,13 +108,14 @@ ships. See [Decision 012](../architecture/decisions/012-future-flags-for-next-ma
 ```ts
 createOptions: {
 	future: {
-		v8_ariaControlTooltip: true,
+		// v{major}_{behavior}: true
 	},
 }
 ```
 
-A project can set a flag to try an upcoming behavior flip before that major ships. New UI is not hidden behind
-flags; only leftover behavior that must stay dual-path in this major.
+A project can set a flag to try an upcoming behavior flip before that major ships. Keys are added only when
+something in `@mapsight/ui` reads them. New UI is not hidden behind flags; only leftover behavior that must stay
+dual-path in this major.
 
 ---
 
