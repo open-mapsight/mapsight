@@ -1,3 +1,5 @@
+import ErrorBoundary from "../error-boundary";
+
 /**
  * @param {object} props props
  * @param {"top-left" | "top-right" | "bottom-right" | "bottom-left"} props.position position
@@ -9,7 +11,7 @@ function MapOverlayArea({position, children}) {
 		<div
 			className={`ms3-map-overlay__area ms3-map-overlay__area--${position}`}
 		>
-			{children}
+			<ErrorBoundary variant="overlay">{children}</ErrorBoundary>
 		</div>
 	);
 }

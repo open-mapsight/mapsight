@@ -6,6 +6,7 @@ import {EMPTY_FUTURE_FLAGS, FutureFlagsContext} from "../../future/context";
 import type {MapsightUiComponents} from "../../helpers/components";
 import {ComponentsContext} from "../../helpers/components";
 import type {AppChannelListenerDefinition, FutureFlags} from "../../types";
+import ErrorBoundary from "../error-boundary";
 import {AppChannelProvider} from "./app-channel";
 
 function AppContext({
@@ -26,7 +27,7 @@ function AppContext({
 			<AppChannelProvider listeners={appChannelListeners}>
 				<FutureFlagsContext.Provider value={future}>
 					<ComponentsContext.Provider value={components}>
-						{children}
+						<ErrorBoundary variant="page">{children}</ErrorBoundary>
 					</ComponentsContext.Provider>
 				</FutureFlagsContext.Provider>
 			</AppChannelProvider>

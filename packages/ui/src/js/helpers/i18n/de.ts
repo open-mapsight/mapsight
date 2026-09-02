@@ -84,6 +84,11 @@ const de: Record<string, string> = {
 	"ui.async-status.retry": "Erneut versuchen",
 	"ui.async-status.refreshing": "Aktualisiere …",
 	"ui.async-status.paused": "Warte auf Netzwerk …",
+
+	"ui.error-boundary.page": "Die Anwendung konnte nicht angezeigt werden.",
+	"ui.error-boundary.region": "Dieser Bereich konnte nicht angezeigt werden.",
+	"ui.error-boundary.overlay": "Dieses Steuerelement ist fehlgeschlagen.",
+	"ui.error-boundary.retry": "Erneut versuchen",
 	"ui.feature-details.content.title": "Bezeichnung",
 	"ui.feature-details.content.description": "Bemerkung",
 

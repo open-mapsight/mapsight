@@ -1,8 +1,8 @@
-import  {memo} from "react";
+import {memo} from "react";
 import {useSelector} from "react-redux";
 
 import {isViewMobileOrMapOnlySelector} from "../../store/selectors";
-
+import ErrorBoundary from "../error-boundary";
 import Tooltip from "./tooltip";
 
 function MapSyncedInterlay({size}) {
@@ -14,7 +14,11 @@ function MapSyncedInterlay({size}) {
 			className="ms3-map-synced-interlay"
 			style={{width: width, height: height}}
 		>
-			{!isViewMobileOrMapOnly && <Tooltip />}
+			{!isViewMobileOrMapOnly && (
+				<ErrorBoundary variant="overlay">
+					<Tooltip />
+				</ErrorBoundary>
+			)}
 		</div>
 	);
 }

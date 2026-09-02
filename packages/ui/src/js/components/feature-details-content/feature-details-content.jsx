@@ -1,4 +1,3 @@
-import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
 import {
 	memo,
 	useCallback,
@@ -9,22 +8,20 @@ import {
 } from "react";
 import {useDispatch, useSelector} from "react-redux";
 
+import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
+
 import {VIEW_MAP_ONLY, VIEW_MOBILE} from "../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
-
 import getFeatureProperty from "../../helpers/get-feature-property";
-
 import {setView} from "../../store/actions";
 import {viewSelector} from "../../store/selectors";
-
+import ErrorBoundary from "../error-boundary";
 import {
 	APP_EVENT_PARTIAL_CONTENT_CHANGED,
 	useAppChannelDispatchEvent,
 } from "../helping/app-channel";
-
 import FeatureDetailsContentInner from "./feature-details-content-inner";
-
 import ShareFeatureLinkModal from "./share-feature-link-modal";
 
 function FeatureDetailsContent({
@@ -170,22 +167,24 @@ function FeatureDetailsContent({
 	}, [setShowShareLinkDialog]);
 
 	return (
-		<div>
-			<FeatureDetailsContentInner
-				feature={feature}
-				url={getFeatureProperty(feature, "detailsUrl")}
-				html={html}
-				hasError={hasError}
-				handleContentChange={handleContentChange}
-				actions={actions}
-			/>
+		<ErrorBoundary resetKeys={[feature?.id]} variant="region">
+			<div>
+				<FeatureDetailsContentInner
+					feature={feature}
+					url={getFeatureProperty(feature, "detailsUrl")}
+					html={html}
+					hasError={hasError}
+					handleContentChange={handleContentChange}
+					actions={actions}
+				/>
 
-			<ShareFeatureLinkModal
-				feature={feature}
-				isOpen={showShareLinkDialog}
-				onRequestClose={closeShareLinkDialog}
-			/>
-		</div>
+				<ShareFeatureLinkModal
+					feature={feature}
+					isOpen={showShareLinkDialog}
+					onRequestClose={closeShareLinkDialog}
+				/>
+			</div>
+		</ErrorBoundary>
 	);
 }
 

@@ -24,6 +24,7 @@ import type {
 	MapsightUiFeatureId,
 	SelectFeatureActionOptions,
 } from "../../types";
+import ErrorBoundary from "../error-boundary";
 import FeatureCycling from "../feature-list-cycling";
 import FeatureSorter from "../feature-list-sorting";
 import {
@@ -42,6 +43,7 @@ import FeatureListFooter from "./footer";
 import FeatureListGroupedContent from "./grouped-content";
 import FeatureListHeader from "./header";
 import useAutoloadFeatureSource from "./hooks/useAutoloadFeatureSource";
+import useFeatureListFeatureSource from "./hooks/useFeatureListFeatureSource";
 import useFeatureListState from "./hooks/useFeatureListState";
 import {useMakeHeaderSticky} from "./hooks/useMakeHeaderSticky";
 import useRestoreDocumentScroll from "./hooks/useRestoreDocumentScroll";
@@ -298,4 +300,20 @@ function FeatureListInner(
 	);
 }
 
-export default forwardRef(FeatureListInner);
+const FeatureList = forwardRef(FeatureListInner);
+
+function FeatureListWithBoundary(
+	props: FeatureListProps,
+	ref: ForwardedRef<HTMLElement>,
+) {
+	const {featureSourceId} = useFeatureListFeatureSource(
+		props.listControllerName,
+	);
+	return (
+		<ErrorBoundary resetKeys={[featureSourceId]} variant="region">
+			<FeatureList {...props} ref={ref} />
+		</ErrorBoundary>
+	);
+}
+
+export default forwardRef(FeatureListWithBoundary);

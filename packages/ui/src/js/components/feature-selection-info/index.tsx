@@ -9,6 +9,7 @@ import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
+import ErrorBoundary from "../error-boundary";
 import FeatureDetailsContent from "../feature-details-content";
 import CloseButton from "./close-button";
 import Header from "./header";
@@ -53,29 +54,31 @@ export default function FeatureSelectionInfo({
 
 	const T = hasStickyHeader ? WithStickyHeader : WithoutStickyHeader;
 	return (
-		<FocusTrap
-			active={enableKeyboardControl}
-			focusTrapOptions={{
-				clickOutsideDeactivates: true,
-				onDeactivate: removeSelection,
-			}}
-		>
-			<T
-				feature={feature}
-				close={
-					<CloseButton
-						feature={feature}
-						enableKeyboardControl={enableKeyboardControl}
-					/>
-				}
-				header={<Header feature={feature} />}
-				content={
-					<div className="ms3-feature-selection-info__content">
-						<FeatureDetailsContent feature={feature} />
-					</div>
-				}
-				renderWrapper={renderWrapper}
-			/>
-		</FocusTrap>
+		<ErrorBoundary resetKeys={[feature.id]} variant="region">
+			<FocusTrap
+				active={enableKeyboardControl}
+				focusTrapOptions={{
+					clickOutsideDeactivates: true,
+					onDeactivate: removeSelection,
+				}}
+			>
+				<T
+					feature={feature}
+					close={
+						<CloseButton
+							feature={feature}
+							enableKeyboardControl={enableKeyboardControl}
+						/>
+					}
+					header={<Header feature={feature} />}
+					content={
+						<div className="ms3-feature-selection-info__content">
+							<FeatureDetailsContent feature={feature} />
+						</div>
+					}
+					renderWrapper={renderWrapper}
+				/>
+			</FocusTrap>
+		</ErrorBoundary>
 	);
 }

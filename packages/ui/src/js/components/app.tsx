@@ -19,6 +19,7 @@ import {
 	timeFilterVisible,
 	viewSelector,
 } from "../store/selectors";
+import ErrorBoundary from "./error-boundary";
 import FeatureList from "./feature-list";
 import VisibilityWrapper from "./helping/visibility-wrapper";
 import LayerSwitcher from "./layer-switcher/index";
@@ -95,7 +96,9 @@ function App() {
 		<AppWrapper>
 			<MainContainer>
 				<VisibilityWrapper visibleSelector={pageTitleShowSelector}>
-					<TitleBar />
+					<ErrorBoundary variant="region">
+						<TitleBar />
+					</ErrorBoundary>
 				</VisibilityWrapper>
 
 				<VisibilityWrapper visibleSelector={mapVisible}>
@@ -118,7 +121,9 @@ function App() {
 							<Map />
 							<MapSyncedInterlay />
 							<MapOverlay>
-								{mapOverlayStart()}
+								<ErrorBoundary variant="overlay">
+									{mapOverlayStart()}
+								</ErrorBoundary>
 
 								<MapOverlayArea position="top-left">
 									{mapOverlayTopLeft(
@@ -157,7 +162,9 @@ function App() {
 									)}
 								</MapOverlayArea>
 
-								{mapOverlayEnd()}
+								<ErrorBoundary variant="overlay">
+									{mapOverlayEnd()}
+								</ErrorBoundary>
 
 								<InfoOverlayModal>
 									{mapOverlayModal(
@@ -189,22 +196,26 @@ function App() {
 				<AdditionalContainer>
 					<VisibilityWrapper visibleSelector={marginalLeftSelector}>
 						<Marginal position="left">
-							<VisibilityWrapper
-								visibleSelector={(state) =>
-									!!layerSwitcherConfigExternalSelector(state)
-								}
-							>
-								<LayerSwitcher
-									configSelector={
-										layerSwitcherConfigExternalSelector
+							<ErrorBoundary variant="region">
+								<VisibilityWrapper
+									visibleSelector={(state) =>
+										!!layerSwitcherConfigExternalSelector(
+											state,
+										)
 									}
-								/>
-							</VisibilityWrapper>
-							<VisibilityWrapper
-								visibleSelector={tagSwitcherShowSelector}
-							>
-								<TagSwitcher />
-							</VisibilityWrapper>
+								>
+									<LayerSwitcher
+										configSelector={
+											layerSwitcherConfigExternalSelector
+										}
+									/>
+								</VisibilityWrapper>
+								<VisibilityWrapper
+									visibleSelector={tagSwitcherShowSelector}
+								>
+									<TagSwitcher />
+								</VisibilityWrapper>
+							</ErrorBoundary>
 						</Marginal>
 					</VisibilityWrapper>
 
@@ -216,7 +227,9 @@ function App() {
 
 					<VisibilityWrapper visibleSelector={timeFilterVisible}>
 						<Marginal position="right">
-							<TimeFilter />
+							<ErrorBoundary variant="region">
+								<TimeFilter />
+							</ErrorBoundary>
 						</Marginal>
 					</VisibilityWrapper>
 				</AdditionalContainer>
