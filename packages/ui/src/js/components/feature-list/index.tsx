@@ -24,6 +24,7 @@ import type {
 	MapsightUiFeatureId,
 	SelectFeatureActionOptions,
 } from "../../types";
+import ErrorBoundary from "../error-boundary";
 import FeatureCycling from "../feature-list-cycling";
 import FeatureSorter from "../feature-list-sorting";
 import {
@@ -244,57 +245,61 @@ function FeatureListInner(
 	const Wrapper = T as ElementType;
 
 	return (
-		<FeatureListContextProvider value={contextValue}>
-			<Wrapper
-				className={className}
-				onTouchMove={stopEventPropagation}
-				ref={ref}
-				{...attributes}
-			>
-				<HeaderT ref={headerRef}>
-					{filterBox}
+		<ErrorBoundary resetKeys={[featureSourceId]} variant="region">
+			<FeatureListContextProvider value={contextValue}>
+				<Wrapper
+					className={className}
+					onTouchMove={stopEventPropagation}
+					ref={ref}
+					{...attributes}
+				>
+					<HeaderT ref={headerRef}>
+						{filterBox}
 
-					{sortControl && <FeatureSorter />}
+						{sortControl && <FeatureSorter />}
 
-					{cyclingControl && (
-						<FeatureCycling filteredFeatures={filteredFeatures} />
-					)}
-
-					{integratedList &&
-						layerSwitcherShowExternal &&
-						(layerSwitcherControl ? (
-							<FeatureListLayerSwitcherControl />
-						) : (
-							<LayerSwitcher
-								configSelector={
-									layerSwitcherConfigExternalSelector
-								}
+						{cyclingControl && (
+							<FeatureCycling
+								filteredFeatures={filteredFeatures}
 							/>
-						))}
+						)}
 
-					{integratedList &&
-						tagSwitcherShow &&
-						(tagSwitcherControl ? (
-							<FeatureListTagSwitcherControl />
-						) : (
-							<TagSwitcher />
-						))}
-				</HeaderT>
-				<ContentT
-					groupAs={renderGroupAs}
-					itemAs={renderItemAs}
-					featureSourceId={featureSourceId}
-				/>
-				<FooterT>
-					{paginationControl ? (
-						<Pagination
-							page={page}
-							count={Math.ceil(featureCount / itemsPerPage)}
-						/>
-					) : null}
-				</FooterT>
-			</Wrapper>
-		</FeatureListContextProvider>
+						{integratedList &&
+							layerSwitcherShowExternal &&
+							(layerSwitcherControl ? (
+								<FeatureListLayerSwitcherControl />
+							) : (
+								<LayerSwitcher
+									configSelector={
+										layerSwitcherConfigExternalSelector
+									}
+								/>
+							))}
+
+						{integratedList &&
+							tagSwitcherShow &&
+							(tagSwitcherControl ? (
+								<FeatureListTagSwitcherControl />
+							) : (
+								<TagSwitcher />
+							))}
+					</HeaderT>
+					<ContentT
+						groupAs={renderGroupAs}
+						itemAs={renderItemAs}
+						featureSourceId={featureSourceId}
+					/>
+					<FooterT>
+						{paginationControl ? (
+							<Pagination
+								page={page}
+								count={Math.ceil(featureCount / itemsPerPage)}
+							/>
+						) : null}
+					</FooterT>
+				</Wrapper>
+			</FeatureListContextProvider>
+		</ErrorBoundary>
 	);
 }
 

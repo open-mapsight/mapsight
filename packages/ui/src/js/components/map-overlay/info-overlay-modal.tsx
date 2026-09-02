@@ -8,6 +8,7 @@ import {
 	isOverlayModalVisibleSelector,
 	isViewMobileOrMapOnlySelector,
 } from "../../store/selectors";
+import ErrorBoundary from "../error-boundary";
 import Modal from "../modal";
 
 const InfoOverlayModal = memo(InfoOverlayModel_);
@@ -41,7 +42,7 @@ function InfoOverlayModel_({children}: PropsWithChildren) {
 			headline={translate("ui.map-overlay.info.modal.headline")}
 			onRequestClose={collapse}
 		>
-			{children}
+			<ErrorBoundary variant="region">{children}</ErrorBoundary>
 		</Modal>
 	);
 }

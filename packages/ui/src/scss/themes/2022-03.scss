@@ -123,6 +123,21 @@ $ms3-theme-desktop-map-min-height: 500px !default;
 	}
 }
 
+.ms3-error-boundary {
+	&--region,
+	&--page {
+		font-size: var(--ms3-font-size-base);
+	}
+
+	&--overlay {
+		border: 1px solid var(--ms3-border-color);
+	}
+
+	&__retry:hover {
+		color: var(--ms3-primary-color);
+	}
+}
+
 .ms3-async-status {
 	&--placeholder {
 		padding: 1em;

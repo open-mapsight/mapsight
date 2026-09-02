@@ -82,6 +82,11 @@ const en: Record<string, string> = {
 	"ui.async-status.retry": "Try again",
 	"ui.async-status.refreshing": "Updating…",
 	"ui.async-status.paused": "Waiting for network…",
+
+	"ui.error-boundary.page": "The application could not be displayed.",
+	"ui.error-boundary.region": "This section could not be displayed.",
+	"ui.error-boundary.overlay": "This control failed.",
+	"ui.error-boundary.retry": "Try again",
 	"ui.feature-details.content.title": "title",
 	"ui.feature-details.content.description": "description",
 

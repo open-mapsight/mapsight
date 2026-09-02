@@ -7,6 +7,7 @@ import {
 	mapVisible,
 	viewSelector,
 } from "../../store/selectors";
+import ErrorBoundary from "../error-boundary";
 
 import "./host-slots";
 
@@ -28,7 +29,11 @@ function AppWrapper({children, className: classNameProp = "", ...attributes}) {
 
 	return (
 		<div {...attributes} className={className}>
-			{AppWrapperStart ? <AppWrapperStart /> : null}
+			{AppWrapperStart ? (
+				<ErrorBoundary variant="region">
+					<AppWrapperStart />
+				</ErrorBoundary>
+			) : null}
 			{children}
 		</div>
 	);

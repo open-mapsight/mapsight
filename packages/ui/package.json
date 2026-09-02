@@ -89,6 +89,10 @@
 			"types": "./dist/embed/*.d.ts",
 			"default": "./dist/embed/*.js"
 		},
+		"./components/error-boundary": {
+			"types": "./dist/components/error-boundary/index.d.ts",
+			"default": "./dist/components/error-boundary/index.js"
+		},
 		"./components/feature-list": {
 			"types": "./dist/components/feature-list/index.d.ts",
 			"default": "./dist/components/feature-list/index.js"
