@@ -70,6 +70,13 @@
 			height: auto;
 		}
 
+		&__end {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			margin-inline-start: 6px;
+		}
+
 		&:first-child {
 			border-top: 0;
 		}

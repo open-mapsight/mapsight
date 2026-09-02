@@ -1,4 +1,4 @@
-import type {ElementType} from "react";
+import type {ElementType, ReactNode} from "react";
 import {Fragment, memo} from "react";
 
 import {
@@ -60,6 +60,8 @@ export type SwitcherEntryProps = {
 	exclusive?: boolean;
 	/** Optional preview thumbnail (e.g. base-layer map tile). */
 	previewUrl?: string | null;
+	/** Host content after the title (e.g. presentational badges). */
+	end?: ReactNode;
 };
 
 function SwitcherEntry({
@@ -78,6 +80,7 @@ function SwitcherEntry({
 	locked = false,
 	exclusive = false,
 	previewUrl = null,
+	end,
 	...attributes
 }: SwitcherEntryProps) {
 	// `toggleActive` manages the "split" mode. If `toggleActive` isn't set we switch to the
@@ -126,6 +129,11 @@ function SwitcherEntry({
 		</span>
 	) : null;
 
+	const endContent =
+		end === null || end === undefined ? null : (
+			<span className={`${baseClassName}__end`}>{end}</span>
+		);
+
 	const text = (
 		<Fragment>
 			<span className={`${baseClassName}__label`}>{title}</span>
@@ -137,6 +145,7 @@ function SwitcherEntry({
 					{count}
 				</span>
 			)}
+			{endContent}
 		</Fragment>
 	);
 

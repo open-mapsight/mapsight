@@ -56,6 +56,37 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 		expect(toggleActive).toHaveBeenCalledTimes(1);
 	});
 
+	it("renders optional end content after the title", () => {
+		render(
+			<SwitcherEntry
+				title="Parking"
+				active
+				toggleActive={() => undefined}
+				end={<span>LIVE</span>}
+			/>,
+		);
+
+		expect(screen.getByText("LIVE")).toBeTruthy();
+		expect(
+			screen.getByRole("checkbox", {name: /Parking/}).textContent,
+		).toContain("LIVE");
+	});
+
+	it("renders a numeric zero as end content", () => {
+		render(
+			<SwitcherEntry
+				title="Parking"
+				active
+				toggleActive={() => undefined}
+				end={0}
+			/>,
+		);
+
+		expect(
+			screen.getByRole("checkbox", {name: /Parking/}).textContent,
+		).toContain("0");
+	});
+
 	it("does not disable a regular active checkbox entry", () => {
 		const toggleActive = vi.fn();
 
