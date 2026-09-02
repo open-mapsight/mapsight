@@ -67,8 +67,8 @@ catalogs:
       specifier: ^3.1.0
       version: 3.1.0
     reselect:
-      specifier: ^5.1.1
-      version: 5.2.0
+      specifier: ^5.3.0
+      version: 5.3.0
     tailwindcss:
       specifier: ^4.3.3
       version: 4.3.3
@@ -246,7 +246,7 @@ importers:
         version: 5.10.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       reselect:
         specifier: 'catalog:'
-        version: 5.2.0
+        version: 5.3.0
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -259,7 +259,7 @@ importers:
         version: 1.62.1
       '@tailwindcss/vite':
         specifier: ^4.3.3
-        version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
@@ -280,13 +280,13 @@ importers:
         version: 6.1.3
       terser:
         specifier: ^5.50.0
-        version: 5.51.0
+        version: 5.50.0
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
   apps/vector-editor:
     dependencies:
@@ -377,7 +377,7 @@ importers:
         version: 8.0.1(postcss@8.5.26)
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
   packages/core:
     dependencies:
@@ -453,10 +453,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/count-aggregator-api:
     dependencies:
@@ -478,7 +478,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/count-aggregator-ui:
     dependencies:
@@ -545,7 +545,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/lib-js:
     devDependencies:
@@ -563,7 +563,7 @@ importers:
         version: 4.1.5
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/lib-ol:
     dependencies:
@@ -585,7 +585,7 @@ importers:
         version: 1.9.2
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/lib-redux:
     dependencies:
@@ -662,7 +662,7 @@ importers:
         version: 3.0.4
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
     publishDirectory: dist
 
   packages/ui:
@@ -720,7 +720,7 @@ importers:
         version: 1.21.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-intersection-observer:
         specifier: ^11.0.0
-        version: 11.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 11.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -772,7 +772,7 @@ importers:
         version: 4.0.2
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/vector-style-compiler:
     dependencies:
@@ -833,10 +833,10 @@ importers:
         version: 9.0.0
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/vite-count-aggregator-embed:
     dependencies:
@@ -852,10 +852,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/vite-host-embed:
     devDependencies:
@@ -867,10 +867,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
       vitest:
         specifier: 'catalog:'
-        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+        version: 4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
 
   starters/mapsight-host-starter:
     dependencies:
@@ -937,7 +937,7 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
   starters/mapsight-next-starter:
     dependencies:
@@ -1092,7 +1092,7 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.2.1
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
 packages:
 
@@ -4633,8 +4633,8 @@ packages:
     peerDependencies:
       react: '>= 16 <= 19'
 
-  react-intersection-observer@11.0.1:
-    resolution: {integrity: sha512-BIZ1M40GPSKDIT1MJbXK7SB0BwBaTKr84QfZCs5asKer7YMOYLzMi+RI1F4VStbZLGHoosJmd+aOQDDipUV1gA==}
+  react-intersection-observer@11.0.0:
+    resolution: {integrity: sha512-tF2PjXa//GcUmkCIcZR2qGsj6HwnuunFQdgeJ89BwFE6epB7E9yIzdr018H1khxG7DiMpIDvAne1GKQMFwn+fw==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -4801,6 +4801,9 @@ packages:
 
   reselect@5.2.0:
     resolution: {integrity: sha512-AgZ3UOZm3YndfrJ4OYjgrT7bmCm/1iqkjvEfH/oYjzh6PD2qw4QuT3jjnXIrpdt4MTpMXclMT3lXbmRY+XRakw==}
+
+  reselect@5.3.0:
+    resolution: {integrity: sha512-XGoLeRAVzUTcJ1qkxPQhDJyIZ5d6zzZD9nT7AEZOaaU9UbWclhycElmhO+VD5bFeLuzhPBaOV2oXC8uG35ZSpg==}
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -5171,8 +5174,8 @@ packages:
   teex@1.0.1:
     resolution: {integrity: sha512-eYE6iEI62Ni1H8oIa7KlDU6uQBtqr4Eajni3wX7rpfXD8ysFx8z0+dri+KWEPWpBsxXfxu58x/0jvTVT1ekOSg==}
 
-  terser@5.51.0:
-    resolution: {integrity: sha512-myiQ6aFnxDOjdiXdTlC8ngVccQD88uHXTx5RUQOSEnarDYgJMjDagwAQszcOusjvmf4YqWsxoD1+MY+oAJRmpw==}
+  terser@5.50.0:
+    resolution: {integrity: sha512-CN9BVxWhgS/hRxtUMjtC2uRWSTcSfQFHMDWma6sKKfIivCD91sM+FOPfvwoaRMqCSrUpe1nv3jDamd9eEQ4y+w==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -6566,12 +6569,12 @@ snapshots:
       postcss: 8.5.25
       tailwindcss: 4.3.3
 
-  '@tailwindcss/vite@4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))':
+  '@tailwindcss/vite@4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))':
     dependencies:
       '@tailwindcss/node': 4.3.3
       '@tailwindcss/oxide': 4.3.3
       tailwindcss: 4.3.3
-      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
   '@tanstack/query-core@5.101.4': {}
 
@@ -6933,13 +6936,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.11(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.11(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.11':
     dependencies:
@@ -9117,7 +9120,7 @@ snapshots:
       flatpickr: 4.6.13
       react: 19.2.8
 
-  react-intersection-observer@11.0.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+  react-intersection-observer@11.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       react: 19.2.8
     optionalDependencies:
@@ -9316,6 +9319,8 @@ snapshots:
   require-from-string@2.0.2: {}
 
   reselect@5.2.0: {}
+
+  reselect@5.3.0: {}
 
   resolve-from@4.0.0: {}
 
@@ -9763,7 +9768,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  terser@5.51.0:
+  terser@5.50.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
       acorn: 8.18.0
@@ -9997,7 +10002,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0):
+  vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.5
@@ -10009,13 +10014,13 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.7.0
       sass: 1.102.0
-      terser: 5.51.0
+      terser: 5.50.0
       yaml: 2.9.0
 
-  vitest@4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)):
+  vitest@4.1.11(@types/node@24.13.3)(jsdom@30.0.1(canvas@3.2.3))(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.11(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -10032,7 +10037,7 @@ snapshots:
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.51.0)(yaml@2.9.0)
+      vite: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)(sass@1.102.0)(terser@5.50.0)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.13.3
