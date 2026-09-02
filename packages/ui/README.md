@@ -44,6 +44,7 @@ Next.js host).
 | `@mapsight/ui/react-query`             | TanStack Query adapters (`QueryStatusRegion`) — optional peer                  |
 | `@mapsight/ui/embed/browser`           | CMS embed bootstrap (`browserEmbed`, hydration from `data-dehydrated-state`)   |
 | `@mapsight/ui/embed/node`              | SSR entry (`nodeEmbed`): HTML shell + `emitFragment` / `data-dehydrated-state` |
+| `@mapsight/ui/components/tooltip`      | Hover/focus tooltip for host controls (accessible name stays on the control)   |
 
 Peer dependency: `react`, `react-dom`. Optional peer for Query helpers: `@tanstack/react-query`.
 
