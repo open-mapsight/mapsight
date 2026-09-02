@@ -1,13 +1,15 @@
 import {type ReactElement, cloneElement} from "react";
 
 import {useFutureFlag} from "../future/context";
-import Tooltip, {type TooltipPlacement} from "./tooltip";
+import Tooltip, {
+	type TooltipPlacement,
+	type TooltipTriggerElement,
+} from "./tooltip";
 
 export type HintTooltipProps = {
 	text: string;
-	children: ReactElement<{className?: string; "aria-label"?: string}>;
+	children: TooltipTriggerElement;
 	placement?: TooltipPlacement;
-	className?: string;
 };
 
 /**
@@ -18,21 +20,23 @@ export default function HintTooltip({
 	text,
 	children,
 	placement = "right",
-	className,
 }: HintTooltipProps): ReactElement {
 	const useAria = useFutureFlag("v8_ariaControlTooltip");
+	const namedChild = cloneElement(children, {
+		"aria-label": children.props["aria-label"] ?? text,
+	});
+
 	if (useAria) {
 		return (
-			<Tooltip text={text} placement={placement} className={className}>
-				{children}
+			<Tooltip text={text} placement={placement}>
+				{namedChild}
 			</Tooltip>
 		);
 	}
 
 	const hintClass = `ms3-hint--${placement} ms3-hint--rounded`;
-	const existing = children.props.className;
-	return cloneElement(children, {
+	const existing = namedChild.props.className;
+	return cloneElement(namedChild, {
 		className: existing ? `${existing} ${hintClass}` : hintClass,
-		"aria-label": children.props["aria-label"] ?? text,
 	});
 }

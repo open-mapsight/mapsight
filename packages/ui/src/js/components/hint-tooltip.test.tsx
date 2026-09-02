@@ -51,4 +51,39 @@ describe("HintTooltip", () => {
 			}),
 		).toBeTruthy();
 	});
+
+	it("uses text as the accessible name when the child omits aria-label", () => {
+		render(
+			<HintTooltip text="Center map on a region">
+				<ul className="ms3-region-selector" />
+			</HintTooltip>,
+		);
+
+		expect(
+			screen.getByRole("list", {name: "Center map on a region"}),
+		).toBeTruthy();
+	});
+
+	it("keeps the accessible name on the control when the ARIA tooltip is on", async () => {
+		render(
+			<FutureFlagsContext.Provider value={{v8_ariaControlTooltip: true}}>
+				<HintTooltip text="Center map on a region">
+					<ul className="ms3-region-selector" />
+				</HintTooltip>
+			</FutureFlagsContext.Provider>,
+		);
+
+		const list = screen.getByRole("list", {
+			name: "Center map on a region",
+		});
+
+		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
+		fireEvent.pointerEnter(list, {pointerType: "mouse"});
+
+		expect(
+			await screen.findByRole("tooltip", {
+				name: "Center map on a region",
+			}),
+		).toBeTruthy();
+	});
 });
