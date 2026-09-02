@@ -72,6 +72,21 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 		).toContain("LIVE");
 	});
 
+	it("renders a numeric zero as end content", () => {
+		render(
+			<SwitcherEntry
+				title="Parking"
+				active
+				toggleActive={() => undefined}
+				end={0}
+			/>,
+		);
+
+		expect(
+			screen.getByRole("checkbox", {name: /Parking/}).textContent,
+		).toContain("0");
+	});
+
 	it("does not disable a regular active checkbox entry", () => {
 		const toggleActive = vi.fn();
 

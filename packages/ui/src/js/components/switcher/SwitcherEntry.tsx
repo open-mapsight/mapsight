@@ -129,9 +129,10 @@ function SwitcherEntry({
 		</span>
 	) : null;
 
-	const endContent = end ? (
-		<span className={`${baseClassName}__end`}>{end}</span>
-	) : null;
+	const endContent =
+		end === null || end === undefined ? null : (
+			<span className={`${baseClassName}__end`}>{end}</span>
+		);
 
 	const text = (
 		<Fragment>

@@ -32,7 +32,7 @@ export type LayerSwitcherContainerProps = {
 	/** Opt-in: overlay groups collapse and show visible/total counts. Only with `splitBaseLayers`. */
 	collapsibleGroups?: boolean;
 	setFeatureSourceIdPath?: ActionPath | null;
-	/** Optional host content after each overlay-layer title. */
+	/** Optional host content after each entry title (base and overlay). */
 	renderEntryEnd?: (layerId: string) => ReactNode;
 };
 
