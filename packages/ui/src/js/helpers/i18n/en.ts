@@ -107,6 +107,8 @@ const en: Record<string, string> = {
 
 	"ui.map-overlay.logo.copyright": "The map is based on Mapsight",
 
+	"ui.region-selector.label": "Center map on a region",
+
 	"ui.map-overlay.info.modal.label": "Citations and Information",
 	"ui.map-overlay.info.modal.headline": "Citations and Information",
 	"ui.map-overlay.info.closeSources":

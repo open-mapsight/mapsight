@@ -109,6 +109,8 @@ const de: Record<string, string> = {
 
 	"ui.map-overlay.logo.copyright": "Diese Kartenanwendung nutzt Mapsight",
 
+	"ui.region-selector.label": "Gebiet auf Karte zentrieren …",
+
 	"ui.map-overlay.info.modal.label": "Quellenangaben und Informationen",
 	"ui.map-overlay.info.modal.headline": "Quellenangaben und Informationen",
 	"ui.map-overlay.info.closeSources":

@@ -1,8 +1,10 @@
-import  {memo, useCallback} from "react";
+import {memo, useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {setSelectedRegionIdAndAnimateMap} from "../../store/actions";
 
+import {translate} from "../../helpers/i18n";
+import {setSelectedRegionIdAndAnimateMap} from "../../store/actions";
 import {regionsSelector, selectedRegionIdSelector} from "../../store/selectors";
+import HintTooltip from "../hint-tooltip";
 
 const RegionSelectorEntry = memo(
 	/**
@@ -47,16 +49,20 @@ const RegionSelector = memo(function RegionSelector({
 		return null;
 	}
 
+	const label = translate("ui.region-selector.label");
+
 	return (
-		<T
-			className="ms3-region-selector [ ms3-hint--right ms3-hint--rounded ]"
-			style={style}
-			aria-label="Gebiet auf Karte zentrieren …"
-		>
-			{Object.entries(regions).map(([id, region]) => (
-				<RegionSelectorEntry key={id} regionId={id} region={region} />
-			))}
-		</T>
+		<HintTooltip text={label} placement="right">
+			<T className="ms3-region-selector" style={style} aria-label={label}>
+				{Object.entries(regions).map(([id, region]) => (
+					<RegionSelectorEntry
+						key={id}
+						regionId={id}
+						region={region}
+					/>
+				))}
+			</T>
+		</HintTooltip>
 	);
 });
 
