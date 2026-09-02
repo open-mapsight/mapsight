@@ -1,4 +1,4 @@
-import type {ReactElement} from "react";
+import type {HTMLAttributes, ReactElement, RefAttributes} from "react";
 import {
 	Tooltip as AriaTooltip,
 	Focusable,
@@ -7,9 +7,14 @@ import {
 
 export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
+/** Single DOM element that can take a ref. Fragments and non-forwarding components will not receive hover/focus. */
+export type TooltipTriggerElement = ReactElement<
+	HTMLAttributes<HTMLElement> & RefAttributes<HTMLElement>
+>;
+
 export type TooltipProps = {
 	text: string;
-	children: ReactElement;
+	children: TooltipTriggerElement;
 	className?: string;
 	placement?: TooltipPlacement;
 	/** When false, the tooltip stays on `placement` instead of flipping to fit. */

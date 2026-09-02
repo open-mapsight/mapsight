@@ -42,6 +42,25 @@ describe("Tooltip", () => {
 		).toContain("ms3-control-tooltip");
 	});
 
+	it("shows the tooltip text on focus and keeps the name on the control", async () => {
+		render(
+			<Tooltip text="Zoom in">
+				<button type="button" aria-label="Zoom in" />
+			</Tooltip>,
+		);
+
+		const trigger = screen.getByRole("button", {name: "Zoom in"});
+		// React Aria only opens on keyboard focus, not programmatic mouse-style focus.
+		fireEvent.keyDown(document.body, {key: "Tab"});
+		trigger.focus();
+
+		expect(
+			await screen.findByRole("tooltip", {name: "Zoom in"}),
+		).toBeTruthy();
+		expect(screen.getByRole("button", {name: "Zoom in"})).toBe(trigger);
+		expect(trigger.getAttribute("title")).toBeNull();
+	});
+
 	it("dismisses on Escape", async () => {
 		render(
 			<Tooltip text="Zoom in">
