@@ -43,6 +43,7 @@ import FeatureListFooter from "./footer";
 import FeatureListGroupedContent from "./grouped-content";
 import FeatureListHeader from "./header";
 import useAutoloadFeatureSource from "./hooks/useAutoloadFeatureSource";
+import useFeatureListFeatureSource from "./hooks/useFeatureListFeatureSource";
 import useFeatureListState from "./hooks/useFeatureListState";
 import {useMakeHeaderSticky} from "./hooks/useMakeHeaderSticky";
 import useRestoreDocumentScroll from "./hooks/useRestoreDocumentScroll";
@@ -245,62 +246,74 @@ function FeatureListInner(
 	const Wrapper = T as ElementType;
 
 	return (
+		<FeatureListContextProvider value={contextValue}>
+			<Wrapper
+				className={className}
+				onTouchMove={stopEventPropagation}
+				ref={ref}
+				{...attributes}
+			>
+				<HeaderT ref={headerRef}>
+					{filterBox}
+
+					{sortControl && <FeatureSorter />}
+
+					{cyclingControl && (
+						<FeatureCycling filteredFeatures={filteredFeatures} />
+					)}
+
+					{integratedList &&
+						layerSwitcherShowExternal &&
+						(layerSwitcherControl ? (
+							<FeatureListLayerSwitcherControl />
+						) : (
+							<LayerSwitcher
+								configSelector={
+									layerSwitcherConfigExternalSelector
+								}
+							/>
+						))}
+
+					{integratedList &&
+						tagSwitcherShow &&
+						(tagSwitcherControl ? (
+							<FeatureListTagSwitcherControl />
+						) : (
+							<TagSwitcher />
+						))}
+				</HeaderT>
+				<ContentT
+					groupAs={renderGroupAs}
+					itemAs={renderItemAs}
+					featureSourceId={featureSourceId}
+				/>
+				<FooterT>
+					{paginationControl ? (
+						<Pagination
+							page={page}
+							count={Math.ceil(featureCount / itemsPerPage)}
+						/>
+					) : null}
+				</FooterT>
+			</Wrapper>
+		</FeatureListContextProvider>
+	);
+}
+
+const FeatureList = forwardRef(FeatureListInner);
+
+function FeatureListWithBoundary(
+	props: FeatureListProps,
+	ref: ForwardedRef<HTMLElement>,
+) {
+	const {featureSourceId} = useFeatureListFeatureSource(
+		props.listControllerName,
+	);
+	return (
 		<ErrorBoundary resetKeys={[featureSourceId]} variant="region">
-			<FeatureListContextProvider value={contextValue}>
-				<Wrapper
-					className={className}
-					onTouchMove={stopEventPropagation}
-					ref={ref}
-					{...attributes}
-				>
-					<HeaderT ref={headerRef}>
-						{filterBox}
-
-						{sortControl && <FeatureSorter />}
-
-						{cyclingControl && (
-							<FeatureCycling
-								filteredFeatures={filteredFeatures}
-							/>
-						)}
-
-						{integratedList &&
-							layerSwitcherShowExternal &&
-							(layerSwitcherControl ? (
-								<FeatureListLayerSwitcherControl />
-							) : (
-								<LayerSwitcher
-									configSelector={
-										layerSwitcherConfigExternalSelector
-									}
-								/>
-							))}
-
-						{integratedList &&
-							tagSwitcherShow &&
-							(tagSwitcherControl ? (
-								<FeatureListTagSwitcherControl />
-							) : (
-								<TagSwitcher />
-							))}
-					</HeaderT>
-					<ContentT
-						groupAs={renderGroupAs}
-						itemAs={renderItemAs}
-						featureSourceId={featureSourceId}
-					/>
-					<FooterT>
-						{paginationControl ? (
-							<Pagination
-								page={page}
-								count={Math.ceil(featureCount / itemsPerPage)}
-							/>
-						) : null}
-					</FooterT>
-				</Wrapper>
-			</FeatureListContextProvider>
+			<FeatureList {...props} ref={ref} />
 		</ErrorBoundary>
 	);
 }
 
-export default forwardRef(FeatureListInner);
+export default forwardRef(FeatureListWithBoundary);
