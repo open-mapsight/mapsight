@@ -37,7 +37,7 @@
 		"rimraf": "^6.1.3",
 		"terser": "^5.50.0",
 		"typescript": "catalog:",
-		"vite": "^8.2.1"
+		"vite": "^8.2.2"
 	},
 	"license": "MIT",
 	"repository": {
