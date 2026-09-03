@@ -146,6 +146,10 @@ const en: Record<string, string> = {
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
 
+	"ui.wrapper.overlay.fullscreen": "Fullscreen map",
+	"ui.wrapper.overlay.mapOnly": "Map",
+	"ui.wrapper.overlay.escape": "Press Escape to exit",
+
 	[`ui.view-toggle-button.ariaLabel${VIEW_MAP_ONLY}`]: "show map only",
 	[`ui.view-toggle-button.ariaLabel${VIEW_FULLSCREEN}`]:
 		"switch to full screen",

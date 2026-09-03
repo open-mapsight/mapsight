@@ -153,6 +153,10 @@ const de: Record<string, string> = {
 	"ui.map.visuallyhidden":
 		"Dieser Bereich der Webseite zeigt eine Landkarte.",
 
+	"ui.wrapper.overlay.fullscreen": "Karte im Vollbild",
+	"ui.wrapper.overlay.mapOnly": "Karte",
+	"ui.wrapper.overlay.escape": "Escape beendet diese Ansicht",
+
 	[`ui.view-toggle-button.ariaLabel${VIEW_MAP_ONLY}`]: "Zur Karte wechseln",
 	[`ui.view-toggle-button.ariaLabel${VIEW_FULLSCREEN}`]:
 		"Zum Vollbild wechseln",
