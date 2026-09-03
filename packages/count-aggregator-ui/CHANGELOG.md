@@ -1,5 +1,17 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.1
+
+### Patch Changes
+
+- b33af3d: Show calendar dates on metric-widget chart axes for daily and coarser series
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@tanstack/react-query` `^5.101.4` → `^5.102.4` (minor)
+
+- Updated dependencies [`99f002d`, `0ac9dc5`, `691da32`, `85af82f`, `90ea3c9`, `2bbb899`, `9ba015e`, `0cdb4a1`, `85ad6ef`, `51c4d1b`]:
+    - `@mapsight/ui@7.5.0 → 7.5.1` (patch)
+
 ## 3.1.0
 
 ### Minor Changes

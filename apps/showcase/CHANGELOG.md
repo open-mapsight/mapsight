@@ -1,5 +1,23 @@
 # @mapsight/showcase
 
+## 0.1.5
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@tanstack/react-query` `^5.101.4` → `^5.102.4` (minor)
+
+- 6a3871f: Bump dependencies from Dependabot ([#241](https://github.com/open-mapsight/mapsight/pull/241)):
+
+    - `vite` `^8.2.1` → `^8.2.2` (patch)
+
+- Updated dependencies [`b33af3d`, `99f002d`, `6a3871f`, `0ac9dc5`, `691da32`, `85af82f`, `90ea3c9`, `2bbb899`, `9ba015e`, `0cdb4a1`, `85ad6ef`, `51c4d1b`]:
+    - `@mapsight/count-aggregator-ui@3.1.0 → 3.1.1` (patch)
+    - `@mapsight/traffic-style@5.5.0 → 5.5.1` (patch)
+    - `@mapsight/ui@7.5.0 → 7.5.1` (patch)
+    - `@mapsight/core@14.6.0 → 14.6.1` (patch)
+
 ## 0.1.4
 
 ### Patch Changes

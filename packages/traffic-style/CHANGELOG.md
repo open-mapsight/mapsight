@@ -1,5 +1,13 @@
 # @mapsight/traffic-style
 
+## 5.5.1
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `svgo` `^4.0.2` → `^4.1.0` (minor)
+
 ## 5.5.0
 
 ### Minor Changes
