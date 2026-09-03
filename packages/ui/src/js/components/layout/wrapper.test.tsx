@@ -2,7 +2,14 @@ import type {ReactNode} from "react";
 import {Provider} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import type {View} from "../../config/constants/app";
@@ -12,6 +19,7 @@ import {
 	VIEW_MAP_ONLY,
 	VIEW_MOBILE,
 } from "../../config/constants/app";
+import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import {SET_VIEW} from "../../store/actions";
 import AppWrapper from "./wrapper";
@@ -66,6 +74,7 @@ function renderWrapper(view: View, ui?: ReactNode, outside?: HTMLElement) {
 describe("AppWrapper overlay chrome", () => {
 	beforeEach(() => {
 		setDocumentLanguage("en");
+		vi.mocked(announceStatus).mockClear();
 	});
 
 	afterEach(() => {
@@ -101,6 +110,34 @@ describe("AppWrapper overlay chrome", () => {
 
 		expect(outside.hasAttribute("inert")).toBe(true);
 		expect(screen.getByTestId("inside").hasAttribute("inert")).toBe(false);
+	});
+
+	it("inerts host nodes inserted while overlay chrome stays open", async () => {
+		renderWrapper(VIEW_FULLSCREEN);
+
+		const lateBanner = document.createElement("div");
+		lateBanner.append(document.createElement("button"));
+		document.body.append(lateBanner);
+
+		await waitFor(() => {
+			expect(lateBanner.hasAttribute("inert")).toBe(true);
+		});
+	});
+
+	it("announces the overlay when the view changes after mount", async () => {
+		const {store} = renderWrapper(VIEW_DESKTOP);
+		expect(announceStatus).not.toHaveBeenCalled();
+
+		act(() => {
+			store.dispatch({type: SET_VIEW, value: VIEW_FULLSCREEN});
+		});
+
+		// focus-trap delays initial focus, so onPostActivate runs async.
+		await waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith(
+				"Fullscreen map. Press Escape to exit",
+			);
+		});
 	});
 
 	it("leaves host siblings reachable in mobile view", () => {

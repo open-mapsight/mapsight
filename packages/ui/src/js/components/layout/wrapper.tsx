@@ -56,6 +56,13 @@ function AppWrapper({
 		: undefined;
 	const escapeHint = translate("ui.wrapper.overlay.escape");
 
+	// focus-trap-react reads focusTrapOptions when the trap mounts, which
+	// happens in desktop/mobile view, so callbacks must read live values.
+	const announcementRef = useRef<string | undefined>(undefined);
+	announcementRef.current = overlayLabel
+		? `${overlayLabel}. ${escapeHint}`
+		: undefined;
+
 	const focusTrapOptions = useMemo(
 		() => ({
 			allowOutsideClick: true,
@@ -81,12 +88,13 @@ function AppWrapper({
 				dispatch(setView(pairedView(viewRef.current)));
 			},
 			onPostActivate: () => {
-				if (overlayLabel) {
-					announceStatus(`${overlayLabel}. ${escapeHint}`);
+				const announcement = announcementRef.current;
+				if (announcement) {
+					announceStatus(announcement);
 				}
 			},
 		}),
-		[dispatch, escapeHint, overlayLabel],
+		[dispatch],
 	);
 
 	const className = [

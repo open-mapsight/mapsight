@@ -9,6 +9,7 @@
 		"@mapsight/lib-ol": "workspace:^",
 		"@mapsight/lib-redux": "workspace:^",
 		"@mapsight/traffic-style": "workspace:^",
+		"@react-aria/live-announcer": "^3.5.1",
 		"@reduxjs/toolkit": "catalog:",
 		"@types/react-redux": "catalog:",
 		"breakpoint-sass": "^3.0.0",

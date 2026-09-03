@@ -10,6 +10,9 @@ import {
 /**
  * Sets `inert` on document siblings outside `containerRef` while `enabled`.
  * Restores only the nodes this hook marked, so pre-existing `inert` is kept.
+ *
+ * Nodes added to the host page while the overlay stays open (late cookie
+ * banners, SPA navigation) are inerted as well via a child-list observer.
  */
 export default function useInertOutside(
 	containerRef: RefObject<HTMLElement | null>,
@@ -25,11 +28,29 @@ export default function useInertOutside(
 			return;
 		}
 
-		const targets = collectInertTargets(container);
-		applyInert(targets);
+		// Only nodes marked here are restored, so host-owned `inert` survives.
+		const marked = new Set<HTMLElement>();
+
+		const inertNewTargets = () => {
+			// collectInertTargets skips nodes that already carry `inert`.
+			const targets = collectInertTargets(container);
+			applyInert(targets);
+			for (const target of targets) {
+				marked.add(target);
+			}
+		};
+
+		inertNewTargets();
+
+		const observer =
+			typeof MutationObserver === "undefined"
+				? undefined
+				: new MutationObserver(inertNewTargets);
+		observer?.observe(document.body, {childList: true, subtree: true});
 
 		return () => {
-			restoreInert(targets);
+			observer?.disconnect();
+			restoreInert(Array.from(marked));
 		};
 	}, [containerRef, enabled]);
 }
