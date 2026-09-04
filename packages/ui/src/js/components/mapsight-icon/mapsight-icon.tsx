@@ -85,7 +85,11 @@ function MapsightIcon({
 		return null;
 	}
 
-	if (isComposableIcon(id) || parseMapsightIcon(id)?.label != null) {
+	if (
+		id.includes("/") ||
+		isComposableIcon(id) ||
+		parseMapsightIcon(id)?.label != null
+	) {
 		return (
 			<ComposableMapsightIcon
 				id={id}

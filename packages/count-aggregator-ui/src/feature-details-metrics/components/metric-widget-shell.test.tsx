@@ -1,7 +1,10 @@
+import {uiIconSrc} from "@mapsight/traffic-style/icon";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 
 import MetricWidgetShell from "./metric-widget-shell.js";
+
+const METRIC_ICON_ID = "fa-thunderstorm-sun/#2f6d6f/#ffffff";
 
 afterEach(cleanup);
 
@@ -10,7 +13,7 @@ describe("MetricWidgetShell", () => {
 		const {container} = render(
 			<MetricWidgetShell
 				label="Lufttemperatur"
-				mapsightIconId="fa-thunderstorm-sun/#2f6d6f/#ffffff"
+				mapsightIconId={METRIC_ICON_ID}
 				showMetricIcons
 				lastUpdatedAt={null}
 			>
@@ -20,8 +23,11 @@ describe("MetricWidgetShell", () => {
 
 		expect(screen.getByText("Lufttemperatur")).toBeTruthy();
 		const img = container.querySelector(".ms3-smart-city-metric__icon img");
-		expect(img?.getAttribute("src") ?? "").toContain(
-			"data:image/svg+xml;charset=utf-8,",
+		const expected = uiIconSrc(METRIC_ICON_ID, "plain")?.src;
+		expect(expected).toBeTruthy();
+		expect(expected).not.toBe(
+			uiIconSrc("marker/#2f6d6f/#ffffff", "plain")?.src,
 		);
+		expect(img?.getAttribute("src")).toBe(expected);
 	});
 });

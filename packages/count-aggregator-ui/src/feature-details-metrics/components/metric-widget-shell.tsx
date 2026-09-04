@@ -1,5 +1,7 @@
 import type {MouseEvent, ReactNode} from "react";
 
+import "@mapsight/traffic-style/pictograms-fontawesome";
+
 import MapsightIcon from "@mapsight/ui/components/mapsight-icon/mapsight-icon";
 
 import {

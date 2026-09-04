@@ -29,6 +29,15 @@ describe("MapsightIcon", () => {
 		);
 	});
 
+	it("composes a colored custom pictogram id instead of a slashed sprite URL", () => {
+		const {container} = render(<MapsightIcon id="my-poi/#035799" />);
+		const src = container.querySelector("img")?.getAttribute("src") ?? "";
+
+		expect(src).toContain("data:image/svg+xml;charset=utf-8,");
+		expect(src).not.toContain("-plain.png");
+		expect(src).not.toContain("my-poi/");
+	});
+
 	it("renders compact 1–2 character labels as SVG, not PNGs", () => {
 		for (const id of ["10", "P2", "t"]) {
 			const {container} = render(<MapsightIcon id={id} />);

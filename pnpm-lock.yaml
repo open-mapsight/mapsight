@@ -485,6 +485,9 @@ importers:
       '@mapsight/count-aggregator-api':
         specifier: workspace:^
         version: link:../count-aggregator-api
+      '@mapsight/traffic-style':
+        specifier: workspace:*
+        version: link:../traffic-style/dist
       '@tanstack/react-query':
         specifier: ^5.102.4
         version: 5.102.8(react@19.2.8)
