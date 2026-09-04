@@ -5,6 +5,9 @@ import {isComposableIcon} from "@mapsight/traffic-style/icon-meta";
 import {siteConfig} from "../../config";
 import {useMapsightIcon} from "../../hooks/useMapsightIcon";
 
+/** Same compact ids `parseMapsightIcon` treats as labels (`10`, `P2`, `t`). */
+const COMPACT_LABEL_ID = /^[0-9a-zA-Z]{1,2}$/;
+
 export type MapsightIconProps = {
 	id: string | undefined;
 	className?: string;
@@ -90,7 +93,7 @@ function MapsightIcon({
 		return null;
 	}
 
-	if (id.includes("/") || isComposableIcon(id)) {
+	if (id.includes("/") || isComposableIcon(id) || COMPACT_LABEL_ID.test(id)) {
 		return (
 			<ComposableMapsightIcon
 				id={id}
