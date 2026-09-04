@@ -422,6 +422,24 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-boxes-packing": {
+			"label": {
+				"de": "Versand",
+				"en": "Packing"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-building": {
+			"label": {
+				"de": "Gebäude",
+				"en": "Building"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-generic"],
+			"render": "composable"
+		},
 		"fa-bus": {
 			"label": {
 				"de": "Bus",
@@ -458,6 +476,15 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-chair": {
+			"label": {
+				"de": "Sitzplatz",
+				"en": "Chair"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
 		"fa-charging-station": {
 			"label": {
 				"de": "Ladestation (FA)",
@@ -474,6 +501,69 @@
 			},
 			"aliases": ["weatherRain"],
 			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-cloud-showers-water": {
+			"label": {
+				"de": "Starkregen",
+				"en": "Heavy rain"
+			},
+			"aliases": [],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-cloud-sun": {
+			"label": {
+				"de": "Bewölkt",
+				"en": "Partly cloudy"
+			},
+			"aliases": [],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-dumpster": {
+			"label": {
+				"de": "Container",
+				"en": "Dumpster"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-faucet-drip": {
+			"label": {
+				"de": "Wasserhahn",
+				"en": "Faucet"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-gas-pump": {
+			"label": {
+				"de": "Tankstelle",
+				"en": "Gas station"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-glass-water-droplet": {
+			"label": {
+				"de": "Trinkwasser",
+				"en": "Drinking water"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-hand-holding-droplet": {
+			"label": {
+				"de": "Wasserabgabe",
+				"en": "Water supply"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
 		"fa-hospital": {
@@ -525,6 +615,51 @@
 			"groups": ["poi", "poi-generic"],
 			"render": "composable"
 		},
+		"fa-person-biking": {
+			"label": {
+				"de": "Radfahrer",
+				"en": "Cyclist"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-person-shelter": {
+			"label": {
+				"de": "Unterstand",
+				"en": "Shelter"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-person-walking": {
+			"label": {
+				"de": "Fußgänger",
+				"en": "Pedestrian"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-recycle": {
+			"label": {
+				"de": "Recycling",
+				"en": "Recycling"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-route": {
+			"label": {
+				"de": "Route",
+				"en": "Route"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
 		"fa-school": {
 			"label": {
 				"de": "Schule (FA)",
@@ -534,12 +669,48 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-seedling": {
+			"label": {
+				"de": "Pflanze",
+				"en": "Seedling"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-skull-crossbones": {
+			"label": {
+				"de": "Gefahr",
+				"en": "Hazard"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-snowflake": {
+			"label": {
+				"de": "Schnee",
+				"en": "Snowflake"
+			},
+			"aliases": [],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
 		"fa-temperature-high": {
 			"label": {
 				"de": "Wassertemperatur",
 				"en": "Water temperature"
 			},
 			"aliases": ["waterTemp"],
+			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-temperature-low": {
+			"label": {
+				"de": "Niedrige Temperatur",
+				"en": "Low temperature"
+			},
+			"aliases": [],
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
@@ -557,6 +728,15 @@
 				"weatherWindSpeedMax"
 			],
 			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-tower-broadcast": {
+			"label": {
+				"de": "Funkmast",
+				"en": "Broadcast tower"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
 		"fa-tree": {
@@ -577,6 +757,42 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-truck": {
+			"label": {
+				"de": "Lkw",
+				"en": "Truck"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-truck-fast": {
+			"label": {
+				"de": "Schnelllieferung",
+				"en": "Express delivery"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-truck-ramp-box": {
+			"label": {
+				"de": "Entladung",
+				"en": "Unloading"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
+		"fa-umbrella": {
+			"label": {
+				"de": "Regenschirm",
+				"en": "Umbrella"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-generic"],
+			"render": "composable"
+		},
 		"fa-users": {
 			"label": {
 				"de": "Passanten",
@@ -595,6 +811,15 @@
 			"groups": ["poi", "poi-leisure"],
 			"render": "composable"
 		},
+		"fa-warehouse": {
+			"label": {
+				"de": "Lager",
+				"en": "Warehouse"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-water": {
 			"label": {
 				"de": "Wasserstand, Wassertemperatur, Lufttemperatur",
@@ -610,6 +835,15 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-water-ladder": {
+			"label": {
+				"de": "Schwimmbad",
+				"en": "Swimming pool"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
 		"fa-water-lower": {
 			"label": {
 				"de": "Wasserstand, Wassertemperatur",
@@ -622,6 +856,15 @@
 				"waterTemp"
 			],
 			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-wifi": {
+			"label": {
+				"de": "WLAN",
+				"en": "Wi-Fi"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
 		"info": {
