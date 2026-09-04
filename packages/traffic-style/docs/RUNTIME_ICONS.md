@@ -82,15 +82,16 @@ flowchart TB
 
 Pure rendering pipeline. No map awareness, no React, no LRU beyond what callers pass in.
 
-| Module         | Role                                                              |
-| -------------- | ----------------------------------------------------------------- |
-| `icon-id.ts`   | Compact `mapsightIconId` ↔ `IconSpec`, `resolveMapsightIconSpec`  |
-| `compose.ts`   | Pictogram/label + template → SVG string                           |
-| `resolve.ts`   | Default colors and variant                                        |
-| `templates.ts` | Per-variant backgrounds and layout slots                          |
-| `contrast.ts`  | Auto foreground for a background color                            |
-| `rasterize.ts` | SVG → canvas → PNG data URL (browser DOM)                         |
-| `render.ts`    | **`renderIconBitmap(spec)`** — single entry for the full pipeline |
+| Module           | Role                                                              |
+| ---------------- | ----------------------------------------------------------------- |
+| `icon-id.ts`     | Compact `mapsightIconId` ↔ `IconSpec`, `resolveMapsightIconSpec`  |
+| `compose.ts`     | Pictogram/label + template → SVG string                           |
+| `ui-icon-src.ts` | Sync `uiIconSrc` — SVG data URL for React/SSR list icons          |
+| `resolve.ts`     | Default colors and variant                                        |
+| `templates.ts`   | Per-variant backgrounds and layout slots                          |
+| `contrast.ts`    | Auto foreground for a background color                            |
+| `rasterize.ts`   | SVG → canvas → PNG data URL (browser DOM)                         |
+| `render.ts`      | **`renderIconBitmap(spec)`** — single entry for the full pipeline |
 
 Export: `@mapsight/traffic-style/icon` (and re-exported pieces via `runtime-dev`).
 
@@ -344,12 +345,13 @@ icons may rasterize but the map will not pick up the resolved data URLs.
 ### React feature lists
 
 ```ts
-import {useMapsightIcon} from "@mapsight/ui/hooks/useMapsightIcon";
+import {uiIconSrc} from "@mapsight/traffic-style/icon";
 
-const {src, loading} = useMapsightIcon(mapsightIconId, "plain");
+const icon = uiIconSrc(mapsightIconId, "plain");
 ```
 
-Uses `icon-load` (`loadIcon` / `getCachedIcon`), not `mapsightRuntimeIcon`.
+`MapsightIcon` in `@mapsight/ui` uses this sync compose path so SSR HTML includes
+the glyph. Map markers still use `mapsightRuntimeIcon` (placeholder → PNG).
 
 ---
 
@@ -385,5 +387,5 @@ Run unit tests with `pnpm test` in this package.
 | ------------------------------------- | --------------------------------------------- |
 | `@mapsight/traffic-style/runtime`     | Map + UI production API                       |
 | `@mapsight/traffic-style/runtime-dev` | Dev tools, parsing, prewarm, stats            |
-| `@mapsight/traffic-style/icon`        | Icon formation pipeline only                  |
+| `@mapsight/traffic-style/icon`        | Icon formation + sync `uiIconSrc` for UI HTML |
 | `@mapsight/traffic-style/icon-style`  | Direct `mapsightRuntimeIcon` (compiler alias) |

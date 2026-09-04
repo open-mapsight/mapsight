@@ -39,6 +39,11 @@ describe("parseMapsightIcon", () => {
 		expect(parseMapsightIcon("7")).toEqual({label: "7"});
 	});
 
+	it("classifies two-character compact ids as labels", () => {
+		expect(parseMapsightIcon("10")).toEqual({label: "10"});
+		expect(parseMapsightIcon("P2")).toEqual({label: "P2"});
+	});
+
 	it("formats compact values", () => {
 		expect(
 			formatMapsightIcon({
