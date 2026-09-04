@@ -3,6 +3,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 
+import {PACKAGE_COMPOSABLE_PACKS} from "../lib/pictogram-packs.ts";
 import {main as runComposableIconsCli} from "../traffic-composable-icons.ts";
 
 const packageRoot = path.resolve(
@@ -44,7 +45,7 @@ async function main(): Promise<void> {
 		"--scale",
 		scale,
 		"--pack",
-		"traffic-style",
+		PACKAGE_COMPOSABLE_PACKS.join(","),
 		...(format ? ["--format", format] : []),
 	]);
 }

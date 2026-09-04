@@ -90,7 +90,8 @@ Two ways to use the **default** icon assets without running the CLIs:
    `mapsight-traffic-style-icon-sprite-2x.scss`, with matching PNGs under `img/`
    (already optimized)
 2. **Individual files** — `img/mapsight-icons/*.png`, `img/mapsight-icons-2x/*.png`,
-   and `img/mapsight-icons-svg/*.svg` (also already optimized)
+   and `img/mapsight-icons-svg/*.svg` (also already optimized), including
+   composable catalog icons such as `fa-route-plain.png`
 
 To subset, add custom tiles, or register your own pictograms, see
 [CUSTOM_ICON_BUILDS.md](CUSTOM_ICON_BUILDS.md).

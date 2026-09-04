@@ -42,7 +42,8 @@ Optional per-icon default colors in `src/meta.json`:
 
 When `foreground` is omitted, contrast is chosen automatically (same as runtime).
 
-Pre-bake composable PNG/SVG assets for the default package build:
+Pre-bake composable PNG/SVG assets for the default package build. This includes
+every composable id in `src/meta.json` (traffic-style and Font Awesome):
 
 ```bash
 pnpm run build:composable-icons

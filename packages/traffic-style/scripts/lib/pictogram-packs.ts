@@ -4,8 +4,14 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 
 export type PictogramPack = "traffic-style" | "fontawesome";
 
-/** Default for package publish builds and runtime — traffic-style only. */
+/** Default for the CLI when `--pack` is omitted — traffic-style only. */
 export const DEFAULT_COMPOSABLE_PACKS: PictogramPack[] = ["traffic-style"];
+
+/** Packs baked into the published `img/mapsight-icons*` catalog. */
+export const PACKAGE_COMPOSABLE_PACKS: PictogramPack[] = [
+	"traffic-style",
+	"fontawesome",
+];
 
 export function parsePictogramPacks(
 	value: string | undefined,
