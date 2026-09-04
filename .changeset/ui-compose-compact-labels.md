@@ -1,5 +1,7 @@
 ---
+"@mapsight/traffic-style": patch
 "@mapsight/ui": patch
+"@mapsight/count-aggregator-ui": patch
 ---
 
-Compose compact 1–2 character list labels (such as `10` or `P2`) as SVG instead of missing sprite PNGs
+Compose Mapsight UI icons as SVG on first paint, including compact 1–2 character labels

@@ -1,6 +1,6 @@
 import type {MouseEvent, ReactNode} from "react";
 
-import {useMapsightIcon} from "@mapsight/ui/hooks/useMapsightIcon";
+import MapsightIcon from "@mapsight/ui/components/mapsight-icon/mapsight-icon";
 
 import {
 	type CountAggregatorDataViewRequestDetail,
@@ -21,16 +21,6 @@ type Props = {
 	downloadWizardRequest?: CountAggregatorDataViewRequestDetail;
 	downloadWizardLabel?: string;
 };
-
-function MetricIcon({id}: {id: string}) {
-	const {src, error} = useMapsightIcon(id, "plain");
-
-	if (src === null || error !== null) {
-		return null;
-	}
-
-	return <img src={src} alt="" aria-hidden={true} />;
-}
 
 export default function MetricWidgetShell({
 	label,
@@ -88,8 +78,15 @@ export default function MetricWidgetShell({
 		<section className="ms3-smart-city-metric">
 			<header className="ms3-smart-city-metric__header">
 				{showMetricIcons && mapsightIconId ? (
-					<span className="ms3-smart-city-metric__icon">
-						<MetricIcon id={mapsightIconId} />
+					<span
+						className="ms3-smart-city-metric__icon"
+						aria-hidden={true}
+					>
+						<MapsightIcon
+							id={mapsightIconId}
+							width={24}
+							height={24}
+						/>
 					</span>
 				) : null}
 				<span className="ms3-smart-city-metric__label">{label}</span>

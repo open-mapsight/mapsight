@@ -1,12 +1,9 @@
 import {memo} from "react";
 
+import {parseMapsightIcon, uiIconSrc} from "@mapsight/traffic-style/icon";
 import {isComposableIcon} from "@mapsight/traffic-style/icon-meta";
 
 import {siteConfig} from "../../config";
-import {useMapsightIcon} from "../../hooks/useMapsightIcon";
-
-/** Same compact ids `parseMapsightIcon` treats as labels (`10`, `P2`, `t`). */
-const COMPACT_LABEL_ID = /^[0-9a-zA-Z]{1,2}$/;
 
 export type MapsightIconProps = {
 	id: string | undefined;
@@ -55,9 +52,8 @@ function ComposableMapsightIcon({
 	width?: number;
 	height?: number;
 }) {
-	const {src, error} = useMapsightIcon(id, "plain");
-
-	if (error) {
+	const icon = uiIconSrc(id, "plain");
+	if (!icon) {
 		return (
 			<SpriteMapsightIcon
 				id={id}
@@ -68,14 +64,10 @@ function ComposableMapsightIcon({
 		);
 	}
 
-	if (!src) {
-		return null;
-	}
-
 	return (
 		<img
 			className={className}
-			src={src}
+			src={icon.src}
 			width={width}
 			height={height}
 			alt=""
@@ -93,7 +85,7 @@ function MapsightIcon({
 		return null;
 	}
 
-	if (id.includes("/") || isComposableIcon(id) || COMPACT_LABEL_ID.test(id)) {
+	if (isComposableIcon(id) || parseMapsightIcon(id)?.label != null) {
 		return (
 			<ComposableMapsightIcon
 				id={id}

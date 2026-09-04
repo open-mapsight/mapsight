@@ -1,28 +1,23 @@
 import {cleanup, render} from "@testing-library/react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it} from "vitest";
 
 import MapsightIcon from "./mapsight-icon";
-
-vi.mock("../../hooks/useMapsightIcon", () => ({
-	useMapsightIcon: (id: string) => ({
-		src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(id)}`,
-		bitmap: null,
-		loading: false,
-		error: null,
-	}),
-}));
 
 afterEach(cleanup);
 
 describe("MapsightIcon", () => {
-	it("renders a composable id through the SVG path", () => {
+	it("renders a composable id as an SVG data URL on the first paint", () => {
 		const {container} = render(
 			<MapsightIcon id="museum/#be123c/#ffffff" />,
 		);
-		const src = container.querySelector("img")?.getAttribute("src") ?? "";
+		const img = container.querySelector("img");
 
-		expect(src).toContain("data:image/svg+xml;charset=utf-8,");
-		expect(src).not.toContain("-plain.png");
+		expect(img).toBeInstanceOf(HTMLImageElement);
+		expect(img?.getAttribute("src") ?? "").toContain(
+			"data:image/svg+xml;charset=utf-8,",
+		);
+		expect(img?.getAttribute("width")).toBe("40");
+		expect(img?.getAttribute("height")).toBe("40");
 	});
 
 	it("renders a sprite id as a PNG from imagesUrl", () => {
