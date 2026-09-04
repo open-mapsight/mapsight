@@ -1,13 +1,13 @@
 {
 	"name": "mapsight-next-starter",
 	"description": "Minimal Next.js App Router host template — copy into your app repo",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"private": true,
 	"dependencies": {
 		"@mapsight/lib-js": "^3.0.8",
 		"@mapsight/lib-ol": "^4.2.3",
-		"@mapsight/traffic-style": "^5.5.0",
-		"@mapsight/ui": "^7.5.0",
+		"@mapsight/traffic-style": "^5.5.1",
+		"@mapsight/ui": "^7.5.1",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
 		"next": "^16.3.1",
@@ -18,7 +18,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^13.0.2",
+		"@mapsight/vector-style-compiler": "^13.0.3",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@types/node": "^24.13.3",
 		"@types/react": "^19.2.18",

@@ -1,5 +1,28 @@
 # @mapsight/ui
 
+## 7.5.1
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@tanstack/react-query` `^5.101.4` → `^5.102.4` (minor)
+    - `svgo` `^4.0.2` → `^4.1.0` (minor)
+
+- 0ac9dc5: Deprecate hint.css control tooltips behind future.v8_ariaControlTooltip
+- 691da32: Isolate render exceptions in list, details, and overlay regions so one failing component no longer unmounts the whole UI
+- 85af82f: Add CreateOptions.future flags for next-major behavior
+- 90ea3c9: Allow layer-switcher entries to render optional host content after the title
+- 2bbb899: Sort FeatureList group headers by a leading number so numbered sections keep a
+  fixed order after distance sort
+- 9ba015e: Trap keyboard focus in fullscreen and map-only chrome so host-page controls stay unreachable
+- 0cdb4a1: Add a reusable hover/focus tooltip for controls
+- 85ad6ef: Add headless place actions (share, navigate, website, call) and an optional details slot for them
+- 51c4d1b: Add a pure place page-meta builder for selected-feature title, Open Graph, and Place JSON-LD
+- Updated dependencies [`99f002d`, `6a3871f`]:
+    - `@mapsight/traffic-style@5.5.0 → 5.5.1` (patch)
+    - `@mapsight/core@14.6.0 → 14.6.1` (patch)
+
 ## 7.5.0
 
 ### Minor Changes
