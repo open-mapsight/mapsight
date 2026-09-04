@@ -217,8 +217,9 @@ starting with `fa-` belong to the Font Awesome pack; all other composable ids us
 traffic-style pictograms. Combine `--pack` with `--groups` / `--icons` to subset
 within a pack.
 
-The default package build (`pnpm run build:composable-icons`) pre-bakes **traffic-style
-only** (not Font Awesome).
+The default package build (`pnpm run build:composable-icons`) pre-bakes **every
+composable catalog icon** (traffic-style and Font Awesome), including
+`fa-*-plain.png` for UI chrome that loads `/img/mapsight-icons/{id}-plain.png`.
 
 ### Adding custom composable pictograms
 
