@@ -114,11 +114,24 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	}
 
 	subscribe(listener: FeatureSourceListener) {
-		if (this.isAbandoned()) {
+		const wasAbandoned = this.isAbandoned();
+		const featuresBefore = this.getFeatures().length;
+		this._listeners.push(listener);
+
+		if (wasAbandoned) {
 			this._unsubscribeFromStore = this._subscribeToSource();
 		}
 
-		this._listeners.push(listener);
+		// getAndObserveState notifies listeners that are already registered
+		// when it first applies store data. That covers first subscribe after
+		// SSR hydrate. Late joiners, and re-subscribe after abandon when
+		// the source already has features, still need an explicit refresh.
+		if (
+			this.getFeatures().length > 0 &&
+			(!wasAbandoned || featuresBefore > 0)
+		) {
+			listener();
+		}
 
 		return () => {
 			this._listeners = this._listeners.filter((f) => f !== listener);

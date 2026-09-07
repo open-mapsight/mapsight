@@ -39,6 +39,19 @@ export type CreateHighlightTestMapOptions = {
 	getHitMode?: () => HitMode;
 	/** Mount target; creates and appends a div when omitted. */
 	mountTarget?: HTMLElement;
+	/**
+	 * Put this FeatureCollection on the POI source before store/map init.
+	 * Used to reproduce SSR hydrate (data already in Redux, no later setData).
+	 */
+	hydrateFeatureCollection?: {
+		type: "FeatureCollection";
+		features: Array<{
+			id: string;
+			type: "Feature";
+			properties: Record<string, unknown>;
+			geometry: {type: "Point"; coordinates: [number, number]};
+		}>;
+	};
 };
 
 /**
@@ -53,6 +66,7 @@ export function createHighlightTestMap(
 			process.env.VITEST === "true",
 		getHitMode = () => "empty",
 		mountTarget,
+		hydrateFeatureCollection,
 	} = options;
 
 	const mapController = new MapController("map");
@@ -145,9 +159,9 @@ export function createHighlightTestMap(
 		featureSources: {
 			pois: {
 				type: "local",
-				data: null,
-				lastUpdate: null,
-				lastActionType: null,
+				data: hydrateFeatureCollection ?? null,
+				lastUpdate: hydrateFeatureCollection ? 1 : null,
+				lastActionType: hydrateFeatureCollection ? "LOAD" : null,
 			},
 		},
 	};
@@ -184,23 +198,25 @@ export function createHighlightTestMap(
 		feature.setId(HIGHLIGHT_TEST_FEATURE_ID);
 		stubFeatureHitDetection(map, layer, feature, getHitMode);
 	} else {
-		store.dispatch(
-			setData("featureSources", "pois", {
-				type: "FeatureCollection",
-				features: [
-					{
-						id: HIGHLIGHT_TEST_FEATURE_ID,
-						type: "Feature",
-						properties: {},
-						geometry: {
-							type: "Point",
-							coordinates: HIGHLIGHT_TEST_COORD,
+		if (!hydrateFeatureCollection) {
+			store.dispatch(
+				setData("featureSources", "pois", {
+					type: "FeatureCollection",
+					features: [
+						{
+							id: HIGHLIGHT_TEST_FEATURE_ID,
+							type: "Feature",
+							properties: {},
+							geometry: {
+								type: "Point",
+								coordinates: HIGHLIGHT_TEST_COORD,
+							},
 						},
-					},
-				],
-			}),
-		);
-		map.renderSync();
+					],
+				}),
+			);
+			map.renderSync();
+		}
 		const source = (
 			layer as {getSource: () => {getFeatures: () => Array<Feature>}}
 		).getSource();

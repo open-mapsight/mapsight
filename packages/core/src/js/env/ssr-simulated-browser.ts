@@ -3,6 +3,7 @@ import {JSDOM} from "jsdom";
 // browser simulation
 export const navigator = {userAgent: "blubb"};
 export const requestAnimationFrame = setImmediate;
+export const cancelAnimationFrame = clearImmediate;
 
 // shim browser environment for openlayers
 const dom = new JSDOM("", {
