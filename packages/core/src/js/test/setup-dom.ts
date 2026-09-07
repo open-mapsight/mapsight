@@ -1,6 +1,7 @@
 import {Canvas, Image as CanvasImage} from "canvas";
 
 import {
+	cancelAnimationFrame,
 	document,
 	requestAnimationFrame,
 	window,
@@ -10,6 +11,8 @@ globalThis.window = window as unknown as Window & typeof globalThis;
 globalThis.document = document;
 globalThis.requestAnimationFrame =
 	requestAnimationFrame as unknown as typeof globalThis.requestAnimationFrame;
+globalThis.cancelAnimationFrame =
+	cancelAnimationFrame as unknown as typeof globalThis.cancelAnimationFrame;
 globalThis.HTMLElement = window.HTMLElement;
 globalThis.MouseEvent = window.MouseEvent;
 globalThis.getComputedStyle = window.getComputedStyle;
@@ -29,6 +32,12 @@ if (!globalThis.ShadowRoot) {
 
 if (!globalThis.CanvasPattern) {
 	globalThis.CanvasPattern = class {} as typeof CanvasPattern;
+}
+
+if (!globalThis.CanvasGradient) {
+	globalThis.CanvasGradient = class {
+		addColorStop() {}
+	} as typeof CanvasGradient;
 }
 
 // node-canvas backing store for OpenLayers vector rendering in Node tests / SSR prep.

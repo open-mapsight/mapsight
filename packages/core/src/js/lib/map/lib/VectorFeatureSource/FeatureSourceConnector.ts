@@ -206,6 +206,9 @@ export default class FeatureSourceConnector {
 				);
 			this._source = instance;
 			this._unsubscribeFeatureSource = unsubscribe;
+			// subscribe() may notify before this._source is assigned, so
+			// refresh would still see an empty connector. Push once wired.
+			this._onUpdate();
 		}
 	}
 }
