@@ -1,7 +1,19 @@
-import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {StrictMode} from "react";
+
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+} from "@testing-library/react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import useNativeDialog from "./useNativeDialog";
+
+/** First tabbable control — native `showModal()` focuses this. */
+const FIRST_TABBABLE = "button, [href], input, select, textarea, [tabindex]";
 
 /** jsdom does not implement `<dialog>` modal methods. */
 function polyfillDialog(): void {
@@ -26,6 +38,7 @@ function polyfillDialog(): void {
 
 	proto.showModal = function showModal(this: HTMLDialogElement) {
 		this.open = true;
+		this.querySelector<HTMLElement>(FIRST_TABBABLE)?.focus();
 	};
 	proto.close = function close(this: HTMLDialogElement) {
 		this.open = false;
@@ -37,10 +50,12 @@ function DialogHarness({
 	isOpen,
 	onClose,
 	dismissOnBackdrop,
+	withAutofocus,
 }: {
 	isOpen: boolean;
 	onClose: () => void;
 	dismissOnBackdrop?: boolean;
+	withAutofocus?: boolean;
 }) {
 	const {dialogRef, dialogProps} = useNativeDialog({
 		isOpen,
@@ -51,6 +66,13 @@ function DialogHarness({
 	return (
 		<dialog ref={dialogRef} {...dialogProps} data-testid="dlg">
 			<button type="button">inside</button>
+			{withAutofocus ? (
+				<input
+					type="search"
+					aria-label="search query"
+					{...{autofocus: ""}}
+				/>
+			) : null}
 		</dialog>
 	);
 }
@@ -120,6 +142,21 @@ describe("useNativeDialog", () => {
 		onClose.mockClear();
 		fireEvent.click(screen.getByRole("button", {name: "inside"}));
 		expect(onClose).not.toHaveBeenCalled();
+	});
+
+	it("focuses an autofocus descendant after showModal", async () => {
+		const onClose = vi.fn();
+		render(
+			<StrictMode>
+				<DialogHarness isOpen={true} onClose={onClose} withAutofocus />
+			</StrictMode>,
+		);
+
+		await waitFor(() => {
+			expect(document.activeElement).toBe(
+				screen.getByRole("searchbox", {name: "search query"}),
+			);
+		});
 	});
 
 	it("does not dismiss on backdrop when dismissOnBackdrop is false", () => {

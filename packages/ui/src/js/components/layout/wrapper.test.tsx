@@ -112,6 +112,19 @@ describe("AppWrapper overlay chrome", () => {
 		expect(screen.getByTestId("inside").hasAttribute("inert")).toBe(false);
 	});
 
+	it("leaves data-ms3-portal siblings interactive while overlay chrome is open", () => {
+		const portal = document.createElement("div");
+		portal.setAttribute("data-ms3-portal", "");
+		const button = document.createElement("button");
+		button.type = "button";
+		button.textContent = "portal control";
+		portal.append(button);
+		renderWrapper(VIEW_MAP_ONLY, undefined, portal);
+
+		expect(portal.hasAttribute("inert")).toBe(false);
+		expect(button.hasAttribute("inert")).toBe(false);
+	});
+
 	it("inerts host nodes inserted while overlay chrome stays open", async () => {
 		renderWrapper(VIEW_FULLSCREEN);
 

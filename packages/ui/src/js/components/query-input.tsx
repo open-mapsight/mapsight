@@ -1,5 +1,5 @@
 import type {ChangeEvent, ReactNode} from "react";
-import {forwardRef, useCallback, useRef} from "react";
+import {forwardRef, useCallback, useLayoutEffect, useRef} from "react";
 
 import {translate} from "../helpers/i18n";
 import {forwardRefValue} from "../helpers/react";
@@ -34,6 +34,21 @@ const QueryInput = forwardRef<HTMLInputElement, Props>(function QueryInput(
 ) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	forwardRefValue(inputRef, forwardedRef);
+
+	// React's `autoFocus` focuses on mount but does not always set the HTML
+	// `autofocus` attribute. Native `<dialog showModal>` (and useNativeDialog)
+	// look for that attribute when choosing initial focus.
+	useLayoutEffect(() => {
+		const input = inputRef.current;
+		if (!input) {
+			return;
+		}
+		if (autoFocus) {
+			input.setAttribute("autofocus", "");
+		} else {
+			input.removeAttribute("autofocus");
+		}
+	}, [autoFocus]);
 
 	const handleInput = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
