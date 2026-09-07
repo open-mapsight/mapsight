@@ -1,5 +1,5 @@
 import {cleanup, render, screen} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {ComponentsContext} from "../../helpers/components";
 import type {MapsightUiFeature} from "../../types";
@@ -56,5 +56,34 @@ describe("FeatureDetailsContentInner place-actions slot", () => {
 
 		expect(screen.queryByText("actions")).toBeNull();
 		expect(screen.getByText("Beschreibung")).toBeTruthy();
+	});
+});
+
+describe("FeatureDetailsContentInner partial-content notification", () => {
+	it("notifies again when the feature object is replaced with the same description", () => {
+		const handleContentChange = vi.fn();
+		const {rerender} = render(
+			<FeatureDetailsContentInner
+				feature={museum()}
+				hasError={false}
+				handleContentChange={handleContentChange}
+			/>,
+		);
+
+		expect(handleContentChange).toHaveBeenCalled();
+		handleContentChange.mockClear();
+
+		rerender(
+			<FeatureDetailsContentInner
+				feature={museum()}
+				hasError={false}
+				handleContentChange={handleContentChange}
+			/>,
+		);
+
+		expect(handleContentChange).toHaveBeenCalled();
+		expect(handleContentChange.mock.calls.at(-1)?.[0]).toBeInstanceOf(
+			HTMLElement,
+		);
 	});
 });

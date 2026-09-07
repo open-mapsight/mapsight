@@ -28,9 +28,16 @@ function findDetailsContentContainer(): Element | null {
 function unmountMetricPlaceholder(element: HTMLElement) {
 	const root = mountedRoots.get(element);
 
-	if (root) {
+	if (!root) {
+		return;
+	}
+
+	mountedRoots.delete(element);
+	try {
 		root.unmount();
-		mountedRoots.delete(element);
+	} catch {
+		// Feature-details HTML is injected with dangerouslySetInnerHTML. A
+		// source refresh can empty or replace those nodes before we unmount.
 	}
 }
 
@@ -59,6 +66,10 @@ export function mountSmartCityMetrics(
 		}
 
 		seen.add(element);
+		if (mountedRoots.has(element) && element.childElementCount > 0) {
+			continue;
+		}
+
 		unmountMetricPlaceholder(element);
 
 		const root = createRoot(element);
