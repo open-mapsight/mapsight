@@ -78,18 +78,19 @@ const remove = addRuntimeIconMapRenderCallback(() => map.render());
 
 ---
 
-## React / async UI (outside `@mapsight/ui`)
+## React / UI (outside `@mapsight/ui`)
 
-For lists, panels, or `<img>` tags — use the async loader (same API as
-`useMapsightIcon` in `@mapsight/ui`):
+For lists, panels, or `<img>` tags — compose SVG synchronously (works in Node SSR):
 
 ```ts
-import {getCachedIcon, loadIcon} from "@mapsight/traffic-style/runtime";
+import {uiIconSrc} from "@mapsight/traffic-style/icon";
 
-const cached = getCachedIcon("museum/#be123c", "plain");
-const bitmap = await loadIcon("museum/#be123c", "plain");
-// bitmap.dataUrl → <img src={bitmap.dataUrl} />
+const icon = uiIconSrc("museum/#be123c", "plain");
+// icon.src → data:image/svg+xml… for <img src={icon.src} />
 ```
+
+`@mapsight/ui` `MapsightIcon` uses this path. Keep `loadIcon` / `useMapsightIcon` for
+OpenLayers or other callers that need a PNG data URL.
 
 ---
 

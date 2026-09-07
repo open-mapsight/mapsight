@@ -68,7 +68,7 @@ create(container, styleFunction, baseMapsightConfig);
 
 Icons work out of the box: set `mapsightIconId` on features (or per-layer via
 style env as above). `@mapsight/ui` browser defaults include the runtime icon
-plugin; feature lists use `useMapsightIcon` automatically.
+plugin; feature lists compose SVG icons synchronously (SSR-safe). Map markers still use the async runtime icon plugin.
 
 ```json
 { "mapsightIconId": "museum" }
