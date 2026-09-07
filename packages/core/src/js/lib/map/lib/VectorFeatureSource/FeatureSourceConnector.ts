@@ -193,6 +193,7 @@ export default class FeatureSourceConnector {
 			this._controllerName &&
 			this._targetControllerName
 		) {
+			let sourceWired = false;
 			const {instance, unsubscribe} =
 				SharedReadonlyVectorFeatureSource.subscribe(
 					this._store,
@@ -202,12 +203,15 @@ export default class FeatureSourceConnector {
 					this._format,
 					this._internalProjection,
 					this._externalProjection,
-					this._onUpdate,
+					() => {
+						if (sourceWired) {
+							this._onUpdate();
+						}
+					},
 				);
 			this._source = instance;
 			this._unsubscribeFeatureSource = unsubscribe;
-			// subscribe() may notify before this._source is assigned, so
-			// refresh would still see an empty connector. Push once wired.
+			sourceWired = true;
 			this._onUpdate();
 		}
 	}
