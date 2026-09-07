@@ -1,3 +1,5 @@
+import {StrictMode} from "react";
+
 import {
 	act,
 	cleanup,
@@ -9,6 +11,9 @@ import {
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import useNativeDialog from "./useNativeDialog";
+
+/** First tabbable control — native `showModal()` focuses this. */
+const FIRST_TABBABLE = "button, [href], input, select, textarea, [tabindex]";
 
 /** jsdom does not implement `<dialog>` modal methods. */
 function polyfillDialog(): void {
@@ -33,6 +38,7 @@ function polyfillDialog(): void {
 
 	proto.showModal = function showModal(this: HTMLDialogElement) {
 		this.open = true;
+		this.querySelector<HTMLElement>(FIRST_TABBABLE)?.focus();
 	};
 	proto.close = function close(this: HTMLDialogElement) {
 		this.open = false;
@@ -61,7 +67,11 @@ function DialogHarness({
 		<dialog ref={dialogRef} {...dialogProps} data-testid="dlg">
 			<button type="button">inside</button>
 			{withAutofocus ? (
-				<input type="search" autoFocus aria-label="search query" />
+				<input
+					type="search"
+					aria-label="search query"
+					{...{autofocus: ""}}
+				/>
 			) : null}
 		</dialog>
 	);
@@ -137,7 +147,9 @@ describe("useNativeDialog", () => {
 	it("focuses an autofocus descendant after showModal", async () => {
 		const onClose = vi.fn();
 		render(
-			<DialogHarness isOpen={true} onClose={onClose} withAutofocus />,
+			<StrictMode>
+				<DialogHarness isOpen={true} onClose={onClose} withAutofocus />
+			</StrictMode>,
 		);
 
 		await waitFor(() => {

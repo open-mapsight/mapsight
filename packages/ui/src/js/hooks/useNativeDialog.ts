@@ -66,19 +66,23 @@ export default function useNativeDialog({
 			return;
 		}
 
-		if (isOpen && !dialog.open) {
-			dialog.showModal();
+		if (isOpen) {
+			if (!dialog.open) {
+				dialog.showModal();
+			}
 			// Native showModal() focuses the first tabbable (often Close). Prefer
 			// an `autofocus` descendant — React may set the property, not the
 			// content attribute, so check both. Wait a frame so a parent
-			// overlay-chrome trap can pause on `dialog[open]` first.
+			// overlay-chrome trap can pause on `dialog[open]` first. Schedule
+			// whenever open so StrictMode's setup→cleanup→setup replay still
+			// restores focus after the first frame is cancelled.
 			const frame = window.requestAnimationFrame(() => {
 				findAutofocusElement(dialog)?.focus();
 			});
 			return () => window.cancelAnimationFrame(frame);
 		}
 
-		if (!isOpen && dialog.open) {
+		if (dialog.open) {
 			dialog.close();
 		}
 	}, [isOpen]);
