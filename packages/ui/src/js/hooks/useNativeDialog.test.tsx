@@ -1,4 +1,11 @@
-import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+} from "@testing-library/react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import useNativeDialog from "./useNativeDialog";
@@ -37,10 +44,12 @@ function DialogHarness({
 	isOpen,
 	onClose,
 	dismissOnBackdrop,
+	withAutofocus,
 }: {
 	isOpen: boolean;
 	onClose: () => void;
 	dismissOnBackdrop?: boolean;
+	withAutofocus?: boolean;
 }) {
 	const {dialogRef, dialogProps} = useNativeDialog({
 		isOpen,
@@ -51,6 +60,9 @@ function DialogHarness({
 	return (
 		<dialog ref={dialogRef} {...dialogProps} data-testid="dlg">
 			<button type="button">inside</button>
+			{withAutofocus ? (
+				<input type="search" autoFocus aria-label="search query" />
+			) : null}
 		</dialog>
 	);
 }
@@ -120,6 +132,19 @@ describe("useNativeDialog", () => {
 		onClose.mockClear();
 		fireEvent.click(screen.getByRole("button", {name: "inside"}));
 		expect(onClose).not.toHaveBeenCalled();
+	});
+
+	it("focuses an autofocus descendant after showModal", async () => {
+		const onClose = vi.fn();
+		render(
+			<DialogHarness isOpen={true} onClose={onClose} withAutofocus />,
+		);
+
+		await waitFor(() => {
+			expect(document.activeElement).toBe(
+				screen.getByRole("searchbox", {name: "search query"}),
+			);
+		});
 	});
 
 	it("does not dismiss on backdrop when dismissOnBackdrop is false", () => {

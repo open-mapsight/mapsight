@@ -28,6 +28,23 @@ export type UseNativeDialogResult = {
 	>;
 };
 
+function findAutofocusElement(root: ParentNode): HTMLElement | null {
+	const marked = root.querySelector<HTMLElement>("[autofocus]");
+	if (marked) {
+		return marked;
+	}
+
+	for (const candidate of root.querySelectorAll<HTMLElement>(
+		"input, textarea, select, button, [tabindex]",
+	)) {
+		if ((candidate as HTMLInputElement).autofocus) {
+			return candidate;
+		}
+	}
+
+	return null;
+}
+
 /**
  * Controlled native `<dialog>` via `showModal()` / `close()`.
  *
@@ -51,7 +68,14 @@ export default function useNativeDialog({
 
 		if (isOpen && !dialog.open) {
 			dialog.showModal();
-			return;
+			// Native showModal() focuses the first tabbable (often Close). Prefer
+			// an `autofocus` descendant — React may set the property, not the
+			// content attribute, so check both. Wait a frame so a parent
+			// overlay-chrome trap can pause on `dialog[open]` first.
+			const frame = window.requestAnimationFrame(() => {
+				findAutofocusElement(dialog)?.focus();
+			});
+			return () => window.cancelAnimationFrame(frame);
 		}
 
 		if (!isOpen && dialog.open) {
