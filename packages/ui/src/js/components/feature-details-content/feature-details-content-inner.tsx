@@ -41,10 +41,13 @@ function FeatureDetailsContentInner({
 
 	const desc = getFeatureProperty(feature, "description");
 
-	// NOTE(PG): Using useEffect to detect content changes (here: props), maybe we could move this up into the parent comp?
+	// A refreshing feature source replaces the selected feature object even
+	// when the description HTML is unchanged. Plugins that mount into that
+	// HTML (createRoot into dangerouslySetInnerHTML) must be notified so they
+	// can remount after React resets the injected markup.
 	useEffect(() => {
 		handleContentChange?.(containerRef.current);
-	}, [handleContentChange, html, hasError, desc]);
+	}, [handleContentChange, html, hasError, desc, feature]);
 
 	let content: ReactNode = null;
 	if (url) {
