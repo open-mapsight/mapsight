@@ -41,10 +41,10 @@ function FeatureDetailsContentInner({
 
 	const desc = getFeatureProperty(feature, "description");
 
-	// Source XHR refresh replaces the selected feature object even when the
-	// description HTML is unchanged. Plugins that mount into that HTML (e.g.
-	// count-aggregator metric widgets via createRoot) must be notified so they
-	// can remount after React resets dangerouslySetInnerHTML.
+	// A refreshing feature source replaces the selected feature object even
+	// when the description HTML is unchanged. Plugins that mount into that
+	// HTML (createRoot into dangerouslySetInnerHTML) must be notified so they
+	// can remount after React resets the injected markup.
 	useEffect(() => {
 		handleContentChange?.(containerRef.current);
 	}, [handleContentChange, html, hasError, desc, feature]);

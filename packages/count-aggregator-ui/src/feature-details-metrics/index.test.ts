@@ -51,4 +51,27 @@ describe("mountSmartCityMetrics", () => {
 
 		container.remove();
 	});
+
+	it("applies a later mount of the same placeholder", async () => {
+		const container = document.createElement("div");
+		container.innerHTML = PLACEHOLDER_HTML;
+		document.body.append(container);
+
+		mountSmartCityMetrics(container);
+		await vi.waitFor(() => {
+			expect(
+				container.querySelector("[data-testid=metric-widget]"),
+			).toBeTruthy();
+		});
+		const first = container.querySelector("[data-testid=metric-widget]");
+
+		mountSmartCityMetrics(container);
+		await vi.waitFor(() => {
+			const next = container.querySelector("[data-testid=metric-widget]");
+			expect(next).toBeTruthy();
+			expect(next).not.toBe(first);
+		});
+
+		container.remove();
+	});
 });

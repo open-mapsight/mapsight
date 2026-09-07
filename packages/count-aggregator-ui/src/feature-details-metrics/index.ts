@@ -66,10 +66,6 @@ export function mountSmartCityMetrics(
 		}
 
 		seen.add(element);
-		if (mountedRoots.has(element) && element.childElementCount > 0) {
-			continue;
-		}
-
 		unmountMetricPlaceholder(element);
 
 		const root = createRoot(element);
