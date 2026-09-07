@@ -21,6 +21,14 @@ function hasIconSource(style: StyleLiteral): boolean {
 	return typeof src === "string" && src.length > 0;
 }
 
+function isNoneShorthand(declaration: object): boolean {
+	if (!("value" in declaration)) {
+		return false;
+	}
+	const value = (declaration as {value?: unknown}).value;
+	return value === "none" || value === "unset";
+}
+
 const unitFromAnchorValue = (a?: string | null) =>
 	a && typeof a === "string" && a.indexOf("px") > -1 ? "pixels" : "fraction";
 const boolishValue = (a?: BoolishStyleValue) =>
@@ -264,7 +272,11 @@ function _declarationToStyle(
 		applyPaintOpacity(style);
 	}
 
-	if (type === "icon" && !hasIconSource(style) && !style.image) {
+	if (
+		type === "icon" &&
+		(isNoneShorthand(declaration) ||
+			(!hasIconSource(style) && !style.image))
+	) {
 		return null;
 	}
 

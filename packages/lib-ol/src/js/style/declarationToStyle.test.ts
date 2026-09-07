@@ -49,6 +49,27 @@ it("still constructs an Icon when src is a non-empty URL", () => {
 	expect((style?.getImage() as Icon).getSrc()).toBe(src);
 });
 
+it("skips Icon construction when icon is none even if a merged src remains", () => {
+	const style = declarationToStyle(
+		constructorsMap,
+		{
+			image: {type: {value: "icon"}},
+			icon: {
+				value: "none",
+				src: {
+					value: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII=",
+				},
+			},
+			fill: {color: {value: "rgba(0,127,0,0.3)"}},
+		},
+		"style",
+		"icon-none-with-merged-src",
+	);
+
+	expect(style?.getImage()).toBeNull();
+	expect(style?.getFill()).not.toBeNull();
+});
+
 it("skips Icon construction when icon-src is empty", () => {
 	const style = declarationToStyle(
 		constructorsMap,
