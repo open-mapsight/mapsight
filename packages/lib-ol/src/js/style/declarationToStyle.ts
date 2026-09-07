@@ -14,7 +14,20 @@ import type {
 } from "../index";
 
 const IMAGE_TYPES = ["image", "icon", "circle"];
-const NONE_ABLE_PROPS = ["fill", "stroke"];
+const NONE_ABLE_PROPS = ["fill", "stroke", "src"];
+
+function hasIconSource(style: StyleLiteral): boolean {
+	const src = style.src;
+	return typeof src === "string" && src.length > 0;
+}
+
+function isNoneShorthand(declaration: object): boolean {
+	if (!("value" in declaration)) {
+		return false;
+	}
+	const value = (declaration as {value?: unknown}).value;
+	return value === "none" || value === "unset";
+}
 
 const unitFromAnchorValue = (a?: string | null) =>
 	a && typeof a === "string" && a.indexOf("px") > -1 ? "pixels" : "fraction";
@@ -257,6 +270,14 @@ function _declarationToStyle(
 
 	if (type === "fill" || type === "stroke") {
 		applyPaintOpacity(style);
+	}
+
+	if (
+		type === "icon" &&
+		(isNoneShorthand(declaration) ||
+			(!hasIconSource(style) && !style.image))
+	) {
+		return null;
 	}
 
 	const StyleCtor = constructorsMap[type] as
