@@ -3,8 +3,10 @@
  *
  * Walks from `container` to `document.body` and sets `inert` on siblings so
  * keyboard and AT cannot reach host-page chrome behind the overlay
- * (WCAG 2.4.3 / EN 301 549 / BITV 2.0). Native `<dialog showModal>` and
- * react-modal portals stay interactive.
+ * (WCAG 2.4.3 / EN 301 549 / BITV 2.0). Native `<dialog showModal>`,
+ * react-modal portals, and react-aria `OverlayContainer` roots stay
+ * interactive. Host chrome that portals to `document.body` should set
+ * `data-ms3-portal` (react-aria already marks `[data-overlay-container]`).
  */
 
 const LIVE_ROLES = new Set(["alert", "log", "status", "timer"]);
@@ -31,6 +33,16 @@ export function isExemptFromInert(element: Element): boolean {
 	}
 
 	if (element.classList.contains("ReactModalPortal")) {
+		return true;
+	}
+
+	// OverlayContainer portals a new OverlayProvider to document.body. The
+	// same attribute also wraps OverlayProvider application children, so only
+	// keep a sibling interactive when it currently hosts a dialog.
+	if (
+		element.hasAttribute("data-overlay-container") &&
+		element.querySelector("[role='dialog'], [role='alertdialog']") != null
+	) {
 		return true;
 	}
 
@@ -85,5 +97,19 @@ export function applyInert(elements: readonly HTMLElement[]): void {
 export function restoreInert(elements: readonly HTMLElement[]): void {
 	for (const element of elements) {
 		element.removeAttribute("inert");
+	}
+}
+
+/**
+ * Drop hook-owned `inert` from nodes that have since become exempt
+ * (e.g. a persistent OverlayProvider that later hosts a dialog).
+ */
+export function restoreExemptMarks(marked: Set<HTMLElement>): void {
+	for (const element of marked) {
+		if (!isExemptFromInert(element)) {
+			continue;
+		}
+		element.removeAttribute("inert");
+		marked.delete(element);
 	}
 }

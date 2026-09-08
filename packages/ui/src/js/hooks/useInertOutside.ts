@@ -4,6 +4,7 @@ import {useEffect} from "react";
 import {
 	applyInert,
 	collectInertTargets,
+	restoreExemptMarks,
 	restoreInert,
 } from "../helpers/inert-outside";
 
@@ -32,7 +33,10 @@ export default function useInertOutside(
 		const marked = new Set<HTMLElement>();
 
 		const inertNewTargets = () => {
-			// collectInertTargets skips nodes that already carry `inert`.
+			// collectInertTargets skips nodes that already carry `inert`,
+			// including hook-owned marks. Release those that became exempt
+			// (dialog mounted into a previously empty overlay container).
+			restoreExemptMarks(marked);
 			const targets = collectInertTargets(container);
 			applyInert(targets);
 			for (const target of targets) {
