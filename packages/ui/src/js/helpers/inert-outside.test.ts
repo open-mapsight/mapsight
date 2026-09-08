@@ -8,10 +8,12 @@ import {
 } from "./inert-outside";
 
 describe("isExemptFromInert", () => {
-	it("exempts dialogs, react-modal portals, and live regions", () => {
+	it("exempts dialogs, react-modal portals, overlay containers, and live regions", () => {
 		const dialog = document.createElement("dialog");
 		const portal = document.createElement("div");
 		portal.className = "ReactModalPortal";
+		const overlay = document.createElement("div");
+		overlay.setAttribute("data-overlay-container", "");
 		const marked = document.createElement("div");
 		marked.setAttribute("data-ms3-portal", "");
 		const live = document.createElement("div");
@@ -22,6 +24,7 @@ describe("isExemptFromInert", () => {
 
 		expect(isExemptFromInert(dialog)).toBe(true);
 		expect(isExemptFromInert(portal)).toBe(true);
+		expect(isExemptFromInert(overlay)).toBe(true);
 		expect(isExemptFromInert(marked)).toBe(true);
 		expect(isExemptFromInert(live)).toBe(true);
 		expect(isExemptFromInert(status)).toBe(true);
@@ -42,15 +45,18 @@ describe("collectInertTargets / applyInert", () => {
 		alreadyInert.setAttribute("inert", "");
 		const portal = document.createElement("div");
 		portal.className = "ReactModalPortal";
+		const overlayRoot = document.createElement("div");
+		overlayRoot.setAttribute("data-overlay-container", "");
 		const root = document.createElement("div");
 		const overlay = document.createElement("div");
 		root.append(overlay);
 
-		document.body.append(header, alreadyInert, portal, root);
+		document.body.append(header, alreadyInert, portal, overlayRoot, root);
 
 		const targets = collectInertTargets(overlay);
 		expect(targets).toContain(header);
 		expect(targets).not.toContain(portal);
+		expect(targets).not.toContain(overlayRoot);
 		expect(targets).not.toContain(alreadyInert);
 		expect(targets).not.toContain(overlay);
 

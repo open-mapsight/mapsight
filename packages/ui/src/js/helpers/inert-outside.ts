@@ -3,8 +3,10 @@
  *
  * Walks from `container` to `document.body` and sets `inert` on siblings so
  * keyboard and AT cannot reach host-page chrome behind the overlay
- * (WCAG 2.4.3 / EN 301 549 / BITV 2.0). Native `<dialog showModal>` and
- * react-modal portals stay interactive.
+ * (WCAG 2.4.3 / EN 301 549 / BITV 2.0). Native `<dialog showModal>`,
+ * react-modal portals, and react-aria `OverlayContainer` roots stay
+ * interactive. Host chrome that portals to `document.body` should set
+ * `data-ms3-portal` (react-aria already marks `[data-overlay-container]`).
  */
 
 const LIVE_ROLES = new Set(["alert", "log", "status", "timer"]);
@@ -31,6 +33,11 @@ export function isExemptFromInert(element: Element): boolean {
 	}
 
 	if (element.classList.contains("ReactModalPortal")) {
+		return true;
+	}
+
+	// OverlayContainer always portals to document.body as this root.
+	if (element.hasAttribute("data-overlay-container")) {
 		return true;
 	}
 

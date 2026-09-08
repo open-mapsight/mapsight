@@ -31,4 +31,34 @@ describe("isNestedPlatformModalOpen", () => {
 
 		expect(isNestedPlatformModalOpen()).toBe(true);
 	});
+
+	it("is true for a react-aria overlay dialog outside the chrome", () => {
+		const chrome = document.createElement("div");
+		const insideProvider = document.createElement("div");
+		insideProvider.setAttribute("data-overlay-container", "");
+		chrome.append(insideProvider);
+
+		const portal = document.createElement("div");
+		portal.setAttribute("data-overlay-container", "");
+		const dialog = document.createElement("div");
+		dialog.setAttribute("role", "dialog");
+		portal.append(dialog);
+
+		document.body.append(chrome, portal);
+
+		expect(isNestedPlatformModalOpen(chrome)).toBe(true);
+	});
+
+	it("ignores react-aria overlay providers that live inside the chrome", () => {
+		const chrome = document.createElement("div");
+		const insideProvider = document.createElement("div");
+		insideProvider.setAttribute("data-overlay-container", "");
+		const dialog = document.createElement("div");
+		dialog.setAttribute("role", "dialog");
+		insideProvider.append(dialog);
+		chrome.append(insideProvider);
+		document.body.append(chrome);
+
+		expect(isNestedPlatformModalOpen(chrome)).toBe(false);
+	});
 });
