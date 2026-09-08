@@ -24,6 +24,26 @@ describe("isNestedPlatformModalOpen", () => {
 		expect(isNestedPlatformModalOpen()).toBe(true);
 	});
 
+	it("is true for a native dialog rendered inside the overlay chrome", () => {
+		const chrome = document.createElement("div");
+		const dialog = document.createElement("dialog");
+		dialog.setAttribute("open", "");
+		chrome.append(dialog);
+		document.body.append(chrome);
+
+		expect(isNestedPlatformModalOpen(chrome)).toBe(true);
+	});
+
+	it("is true for a react-modal overlay rendered inside the overlay chrome", () => {
+		const chrome = document.createElement("div");
+		const overlay = document.createElement("div");
+		overlay.className = "ReactModal__Overlay";
+		chrome.append(overlay);
+		document.body.append(chrome);
+
+		expect(isNestedPlatformModalOpen(chrome)).toBe(true);
+	});
+
 	it("is true for a react-modal overlay", () => {
 		const overlay = document.createElement("div");
 		overlay.className = "ReactModal__Overlay";

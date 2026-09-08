@@ -3,8 +3,10 @@
  * react-modal, react-aria popovers). The overlay-chrome trap must pause so
  * the two do not fight.
  *
- * `[data-overlay-container] [role="dialog"]` is the open popover, not the
- * OverlayProvider wrapper hosts may keep inside the chrome.
+ * In-chrome `OverlayProvider` wrappers can host a `role="dialog"` without
+ * being a nested platform modal. Native `<dialog>` and react-modal still
+ * count when they render inside the chrome (`NativeDialog` defaults to
+ * in-place).
  */
 export const NESTED_PLATFORM_MODAL_SELECTOR = [
 	"dialog[open]",
@@ -12,6 +14,14 @@ export const NESTED_PLATFORM_MODAL_SELECTOR = [
 	".ReactModal__Content",
 	"[data-overlay-container] [role='dialog']",
 ].join(",");
+
+function isReactAriaOverlayDialog(node: Element): boolean {
+	return (
+		node.getAttribute("role") === "dialog" &&
+		node.tagName !== "DIALOG" &&
+		node.closest("[data-overlay-container]") != null
+	);
+}
 
 export function isNestedPlatformModalOpen(
 	exclude: Element | null = null,
@@ -22,7 +32,10 @@ export function isNestedPlatformModalOpen(
 
 	const matches = document.querySelectorAll(NESTED_PLATFORM_MODAL_SELECTOR);
 	for (const node of matches) {
-		if (node === exclude || exclude?.contains(node)) {
+		if (node === exclude) {
+			continue;
+		}
+		if (exclude?.contains(node) && isReactAriaOverlayDialog(node)) {
 			continue;
 		}
 		return true;
