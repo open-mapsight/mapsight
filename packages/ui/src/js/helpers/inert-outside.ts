@@ -99,3 +99,17 @@ export function restoreInert(elements: readonly HTMLElement[]): void {
 		element.removeAttribute("inert");
 	}
 }
+
+/**
+ * Drop hook-owned `inert` from nodes that have since become exempt
+ * (e.g. a persistent OverlayProvider that later hosts a dialog).
+ */
+export function restoreExemptMarks(marked: Set<HTMLElement>): void {
+	for (const element of marked) {
+		if (!isExemptFromInert(element)) {
+			continue;
+		}
+		element.removeAttribute("inert");
+		marked.delete(element);
+	}
+}

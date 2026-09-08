@@ -4,6 +4,7 @@ import {
 	applyInert,
 	collectInertTargets,
 	isExemptFromInert,
+	restoreExemptMarks,
 	restoreInert,
 } from "./inert-outside";
 
@@ -86,5 +87,25 @@ describe("collectInertTargets / applyInert", () => {
 		restoreInert(targets);
 		expect(header.hasAttribute("inert")).toBe(false);
 		expect(alreadyInert.hasAttribute("inert")).toBe(true);
+	});
+
+	it("releases hook-owned inert once an overlay container hosts a dialog", () => {
+		const overlayRoot = document.createElement("div");
+		overlayRoot.setAttribute("data-overlay-container", "");
+		overlayRoot.setAttribute("inert", "");
+		const header = document.createElement("header");
+		header.setAttribute("inert", "");
+		const marked = new Set<HTMLElement>([overlayRoot, header]);
+
+		const dialog = document.createElement("div");
+		dialog.setAttribute("role", "dialog");
+		overlayRoot.append(dialog);
+
+		restoreExemptMarks(marked);
+
+		expect(overlayRoot.hasAttribute("inert")).toBe(false);
+		expect(marked.has(overlayRoot)).toBe(false);
+		expect(header.hasAttribute("inert")).toBe(true);
+		expect(marked.has(header)).toBe(true);
 	});
 });

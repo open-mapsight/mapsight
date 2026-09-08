@@ -140,6 +140,25 @@ describe("AppWrapper overlay chrome", () => {
 		expect(provider.hasAttribute("inert")).toBe(true);
 	});
 
+	it("un-inerts an overlay container after a dialog mounts into it", async () => {
+		const provider = document.createElement("div");
+		provider.setAttribute("data-overlay-container", "");
+		renderWrapper(VIEW_MAP_ONLY, undefined, provider);
+		expect(provider.hasAttribute("inert")).toBe(true);
+
+		const dialog = document.createElement("div");
+		dialog.setAttribute("role", "dialog");
+		const button = document.createElement("button");
+		button.type = "button";
+		button.textContent = "Google Maps";
+		dialog.append(button);
+		provider.append(dialog);
+
+		await waitFor(() => {
+			expect(provider.hasAttribute("inert")).toBe(false);
+		});
+	});
+
 	it("leaves data-ms3-portal siblings interactive while overlay chrome is open", () => {
 		const portal = document.createElement("div");
 		portal.setAttribute("data-ms3-portal", "");
