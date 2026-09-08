@@ -14,6 +14,11 @@ describe("isExemptFromInert", () => {
 		portal.className = "ReactModalPortal";
 		const overlay = document.createElement("div");
 		overlay.setAttribute("data-overlay-container", "");
+		const overlayDialog = document.createElement("div");
+		overlayDialog.setAttribute("role", "dialog");
+		overlay.append(overlayDialog);
+		const emptyOverlay = document.createElement("div");
+		emptyOverlay.setAttribute("data-overlay-container", "");
 		const marked = document.createElement("div");
 		marked.setAttribute("data-ms3-portal", "");
 		const live = document.createElement("div");
@@ -25,6 +30,7 @@ describe("isExemptFromInert", () => {
 		expect(isExemptFromInert(dialog)).toBe(true);
 		expect(isExemptFromInert(portal)).toBe(true);
 		expect(isExemptFromInert(overlay)).toBe(true);
+		expect(isExemptFromInert(emptyOverlay)).toBe(false);
 		expect(isExemptFromInert(marked)).toBe(true);
 		expect(isExemptFromInert(live)).toBe(true);
 		expect(isExemptFromInert(status)).toBe(true);
@@ -47,14 +53,27 @@ describe("collectInertTargets / applyInert", () => {
 		portal.className = "ReactModalPortal";
 		const overlayRoot = document.createElement("div");
 		overlayRoot.setAttribute("data-overlay-container", "");
+		const overlayDialog = document.createElement("div");
+		overlayDialog.setAttribute("role", "dialog");
+		overlayRoot.append(overlayDialog);
+		const emptyOverlayRoot = document.createElement("div");
+		emptyOverlayRoot.setAttribute("data-overlay-container", "");
 		const root = document.createElement("div");
 		const overlay = document.createElement("div");
 		root.append(overlay);
 
-		document.body.append(header, alreadyInert, portal, overlayRoot, root);
+		document.body.append(
+			header,
+			alreadyInert,
+			portal,
+			overlayRoot,
+			emptyOverlayRoot,
+			root,
+		);
 
 		const targets = collectInertTargets(overlay);
 		expect(targets).toContain(header);
+		expect(targets).toContain(emptyOverlayRoot);
 		expect(targets).not.toContain(portal);
 		expect(targets).not.toContain(overlayRoot);
 		expect(targets).not.toContain(alreadyInert);

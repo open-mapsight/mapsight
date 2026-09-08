@@ -36,8 +36,13 @@ export function isExemptFromInert(element: Element): boolean {
 		return true;
 	}
 
-	// OverlayContainer always portals to document.body as this root.
-	if (element.hasAttribute("data-overlay-container")) {
+	// OverlayContainer portals a new OverlayProvider to document.body. The
+	// same attribute also wraps OverlayProvider application children, so only
+	// keep a sibling interactive when it currently hosts a dialog.
+	if (
+		element.hasAttribute("data-overlay-container") &&
+		element.querySelector("[role='dialog'], [role='alertdialog']") != null
+	) {
 		return true;
 	}
 

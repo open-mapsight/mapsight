@@ -115,14 +115,29 @@ describe("AppWrapper overlay chrome", () => {
 	it("leaves react-aria overlay-container siblings interactive", () => {
 		const portal = document.createElement("div");
 		portal.setAttribute("data-overlay-container", "");
+		const dialog = document.createElement("div");
+		dialog.setAttribute("role", "dialog");
 		const button = document.createElement("button");
 		button.type = "button";
 		button.textContent = "Google Maps";
-		portal.append(button);
+		dialog.append(button);
+		portal.append(dialog);
 		renderWrapper(VIEW_MAP_ONLY, undefined, portal);
 
 		expect(portal.hasAttribute("inert")).toBe(false);
 		expect(button.hasAttribute("inert")).toBe(false);
+	});
+
+	it("inerts overlay-provider siblings that do not host a dialog", () => {
+		const provider = document.createElement("div");
+		provider.setAttribute("data-overlay-container", "");
+		const button = document.createElement("button");
+		button.type = "button";
+		button.textContent = "host nav";
+		provider.append(button);
+		renderWrapper(VIEW_MAP_ONLY, undefined, provider);
+
+		expect(provider.hasAttribute("inert")).toBe(true);
 	});
 
 	it("leaves data-ms3-portal siblings interactive while overlay chrome is open", () => {

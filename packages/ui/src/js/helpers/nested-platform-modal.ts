@@ -13,12 +13,22 @@ export const NESTED_PLATFORM_MODAL_SELECTOR = [
 	".ReactModal__Overlay",
 	".ReactModal__Content",
 	"[data-overlay-container] [role='dialog']",
+	"[data-overlay-container] [role='alertdialog']",
 ].join(",");
 
-function isReactAriaOverlayDialog(node: Element): boolean {
+function isReactModalMarker(node: Element): boolean {
 	return (
-		node.getAttribute("role") === "dialog" &&
+		node.classList.contains("ReactModal__Overlay") ||
+		node.classList.contains("ReactModal__Content")
+	);
+}
+
+function isReactAriaOverlayDialog(node: Element): boolean {
+	const role = node.getAttribute("role");
+	return (
+		(role === "dialog" || role === "alertdialog") &&
 		node.tagName !== "DIALOG" &&
+		!isReactModalMarker(node) &&
 		node.closest("[data-overlay-container]") != null
 	);
 }
