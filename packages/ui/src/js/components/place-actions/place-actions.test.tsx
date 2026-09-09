@@ -1,8 +1,17 @@
+import {Provider} from "react-redux";
+
+import {configureStore} from "@reduxjs/toolkit";
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
+import {ANIMATE} from "@mapsight/core/lib/map/actions";
+
 import {setDocumentLanguage} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
+import {
+	APP_EVENT_SCROLL_TO_MAP,
+	AppChannelProvider,
+} from "../helping/app-channel";
 import FeaturePlaceActions from "./feature-place-actions";
 import PlaceActions from "./place-actions";
 import type {PlaceActionsConfig} from "./types";
@@ -130,10 +139,13 @@ describe("PlaceActions", () => {
 			</PlaceActions.Root>,
 		);
 
-		const link = screen.getByRole("link", {name: "Website"});
+		const link = screen.getByRole("link", {
+			name: "Website dieses Ortes öffnen",
+		});
 		expect(link.getAttribute("href")).toBe(
 			"https://www.example.de/schlosspark",
 		);
+		expect(link.getAttribute("title")).toBe("Website dieses Ortes öffnen");
 		expect(link.getAttribute("rel")).toBe("external noreferrer noopener");
 		expect(link.getAttribute("target")).toBe("_blank");
 	});
@@ -154,10 +166,12 @@ describe("PlaceActions", () => {
 		);
 
 		const link = screen.getByRole("link", {
-			name: "Anrufen +49 531 470 1",
+			name: "Diesen Ort anrufen: +49 531 470 1",
 		});
 		expect(link.getAttribute("href")).toBe("tel:+495314701");
-		expect(link.textContent).toBe("Anrufen");
+		expect(link.getAttribute("title")).toBe(
+			"Diesen Ort anrufen: +49 531 470 1",
+		);
 		expect(link.textContent).not.toContain("+49");
 		expect(link.textContent).not.toContain("531");
 	});
@@ -175,12 +189,15 @@ describe("PlaceActions", () => {
 				feature={feature()}
 				config={{
 					permalink: "https://example.de/plan?feature=schlosspark",
+					showOnMap: false,
 					navigation: {fromGeometry: false},
 				}}
 			/>,
 		);
 
-		fireEvent.click(screen.getByRole("button", {name: "Teilen"}));
+		fireEvent.click(
+			screen.getByRole("button", {name: "Diesen Ort teilen"}),
+		);
 
 		expect(screen.getByRole("dialog")).toBeTruthy();
 		const permalink = screen.getByRole("link", {
@@ -196,6 +213,193 @@ describe("PlaceActions", () => {
 				"https://example.de/plan?feature=schlosspark",
 			);
 		});
+	});
+
+	it("lists built-in routing services", () => {
+		render(
+			<FeaturePlaceActions
+				feature={feature()}
+				config={{
+					permalink: () => null,
+					showOnMap: false,
+					navigation: {supportsGeo: false},
+				}}
+			/>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Zu diesem Ort mit einer anderen App navigieren",
+			}),
+		);
+
+		expect(
+			screen
+				.getByRole("link", {name: "Google Maps"})
+				.getAttribute("href"),
+		).toBe(
+			"https://www.google.com/maps/dir/?api=1&destination=52.26,10.52",
+		);
+		expect(
+			screen
+				.getByRole("link", {name: "Apple Karten"})
+				.getAttribute("href"),
+		).toBe("https://maps.apple.com/?daddr=52.26,10.52");
+		expect(screen.queryByRole("link", {name: "NUNAV"})).toBeNull();
+	});
+
+	it("centers the feature and scrolls to the map when it is off-screen", () => {
+		const store = configureStore({
+			reducer: {
+				app: (state = {mapIsOutOfViewport: true}) => state,
+			},
+		});
+		const dispatch = vi.spyOn(store, "dispatch");
+		const onScrollToMap = vi.fn();
+
+		render(
+			<Provider store={store}>
+				<AppChannelProvider
+					listeners={[[APP_EVENT_SCROLL_TO_MAP, onScrollToMap]]}
+				>
+					<FeaturePlaceActions
+						feature={feature()}
+						config={{
+							permalink: () => null,
+							navigation: {fromGeometry: false},
+						}}
+					/>
+				</AppChannelProvider>
+			</Provider>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Diesen Ort auf der Karte zeigen",
+			}),
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: ANIMATE,
+				options: expect.objectContaining({
+					maxZoom: 17,
+					duration: 500,
+				}),
+			}),
+		);
+		expect(onScrollToMap).toHaveBeenCalledTimes(1);
+	});
+
+	it("centers the feature without scrolling when the map is on-screen", () => {
+		const store = configureStore({
+			reducer: {
+				app: (state = {mapIsOutOfViewport: false}) => state,
+			},
+		});
+		const dispatch = vi.spyOn(store, "dispatch");
+		const onScrollToMap = vi.fn();
+
+		render(
+			<Provider store={store}>
+				<AppChannelProvider
+					listeners={[[APP_EVENT_SCROLL_TO_MAP, onScrollToMap]]}
+				>
+					<FeaturePlaceActions
+						feature={feature()}
+						config={{
+							permalink: () => null,
+							navigation: {fromGeometry: false},
+						}}
+					/>
+				</AppChannelProvider>
+			</Provider>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Diesen Ort auf der Karte zeigen",
+			}),
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({type: ANIMATE}),
+		);
+		expect(onScrollToMap).not.toHaveBeenCalled();
+	});
+
+	it("exposes explanatory tooltips on icon-only actions", () => {
+		const store = configureStore({
+			reducer: {
+				app: (state = {mapIsOutOfViewport: false}) => state,
+			},
+		});
+
+		render(
+			<Provider store={store}>
+				<FeaturePlaceActions
+					feature={feature()}
+					config={{
+						permalink:
+							"https://example.de/plan?feature=schlosspark",
+						navigation: {fromGeometry: false},
+					}}
+				/>
+			</Provider>,
+		);
+
+		const share = screen.getByRole("button", {name: "Diesen Ort teilen"});
+		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
+		expect(share.textContent).toBe("");
+
+		const showOnMap = screen.getByRole("button", {
+			name: "Diesen Ort auf der Karte zeigen",
+		});
+		expect(showOnMap.getAttribute("title")).toBe(
+			"Diesen Ort auf der Karte zeigen",
+		);
+	});
+
+	it("names a labeled action from its visible text, not the tooltip", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature()}
+				config={{
+					permalink: "https://example.de/plan?feature=schlosspark",
+					navigation: {fromGeometry: false},
+				}}
+			>
+				<PlaceActions.Share label="Teilen" />
+			</PlaceActions.Root>,
+		);
+
+		const share = screen.getByRole("button", {name: "Teilen"});
+		expect(share.getAttribute("aria-label")).toBeNull();
+		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
+	});
+
+	it("keeps the telephone in a labeled call action's accessible name", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature({
+					properties: {
+						id: "schlosspark",
+						schema: {telephone: "+49 531 470 1"},
+					},
+				})}
+				config={isolated}
+			>
+				<PlaceActions.Call label="Anrufen" />
+			</PlaceActions.Root>,
+		);
+
+		const link = screen.getByRole("link", {
+			name: "Anrufen: +49 531 470 1",
+		});
+		expect(link.getAttribute("aria-label")).toBeNull();
+		expect(link.getAttribute("title")).toBe(
+			"Diesen Ort anrufen: +49 531 470 1",
+		);
 	});
 
 	it("keeps a permalink anchor in the document for share", () => {

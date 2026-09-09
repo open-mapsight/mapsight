@@ -69,6 +69,8 @@ export type PlaceActionsConfig = {
 		supportsGeo?: boolean | (() => boolean);
 	};
 	share?: {title?: string | ((feature: MapsightUiFeature) => string)};
+	/** Default: show when the feature has a point or bbox. */
+	showOnMap?: boolean;
 };
 
 export type ResolvedNavTarget = {
@@ -81,6 +83,10 @@ export type SharePlaceAction = {
 	kind: "share";
 	href: string;
 	title: string;
+};
+
+export type ShowOnMapPlaceAction = {
+	kind: "showOnMap";
 };
 
 export type NavigatePlaceAction = {
@@ -101,6 +107,7 @@ export type CallPlaceAction = {
 
 export type PlaceAction =
 	| SharePlaceAction
+	| ShowOnMapPlaceAction
 	| NavigatePlaceAction
 	| WebsitePlaceAction
 	| CallPlaceAction;

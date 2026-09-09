@@ -10,7 +10,7 @@ export type FeaturePlaceActionsProps = {
 	className?: string;
 };
 
-/** Default composition: share, navigate, website, call. */
+/** Default composition: share, show on map, navigate, website, call. */
 export default function FeaturePlaceActions({
 	feature,
 	config,
@@ -23,6 +23,7 @@ export default function FeaturePlaceActions({
 			className={className}
 		>
 			<PlaceActions.Share />
+			<PlaceActions.ShowOnMap />
 			<PlaceActions.Navigate />
 			<PlaceActions.Website />
 			<PlaceActions.Call />

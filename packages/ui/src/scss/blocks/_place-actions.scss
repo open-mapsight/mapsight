@@ -1,3 +1,5 @@
+@use "../variables";
+
 // Structural place-actions layout. Visual chrome belongs in a theme or host stylesheet.
 
 .ms3-place-actions {
@@ -8,14 +10,55 @@
 	color: var(--ms3-place-actions-fg, inherit);
 	background: var(--ms3-place-actions-bg, transparent);
 
+	&__item,
+	&__share-button,
+	&__show-on-map,
+	&__navigate-button,
+	&__website,
+	&__call {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+	}
+
+	&__item--icon-only {
+		justify-content: center;
+	}
+
 	&__icon {
 		inline-size: var(--ms3-place-actions-icon-size, 1.25em);
 		block-size: var(--ms3-place-actions-icon-size, 1.25em);
+		flex: 0 0 auto;
+		background: transparent no-repeat center / contain;
+	}
+
+	&__share-button &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
+	}
+
+	&__show-on-map &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "map.svg");
+	}
+
+	&__navigate-button &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "route.svg");
+	}
+
+	&__website &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "globe.svg");
+	}
+
+	&__call &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "phone.svg");
 	}
 
 	&__navigate-list {
 		margin: 0;
 		padding: 0;
 		list-style: none;
+	}
+
+	&__navigate-target {
+		text-decoration: none;
 	}
 }
