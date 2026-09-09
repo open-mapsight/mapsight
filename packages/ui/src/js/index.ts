@@ -241,15 +241,18 @@ export function create(
 		),
 		context.initialState,
 		context.storeEnhancer,
-		{
-			extraArgument: {
-				featureSourceCache: context.createOptions.featureSourceCache,
-				featureSourceRevision:
-					context.createOptions.featureSourceRevision,
-				featureSourceCacheTtl:
-					context.createOptions.featureSourceCacheTtl,
-			},
-		},
+		context.createOptions.featureSourceCache
+			? {
+					extraArgument: {
+						featureSourceCache:
+							context.createOptions.featureSourceCache,
+						featureSourceRevision:
+							context.createOptions.featureSourceRevision,
+						featureSourceCacheTtl:
+							context.createOptions.featureSourceCacheTtl,
+					},
+				}
+			: {},
 	);
 
 	// render

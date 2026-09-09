@@ -189,7 +189,6 @@ function freshnessLifetimeSec(
 	expires: string | undefined,
 	fetchedAt: number,
 	shared: boolean,
-	ageSec: number,
 	dateHeader?: string,
 ): number | undefined {
 	if (shared && directives.sMaxAgeSec !== undefined) {
@@ -205,9 +204,8 @@ function freshnessLifetimeSec(
 	if (!Number.isFinite(expiresAt)) {
 		return 0;
 	}
-	const dateAt = dateHeader
-		? Date.parse(dateHeader)
-		: fetchedAt - Math.max(0, ageSec) * 1000;
+	// RFC 9111: a missing Date is the receipt time, not receipt minus Age.
+	const dateAt = dateHeader ? Date.parse(dateHeader) : fetchedAt;
 	if (!Number.isFinite(dateAt)) {
 		return 0;
 	}
@@ -219,7 +217,6 @@ function originFreshnessLifetimeSec(
 	expires: string | undefined,
 	fetchedAt: number,
 	shared: boolean,
-	ageSec = 0,
 	dateHeader?: string,
 ): number | undefined {
 	return freshnessLifetimeSec(
@@ -227,7 +224,6 @@ function originFreshnessLifetimeSec(
 		expires,
 		fetchedAt,
 		shared,
-		ageSec,
 		dateHeader,
 	);
 }
@@ -263,7 +259,6 @@ export function shouldPersistDocumentCache(input: {
 		input.expires,
 		input.fetchedAt ?? Date.now(),
 		input.shared ?? false,
-		input.ageSec ?? 0,
 		input.date,
 	);
 	if (lifetimeSec === undefined) {
@@ -327,7 +322,6 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 		input.expires,
 		input.fetchedAt,
 		shared,
-		input.ageSec ?? 0,
 		input.date,
 	);
 	const mustRevalidate =
@@ -378,7 +372,6 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 		input.expires,
 		input.fetchedAt,
 		shared,
-		input.ageSec ?? 0,
 		input.date,
 	);
 	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);

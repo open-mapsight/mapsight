@@ -240,6 +240,18 @@ describe("evaluateFreshness", () => {
 		).toBe("stale");
 	});
 
+	it("uses receipt time as Date when the Date header is absent", () => {
+		const received = Date.parse("Wed, 09 Sep 2026 19:00:00 GMT");
+		expect(
+			evaluateFreshness({
+				fetchedAt: received,
+				ageSec: 59,
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				now: received + 2_000,
+			}),
+		).toBe("stale");
+	});
+
 	it("must-revalidate private responses on shared caches", () => {
 		expect(
 			evaluateFreshness({
@@ -294,6 +306,13 @@ describe("shouldPersistDocumentCache", () => {
 			shouldPersistDocumentCache({
 				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
 				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+			}),
+		).toBe(false);
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+				ageSec: 59,
 			}),
 		).toBe(false);
 	});
