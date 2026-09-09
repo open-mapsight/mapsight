@@ -43,6 +43,17 @@ describe("parseCacheControl", () => {
 		).toBe("must-revalidate");
 	});
 
+	it("treats duplicate max-age as zero freshness", () => {
+		expect(parseCacheControl("max-age=0, max-age=3600").maxAgeSec).toBe(0);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=0, max-age=3600",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+	});
+
 	it("reads private", () => {
 		expect(parseCacheControl("max-age=60, private")).toMatchObject({
 			maxAgeSec: 60,
@@ -163,6 +174,21 @@ describe("evaluateFreshness", () => {
 				now: fetchedAt + DEFAULT_CACHE_TTL.defaultMs + 1,
 			}),
 		).toBe("stale");
+	});
+
+	it("treats an invalid Expires as already expired", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				expires: "not-a-date",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+		expect(
+			shouldPersistDocumentCache({
+				expires: "not-a-date",
+			}),
+		).toBe(false);
 	});
 
 	it("caps origin max-age at the maximum TTL", () => {

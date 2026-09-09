@@ -9,6 +9,7 @@ import {purgeDocumentCacheEntries} from "./purge";
 import {
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
+	withDocumentCacheWrite,
 } from "./single-flight";
 
 const emptyCollection = {type: "FeatureCollection" as const, features: []};
@@ -85,5 +86,37 @@ describe("purgeDocumentCacheEntries", () => {
 				url,
 			),
 		).toBe(true);
+	});
+
+	it("resolves purge URLs before waiting on the write queue", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const globalWithBase = global as typeof globalThis & {
+			baseUrl?: string;
+		};
+		globalWithBase.baseUrl = "https://a.example/";
+		const relative = "/schools.geojson";
+		const hostA = "https://a.example/schools.geojson";
+		await putUrl(cache, hostA);
+
+		let release: () => void = () => undefined;
+		let entered: () => void = () => undefined;
+		const enteredWrite = new Promise<void>((resolve) => {
+			entered = resolve;
+		});
+		const blocked = withDocumentCacheWrite(cache, () => {
+			entered();
+			return new Promise<void>((resolve) => {
+				release = resolve;
+			});
+		});
+		await enteredWrite;
+		const purging = purgeDocumentCacheEntries(cache, [relative]);
+		globalWithBase.baseUrl = "https://b.example/";
+		release();
+		await blocked;
+		await purging;
+		delete globalWithBase.baseUrl;
+
+		expect(cache.keys()).toEqual([]);
 	});
 });

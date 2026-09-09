@@ -99,10 +99,16 @@ export function parseCacheControl(
 
 		switch (name) {
 			case "max-age":
-				directives.maxAgeSec = parseDeltaSeconds(value) ?? 0;
+				directives.maxAgeSec =
+					directives.maxAgeSec === undefined
+						? (parseDeltaSeconds(value) ?? 0)
+						: 0;
 				break;
 			case "s-maxage":
-				directives.sMaxAgeSec = parseDeltaSeconds(value) ?? 0;
+				directives.sMaxAgeSec =
+					directives.sMaxAgeSec === undefined
+						? (parseDeltaSeconds(value) ?? 0)
+						: 0;
 				break;
 			case "stale-while-revalidate":
 				directives.staleWhileRevalidateSec = parseDeltaSeconds(value);
@@ -191,13 +197,13 @@ function freshnessLifetimeSec(
 	}
 	const expiresAt = Date.parse(expires);
 	if (!Number.isFinite(expiresAt)) {
-		return undefined;
+		return 0;
 	}
 	const dateAt = dateHeader
 		? Date.parse(dateHeader)
 		: fetchedAt - Math.max(0, ageSec) * 1000;
 	if (!Number.isFinite(dateAt)) {
-		return undefined;
+		return 0;
 	}
 	return Math.max(0, Math.floor((expiresAt - dateAt) / 1000));
 }

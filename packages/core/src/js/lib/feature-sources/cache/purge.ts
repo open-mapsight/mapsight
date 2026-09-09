@@ -4,6 +4,7 @@ import {
 	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
+import {resolveXhrJsonUrl} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
 export type PurgeableFeatureSourceCache = FeatureSourceCache & {
 	keys(): string[];
@@ -19,7 +20,12 @@ export async function purgeDocumentCacheEntries(
 	urls?: readonly string[],
 ): Promise<string[]> {
 	const unique = [
-		...new Set((urls ?? []).map((url) => url.trim()).filter(Boolean)),
+		...new Set(
+			(urls ?? [])
+				.map((url) => url.trim())
+				.filter(Boolean)
+				.map((url) => resolveXhrJsonUrl(url)),
+		),
 	];
 	return withDocumentCacheWrite(cache, async () => {
 		bumpDocumentCacheGeneration(cache, unique);
