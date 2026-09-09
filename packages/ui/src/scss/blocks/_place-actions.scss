@@ -32,36 +32,23 @@
 		background: transparent no-repeat center / contain;
 	}
 
-	&__share-button:not(:has(.ms3-place-actions__icon))::before,
-	&__show-on-map:not(:has(.ms3-place-actions__icon))::before,
-	&__navigate-button:not(:has(.ms3-place-actions__icon))::before,
-	&__website:not(:has(.ms3-place-actions__icon))::before,
-	&__call:not(:has(.ms3-place-actions__icon))::before {
-		content: "";
-		display: inline-block;
-		flex: 0 0 auto;
-		inline-size: var(--ms3-place-actions-icon-size, 1.25em);
-		block-size: var(--ms3-place-actions-icon-size, 1.25em);
-		background: transparent no-repeat center / contain;
-	}
-
-	&__share-button:not(:has(.ms3-place-actions__icon))::before {
+	&__share-button &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
 	}
 
-	&__show-on-map:not(:has(.ms3-place-actions__icon))::before {
+	&__show-on-map &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "map.svg");
 	}
 
-	&__navigate-button:not(:has(.ms3-place-actions__icon))::before {
+	&__navigate-button &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "route.svg");
 	}
 
-	&__website:not(:has(.ms3-place-actions__icon))::before {
+	&__website &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "globe.svg");
 	}
 
-	&__call:not(:has(.ms3-place-actions__icon))::before {
+	&__call &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "phone.svg");
 	}
 
