@@ -249,6 +249,27 @@ describe("load with FeatureSourceCache", () => {
 		expect(failure?.error?.message).toBe(ERROR_COLD_CACHE);
 	});
 
+	it("serves Redux data for USE_CACHE_ONLY when the document cache is cold", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const fetchMock = vi.fn();
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools", {useCache: USE_CACHE_ONLY})(
+			dispatch,
+			() => xhrJsonState({data: schoolsCollection, lastUpdate: 1}),
+			{featureSourceCache: cache},
+		);
+
+		expect(fetchMock).not.toHaveBeenCalled();
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
+
 	it("single-flights concurrent misses for the same document", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		let resolveFetch: (value: {

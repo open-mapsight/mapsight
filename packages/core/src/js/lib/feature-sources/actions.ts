@@ -644,24 +644,21 @@ async function loadWithCache(
 			}
 		}
 
-		if (useCache === USE_CACHE_ONLY) {
-			await Promise.resolve();
-			throw new Error(ERROR_COLD_CACHE);
+		if (useCache !== USE_CACHE_ONLY) {
+			return singleFlight(cache, key, async () => {
+				const replay = !forceRefresh ? await cache.get(key) : null;
+				if (replay) {
+					return replay.data;
+				}
+				return revalidateDocumentCache(
+					state,
+					extra,
+					key,
+					null,
+					forceRefresh,
+				);
+			});
 		}
-
-		return singleFlight(cache, key, async () => {
-			const replay = !forceRefresh ? await cache.get(key) : null;
-			if (replay) {
-				return replay.data;
-			}
-			return revalidateDocumentCache(
-				state,
-				extra,
-				key,
-				null,
-				forceRefresh,
-			);
-		});
 	}
 
 	const canUseReduxCache = !forceRefresh && state.data;
