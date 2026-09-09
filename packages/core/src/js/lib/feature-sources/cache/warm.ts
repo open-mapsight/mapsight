@@ -147,25 +147,30 @@ export async function warmFeatureSourceUrl(
 						}
 						return;
 					}
-					await cache.put(key, {
-						data,
-						fetchedAt: result.fetchedAt,
-						ageSec: result.ageSec,
-						date: result.date,
-						bytes:
-							result.notModified && existing
-								? existing.bytes
-								: estimateFeatureSourceBytes(data),
-						etag: result.etag ?? existing?.etag,
-						lastModified:
-							result.lastModified ?? existing?.lastModified,
-						cacheControl,
-						expires:
-							result.expires ??
-							(result.notModified
-								? existing?.expires
-								: undefined),
-					});
+					try {
+						await cache.put(key, {
+							data,
+							fetchedAt: result.fetchedAt,
+							ageSec: result.ageSec,
+							date: result.date,
+							bytes:
+								result.notModified && existing
+									? existing.bytes
+									: estimateFeatureSourceBytes(data),
+							etag: result.etag ?? existing?.etag,
+							lastModified:
+								result.lastModified ?? existing?.lastModified,
+							cacheControl,
+							expires:
+								result.expires ??
+								(result.notModified
+									? existing?.expires
+									: undefined),
+						});
+					} catch {
+						// Optional adapter: the fetched body still returns to
+						// joined loads; warm reports persist via a later get.
+					}
 				});
 				return {value: data, share};
 			},

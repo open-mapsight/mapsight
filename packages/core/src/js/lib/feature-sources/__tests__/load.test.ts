@@ -551,6 +551,73 @@ describe("load with FeatureSourceCache", () => {
 		);
 	});
 
+	it("does not fail a joined load when a concurrent warm put rejects", async () => {
+		const inner = createMemoryFeatureSourceCache();
+		const cache = {
+			get: inner.get.bind(inner),
+			put() {
+				return Promise.reject(new Error("put failed"));
+			},
+			delete: inner.delete.bind(inner),
+			estimateTotalBytes: inner.estimateTotalBytes.bind(inner),
+			evictLRU: inner.evictLRU.bind(inner),
+			keys: inner.keys.bind(inner),
+		};
+		let resolveFetch: (value: {
+			ok: boolean;
+			status: number;
+			headers: {get: (name: string) => string | null};
+			json: () => Promise<typeof schoolsCollection>;
+		}) => void;
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise((resolve) => {
+							resolveStarted();
+							resolveFetch = resolve;
+						}),
+				),
+			);
+		});
+
+		const extra = {featureSourceCache: cache};
+		const warming = warmFeatureSourceUrl(
+			cache,
+			"/geojson/schools.geojson",
+			undefined,
+			{shared: false},
+		);
+		await fetchStarted;
+		const dispatch = vi.fn();
+		const loading = load(controllerName, "schools")(
+			dispatch,
+			() => xhrJsonState(),
+			extra,
+		);
+
+		resolveFetch!({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "Cache-Control" ? "max-age=60" : null;
+				},
+			},
+			json: () => Promise.resolve(schoolsCollection),
+		});
+		await expect(warming).resolves.toBe(false);
+		await loading;
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+		expect(cache.keys()).toEqual([]);
+	});
+
 	it("does not put a fetch that started before purge", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		let resolveFetch: (value: {
