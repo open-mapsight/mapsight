@@ -579,6 +579,41 @@ describe("load with FeatureSourceCache", () => {
 		);
 	});
 
+	it("reuses stored bytes when a 304 refreshes cache metadata", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 1000,
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "no-cache",
+		});
+
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: false,
+				status: 304,
+				headers: {
+					get(name: string) {
+						return name === "ETag" ? '"v1"' : null;
+					},
+				},
+			})),
+		);
+
+		await load(controllerName, "schools")(vi.fn(), () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+
+		expect((await cache.get(key))?.bytes).toBe(10);
+	});
+
 	it("stores no-cache documents and revalidates with If-None-Match", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const fetchMock = vi

@@ -500,7 +500,7 @@ function isSharedDocumentCache(extra?: FeatureSourceCacheExtra): boolean {
 }
 
 function documentCacheKey(
-	state: FeatureSourceState,
+	url: string,
 	id: string,
 	controllerName: string,
 	extra?: FeatureSourceCacheExtra,
@@ -508,7 +508,7 @@ function documentCacheKey(
 	return buildCacheKey({
 		controllerName,
 		featureSourceId: id,
-		url: state.url,
+		url,
 		appVersion: extra?.featureSourceRevision,
 	});
 }
@@ -541,6 +541,7 @@ async function putDocumentCacheEntry(
 		date?: string;
 		ageSec?: number;
 		fetchedAt?: number;
+		bytes?: number;
 	},
 	generation?: CacheWriteGeneration,
 	url?: string,
@@ -582,7 +583,10 @@ async function putDocumentCacheEntry(
 						dateHeader: meta.date,
 					}),
 				date: meta.date,
-				bytes: estimateFeatureSourceBytes(data),
+				bytes:
+					meta.bytes && meta.bytes > 0
+						? meta.bytes
+						: estimateFeatureSourceBytes(data),
 				etag: meta.etag,
 				lastModified: meta.lastModified,
 				cacheControl: meta.cacheControl,
@@ -595,14 +599,13 @@ async function putDocumentCacheEntry(
 }
 
 async function revalidateDocumentCache(
-	state: FeatureSourceState,
 	extra: FeatureSourceCacheExtra,
 	key: string,
 	entry: FeatureSourceCacheEntry | null,
 	forceRefresh: boolean,
+	url: string,
 ): Promise<FeatureSourceData | undefined> {
 	const cache = extra.featureSourceCache;
-	const url = state.url ?? "";
 	const generation = cache
 		? captureCacheWriteGeneration(cache, url)
 		: undefined;
@@ -625,6 +628,7 @@ async function revalidateDocumentCache(
 				date: result.date ?? entry.date,
 				ageSec: result.ageSec,
 				fetchedAt: result.fetchedAt,
+				bytes: entry.bytes,
 			},
 			generation,
 			url,
@@ -677,7 +681,8 @@ async function loadWithCache(
 		useCache !== USE_CACHE_NO && cache && shouldUseDocumentCache(state);
 
 	if (canUseDocumentCache && state.url && extra) {
-		const key = documentCacheKey(state, id, controllerName, extra);
+		const url = xhrJson.resolveXhrJsonUrl(state.url);
+		const key = documentCacheKey(url, id, controllerName, extra);
 		const entry = !forceRefresh
 			? await readDocumentCacheEntry(cache, key)
 			: null;
@@ -704,13 +709,13 @@ async function loadWithCache(
 			}
 			if (decision === "stale-while-revalidate") {
 				void singleFlight(cache, key, () =>
-					revalidateDocumentCache(state, extra, key, entry, false),
+					revalidateDocumentCache(extra, key, entry, false, url),
 				).catch(() => undefined);
 				return entry.data;
 			}
 			try {
 				return await singleFlight(cache, key, () =>
-					revalidateDocumentCache(state, extra, key, entry, false),
+					revalidateDocumentCache(extra, key, entry, false, url),
 				);
 			} catch (error) {
 				if (
@@ -740,11 +745,11 @@ async function loadWithCache(
 					return replay.data;
 				}
 				return revalidateDocumentCache(
-					state,
 					extra,
 					key,
 					null,
 					forceRefresh,
+					url,
 				);
 			});
 		}

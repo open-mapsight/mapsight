@@ -4,6 +4,7 @@ import {
 	XhrJsonHttpError,
 	fetchXhrJson,
 	load,
+	resolveXhrJsonUrl,
 } from "@/lib/feature-sources/loaders/xhr-json-loader";
 
 describe("xhr-json loader", () => {
@@ -162,5 +163,14 @@ describe("xhr-json loader", () => {
 
 		const result = await fetchXhrJson("/schools.geojson");
 		expect(result.fetchedAt).toBe(1_050);
+	});
+
+	it("does not re-resolve an absolute URL when baseUrl changes", () => {
+		const globalWithBase = global as typeof globalThis & {baseUrl?: string};
+		globalWithBase.baseUrl = "https://a.example/";
+		const resolved = resolveXhrJsonUrl("/schools.geojson");
+		globalWithBase.baseUrl = "https://b.example/";
+		expect(resolveXhrJsonUrl(resolved)).toBe(resolved);
+		delete globalWithBase.baseUrl;
 	});
 });

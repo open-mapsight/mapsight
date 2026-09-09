@@ -274,7 +274,8 @@ function effectiveFreshnessLifetimeSec(
  * Decide whether a stored document may be returned without waiting on origin.
  *
  * Missing freshness headers use `defaultMs`, then cap at `maxMs`.
- * Origins that want a check every time send `no-cache` or `must-revalidate`.
+ * Origins that want a check every time send `no-cache`.
+ * `must-revalidate` / `proxy-revalidate` apply once that lifetime is exceeded.
  */
 export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 	const now = input.now ?? Date.now();
@@ -306,9 +307,6 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 		(shared &&
 			(directives.proxyRevalidate ||
 				directives.sMaxAgeSec !== undefined));
-	if (mustRevalidate && originLifetime === undefined) {
-		return "must-revalidate";
-	}
 
 	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
 

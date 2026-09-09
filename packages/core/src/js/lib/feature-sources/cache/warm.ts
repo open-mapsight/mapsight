@@ -11,7 +11,10 @@ import {
 	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
-import {fetchXhrJson} from "@/lib/feature-sources/loaders/xhr-json-loader";
+import {
+	fetchXhrJson,
+	resolveXhrJsonUrl,
+} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
 export type WarmFeatureSourceUrlOptions = {
 	/**
@@ -39,7 +42,8 @@ export async function warmFeatureSourceUrl(
 	revision?: string,
 	options?: WarmFeatureSourceUrlOptions,
 ): Promise<boolean> {
-	const key = buildDocumentCacheKey({url, revision});
+	const resolvedUrl = resolveXhrJsonUrl(url);
+	const key = buildDocumentCacheKey({url: resolvedUrl, revision});
 	try {
 		const data = await singleFlight(cache, key, async () => {
 			const existing = await cache.get(key).catch(() => null);
@@ -48,10 +52,16 @@ export async function warmFeatureSourceUrl(
 			}
 
 			const shared = options?.shared ?? defaultSharedCache();
-			const generation = captureCacheWriteGeneration(cache, url);
-			const result = await fetchXhrJson(url);
+			const generation = captureCacheWriteGeneration(cache, resolvedUrl);
+			const result = await fetchXhrJson(resolvedUrl);
 			await withDocumentCacheWrite(cache, async () => {
-				if (!isCacheWriteGenerationCurrent(cache, url, generation)) {
+				if (
+					!isCacheWriteGenerationCurrent(
+						cache,
+						resolvedUrl,
+						generation,
+					)
+				) {
 					return;
 				}
 				if (

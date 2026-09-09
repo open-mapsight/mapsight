@@ -78,6 +78,23 @@ describe("evaluateFreshness", () => {
 		).toBe("must-revalidate");
 	});
 
+	it("must-revalidate without max-age still uses the default TTL while fresh", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "must-revalidate",
+				now: fetchedAt + 60_000,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "must-revalidate",
+				now: fetchedAt + 6 * 60_000,
+			}),
+		).toBe("must-revalidate");
+	});
+
 	it("honors s-maxage and proxy-revalidate on shared caches", () => {
 		expect(
 			evaluateFreshness({
