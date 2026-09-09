@@ -276,7 +276,28 @@ function reduceUncontrolledFeatureSourceChanges(
 		}
 	}
 
-	return state;
+	let next = state;
+	for (const [id, source] of Object.entries(state)) {
+		const oldSource = oldState[id];
+		if (!oldSource || oldSource.data === source.data) {
+			continue;
+		}
+
+		const fingerprint = nextFeatureCollectionFeaturesKey(source.data);
+		if (
+			source.featuresKey === fingerprint.key &&
+			source.featuresCount === fingerprint.count
+		) {
+			continue;
+		}
+
+		next = mergeSource(next, id, {
+			featuresKey: fingerprint.key,
+			featuresCount: fingerprint.count,
+		});
+	}
+
+	return next;
 }
 
 const emptyFeaturesArray: Array<Feature> = [];

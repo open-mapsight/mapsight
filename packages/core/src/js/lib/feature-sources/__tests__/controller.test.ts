@@ -114,6 +114,29 @@ describe("FeatureSourcesController", () => {
 		});
 	});
 
+	it("recomputes the fingerprint when an uncontrolled merge changes crs", () => {
+		const initial = controller.reduce(
+			loadedState,
+			mergeAt(["smartCity"], {type: "xhr-json"}),
+		);
+		const withCrs = controller.reduce(
+			initial,
+			mergeAt(["smartCity"], {
+				data: {
+					type: "FeatureCollection",
+					features: [sensorFeature],
+					crs: {type: "name", properties: {name: "EPSG:25832"}},
+				},
+			}),
+		);
+
+		expect(initial.smartCity?.featuresKey).toBeDefined();
+		expect(withCrs.smartCity?.featuresKey).not.toBe(
+			initial.smartCity?.featuresKey,
+		);
+		expect(withCrs.smartCity?.ids).toEqual(["sensor-1"]);
+	});
+
 	it("limits data history when historyLimit is configured", () => {
 		const state: FeatureSourcesState = {
 			editor: {
