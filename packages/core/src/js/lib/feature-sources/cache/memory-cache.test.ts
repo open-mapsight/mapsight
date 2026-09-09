@@ -48,4 +48,22 @@ describe("createMemoryFeatureSourceCache", () => {
 		expect(await cache.get("old")).toBeNull();
 		expect(await cache.get("new")).not.toBeNull();
 	});
+
+	it("evicts by access order when timestamps would tie", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		await cache.put("first", {
+			data: collection,
+			fetchedAt: 1,
+			bytes: 100,
+		});
+		await cache.put("second", {
+			data: collection,
+			fetchedAt: 1,
+			bytes: 100,
+		});
+		await cache.get("first");
+
+		const evicted = await cache.evictLRU(100);
+		expect(evicted).toEqual(["second"]);
+	});
 });

@@ -56,6 +56,8 @@ export type FreshnessInput = {
 	ageSec?: number;
 	cacheControl?: string;
 	expires?: string;
+	/** HTTP Date of the stored response; used with Expires. */
+	date?: string;
 	now?: number;
 	/** Shared caches (SSR sidecar) honor `s-maxage` and `proxy-revalidate`. */
 	shared?: boolean;
@@ -63,7 +65,7 @@ export type FreshnessInput = {
 };
 
 function parseDeltaSeconds(value: string | undefined): number | undefined {
-	if (value === undefined) {
+	if (value === undefined || !/^\d+$/.test(value)) {
 		return undefined;
 	}
 	const parsed = Number.parseInt(value, 10);
@@ -135,24 +137,35 @@ export function parseCacheControl(
 }
 
 /**
- * RFC 9111 corrected initial age: max(Age, apparent_age from Date).
+ * RFC 9111 corrected initial age:
+ * max(apparent_age, Age + response_delay).
  */
 export function correctedInitialAgeSec(input: {
 	ageHeader?: string;
 	dateHeader?: string;
 	now?: number;
+	requestTime?: number;
+	responseTime?: number;
 }): number {
+	const responseTime = input.responseTime ?? input.now ?? Date.now();
 	const ageHeaderSec = parseDeltaSeconds(input.ageHeader) ?? 0;
+	const responseDelaySec =
+		input.requestTime === undefined
+			? 0
+			: Math.max(0, (responseTime - input.requestTime) / 1000);
+	const correctedAgeValue = ageHeaderSec + responseDelaySec;
 	if (!input.dateHeader) {
-		return ageHeaderSec;
+		return Math.floor(correctedAgeValue);
 	}
 	const dateAt = Date.parse(input.dateHeader);
 	if (!Number.isFinite(dateAt)) {
-		return ageHeaderSec;
+		return Math.floor(correctedAgeValue);
 	}
-	const now = input.now ?? Date.now();
-	const apparentAgeSec = Math.max(0, Math.floor((now - dateAt) / 1000));
-	return Math.max(ageHeaderSec, apparentAgeSec);
+	const apparentAgeSec = Math.max(
+		0,
+		Math.floor((responseTime - dateAt) / 1000),
+	);
+	return Math.max(apparentAgeSec, Math.floor(correctedAgeValue));
 }
 
 function currentAgeSec(fetchedAt: number, ageSec: number, now: number): number {
@@ -165,6 +178,7 @@ function freshnessLifetimeSec(
 	fetchedAt: number,
 	shared: boolean,
 	ageSec: number,
+	dateHeader?: string,
 ): number | undefined {
 	if (shared && directives.sMaxAgeSec !== undefined) {
 		return directives.sMaxAgeSec;
@@ -179,7 +193,12 @@ function freshnessLifetimeSec(
 	if (!Number.isFinite(expiresAt)) {
 		return undefined;
 	}
-	const dateAt = fetchedAt - Math.max(0, ageSec) * 1000;
+	const dateAt = dateHeader
+		? Date.parse(dateHeader)
+		: fetchedAt - Math.max(0, ageSec) * 1000;
+	if (!Number.isFinite(dateAt)) {
+		return undefined;
+	}
 	return Math.max(0, Math.floor((expiresAt - dateAt) / 1000));
 }
 
@@ -189,8 +208,16 @@ function originFreshnessLifetimeSec(
 	fetchedAt: number,
 	shared: boolean,
 	ageSec = 0,
+	dateHeader?: string,
 ): number | undefined {
-	return freshnessLifetimeSec(directives, expires, fetchedAt, shared, ageSec);
+	return freshnessLifetimeSec(
+		directives,
+		expires,
+		fetchedAt,
+		shared,
+		ageSec,
+		dateHeader,
+	);
 }
 
 /**
@@ -264,9 +291,13 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 		input.fetchedAt,
 		shared,
 		input.ageSec ?? 0,
+		input.date,
 	);
 	const mustRevalidate =
-		directives.mustRevalidate || (shared && directives.proxyRevalidate);
+		directives.mustRevalidate ||
+		(shared &&
+			(directives.proxyRevalidate ||
+				directives.sMaxAgeSec !== undefined));
 	if (mustRevalidate && originLifetime === undefined) {
 		return "must-revalidate";
 	}
@@ -307,6 +338,7 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 		input.fetchedAt,
 		shared,
 		input.ageSec ?? 0,
+		input.date,
 	);
 	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
 	return ageSec < lifetime + directives.staleIfErrorSec;

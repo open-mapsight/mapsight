@@ -16,6 +16,7 @@ export type FeatureSourceCacheEntry = {
 	lastModified?: string;
 	cacheControl?: string;
 	expires?: string;
+	date?: string;
 	bytes: number;
 	tier: FeatureSourceCacheTier;
 };

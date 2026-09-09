@@ -19,9 +19,10 @@ type StoredEntry = FeatureSourceCacheEntry & {lastAccessedAt: number};
  */
 export function createMemoryFeatureSourceCache(): MemoryFeatureSourceCache {
 	const entries = new Map<string, StoredEntry>();
+	let accessSeq = 0;
 
 	function touch(entry: StoredEntry): StoredEntry {
-		entry.lastAccessedAt = Date.now();
+		entry.lastAccessedAt = ++accessSeq;
 		return entry;
 	}
 
@@ -41,7 +42,7 @@ export function createMemoryFeatureSourceCache(): MemoryFeatureSourceCache {
 				key,
 				bytes,
 				tier: "memory",
-				lastAccessedAt: Date.now(),
+				lastAccessedAt: ++accessSeq,
 			});
 			return Promise.resolve();
 		},

@@ -24,6 +24,10 @@ describe("parseCacheControl", () => {
 		});
 	});
 
+	it("ignores malformed delta-seconds", () => {
+		expect(parseCacheControl("max-age=60junk").maxAgeSec).toBeUndefined();
+	});
+
 	it("reads private", () => {
 		expect(parseCacheControl("max-age=60, private")).toMatchObject({
 			maxAgeSec: 60,
@@ -93,6 +97,27 @@ describe("evaluateFreshness", () => {
 		).toBe("fresh");
 	});
 
+	it("treats s-maxage as proxy-revalidate on shared caches once stale", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl:
+					"max-age=60, s-maxage=60, stale-while-revalidate=30",
+				now: fetchedAt + 80_000,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl:
+					"max-age=60, s-maxage=60, stale-while-revalidate=30",
+				now: fetchedAt + 80_000,
+				shared: false,
+			}),
+		).toBe("stale-while-revalidate");
+	});
+
 	it("uses the default TTL when freshness headers are missing", () => {
 		expect(
 			evaluateFreshness({
@@ -135,6 +160,18 @@ describe("evaluateFreshness", () => {
 				now: fetchedAt,
 			}),
 		).toBe("fresh");
+	});
+
+	it("uses Expires minus Date, not fetchedAt minus Age", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:00 GMT"),
+				ageSec: 59,
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				now: Date.parse("Wed, 09 Sep 2026 19:00:00 GMT") + 2_000,
+			}),
+		).toBe("stale");
 	});
 
 	it("must-revalidate private responses on shared caches", () => {
@@ -220,5 +257,12 @@ describe("correctedInitialAgeSec", () => {
 			}),
 		).toBe(60);
 		expect(correctedInitialAgeSec({ageHeader: "59"})).toBe(59);
+		expect(
+			correctedInitialAgeSec({
+				ageHeader: "0",
+				requestTime: 1_000,
+				responseTime: 6_000,
+			}),
+		).toBe(5);
 	});
 });

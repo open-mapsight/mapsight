@@ -154,4 +154,40 @@ describe("warmFeatureSourceUrl", () => {
 		await purged;
 		expect(cache.keys()).toEqual([]);
 	});
+
+	it("single-flights concurrent warm of the same cold key", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		let resolveFetch: (
+			value: ReturnType<typeof jsonResponse>,
+		) => void = () => undefined;
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise((resolve) => {
+							resolveStarted();
+							resolveFetch = resolve;
+						}),
+				),
+			);
+		});
+
+		const first = warmFeatureSourceUrl(cache, "/schools.geojson", "rev-1", {
+			shared: false,
+		});
+		await fetchStarted;
+		const second = warmFeatureSourceUrl(
+			cache,
+			"/schools.geojson",
+			"rev-1",
+			{shared: false},
+		);
+		resolveFetch(jsonResponse({"Cache-Control": "max-age=60"}));
+		await expect(Promise.all([first, second])).resolves.toEqual([
+			true,
+			true,
+		]);
+		expect(fetch).toHaveBeenCalledOnce();
+	});
 });

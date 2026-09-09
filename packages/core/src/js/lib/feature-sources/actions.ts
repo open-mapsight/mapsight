@@ -556,32 +556,37 @@ async function putDocumentCacheEntry(
 		) {
 			return;
 		}
-		if (
-			!shouldPersistDocumentCache({
+		try {
+			if (
+				!shouldPersistDocumentCache({
+					cacheControl: meta.cacheControl,
+					expires: meta.expires,
+					shared: isSharedDocumentCache(extra),
+					ttl: extra.featureSourceCacheTtl,
+				})
+			) {
+				await cache.delete(key);
+				return;
+			}
+			await cache.put(key, {
+				data,
+				fetchedAt: Date.now(),
+				ageSec:
+					meta.ageSec ??
+					correctedInitialAgeSec({
+						ageHeader: meta.age,
+						dateHeader: meta.date,
+					}),
+				date: meta.date,
+				bytes: estimateFeatureSourceBytes(data),
+				etag: meta.etag,
+				lastModified: meta.lastModified,
 				cacheControl: meta.cacheControl,
 				expires: meta.expires,
-				shared: isSharedDocumentCache(extra),
-				ttl: extra.featureSourceCacheTtl,
-			})
-		) {
-			await cache.delete(key);
-			return;
+			});
+		} catch {
+			// Optional adapter: a failed put/delete must not fail the load.
 		}
-		await cache.put(key, {
-			data,
-			fetchedAt: Date.now(),
-			ageSec:
-				meta.ageSec ??
-				correctedInitialAgeSec({
-					ageHeader: meta.age,
-					dateHeader: meta.date,
-				}),
-			bytes: estimateFeatureSourceBytes(data),
-			etag: meta.etag,
-			lastModified: meta.lastModified,
-			cacheControl: meta.cacheControl,
-			expires: meta.expires,
-		});
 	});
 }
 
@@ -613,7 +618,8 @@ async function revalidateDocumentCache(
 				cacheControl: result.cacheControl ?? entry.cacheControl,
 				expires: result.expires ?? entry.expires,
 				age: result.age,
-				date: result.date,
+				date: result.date ?? entry.date,
+				ageSec: result.ageSec,
 			},
 			generation,
 			url,
@@ -636,6 +642,17 @@ async function revalidateDocumentCache(
 	return result.data;
 }
 
+async function readDocumentCacheEntry(
+	cache: FeatureSourceCache,
+	key: string,
+): Promise<FeatureSourceCacheEntry | null> {
+	try {
+		return await cache.get(key);
+	} catch {
+		return null;
+	}
+}
+
 async function loadWithCache(
 	state: FeatureSourceState,
 	getState: () => unknown,
@@ -656,7 +673,9 @@ async function loadWithCache(
 
 	if (canUseDocumentCache && state.url && extra) {
 		const key = documentCacheKey(state, id, controllerName, extra);
-		const entry = !forceRefresh ? await cache.get(key) : null;
+		const entry = !forceRefresh
+			? await readDocumentCacheEntry(cache, key)
+			: null;
 
 		if (entry && useCache === USE_CACHE_ONLY) {
 			return entry.data;
@@ -666,6 +685,7 @@ async function loadWithCache(
 			const decision = evaluateFreshness({
 				fetchedAt: entry.fetchedAt,
 				ageSec: entry.ageSec,
+				date: entry.date,
 				cacheControl: entry.cacheControl,
 				expires: entry.expires,
 				shared: isSharedDocumentCache(extra),
@@ -689,9 +709,11 @@ async function loadWithCache(
 				);
 			} catch (error) {
 				if (
+					xhrJson.allowsStaleIfErrorForFailure(error) &&
 					allowsStaleOnError({
 						fetchedAt: entry.fetchedAt,
 						ageSec: entry.ageSec,
+						date: entry.date,
 						cacheControl: entry.cacheControl,
 						expires: entry.expires,
 						shared: isSharedDocumentCache(extra),
@@ -706,7 +728,9 @@ async function loadWithCache(
 
 		if (useCache !== USE_CACHE_ONLY) {
 			return singleFlight(cache, key, async () => {
-				const replay = !forceRefresh ? await cache.get(key) : null;
+				const replay = !forceRefresh
+					? await readDocumentCacheEntry(cache, key)
+					: null;
 				if (replay) {
 					return replay.data;
 				}

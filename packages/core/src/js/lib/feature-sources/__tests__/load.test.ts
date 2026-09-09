@@ -545,6 +545,135 @@ describe("load with FeatureSourceCache", () => {
 		);
 	});
 
+	it("still returns origin data when cache.put rejects", async () => {
+		const inner = createMemoryFeatureSourceCache();
+		const cache = {
+			get: inner.get.bind(inner),
+			put: () => Promise.reject(new Error("quota")),
+			delete: inner.delete.bind(inner),
+			estimateTotalBytes: inner.estimateTotalBytes.bind(inner),
+			evictLRU: inner.evictLRU.bind(inner),
+		};
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				headers: emptyHeaders(),
+				json: () => Promise.resolve(schoolsCollection),
+			})),
+		);
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
+
+	it("treats a rejected cache.get as a miss", async () => {
+		const cache = {
+			get: () => Promise.reject(new Error("idb")),
+			put: vi.fn(() => Promise.resolve()),
+			delete: vi.fn(() => Promise.resolve()),
+			estimateTotalBytes: () => Promise.resolve(0),
+			evictLRU: () => Promise.resolve([]),
+		};
+		const fetchMock = vi.fn(() => ({
+			ok: true,
+			status: 200,
+			headers: emptyHeaders(),
+			json: () => Promise.resolve(schoolsCollection),
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+		expect(fetchMock).toHaveBeenCalledOnce();
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
+
+	it("does not serve stale-if-error for HTTP 404", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 120_000,
+			bytes: 10,
+			cacheControl: "max-age=60, stale-if-error=3600",
+		});
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: false,
+				status: 404,
+				statusText: "Not Found",
+				headers: {get: () => null},
+			})),
+		);
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({type: LOAD_FEATURE_SOURCE_ERROR}),
+		);
+		expect(dispatch).not.toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
+
+	it("serves stale-if-error for HTTP 503", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 120_000,
+			bytes: 10,
+			cacheControl: "max-age=60, stale-if-error=3600",
+		});
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: false,
+				status: 503,
+				statusText: "Service Unavailable",
+				headers: {get: () => null},
+			})),
+		);
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
+
 	it("reaches load() extraArgument even when redux-thunk is the app enhancer", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const key = buildCacheKey({

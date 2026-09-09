@@ -1,6 +1,7 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {
+	XhrJsonHttpError,
 	fetchXhrJson,
 	load,
 } from "@/lib/feature-sources/loaders/xhr-json-loader";
@@ -23,6 +24,12 @@ describe("xhr-json loader", () => {
 
 		await expect(load({url: "/missing.geojson"})).rejects.toThrow(
 			"HTTP 404",
+		);
+		await expect(load({url: "/missing.geojson"})).rejects.toMatchObject({
+			status: 404,
+		});
+		await expect(load({url: "/missing.geojson"})).rejects.toBeInstanceOf(
+			XhrJsonHttpError,
 		);
 	});
 

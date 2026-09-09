@@ -2,12 +2,12 @@ import {buildDocumentCacheKey} from "@/lib/feature-sources/cache/build-cache-key
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	type CacheTtlPolicy,
-	correctedInitialAgeSec,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
 import {
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
+	singleFlight,
 	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
@@ -37,43 +37,43 @@ export async function warmFeatureSourceUrl(
 	options?: WarmFeatureSourceUrlOptions,
 ): Promise<boolean> {
 	const key = buildDocumentCacheKey({url, revision});
-	if (await cache.get(key)) {
-		return true;
-	}
-
-	const shared = options?.shared ?? defaultSharedCache();
-	const generation = captureCacheWriteGeneration(cache, url);
 	try {
-		const result = await fetchXhrJson(url);
-		return await withDocumentCacheWrite(cache, async () => {
-			if (!isCacheWriteGenerationCurrent(cache, url, generation)) {
-				return false;
+		return await singleFlight(cache, key, async () => {
+			if (await cache.get(key)) {
+				return true;
 			}
-			if (
-				!result.data ||
-				!shouldPersistDocumentCache({
+
+			const shared = options?.shared ?? defaultSharedCache();
+			const generation = captureCacheWriteGeneration(cache, url);
+			const result = await fetchXhrJson(url);
+			return await withDocumentCacheWrite(cache, async () => {
+				if (!isCacheWriteGenerationCurrent(cache, url, generation)) {
+					return false;
+				}
+				if (
+					!result.data ||
+					!shouldPersistDocumentCache({
+						cacheControl: result.cacheControl,
+						expires: result.expires,
+						shared,
+						ttl: options?.ttl,
+					})
+				) {
+					return false;
+				}
+				await cache.put(key, {
+					data: result.data,
+					fetchedAt: Date.now(),
+					ageSec: result.ageSec,
+					date: result.date,
+					bytes: estimateFeatureSourceBytes(result.data),
+					etag: result.etag,
+					lastModified: result.lastModified,
 					cacheControl: result.cacheControl,
 					expires: result.expires,
-					shared,
-					ttl: options?.ttl,
-				})
-			) {
-				return false;
-			}
-			await cache.put(key, {
-				data: result.data,
-				fetchedAt: Date.now(),
-				ageSec: correctedInitialAgeSec({
-					ageHeader: result.age,
-					dateHeader: result.date,
-				}),
-				bytes: estimateFeatureSourceBytes(result.data),
-				etag: result.etag,
-				lastModified: result.lastModified,
-				cacheControl: result.cacheControl,
-				expires: result.expires,
+				});
+				return true;
 			});
-			return true;
 		});
 	} catch {
 		return false;

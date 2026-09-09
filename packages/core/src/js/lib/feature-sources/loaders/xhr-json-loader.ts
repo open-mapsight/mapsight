@@ -1,3 +1,4 @@
+import {correctedInitialAgeSec} from "@/lib/feature-sources/cache/http-freshness";
 import type {FeatureSourceData} from "@/lib/feature-sources/types";
 
 export type XhrJsonLoaderState = {
@@ -19,7 +20,27 @@ export type XhrJsonFetchResult = {
 	expires?: string;
 	age?: string;
 	date?: string;
+	ageSec: number;
 };
+
+export class XhrJsonHttpError extends Error {
+	readonly status: number;
+
+	constructor(status: number, statusText: string) {
+		const detail = statusText.trim();
+		super(detail ? `HTTP ${status} ${detail}` : `HTTP ${status}`);
+		this.name = "XhrJsonHttpError";
+		this.status = status;
+	}
+}
+
+/** RFC 5861 stale-if-error: 5xx or a failure that is not an HTTP status. */
+export function allowsStaleIfErrorForFailure(error: unknown): boolean {
+	if (error instanceof XhrJsonHttpError) {
+		return error.status >= 500 && error.status <= 599;
+	}
+	return true;
+}
 
 const locationBaseUrl = (() => {
 	if (typeof window === "undefined" || !window.location) {
@@ -27,11 +48,6 @@ const locationBaseUrl = (() => {
 	}
 	return window.location.href;
 })();
-
-function createHttpError(status: number, statusText: string) {
-	const detail = statusText.trim();
-	return new Error(detail ? `HTTP ${status} ${detail}` : `HTTP ${status}`);
-}
 
 export function resolveXhrJsonUrl(url: string): string {
 	return new URL(
@@ -65,10 +81,14 @@ export async function fetchXhrJson(
 		headers["If-Modified-Since"] = conditional.ifModifiedSince;
 	}
 
+	const requestTime = Date.now();
 	const response = await fetch(resolveXhrJsonUrl(url), {
 		redirect: "follow",
 		headers,
 	});
+	const responseTime = Date.now();
+	const age = readHeader(response.headers, "Age");
+	const date = readHeader(response.headers, "Date");
 
 	const meta = {
 		status: response.status,
@@ -76,8 +96,14 @@ export async function fetchXhrJson(
 		lastModified: readHeader(response.headers, "Last-Modified"),
 		cacheControl: readHeader(response.headers, "Cache-Control"),
 		expires: readHeader(response.headers, "Expires"),
-		age: readHeader(response.headers, "Age"),
-		date: readHeader(response.headers, "Date"),
+		age,
+		date,
+		ageSec: correctedInitialAgeSec({
+			ageHeader: age,
+			dateHeader: date,
+			requestTime,
+			responseTime,
+		}),
 	};
 
 	if (response.status === 304) {
@@ -85,7 +111,7 @@ export async function fetchXhrJson(
 	}
 
 	if (!response.ok) {
-		throw createHttpError(response.status, response.statusText);
+		throw new XhrJsonHttpError(response.status, response.statusText);
 	}
 
 	return {
