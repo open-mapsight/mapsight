@@ -43,6 +43,18 @@ function encodeFingerprint(value: unknown): unknown {
 		const time = value.getTime();
 		return Number.isNaN(time) ? ["D", "invalid"] : ["D", time];
 	}
+	if (value instanceof Map) {
+		return [
+			"M",
+			[...value.entries()].map(([key, child]) => [
+				encodeFingerprint(key),
+				encodeFingerprint(child),
+			]),
+		];
+	}
+	if (value instanceof Set) {
+		return ["S", [...value].map(encodeFingerprint)];
+	}
 	if (Array.isArray(value)) {
 		return ["a", value.map(encodeFingerprint)];
 	}

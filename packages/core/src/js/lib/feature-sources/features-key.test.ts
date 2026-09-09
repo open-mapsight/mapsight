@@ -146,6 +146,25 @@ describe("featureCollectionFeaturesKey", () => {
 				],
 			}),
 		);
+		expect(
+			featureCollectionFeaturesKey({
+				features: [
+					{
+						...placeFeature,
+						properties: {status: new Map([["code", 1]])},
+					},
+				],
+			}),
+		).not.toBe(
+			featureCollectionFeaturesKey({
+				features: [
+					{
+						...placeFeature,
+						properties: {status: new Map([["code", 2]])},
+					},
+				],
+			}),
+		);
 	});
 
 	it("hashes on count change so the next metadata-only poll can skip", () => {
