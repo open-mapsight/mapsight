@@ -638,7 +638,7 @@ async function revalidateDocumentCache(
 				cacheControl: result.cacheControl ?? entry.cacheControl,
 				expires: result.expires ?? entry.expires,
 				age: result.age,
-				date: result.date ?? entry.date,
+				date: result.date,
 				ageSec: result.ageSec,
 				fetchedAt: result.fetchedAt,
 				bytes: entry.bytes,
@@ -671,11 +671,17 @@ function documentCacheFlight(
 		data: FeatureSourceData | undefined;
 		share: boolean;
 	}>,
+	shared: boolean,
 ): Promise<FeatureSourceData | undefined> {
-	return singleFlightIfShareable(cache, key, async () => {
-		const result = await load();
-		return {value: result.data, share: result.share};
-	});
+	return singleFlightIfShareable(
+		cache,
+		key,
+		async () => {
+			const result = await load();
+			return {value: result.data, share: result.share};
+		},
+		shared,
+	);
 }
 
 async function readDocumentCacheEntry(
@@ -735,14 +741,22 @@ async function loadWithCache(
 				return entry.data;
 			}
 			if (decision === "stale-while-revalidate") {
-				void documentCacheFlight(cache, key, () =>
-					revalidateDocumentCache(extra, key, entry, false, url),
+				void documentCacheFlight(
+					cache,
+					key,
+					() =>
+						revalidateDocumentCache(extra, key, entry, false, url),
+					isSharedDocumentCache(extra),
 				).catch(() => undefined);
 				return entry.data;
 			}
 			try {
-				return await documentCacheFlight(cache, key, () =>
-					revalidateDocumentCache(extra, key, entry, false, url),
+				return await documentCacheFlight(
+					cache,
+					key,
+					() =>
+						revalidateDocumentCache(extra, key, entry, false, url),
+					isSharedDocumentCache(extra),
 				);
 			} catch (error) {
 				if (
@@ -768,26 +782,47 @@ async function loadWithCache(
 				let pending: Promise<FeatureSourceData | undefined>;
 				await withDocumentCacheWrite(cache, () => {
 					bumpDocumentCacheGeneration(cache, [url]);
-					pending = documentCacheFlight(cache, key, () =>
-						revalidateDocumentCache(extra, key, null, true, url),
+					pending = documentCacheFlight(
+						cache,
+						key,
+						() =>
+							revalidateDocumentCache(
+								extra,
+								key,
+								null,
+								true,
+								url,
+							),
+						isSharedDocumentCache(extra),
 					);
 					return Promise.resolve();
 				});
 				return pending!;
 			}
-			return documentCacheFlight(cache, key, async () => {
-				const replay = await readDocumentCacheEntry(cache, key);
-				if (replay) {
-					return {
-						data: replay.data,
-						share: isShareableCachedResponse({
-							cacheControl: replay.cacheControl,
-							shared: isSharedDocumentCache(extra),
-						}),
-					};
-				}
-				return revalidateDocumentCache(extra, key, null, false, url);
-			});
+			return documentCacheFlight(
+				cache,
+				key,
+				async () => {
+					const replay = await readDocumentCacheEntry(cache, key);
+					if (replay) {
+						return {
+							data: replay.data,
+							share: isShareableCachedResponse({
+								cacheControl: replay.cacheControl,
+								shared: isSharedDocumentCache(extra),
+							}),
+						};
+					}
+					return revalidateDocumentCache(
+						extra,
+						key,
+						null,
+						false,
+						url,
+					);
+				},
+				isSharedDocumentCache(extra),
+			);
 		}
 	}
 

@@ -62,6 +62,18 @@ describe("parseCacheControl", () => {
 		).toBe(0);
 	});
 
+	it("does not let a later valid SWR recover from a malformed first value", () => {
+		expect(
+			parseCacheControl(
+				"stale-while-revalidate=bad, stale-while-revalidate=3600",
+			).staleWhileRevalidateSec,
+		).toBe(0);
+		expect(
+			parseCacheControl("stale-if-error=bad, stale-if-error=3600")
+				.staleIfErrorSec,
+		).toBe(0);
+	});
+
 	it("reads private", () => {
 		expect(parseCacheControl("max-age=60, private")).toMatchObject({
 			maxAgeSec: 60,

@@ -48,62 +48,70 @@ export async function warmFeatureSourceUrl(
 	const key = buildDocumentCacheKey({url: resolvedUrl, revision});
 	const shared = options?.shared ?? defaultSharedCache();
 	try {
-		const data = await singleFlightIfShareable(cache, key, async () => {
-			const existing = await cache.get(key).catch(() => null);
-			if (existing) {
-				return {
-					value: existing.data,
-					share: isShareableCachedResponse({
-						cacheControl: existing.cacheControl,
-						shared,
-					}),
-				};
-			}
-
-			const generation = captureCacheWriteGeneration(cache, resolvedUrl);
-			const result = await fetchXhrJson(resolvedUrl);
-			const share = isShareableCachedResponse({
-				cacheControl: result.cacheControl,
-				shared,
-			});
-			await withDocumentCacheWrite(cache, async () => {
-				if (
-					!isCacheWriteGenerationCurrent(
-						cache,
-						resolvedUrl,
-						generation,
-					)
-				) {
-					return;
+		const data = await singleFlightIfShareable(
+			cache,
+			key,
+			async () => {
+				const existing = await cache.get(key).catch(() => null);
+				if (existing) {
+					return {
+						value: existing.data,
+						share: isShareableCachedResponse({
+							cacheControl: existing.cacheControl,
+							shared,
+						}),
+					};
 				}
-				if (
-					!result.data ||
-					!shouldPersistDocumentCache({
+
+				const generation = captureCacheWriteGeneration(
+					cache,
+					resolvedUrl,
+				);
+				const result = await fetchXhrJson(resolvedUrl);
+				const share = isShareableCachedResponse({
+					cacheControl: result.cacheControl,
+					shared,
+				});
+				await withDocumentCacheWrite(cache, async () => {
+					if (
+						!isCacheWriteGenerationCurrent(
+							cache,
+							resolvedUrl,
+							generation,
+						)
+					) {
+						return;
+					}
+					if (
+						!result.data ||
+						!shouldPersistDocumentCache({
+							cacheControl: result.cacheControl,
+							expires: result.expires,
+							fetchedAt: result.fetchedAt,
+							date: result.date,
+							ageSec: result.ageSec,
+							shared,
+							ttl: options?.ttl,
+						})
+					) {
+						return;
+					}
+					await cache.put(key, {
+						data: result.data,
+						fetchedAt: result.fetchedAt,
+						ageSec: result.ageSec,
+						date: result.date,
+						bytes: estimateFeatureSourceBytes(result.data),
+						etag: result.etag,
+						lastModified: result.lastModified,
 						cacheControl: result.cacheControl,
 						expires: result.expires,
-						fetchedAt: result.fetchedAt,
-						date: result.date,
-						ageSec: result.ageSec,
-						shared,
-						ttl: options?.ttl,
-					})
-				) {
-					return;
-				}
-				await cache.put(key, {
-					data: result.data,
-					fetchedAt: result.fetchedAt,
-					ageSec: result.ageSec,
-					date: result.date,
-					bytes: estimateFeatureSourceBytes(result.data),
-					etag: result.etag,
-					lastModified: result.lastModified,
-					cacheControl: result.cacheControl,
-					expires: result.expires,
+					});
 				});
-			});
-			return {value: result.data, share};
-		});
+				return {value: result.data, share};
+			},
+			shared,
+		);
 		if (data === undefined) {
 			return false;
 		}

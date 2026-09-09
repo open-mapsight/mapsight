@@ -56,6 +56,15 @@ export async function withDocumentCacheWrite<T>(
  * Drop in-flight joins and reject later `put`s for work started before this
  * call. Omit `urls` (or pass []) to bust the whole adapter.
  */
+function inflightSlot(shared: boolean, key: string): string {
+	return `${shared ? "s" : "p"}\0${key}`;
+}
+
+function inflightDocumentKey(slot: string): string {
+	const sep = slot.indexOf("\0");
+	return sep === -1 ? slot : slot.slice(sep + 1);
+}
+
 export function bumpDocumentCacheGeneration(
 	cache: FeatureSourceCache,
 	urls?: readonly string[],
@@ -78,7 +87,7 @@ export function bumpDocumentCacheGeneration(
 			(state.urlGeneration.get(resolved) ?? 0) + 1,
 		);
 		for (const key of [...state.inflight.keys()]) {
-			if (documentCacheKeyMatchesUrl(key, url)) {
+			if (documentCacheKeyMatchesUrl(inflightDocumentKey(key), url)) {
 				state.inflight.delete(key);
 			}
 		}
@@ -124,9 +133,11 @@ export async function singleFlightIfShareable<T>(
 	cache: FeatureSourceCache,
 	key: string,
 	load: () => Promise<{value: T; share: boolean}>,
+	shared = false,
 ): Promise<T> {
 	const state = flightState(cache);
-	const existing = state.inflight.get(key);
+	const slot = inflightSlot(shared, key);
+	const existing = state.inflight.get(slot);
 	if (existing) {
 		const joined = (await existing) as ShareableFlightResult<T>;
 		if (joined.share) {
@@ -147,11 +158,11 @@ export async function singleFlightIfShareable<T>(
 		hasLocal = true;
 		return {share: false as const};
 	})().finally(() => {
-		if (state.inflight.get(key) === pending) {
-			state.inflight.delete(key);
+		if (state.inflight.get(slot) === pending) {
+			state.inflight.delete(slot);
 		}
 	});
-	state.inflight.set(key, pending);
+	state.inflight.set(slot, pending);
 	const published = await pending;
 	if (published.share) {
 		return published.value;

@@ -45,4 +45,36 @@ describe("singleFlightIfShareable", () => {
 		await expect(second).resolves.toBe("waiter-own");
 		expect(loads).toBe(2);
 	});
+
+	it("does not join flights that use a different shared policy", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		let resolvePrivate!: (value: {value: string; share: boolean}) => void;
+		let loads = 0;
+		const privateFlight = singleFlightIfShareable(
+			cache,
+			"k",
+			() => {
+				loads += 1;
+				return new Promise<{value: string; share: boolean}>(
+					(resolve) => {
+						resolvePrivate = resolve;
+					},
+				);
+			},
+			false,
+		);
+		const sharedFlight = singleFlightIfShareable(
+			cache,
+			"k",
+			() => {
+				loads += 1;
+				return Promise.resolve({value: "shared-own", share: false});
+			},
+			true,
+		);
+		resolvePrivate({value: "private-body", share: true});
+		await expect(privateFlight).resolves.toBe("private-body");
+		await expect(sharedFlight).resolves.toBe("shared-own");
+		expect(loads).toBe(2);
+	});
 });
