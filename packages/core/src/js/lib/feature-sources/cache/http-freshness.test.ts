@@ -199,8 +199,17 @@ describe("shouldPersistDocumentCache", () => {
 		expect(shouldPersistDocumentCache({cacheControl: "max-age=1"})).toBe(
 			false,
 		);
-		expect(shouldPersistDocumentCache({cacheControl: "no-cache"})).toBe(
+	});
+
+	it("does not persist no-store", () => {
+		expect(shouldPersistDocumentCache({cacheControl: "no-store"})).toBe(
 			false,
+		);
+	});
+
+	it("persists no-cache so later loads can revalidate", () => {
+		expect(shouldPersistDocumentCache({cacheControl: "no-cache"})).toBe(
+			true,
 		);
 	});
 

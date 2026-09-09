@@ -522,6 +522,62 @@ describe("load with FeatureSourceCache", () => {
 		);
 	});
 
+	it("stores no-cache documents and revalidates with If-None-Match", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const fetchMock = vi
+			.fn()
+			.mockImplementationOnce(() => ({
+				ok: true,
+				status: 200,
+				headers: {
+					get(name: string) {
+						if (name === "ETag") {
+							return '"v1"';
+						}
+						if (name === "Cache-Control") {
+							return "no-cache";
+						}
+						return null;
+					},
+				},
+				json: () => Promise.resolve(schoolsCollection),
+			}))
+			.mockImplementationOnce(() => ({
+				ok: false,
+				status: 304,
+				headers: {
+					get(name: string) {
+						return name === "ETag" ? '"v1"' : null;
+					},
+				},
+			}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "other-placement",
+			url: "/geojson/schools.geojson",
+		});
+		expect((await cache.get(key))?.etag).toBe('"v1"');
+
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+
+		expect(fetchMock).toHaveBeenNthCalledWith(
+			2,
+			expect.stringContaining("/geojson/schools.geojson"),
+			expect.objectContaining({
+				headers: {"If-None-Match": '"v1"'},
+			}),
+		);
+	});
+
 	it("ignores a non-adapter featureSourceCache and loads from the network", async () => {
 		const fetchMock = vi.fn(() => ({
 			ok: true,

@@ -48,23 +48,28 @@ describe("warmFeatureSourceUrl", () => {
 		expect((await cache.get(key))?.data).toEqual(collection);
 	});
 
-	it("does not persist no-cache or sub-min TTL responses", async () => {
+	it("persists no-cache documents for later revalidation", async () => {
 		const cache = createMemoryFeatureSourceCache();
-		const fetchMock = vi.fn(() =>
-			jsonResponse({"Cache-Control": "no-cache"}),
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "no-cache"})),
 		);
-		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(
 			warmFeatureSourceUrl(cache, "/schools.geojson", undefined, {
 				shared: false,
 			}),
-		).resolves.toBe(false);
-		expect(cache.keys()).toEqual([]);
+		).resolves.toBe(true);
+		expect(cache.keys()).toHaveLength(1);
+	});
 
-		fetchMock.mockImplementation(() =>
-			jsonResponse({"Cache-Control": "max-age=1"}),
+	it("does not persist sub-min TTL responses", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "max-age=1"})),
 		);
+
 		await expect(
 			warmFeatureSourceUrl(cache, "/parks.geojson", undefined, {
 				shared: false,

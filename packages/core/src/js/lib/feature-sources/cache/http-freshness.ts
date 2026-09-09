@@ -221,9 +221,10 @@ function originFreshnessLifetimeSec(
 }
 
 /**
- * Whether a response is worth keeping. Skip `no-store` / `no-cache`,
- * `private` on shared caches, and documents whose origin lifetime is shorter
- * than `minMs`.
+ * Whether a response is worth keeping. Skip `no-store`, `private` on shared
+ * caches, and documents whose origin lifetime is shorter than `minMs`.
+ * `no-cache` is stored and revalidated (`evaluateFreshness`); it is not
+ * `no-store`.
  */
 export function shouldPersistDocumentCache(input: {
 	cacheControl?: string;
@@ -234,7 +235,7 @@ export function shouldPersistDocumentCache(input: {
 }): boolean {
 	const ttl = resolveCacheTtlPolicy(input.ttl);
 	const directives = parseCacheControl(input.cacheControl);
-	if (directives.noStore || directives.noCache) {
+	if (directives.noStore) {
 		return false;
 	}
 	if ((input.shared ?? false) && directives.isPrivate) {
