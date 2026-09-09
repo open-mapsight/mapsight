@@ -139,7 +139,6 @@ describe("load with FeatureSourceCache", () => {
 			appVersion: "rev-1",
 		});
 		await cache.put(key, {
-			key,
 			data: schoolsCollection,
 			fetchedAt: Date.now(),
 			bytes: 10,
@@ -202,7 +201,6 @@ describe("load with FeatureSourceCache", () => {
 			appVersion: "rev-1",
 		});
 		await cache.put(staleKey, {
-			key: staleKey,
 			data: schoolsCollection,
 			fetchedAt: 1,
 			bytes: 10,
@@ -307,7 +305,6 @@ describe("load with FeatureSourceCache", () => {
 			url: "/geojson/schools.geojson",
 		});
 		await cache.put(key, {
-			key,
 			data: schoolsCollection,
 			fetchedAt: Date.now() - 1000,
 			bytes: 10,
@@ -371,7 +368,6 @@ describe("load with FeatureSourceCache", () => {
 			url: "/geojson/schools.geojson",
 		});
 		await cache.put(key, {
-			key,
 			data: schoolsCollection,
 			fetchedAt: Date.now() - 1000,
 			bytes: 10,

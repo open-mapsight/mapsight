@@ -13,7 +13,6 @@ async function putUrl(
 ) {
 	const key = buildDocumentCacheKey({url, revision});
 	await cache.put(key, {
-		key,
 		data: emptyCollection,
 		fetchedAt: Date.now(),
 		bytes: 8,

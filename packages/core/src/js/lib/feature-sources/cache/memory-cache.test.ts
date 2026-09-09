@@ -18,7 +18,6 @@ describe("createMemoryFeatureSourceCache", () => {
 	it("round-trips a parsed FeatureCollection", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		await cache.put("doc::/a.geojson", {
-			key: "doc::/a.geojson",
 			data: collection,
 			fetchedAt: 100,
 			bytes: 0,
@@ -33,13 +32,11 @@ describe("createMemoryFeatureSourceCache", () => {
 	it("evicts least-recently used entries down to a byte target", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		await cache.put("old", {
-			key: "old",
 			data: collection,
 			fetchedAt: 1,
 			bytes: 100,
 		});
 		await cache.put("new", {
-			key: "new",
 			data: collection,
 			fetchedAt: 2,
 			bytes: 100,

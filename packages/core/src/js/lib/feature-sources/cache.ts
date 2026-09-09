@@ -27,7 +27,10 @@ export {
 	type FreshnessDecision,
 } from "./cache/http-freshness";
 export {singleFlight} from "./cache/single-flight";
-export {warmFeatureSourceUrl} from "./cache/warm";
+export {
+	warmFeatureSourceUrl,
+	type WarmFeatureSourceUrlOptions,
+} from "./cache/warm";
 export type {
 	BuildCacheKeyInput,
 	FeatureSourceCache,

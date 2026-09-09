@@ -524,7 +524,6 @@ async function putDocumentCacheEntry(
 		return;
 	}
 	await cache.put(key, {
-		key,
 		data,
 		fetchedAt: Date.now(),
 		bytes: estimateFeatureSourceBytes(data),

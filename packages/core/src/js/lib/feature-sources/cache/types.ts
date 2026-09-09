@@ -28,7 +28,7 @@ export interface FeatureSourceCache {
 	get(key: string): Promise<FeatureSourceCacheEntry | null>;
 	put(
 		key: string,
-		entry: Omit<FeatureSourceCacheEntry, "tier">,
+		entry: Omit<FeatureSourceCacheEntry, "key" | "tier">,
 	): Promise<void>;
 	delete(key: string): Promise<void>;
 	estimateTotalBytes(): Promise<number>;
