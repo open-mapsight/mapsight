@@ -97,10 +97,24 @@ describe("featureCollectionFeaturesKey", () => {
 		});
 
 		expect(clearedCaption).not.toBe(emptyProperties);
+		expect(clearedCaption).not.toBe(
+			featureCollectionFeaturesKey({
+				features: [
+					{...placeFeature, properties: {caption: "__undefined__"}},
+				],
+			}),
+		);
 		expect(notANumber).not.toBe(
 			featureCollectionFeaturesKey({
 				features: [
 					{...placeFeature, properties: {markerCaption: null}},
+				],
+			}),
+		);
+		expect(notANumber).not.toBe(
+			featureCollectionFeaturesKey({
+				features: [
+					{...placeFeature, properties: {markerCaption: "__NaN__"}},
 				],
 			}),
 		);

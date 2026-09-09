@@ -11,22 +11,48 @@ export function featureCollectionFeaturesCount(
 	return Array.isArray(data?.features) ? data.features.length : undefined;
 }
 
+function encodeFingerprint(value: unknown): unknown {
+	if (value === undefined) {
+		return ["u"];
+	}
+	if (value === null) {
+		return ["z"];
+	}
+	if (typeof value === "string") {
+		return ["s", value];
+	}
+	if (typeof value === "boolean") {
+		return ["b", value];
+	}
+	if (typeof value === "number") {
+		if (Number.isNaN(value)) {
+			return ["n"];
+		}
+		if (value === Infinity) {
+			return ["p"];
+		}
+		if (value === -Infinity) {
+			return ["m"];
+		}
+		return ["d", value];
+	}
+	if (Array.isArray(value)) {
+		return ["a", value.map(encodeFingerprint)];
+	}
+	if (typeof value === "object") {
+		return [
+			"o",
+			Object.entries(value).map(([key, child]) => [
+				key,
+				encodeFingerprint(child),
+			]),
+		];
+	}
+	return ["t", typeof value];
+}
+
 function fingerprintJson(value: unknown): string {
-	return (
-		JSON.stringify(value, (_key, current) => {
-			if (current === undefined) {
-				return "__undefined__";
-			}
-			if (typeof current === "number" && !Number.isFinite(current)) {
-				return Number.isNaN(current)
-					? "__NaN__"
-					: current > 0
-						? "__Infinity__"
-						: "__-Infinity__";
-			}
-			return current;
-		}) ?? "null"
-	);
+	return JSON.stringify(encodeFingerprint(value)) ?? "null";
 }
 
 export function featureCollectionFeaturesKey(
