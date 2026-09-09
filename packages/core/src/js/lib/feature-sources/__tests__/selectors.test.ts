@@ -123,6 +123,41 @@ describe("feature source selectors", () => {
 		const first = selector(firstState);
 		const second = selector(secondState);
 
-		expect(second).toBe(first);
+		expect(second).not.toBe(first);
+		expect(second?.data).toBe(first?.data);
+		expect(second?.ids).toEqual(first?.ids);
+		expect(second?.isLoading).toBe(true);
+		expect(first?.isLoading).not.toBe(true);
+	});
+
+	it("forwards load errors when the features fingerprint is unchanged", () => {
+		const selector = createFilteredFeatureSourceSelector(
+			"featureSources",
+			"places",
+		);
+		const featuresKey = "same-features";
+		selector({
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+				},
+			},
+		} satisfies State);
+
+		const failed = selector({
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+					error: "timeout",
+					isLoading: false,
+				},
+			},
+		} satisfies State);
+
+		expect(failed?.error).toBe("timeout");
+		expect(failed?.data?.features).toEqual([visibleFeature]);
+		expect(failed?.isLoading).toBe(false);
 	});
 });

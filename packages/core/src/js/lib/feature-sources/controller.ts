@@ -117,6 +117,19 @@ function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
 
+function withRestoredFeatureCollectionIndexes(
+	change: Partial<FeatureSourceState>,
+): Partial<FeatureSourceState> {
+	const fingerprint = nextFeatureCollectionFeaturesKey(change.data);
+	return {
+		...change,
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
+		ids: getIdsFromData(change.data ?? null),
+		featuresById: getFeaturesByIdFromData(change.data ?? null),
+	};
+}
+
 function normalizeFeatureSourceData(
 	data: FeatureSourceState["data"],
 ): FeatureSourceState["data"] {
@@ -437,8 +450,10 @@ export class FeatureSourcesController extends BaseController {
 				return mergeSource(
 					state,
 					featureSourceAction.id,
-					undoChange(
-						ensureNonNullable(state[featureSourceAction.id]),
+					withRestoredFeatureCollectionIndexes(
+						undoChange(
+							ensureNonNullable(state[featureSourceAction.id]),
+						),
 					),
 				);
 
@@ -446,8 +461,10 @@ export class FeatureSourcesController extends BaseController {
 				return mergeSource(
 					state,
 					featureSourceAction.id,
-					redoChange(
-						ensureNonNullable(state[featureSourceAction.id]),
+					withRestoredFeatureCollectionIndexes(
+						redoChange(
+							ensureNonNullable(state[featureSourceAction.id]),
+						),
 					),
 				);
 

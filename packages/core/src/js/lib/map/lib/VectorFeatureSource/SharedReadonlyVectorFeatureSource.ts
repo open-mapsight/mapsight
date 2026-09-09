@@ -42,6 +42,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
 	private _format: GeoJSONFormat;
 	private _lastFeaturesKey: string | undefined;
+	private _lastData: FeatureSourceState["data"] | undefined;
 
 	constructor(
 		store: EnhancedStore,
@@ -160,9 +161,12 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
-				// Fallback when the store has no featuresKey (SSR hydrate).
-				// Load/poll ticks with a stable featuresKey are skipped earlier:
-				// createFilteredFeatureSourceSelector reuses its previous state.
+				// Selector reuses the filtered `data` object when featuresKey is
+				// stable. Skip without hashing in that case. Hash is the fallback
+				// when a new collection object arrives (SSR hydrate, tests).
+				if (sourceState.data === this._lastData) {
+					return;
+				}
 				const featuresKey = featureCollectionFeaturesKey(
 					sourceState.data,
 				);
@@ -170,6 +174,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 					featuresKey !== undefined &&
 					featuresKey === this._lastFeaturesKey
 				) {
+					this._lastData = sourceState.data;
 					return;
 				}
 
@@ -185,6 +190,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 
 					updateFeaturesInSource(this, newFeatures);
 					this._lastFeaturesKey = featuresKey;
+					this._lastData = sourceState.data;
 
 					this._listeners.forEach((listener) => listener());
 				} catch (_e) {

@@ -194,6 +194,12 @@ export function createFilteredFeatureSourceSelector(
 			shallowEqualRecords(filters, cache.filters)
 		) {
 			cache.source = source;
+			cache.state = source && {
+				...source,
+				data: cache.state.data,
+				ids: cache.state.ids,
+				featuresById: cache.state.featuresById,
+			};
 			return cache.state;
 		}
 

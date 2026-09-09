@@ -1,7 +1,10 @@
 import {describe, expect, it} from "vitest";
 
 import {ACTION_MERGE} from "@/lib/base/reducer";
-import {FEATURE_SOURCE_DATA_ADD_FEATURE} from "@/lib/feature-sources/actions";
+import {
+	FEATURE_SOURCE_DATA_ADD_FEATURE,
+	FEATURE_SOURCE_DATA_UNDO,
+} from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 import type {Feature} from "@/types";
@@ -144,5 +147,38 @@ describe("FeatureSourcesController", () => {
 				snapshot.data?.features?.map((feature) => feature.id),
 			),
 		).toEqual([["sensor-1"], ["sensor-1", "sensor-2"]]);
+	});
+
+	it("recomputes fingerprint and indexes when undoing", () => {
+		let state: FeatureSourcesState = {
+			editor: {
+				type: "local",
+				enableHistory: true,
+				data: {
+					type: "FeatureCollection",
+					features: [],
+				},
+				lastUpdate: 1,
+				lastActionType: null,
+			},
+		};
+
+		state = controller.reduce(
+			state,
+			addFeatureAction("editor", sensorFeature),
+		);
+		const afterAdd = state.editor;
+		expect(afterAdd?.ids).toEqual(["sensor-1"]);
+		expect(afterAdd?.featuresKey).toBeDefined();
+
+		state = controller.reduce(state, {
+			type: FEATURE_SOURCE_DATA_UNDO,
+			id: "editor",
+		});
+
+		expect(state.editor?.data?.features).toEqual([]);
+		expect(state.editor?.ids).toEqual([]);
+		expect(state.editor?.featuresById).toBeUndefined();
+		expect(state.editor?.featuresKey).not.toBe(afterAdd?.featuresKey);
 	});
 });
