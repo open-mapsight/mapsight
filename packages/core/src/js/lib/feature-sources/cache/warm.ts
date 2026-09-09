@@ -126,6 +126,12 @@ export async function warmFeatureSourceUrl(
 							ttl: options?.ttl,
 						})
 					) {
+						try {
+							await cache.delete(key);
+						} catch {
+							// Optional adapter: warm still reports whether the
+							// document is cached after this response.
+						}
 						return;
 					}
 					await cache.put(key, {

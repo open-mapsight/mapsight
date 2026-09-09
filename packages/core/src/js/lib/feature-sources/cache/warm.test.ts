@@ -222,6 +222,32 @@ describe("warmFeatureSourceUrl", () => {
 		expect(fetch).toHaveBeenCalledOnce();
 	});
 
+	it("drops a stale entry when revalidation must not persist", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildDocumentCacheKey({
+			url: "/schools.geojson",
+			revision: "rev-1",
+		});
+		await cache.put(key, {
+			data: collection,
+			fetchedAt: Date.now() - 120_000,
+			bytes: 8,
+			etag: '"v1"',
+			cacheControl: "max-age=60",
+		});
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "no-store"})),
+		);
+
+		await expect(
+			warmFeatureSourceUrl(cache, "/schools.geojson", "rev-1", {
+				shared: false,
+			}),
+		).resolves.toBe(false);
+		expect(await cache.get(key)).toBeNull();
+	});
+
 	it("does not share a private response across concurrent shared warms", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		vi.stubGlobal(
