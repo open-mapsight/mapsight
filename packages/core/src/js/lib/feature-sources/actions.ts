@@ -9,6 +9,7 @@ import {
 } from "@/lib/feature-sources/cache/http-freshness";
 import {
 	type CacheWriteGeneration,
+	bumpDocumentCacheGeneration,
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
 	singleFlight,
@@ -738,6 +739,10 @@ async function loadWithCache(
 
 		if (useCache !== USE_CACHE_ONLY) {
 			if (forceRefresh) {
+				await withDocumentCacheWrite(cache, () => {
+					bumpDocumentCacheGeneration(cache, [url]);
+					return Promise.resolve();
+				});
 				return revalidateDocumentCache(extra, key, null, true, url);
 			}
 			return singleFlight(cache, key, async () => {

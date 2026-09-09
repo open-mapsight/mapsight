@@ -493,7 +493,7 @@ describe("load with FeatureSourceCache", () => {
 		});
 	});
 
-	it("does not join an in-flight revalidate when forceRefresh is set", async () => {
+	it("does not let an older in-flight revalidate overwrite a forceRefresh", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const key = buildCacheKey({
 			controllerName,
@@ -508,38 +508,68 @@ describe("load with FeatureSourceCache", () => {
 			cacheControl: "max-age=0, stale-while-revalidate=60",
 		});
 
-		const fetchStarted = new Promise<void>((resolveStarted) => {
-			vi.stubGlobal(
-				"fetch",
-				vi.fn(
-					() =>
-						new Promise(() => {
-							resolveStarted();
-						}),
-				),
-			);
+		const resolvers: Array<(value: unknown) => void> = [];
+		let firstStarted: () => void = () => undefined;
+		const firstFetchStarted = new Promise<void>((resolve) => {
+			firstStarted = resolve;
 		});
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(
+				() =>
+					new Promise((resolve) => {
+						resolvers.push(resolve);
+						if (resolvers.length === 1) {
+							firstStarted();
+						}
+					}),
+			),
+		);
 
 		void load(controllerName, "schools")(vi.fn(), () => xhrJsonState(), {
 			featureSourceCache: cache,
 		});
-		await fetchStarted;
-		const forceDispatch = vi.fn();
-		void load(controllerName, "schools", {forceRefresh: true})(
-			forceDispatch,
-			() => xhrJsonState(),
-			{featureSourceCache: cache},
-		);
+		await firstFetchStarted;
+		const forceLoad = load(controllerName, "schools", {
+			forceRefresh: true,
+		})(vi.fn(), () => xhrJsonState(), {featureSourceCache: cache});
 		await vi.waitFor(() => {
-			expect(fetch).toHaveBeenCalledTimes(2);
+			expect(resolvers).toHaveLength(2);
 		});
-		expect(fetch).toHaveBeenNthCalledWith(
-			2,
-			expect.stringContaining("/geojson/schools.geojson"),
-			expect.objectContaining({
-				headers: {},
-			}),
-		);
+
+		resolvers[1]!({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "ETag" ? '"v3"' : null;
+				},
+			},
+			json: () =>
+				Promise.resolve({
+					type: "FeatureCollection",
+					features: [],
+				}),
+		});
+		await forceLoad;
+		expect((await cache.get(key))?.etag).toBe('"v3"');
+
+		resolvers[0]!({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "ETag" ? '"v2"' : null;
+				},
+			},
+			json: () =>
+				Promise.resolve({
+					type: "FeatureCollection",
+					features: [{id: "stale"}],
+				}),
+		});
+		await Promise.resolve();
+		expect((await cache.get(key))?.etag).toBe('"v3"');
 	});
 
 	it("blocks on must-revalidate and sends If-None-Match", async () => {
