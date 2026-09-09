@@ -324,6 +324,90 @@ describe("load with FeatureSourceCache", () => {
 		expect(fetch).toHaveBeenCalledOnce();
 	});
 
+	it("does not share a private response across shared-cache waiters", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		let fetches = 0;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => {
+				fetches += 1;
+				const id = `school-${fetches}`;
+				return {
+					ok: true,
+					status: 200,
+					headers: {
+						get(name: string) {
+							return name === "Cache-Control"
+								? "max-age=60, private"
+								: null;
+						},
+					},
+					json: () =>
+						Promise.resolve({
+							type: "FeatureCollection" as const,
+							features: [
+								{
+									id,
+									type: "Feature" as const,
+									properties: {title: id},
+									geometry: {
+										type: "Point" as const,
+										coordinates: [10, 52],
+									},
+								},
+							],
+						}),
+				};
+			}),
+		);
+
+		const extra = {
+			featureSourceCache: cache,
+			sharedCache: true,
+		};
+		const firstDispatch = vi.fn();
+		const secondDispatch = vi.fn();
+		await Promise.all([
+			load(controllerName, "schools")(
+				firstDispatch,
+				() => xhrJsonState(),
+				extra,
+			),
+			load(controllerName, "schools")(
+				secondDispatch,
+				() => xhrJsonState(),
+				extra,
+			),
+		]);
+
+		expect(fetches).toBe(2);
+		const firstData = firstDispatch.mock.calls
+			.map(
+				([action]) =>
+					action as {
+						type?: string;
+						data?: {features?: {id?: string}[]};
+					},
+			)
+			.find(
+				(action) => action.type === LOAD_FEATURE_SOURCE_SUCCESS,
+			)?.data;
+		const secondData = secondDispatch.mock.calls
+			.map(
+				([action]) =>
+					action as {
+						type?: string;
+						data?: {features?: {id?: string}[]};
+					},
+			)
+			.find(
+				(action) => action.type === LOAD_FEATURE_SOURCE_SUCCESS,
+			)?.data;
+		expect(firstData?.features?.[0]?.id).toBe("school-1");
+		expect(secondData?.features?.[0]?.id).toBe("school-2");
+		expect(cache.keys()).toEqual([]);
+	});
+
 	it("does not dispatch a warm boolean as feature-source data", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		let resolveFetch: (value: {
@@ -960,5 +1044,56 @@ describe("load with FeatureSourceCache", () => {
 			).toEqual(schoolsCollection);
 		});
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it("lets app thunk middleware see flagged load() when extraArgument is omitted", async () => {
+		const seen: unknown[] = [];
+		const hostThunk: Middleware =
+			({dispatch, getState}) =>
+			(next) =>
+			(action) => {
+				if (typeof action === "function") {
+					seen.push(action);
+					return (
+						action as (
+							dispatch: unknown,
+							getState: unknown,
+						) => unknown
+					)(dispatch, getState);
+				}
+				return next(action);
+			};
+
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				headers: emptyHeaders(),
+				json: () => Promise.resolve(schoolsCollection),
+			})),
+		);
+
+		const store = createMapsightStore(
+			{featureSources: new FeatureSourcesController("featureSources")},
+			{},
+			xhrJsonState(),
+			applyMiddleware(hostThunk),
+		);
+
+		store.dispatch(load(controllerName, "schools"));
+
+		await vi.waitFor(() => {
+			expect(seen).toHaveLength(1);
+		});
+		await vi.waitFor(() => {
+			expect(
+				(
+					store.getState() as {
+						featureSources: FeatureSourcesState;
+					}
+				).featureSources.schools?.data,
+			).toEqual(schoolsCollection);
+		});
 	});
 });

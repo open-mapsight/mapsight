@@ -133,3 +133,53 @@ export function singleFlight<T>(
 	state.inflight.set(key, pending);
 	return pending;
 }
+
+type ShareableFlightResult<T> = {share: true; value: T} | {share: false};
+
+/**
+ * Like `singleFlight`, but waiters do not observe `value` unless the leader
+ * marked the result shareable. Unshareable bodies stay with the leader;
+ * waiters run `load` themselves.
+ */
+export async function singleFlightIfShareable<T>(
+	cache: FeatureSourceCache,
+	key: string,
+	load: () => Promise<{value: T; share: boolean}>,
+): Promise<T> {
+	const state = flightState(cache);
+	const existing = state.inflight.get(key);
+	if (existing) {
+		const joined = (await existing) as ShareableFlightResult<T>;
+		if (joined.share) {
+			return joined.value;
+		}
+		const own = await load();
+		return own.value;
+	}
+
+	let local: T | undefined;
+	let hasLocal = false;
+	const pending = (async (): Promise<ShareableFlightResult<T>> => {
+		const result = await load();
+		if (result.share) {
+			return {share: true as const, value: result.value};
+		}
+		local = result.value;
+		hasLocal = true;
+		return {share: false as const};
+	})().finally(() => {
+		if (state.inflight.get(key) === pending) {
+			state.inflight.delete(key);
+		}
+	});
+	state.inflight.set(key, pending);
+	const published = await pending;
+	if (published.share) {
+		return published.value;
+	}
+	if (hasLocal) {
+		return local as T;
+	}
+	const own = await load();
+	return own.value;
+}

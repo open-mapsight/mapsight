@@ -195,4 +195,28 @@ describe("warmFeatureSourceUrl", () => {
 		]);
 		expect(fetch).toHaveBeenCalledOnce();
 	});
+
+	it("does not share a private response across concurrent shared warms", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "max-age=60, private"})),
+		);
+
+		const first = warmFeatureSourceUrl(cache, "/schools.geojson", "rev-1", {
+			shared: true,
+		});
+		const second = warmFeatureSourceUrl(
+			cache,
+			"/schools.geojson",
+			"rev-1",
+			{shared: true},
+		);
+		await expect(Promise.all([first, second])).resolves.toEqual([
+			false,
+			false,
+		]);
+		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(cache.keys()).toEqual([]);
+	});
 });

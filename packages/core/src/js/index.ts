@@ -121,14 +121,16 @@ export function createMapsightStore<
 		batchDispatchMiddleware,
 	);
 
-	// Core async middleware must wrap `appEnhancer`. UI installs `redux-thunk`
-	// there; if thunk is outer, it intercepts flagged `load()` functions and
-	// calls them without this `extraArgument`, so FeatureSourceCache is unused.
-	const enhancers = [
-		coreEnhancer,
-		coreMiddlewareEnhancer,
-		appEnhancer,
-	].filter(isNonNullable);
+	// When `extraArgument` is set, core async middleware must wrap `appEnhancer`.
+	// UI installs `redux-thunk` there; if thunk is outer, it intercepts flagged
+	// `load()` functions and calls them without this `extraArgument`.
+	// When it is omitted, keep the historical order so an app-provided thunk
+	// still sees flagged Mapsight thunks first.
+	const enhancers = (
+		extraArgument === undefined
+			? [coreEnhancer, appEnhancer, coreMiddlewareEnhancer]
+			: [coreEnhancer, coreMiddlewareEnhancer, appEnhancer]
+	).filter(isNonNullable);
 
 	let enhancer: StoreEnhancer;
 

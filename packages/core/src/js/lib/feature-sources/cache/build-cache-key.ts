@@ -45,6 +45,6 @@ export function buildCacheKey(input: BuildCacheKeyInput): string {
 		});
 	}
 
-	const revision = input.appVersion ?? "";
-	return `src:${revision}:${input.controllerName}:${input.featureSourceId}`;
+	const revision = encodeURIComponent(input.appVersion ?? "");
+	return `src:${revision}:${encodeURIComponent(input.controllerName)}:${encodeURIComponent(input.featureSourceId)}`;
 }

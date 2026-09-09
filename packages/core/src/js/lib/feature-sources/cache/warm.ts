@@ -2,12 +2,13 @@ import {buildDocumentCacheKey} from "@/lib/feature-sources/cache/build-cache-key
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	type CacheTtlPolicy,
+	isShareableCachedResponse,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
 import {
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
-	singleFlight,
+	singleFlightIfShareable,
 	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
@@ -33,8 +34,9 @@ function defaultSharedCache(): boolean {
  * Fetch one xhr-json URL through the shared loader and `cache.put`.
  * Failed entries stay cold. Returns whether the document is now cached.
  *
- * Shares the same `singleFlight` slot as `load()` and returns the document
- * body from that flight so a concurrent load cannot observe `true`.
+ * Shares the same flight slot as `load()` and returns the document body from
+ * that flight so a concurrent load cannot observe `true`. Shared-cache
+ * waiters do not observe `private` / `no-store` bodies.
  */
 export async function warmFeatureSourceUrl(
 	cache: FeatureSourceCache,
@@ -44,16 +46,26 @@ export async function warmFeatureSourceUrl(
 ): Promise<boolean> {
 	const resolvedUrl = resolveXhrJsonUrl(url);
 	const key = buildDocumentCacheKey({url: resolvedUrl, revision});
+	const shared = options?.shared ?? defaultSharedCache();
 	try {
-		const data = await singleFlight(cache, key, async () => {
+		const data = await singleFlightIfShareable(cache, key, async () => {
 			const existing = await cache.get(key).catch(() => null);
 			if (existing) {
-				return existing.data;
+				return {
+					value: existing.data,
+					share: isShareableCachedResponse({
+						cacheControl: existing.cacheControl,
+						shared,
+					}),
+				};
 			}
 
-			const shared = options?.shared ?? defaultSharedCache();
 			const generation = captureCacheWriteGeneration(cache, resolvedUrl);
 			const result = await fetchXhrJson(resolvedUrl);
+			const share = isShareableCachedResponse({
+				cacheControl: result.cacheControl,
+				shared,
+			});
 			await withDocumentCacheWrite(cache, async () => {
 				if (
 					!isCacheWriteGenerationCurrent(
@@ -90,7 +102,7 @@ export async function warmFeatureSourceUrl(
 					expires: result.expires,
 				});
 			});
-			return result.data;
+			return {value: result.data, share};
 		});
 		if (data === undefined) {
 			return false;

@@ -272,6 +272,22 @@ export function shouldPersistDocumentCache(input: {
 	return lifetimeSec * 1000 >= ttl.minMs;
 }
 
+/**
+ * Whether concurrent waiters on a shared cache may observe this response.
+ * `no-store` and shared `private` are not stored; they must not be handed to
+ * other SSR renders through `singleFlight` either.
+ */
+export function isShareableCachedResponse(input: {
+	cacheControl?: string;
+	shared?: boolean;
+}): boolean {
+	const directives = parseCacheControl(input.cacheControl);
+	if (!(input.shared ?? false)) {
+		return true;
+	}
+	return !directives.noStore && !directives.isPrivate;
+}
+
 function effectiveFreshnessLifetimeSec(
 	originLifetimeSec: number | undefined,
 	ttl: CacheTtlPolicy,

@@ -5,6 +5,7 @@ import {
 	allowsStaleOnError,
 	correctedInitialAgeSec,
 	evaluateFreshness,
+	isShareableCachedResponse,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
 import {
@@ -12,7 +13,7 @@ import {
 	bumpDocumentCacheGeneration,
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
-	singleFlight,
+	singleFlightIfShareable,
 	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {
@@ -605,7 +606,10 @@ async function revalidateDocumentCache(
 	entry: FeatureSourceCacheEntry | null,
 	forceRefresh: boolean,
 	url: string,
-): Promise<FeatureSourceData | undefined> {
+): Promise<{
+	data: FeatureSourceData | undefined;
+	share: boolean;
+}> {
 	const cache = extra.featureSourceCache;
 	const generation = cache
 		? captureCacheWriteGeneration(cache, url)
@@ -613,6 +617,14 @@ async function revalidateDocumentCache(
 	const result = await xhrJson.fetchXhrJson(url, {
 		ifNoneMatch: forceRefresh ? undefined : entry?.etag,
 		ifModifiedSince: forceRefresh ? undefined : entry?.lastModified,
+	});
+	const cacheControl =
+		result.notModified && entry
+			? (result.cacheControl ?? entry.cacheControl)
+			: result.cacheControl;
+	const share = isShareableCachedResponse({
+		cacheControl,
+		shared: isSharedDocumentCache(extra),
 	});
 
 	if (result.notModified && entry) {
@@ -634,11 +646,11 @@ async function revalidateDocumentCache(
 			generation,
 			url,
 		);
-		return entry.data;
+		return {data: entry.data, share};
 	}
 
 	if (!result.data) {
-		return entry?.data;
+		return {data: entry?.data, share};
 	}
 
 	await putDocumentCacheEntry(
@@ -649,7 +661,21 @@ async function revalidateDocumentCache(
 		generation,
 		url,
 	);
-	return result.data;
+	return {data: result.data, share};
+}
+
+function documentCacheFlight(
+	cache: FeatureSourceCache,
+	key: string,
+	load: () => Promise<{
+		data: FeatureSourceData | undefined;
+		share: boolean;
+	}>,
+): Promise<FeatureSourceData | undefined> {
+	return singleFlightIfShareable(cache, key, async () => {
+		const result = await load();
+		return {value: result.data, share: result.share};
+	});
 }
 
 async function readDocumentCacheEntry(
@@ -709,13 +735,13 @@ async function loadWithCache(
 				return entry.data;
 			}
 			if (decision === "stale-while-revalidate") {
-				void singleFlight(cache, key, () =>
+				void documentCacheFlight(cache, key, () =>
 					revalidateDocumentCache(extra, key, entry, false, url),
 				).catch(() => undefined);
 				return entry.data;
 			}
 			try {
-				return await singleFlight(cache, key, () =>
+				return await documentCacheFlight(cache, key, () =>
 					revalidateDocumentCache(extra, key, entry, false, url),
 				);
 			} catch (error) {
@@ -742,17 +768,23 @@ async function loadWithCache(
 				let pending: Promise<FeatureSourceData | undefined>;
 				await withDocumentCacheWrite(cache, () => {
 					bumpDocumentCacheGeneration(cache, [url]);
-					pending = singleFlight(cache, key, () =>
+					pending = documentCacheFlight(cache, key, () =>
 						revalidateDocumentCache(extra, key, null, true, url),
 					);
 					return Promise.resolve();
 				});
 				return pending!;
 			}
-			return singleFlight(cache, key, async () => {
+			return documentCacheFlight(cache, key, async () => {
 				const replay = await readDocumentCacheEntry(cache, key);
 				if (replay) {
-					return replay.data;
+					return {
+						data: replay.data,
+						share: isShareableCachedResponse({
+							cacheControl: replay.cacheControl,
+							shared: isSharedDocumentCache(extra),
+						}),
+					};
 				}
 				return revalidateDocumentCache(extra, key, null, false, url);
 			});

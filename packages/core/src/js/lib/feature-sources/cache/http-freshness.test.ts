@@ -5,6 +5,7 @@ import {
 	allowsStaleOnError,
 	correctedInitialAgeSec,
 	evaluateFreshness,
+	isShareableCachedResponse,
 	parseCacheControl,
 	shouldPersistDocumentCache,
 } from "./http-freshness";
@@ -354,6 +355,47 @@ describe("allowsStaleOnError", () => {
 				shared: true,
 			}),
 		).toBe(false);
+	});
+});
+
+describe("isShareableCachedResponse", () => {
+	it("shares public responses on a shared cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60",
+				shared: true,
+			}),
+		).toBe(true);
+	});
+
+	it("does not share no-store or private responses on a shared cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "no-store",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+	});
+
+	it("still coalesces private and no-store on a private cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "no-store",
+				shared: false,
+			}),
+		).toBe(true);
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60, private",
+				shared: false,
+			}),
+		).toBe(true);
 	});
 });
 

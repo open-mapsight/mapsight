@@ -110,6 +110,24 @@ describe("buildCacheKey", () => {
 				featureSourceId: "userGeolocation",
 				appVersion: "v2",
 			}),
-		).toBe("src:v2:featureSources:userGeolocation");
+		).toBe(
+			`src:${encodeURIComponent("v2")}:${encodeURIComponent("featureSources")}:${encodeURIComponent("userGeolocation")}`,
+		);
+	});
+
+	it("does not collide when placement key components contain colons", () => {
+		expect(
+			buildCacheKey({
+				controllerName: "c",
+				featureSourceId: "d",
+				appVersion: "a:b",
+			}),
+		).not.toBe(
+			buildCacheKey({
+				controllerName: "b:c",
+				featureSourceId: "d",
+				appVersion: "a",
+			}),
+		);
 	});
 });
