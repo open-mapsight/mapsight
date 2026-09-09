@@ -1,6 +1,7 @@
 export {default} from "./place-actions";
 export {default as PlaceActions} from "./place-actions";
 export {default as FeaturePlaceActions} from "./feature-place-actions";
+export {mapExtentFromFeature} from "./map-extent-from-feature";
 export {
 	resolveFeaturePermalink,
 	resolveFeatureSchema,
@@ -35,5 +36,6 @@ export type {
 	PlaceActionsResolveContext,
 	ResolvedNavTarget,
 	SharePlaceAction,
+	ShowOnMapPlaceAction,
 	WebsitePlaceAction,
 } from "./types";

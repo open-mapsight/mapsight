@@ -8,12 +8,22 @@ import {
 	useRef,
 	useState,
 } from "react";
+import {useDispatch, useSelector} from "react-redux";
 
+import {animate} from "@mapsight/core/lib/map/actions";
+
+import {MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
+import {isMapOutOfViewportSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
+import {
+	APP_EVENT_SCROLL_TO_MAP,
+	useAppChannelDispatchEvent,
+} from "../helping/app-channel";
 import NativeDialog from "../native-dialog";
 import OutboundLink from "../outbound-link";
 import PopoverDialog from "../popover-dialog";
+import {mapExtentFromFeature} from "./map-extent-from-feature";
 import {resolvePlaceActions} from "./resolve-place-actions";
 import type {PlaceAction, PlaceActionsConfig} from "./types";
 
@@ -44,6 +54,36 @@ function classNames(
 	...parts: Array<string | false | null | undefined>
 ): string {
 	return parts.filter(Boolean).join(" ");
+}
+
+function ActionIcon({icon}: {icon?: ReactNode}): ReactElement {
+	return <span className="ms3-place-actions__icon">{icon}</span>;
+}
+
+type ActionChrome = {
+	title: string;
+	ariaLabel?: string;
+	visible: ReactNode;
+	iconOnly: boolean;
+};
+
+function actionChrome(
+	tooltip: string,
+	label: ReactNode | undefined,
+): ActionChrome {
+	if (label != null) {
+		return {
+			title: tooltip,
+			visible: label,
+			iconOnly: false,
+		};
+	}
+	return {
+		title: tooltip,
+		ariaLabel: tooltip,
+		visible: null,
+		iconOnly: true,
+	};
 }
 
 export type PlaceActionsRootProps = {
@@ -149,20 +189,27 @@ function Share({
 		return null;
 	}
 
-	const text = label ?? translate("ui.place-actions.share");
+	const chrome = actionChrome(
+		translate("ui.place-actions.share.tooltip"),
+		label,
+	);
 	const permalinkLabel = translate("ui.place-actions.share.permalink");
 
 	return (
 		<span className={classNames("ms3-place-actions__share", className)}>
 			<T
 				type={T === "button" ? "button" : undefined}
-				className="ms3-place-actions__item ms3-place-actions__share-button"
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__share-button",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+				)}
+				title={chrome.title}
+				aria-label={chrome.ariaLabel}
 				onClick={onShare}
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
-				{text}
+				<ActionIcon icon={icon} />
+				{chrome.visible}
 			</T>
 			<a
 				className="ms3-place-actions__permalink ms3-visuallyhidden"
@@ -196,6 +243,67 @@ function Share({
 	);
 }
 
+function ShowOnMapButton({
+	feature,
+	as: T = "button",
+	className,
+	label,
+	icon,
+}: PlaceActionPartProps & {feature: MapsightUiFeature}): ReactElement {
+	const dispatch = useDispatch();
+	const isMapOutOfViewport = useSelector(isMapOutOfViewportSelector);
+	const dispatchAppChannelEvent = useAppChannelDispatchEvent();
+
+	const onShowOnMap = useCallback(() => {
+		const bounds = mapExtentFromFeature(feature);
+		if (bounds) {
+			dispatch(
+				animate(MAP, {
+					bounds,
+					duration: 500,
+					maxZoom: 17,
+					padding: [60, 60, 60, 60],
+				}),
+			);
+		}
+		if (isMapOutOfViewport) {
+			dispatchAppChannelEvent(new Event(APP_EVENT_SCROLL_TO_MAP));
+		}
+	}, [dispatch, dispatchAppChannelEvent, feature, isMapOutOfViewport]);
+
+	const chrome = actionChrome(
+		translate("ui.place-actions.show-on-map.tooltip"),
+		label,
+	);
+
+	return (
+		<T
+			type={T === "button" ? "button" : undefined}
+			className={classNames(
+				"ms3-place-actions__item",
+				"ms3-place-actions__show-on-map",
+				chrome.iconOnly && "ms3-place-actions__item--icon-only",
+				className,
+			)}
+			title={chrome.title}
+			aria-label={chrome.ariaLabel}
+			onClick={onShowOnMap}
+		>
+			<ActionIcon icon={icon} />
+			{chrome.visible}
+		</T>
+	);
+}
+
+function ShowOnMap(props: PlaceActionPartProps): ReactElement | null {
+	const ctx = usePlaceActions();
+	const showOnMap = ctx ? actionOf(ctx.actions, "showOnMap") : null;
+	if (!showOnMap || !ctx) {
+		return null;
+	}
+	return <ShowOnMapButton {...props} feature={ctx.feature} />;
+}
+
 function Navigate({
 	as: T = "button",
 	className,
@@ -212,23 +320,30 @@ function Navigate({
 		return null;
 	}
 
-	const text = label ?? translate("ui.place-actions.navigate");
+	const chrome = actionChrome(
+		translate("ui.place-actions.navigate.tooltip"),
+		label,
+	);
 
 	return (
 		<span className={classNames("ms3-place-actions__navigate", className)}>
 			<T
 				ref={T === "button" ? triggerRef : undefined}
 				type={T === "button" ? "button" : undefined}
-				className="ms3-place-actions__item ms3-place-actions__navigate-button"
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__navigate-button",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+				)}
+				title={chrome.title}
+				aria-label={chrome.ariaLabel}
 				aria-expanded={open}
 				aria-haspopup="dialog"
 				aria-controls={open ? menuId : undefined}
 				onClick={() => setOpen((current) => !current)}
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
-				{text}
+				<ActionIcon icon={icon} />
+				{chrome.visible}
 			</T>
 			<PopoverDialog
 				isOpen={open}
@@ -269,7 +384,10 @@ function Website({
 		return null;
 	}
 
-	const text = label ?? translate("ui.place-actions.website");
+	const chrome = actionChrome(
+		translate("ui.place-actions.website.tooltip"),
+		label,
+	);
 
 	return (
 		<T
@@ -277,15 +395,16 @@ function Website({
 			className={classNames(
 				"ms3-place-actions__item",
 				"ms3-place-actions__website",
+				chrome.iconOnly && "ms3-place-actions__item--icon-only",
 				className,
 			)}
+			title={chrome.title}
+			aria-label={chrome.ariaLabel}
 			rel="external noreferrer noopener"
 			target="_blank"
 		>
-			{icon ? (
-				<span className="ms3-place-actions__icon">{icon}</span>
-			) : null}
-			{text}
+			<ActionIcon icon={icon} />
+			{chrome.visible}
 		</T>
 	);
 }
@@ -303,9 +422,11 @@ function Call({
 		return null;
 	}
 
-	const text = label ?? translate("ui.place-actions.call");
-	const accessibleName =
-		typeof text === "string" ? text : translate("ui.place-actions.call");
+	const tooltip = `${translate("ui.place-actions.call.tooltip")}: ${call.telephone}`;
+	const chrome = actionChrome(tooltip, label);
+	const hideTelephone =
+		!chrome.iconOnly &&
+		!(typeof label === "string" && label.includes(call.telephone));
 
 	return (
 		<T
@@ -313,14 +434,17 @@ function Call({
 			className={classNames(
 				"ms3-place-actions__item",
 				"ms3-place-actions__call",
+				chrome.iconOnly && "ms3-place-actions__item--icon-only",
 				className,
 			)}
-			aria-label={`${accessibleName} ${call.telephone}`}
+			title={tooltip}
+			aria-label={chrome.ariaLabel}
 		>
-			{icon ? (
-				<span className="ms3-place-actions__icon">{icon}</span>
+			<ActionIcon icon={icon} />
+			{chrome.visible}
+			{hideTelephone ? (
+				<span className="ms3-visuallyhidden">{`: ${call.telephone}`}</span>
 			) : null}
-			{text}
 		</T>
 	);
 }
@@ -328,6 +452,7 @@ function Call({
 const PlaceActions = {
 	Root,
 	Share,
+	ShowOnMap,
 	Navigate,
 	Website,
 	Call,

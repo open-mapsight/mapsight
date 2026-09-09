@@ -108,7 +108,11 @@ describe("resolvePlaceActions", () => {
 					},
 				},
 			}),
-			{permalink: () => null, navigation: {fromGeometry: false}},
+			{
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			},
 		);
 
 		expect(actions).toEqual([
@@ -129,7 +133,11 @@ describe("resolvePlaceActions", () => {
 					detailsUrl: "/cms/schlosspark",
 				},
 			}),
-			{permalink: () => null, navigation: {fromGeometry: false}},
+			{
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			},
 		);
 
 		expect(actions).toEqual([]);
@@ -243,7 +251,11 @@ describe("resolvePlaceActions", () => {
 					},
 				},
 			}),
-			{permalink: () => null, navigation: {fromGeometry: false}},
+			{
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			},
 		);
 
 		expect(actions).toEqual([]);
@@ -293,6 +305,34 @@ describe("resolvePlaceActions", () => {
 		).toEqual(["google", "apple"]);
 	});
 
+	it("adds show on map when the feature has a point", () => {
+		const actions = resolvePlaceActions(feature(), {
+			permalink: () => null,
+			navigation: {fromGeometry: false},
+		});
+
+		expect(actions.find((action) => action.kind === "showOnMap")).toEqual({
+			kind: "showOnMap",
+		});
+	});
+
+	it("omits show on map without geometry or when disabled", () => {
+		expect(
+			resolvePlaceActions(
+				feature({geometry: {type: "Point", coordinates: []}}),
+				{permalink: () => null, navigation: {fromGeometry: false}},
+			).find((action) => action.kind === "showOnMap"),
+		).toBeUndefined();
+
+		expect(
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "showOnMap"),
+		).toBeUndefined();
+	});
+
 	it("omits navigate when geometry is unused and no address is set", () => {
 		const actions = resolvePlaceActions(feature(), {
 			permalink: () => null,
@@ -315,6 +355,7 @@ describe("resolvePlaceActions", () => {
 			}),
 			{
 				permalink: () => null,
+				showOnMap: false,
 				navigation: {fromGeometry: false},
 				schema: (poi) => ({
 					url: poi.properties.website as string,

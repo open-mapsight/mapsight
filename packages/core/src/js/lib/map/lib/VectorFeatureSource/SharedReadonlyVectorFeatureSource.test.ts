@@ -34,7 +34,10 @@ function createStore(initial: State) {
 	};
 }
 
-function sourceState(features: (typeof placeFeature)[]): State {
+function sourceState(
+	features: (typeof placeFeature)[],
+	extras?: {buildTimestamp?: string; crs?: unknown},
+): State {
 	return {
 		featureSources: {
 			parking: {
@@ -43,6 +46,10 @@ function sourceState(features: (typeof placeFeature)[]): State {
 				filters: [],
 				data: {
 					type: "FeatureCollection",
+					...(extras?.buildTimestamp
+						? {buildTimestamp: extras.buildTimestamp}
+						: {}),
+					...(extras && "crs" in extras ? {crs: extras.crs} : {}),
 					features,
 				},
 				lastUpdate: 1,
@@ -134,5 +141,101 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 		);
 
 		expect(again).toHaveBeenCalled();
+	});
+
+	it("skips readFeatures when only collection metadata changed", () => {
+		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
+		const store = createStore(
+			sourceState([placeFeature], {buildTimestamp: "t1"}),
+		);
+		const onUpdate = vi.fn();
+
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			onUpdate,
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(1);
+
+		store.setState(sourceState([placeFeature], {buildTimestamp: "t2"}));
+
+		expect(readFeatures).toHaveBeenCalledTimes(1);
+		expect(onUpdate).toHaveBeenCalledTimes(1);
+	});
+
+	it("reads again when the collection crs changes", () => {
+		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
+		const store = createStore(
+			sourceState([placeFeature], {
+				crs: {type: "name", properties: {name: "EPSG:4326"}},
+			}),
+		);
+
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			vi.fn(),
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(1);
+
+		store.setState(
+			sourceState([placeFeature], {
+				crs: {type: "name", properties: {name: "EPSG:25832"}},
+			}),
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(2);
+	});
+
+	it("reads again when a feature actually changes", () => {
+		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
+		const store = createStore(
+			sourceState([placeFeature], {buildTimestamp: "t1"}),
+		);
+		const onUpdate = vi.fn();
+
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			onUpdate,
+		);
+
+		store.setState(
+			sourceState(
+				[
+					{
+						...placeFeature,
+						properties: {
+							...placeFeature.properties,
+							markerCaption: "208",
+						},
+					},
+				],
+				{buildTimestamp: "t2"},
+			),
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(2);
+		expect(onUpdate).toHaveBeenCalledTimes(2);
 	});
 });

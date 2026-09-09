@@ -20,7 +20,7 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-redux": "catalog:",
-		"react-router-dom": "^7.18.2",
+		"react-router-dom": "^7.18.3",
 		"react-select": "^5.10.2",
 		"reselect": "catalog:",
 		"tailwindcss": "catalog:"
@@ -35,7 +35,7 @@
 		"mkdirp": "^3.0.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^6.1.3",
-		"terser": "^5.50.0",
+		"terser": "^5.51.2",
 		"typescript": "catalog:",
 		"vite": "^8.2.2"
 	},

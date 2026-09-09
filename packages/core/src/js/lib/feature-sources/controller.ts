@@ -29,6 +29,7 @@ import {
 	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
 	setDataOrError,
 } from "@/lib/feature-sources/actions";
+import {nextFeatureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
 import {
 	createCombinedFeatureSourceSelector,
 	getCombinedFeatureSourceBindings,
@@ -116,6 +117,19 @@ function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
 
+function withRestoredFeatureCollectionIndexes(
+	change: Partial<FeatureSourceState>,
+): Partial<FeatureSourceState> {
+	const fingerprint = nextFeatureCollectionFeaturesKey(change.data);
+	return {
+		...change,
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
+		ids: getIdsFromData(change.data ?? null),
+		featuresById: getFeaturesByIdFromData(change.data ?? null),
+	};
+}
+
 function normalizeFeatureSourceData(
 	data: FeatureSourceState["data"],
 ): FeatureSourceState["data"] {
@@ -152,9 +166,13 @@ function normalizeFeatureSourceState(
 			? null
 			: normalizeFeatureSourceData(source.data);
 
+	const fingerprint = nextFeatureCollectionFeaturesKey(data);
+
 	return {
 		...source,
 		data,
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
 		ids: getIdsFromData(data),
 		featuresById: getFeaturesByIdFromData(data),
 		lastUpdate: source.lastUpdate === undefined ? null : source.lastUpdate,
@@ -172,6 +190,7 @@ function shouldNormalizeFeatureSourceState(source: FeatureSourceState) {
 	return (
 		source.data === undefined ||
 		source.data !== data ||
+		(data?.features !== undefined && source.featuresKey === undefined) ||
 		!isEqual(source.ids, getIdsFromData(data)) ||
 		!isEqual(source.featuresById, getFeaturesByIdFromData(data)) ||
 		source.lastUpdate === undefined ||
@@ -222,8 +241,12 @@ function updateSourceData(
 	const oldData = getSourceData(source);
 	const newData = normalizeFeatureSourceData(reduceData(oldData));
 
+	const fingerprint = nextFeatureCollectionFeaturesKey(newData);
+
 	return mergeSource(state, id, {
 		data: newData,
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
 		ids: getIdsFromData(newData),
 		featuresById: getFeaturesByIdFromData(newData),
 		error: undefined,
@@ -238,6 +261,7 @@ function reduceUncontrolledFeatureSourceChanges(
 	state: FeatureSourcesState,
 	oldState: FeatureSourcesState = {},
 ) {
+	let next = state;
 	for (const [id, source] of Object.entries(state)) {
 		const oldSource = oldState[id];
 		if (
@@ -245,11 +269,35 @@ function reduceUncontrolledFeatureSourceChanges(
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
 		) {
-			return mergeSource(state, id, {data: null});
+			next = mergeSource(next, id, {
+				data: null,
+				featuresKey: undefined,
+				featuresCount: undefined,
+			});
 		}
 	}
 
-	return state;
+	for (const [id, source] of Object.entries(next)) {
+		const oldSource = oldState[id];
+		if (!oldSource || oldSource.data === source.data) {
+			continue;
+		}
+
+		const fingerprint = nextFeatureCollectionFeaturesKey(source.data);
+		if (
+			source.featuresKey === fingerprint.key &&
+			source.featuresCount === fingerprint.count
+		) {
+			continue;
+		}
+
+		next = mergeSource(next, id, {
+			featuresKey: fingerprint.key,
+			featuresCount: fingerprint.count,
+		});
+	}
+
+	return next;
 }
 
 const emptyFeaturesArray: Array<Feature> = [];
@@ -420,8 +468,10 @@ export class FeatureSourcesController extends BaseController {
 				return mergeSource(
 					state,
 					featureSourceAction.id,
-					undoChange(
-						ensureNonNullable(state[featureSourceAction.id]),
+					withRestoredFeatureCollectionIndexes(
+						undoChange(
+							ensureNonNullable(state[featureSourceAction.id]),
+						),
 					),
 				);
 
@@ -429,8 +479,10 @@ export class FeatureSourcesController extends BaseController {
 				return mergeSource(
 					state,
 					featureSourceAction.id,
-					redoChange(
-						ensureNonNullable(state[featureSourceAction.id]),
+					withRestoredFeatureCollectionIndexes(
+						redoChange(
+							ensureNonNullable(state[featureSourceAction.id]),
+						),
 					),
 				);
 

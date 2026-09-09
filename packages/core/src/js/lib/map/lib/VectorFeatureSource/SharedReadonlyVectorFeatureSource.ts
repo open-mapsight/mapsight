@@ -9,6 +9,7 @@ import type {Unsubscribe} from "@reduxjs/toolkit";
 
 import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 
+import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
 import {createFilteredFeatureSourceSelector} from "@/lib/feature-sources/selectors";
 import type {FeatureSourceState} from "@/lib/feature-sources/types";
 import type {EnhancedStore} from "@/types";
@@ -40,6 +41,8 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _listeners: Array<FeatureSourceListener>;
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
 	private _format: GeoJSONFormat;
+	private _lastFeaturesKey: string | undefined;
+	private _lastData: FeatureSourceState["data"] | undefined;
 
 	constructor(
 		store: EnhancedStore,
@@ -158,6 +161,23 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
+				// Skip only when this is the same collection object. A metadata-only
+				// poll produces a new object with the same features key; hash
+				// that and skip GeoJSON.readFeatures.
+				if (sourceState.data === this._lastData) {
+					return;
+				}
+				const featuresKey = featureCollectionFeaturesKey(
+					sourceState.data,
+				);
+				if (
+					featuresKey !== undefined &&
+					featuresKey === this._lastFeaturesKey
+				) {
+					this._lastData = sourceState.data;
+					return;
+				}
+
 				// try to read from feature source
 				let newFeatures;
 				try {
@@ -169,6 +189,8 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 					}) as Array<OlFeature>;
 
 					updateFeaturesInSource(this, newFeatures);
+					this._lastFeaturesKey = featuresKey;
+					this._lastData = sourceState.data;
 
 					this._listeners.forEach((listener) => listener());
 				} catch (_e) {

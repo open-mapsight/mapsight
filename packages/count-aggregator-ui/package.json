@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@mapsight/ui": "workspace:^",
 		"@tailwindcss/cli": "^4.3.3",
-		"@testing-library/react": "^16.3.2",
+		"@testing-library/react": "^16.3.3",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@types/react-flatpickr": "^3.8.11",

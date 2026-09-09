@@ -44,6 +44,16 @@ function getFeaturesById(features: Feature[]) {
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
 
+function sameFilterNameOrder(left?: Array<string>, right?: Array<string>) {
+	if (left === right) {
+		return true;
+	}
+	if (!left || !right || left.length !== right.length) {
+		return false;
+	}
+	return left.every((name, index) => name === right[index]);
+}
+
 export const canUndo = (source: FeatureSourceState) =>
 	!!(source.dataHistory?.past && source.dataHistory.past.length > 0);
 export const canRedo = (source: FeatureSourceState) =>
@@ -124,6 +134,7 @@ type FilteredFeatureSourceSelectorCache = {
 	source?: FeatureSourceState;
 	filterNames?: Array<string>;
 	filters?: Record<string, string>;
+	featuresKey?: string;
 	state?: FeatureSourceState;
 };
 
@@ -146,6 +157,7 @@ export function createFilteredFeatureSourceSelector(
 
 	return function (state: State) {
 		let hasChanged = false;
+		let filterNamesUnchanged = true;
 
 		const source = featureSourceSelector(state);
 		if (source !== cache.source) {
@@ -172,6 +184,11 @@ export function createFilteredFeatureSourceSelector(
 					: undefined;
 			})();
 
+			filterNamesUnchanged = sameFilterNameOrder(
+				filterNames,
+				cache.filterNames,
+			);
+
 			if (filterNames !== cache.filterNames) {
 				cache.filterNames = filterNames;
 
@@ -186,6 +203,28 @@ export function createFilteredFeatureSourceSelector(
 		}
 
 		const filters = filtersSelector(state);
+		if (
+			cache.state &&
+			source?.featuresKey &&
+			source.featuresKey === cache.featuresKey &&
+			shallowEqualRecords(filters, cache.filters) &&
+			filterNamesUnchanged
+		) {
+			cache.source = source;
+			cache.state = source && {
+				...source,
+				data: cache.state.data
+					? {
+							...source.data,
+							features: cache.state.data.features,
+						}
+					: source.data,
+				ids: cache.state.ids,
+				featuresById: cache.state.featuresById,
+			};
+			return cache.state;
+		}
+
 		if (!shallowEqualRecords(filters, cache.filters)) {
 			cache.filters = filters;
 			hasChanged = true;
@@ -217,6 +256,7 @@ export function createFilteredFeatureSourceSelector(
 					? getFeaturesById(filteredFeatures)
 					: source.featuresById,
 			};
+			cache.featuresKey = source?.featuresKey;
 		}
 
 		return cache.state;
