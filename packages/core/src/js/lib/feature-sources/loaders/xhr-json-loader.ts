@@ -21,6 +21,8 @@ export type XhrJsonFetchResult = {
 	age?: string;
 	date?: string;
 	ageSec: number;
+	/** Response-header time; cache writers must not replace this with a later Date.now(). */
+	fetchedAt: number;
 };
 
 export class XhrJsonHttpError extends Error {
@@ -104,6 +106,7 @@ export async function fetchXhrJson(
 			requestTime,
 			responseTime,
 		}),
+		fetchedAt: responseTime,
 	};
 
 	if (response.status === 304) {

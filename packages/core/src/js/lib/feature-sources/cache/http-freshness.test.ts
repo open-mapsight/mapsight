@@ -211,6 +211,25 @@ describe("shouldPersistDocumentCache", () => {
 		expect(shouldPersistDocumentCache({cacheControl: "no-cache"})).toBe(
 			true,
 		);
+		expect(
+			shouldPersistDocumentCache({cacheControl: "no-cache, max-age=0"}),
+		).toBe(true);
+	});
+
+	it("uses the response Date for Expires persist lifetime", () => {
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+			}),
+		).toBe(true);
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+			}),
+		).toBe(false);
 	});
 
 	it("keeps documents with no freshness headers or a long enough max-age", () => {

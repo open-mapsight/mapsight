@@ -230,6 +230,8 @@ export function shouldPersistDocumentCache(input: {
 	cacheControl?: string;
 	expires?: string;
 	fetchedAt?: number;
+	date?: string;
+	ageSec?: number;
 	shared?: boolean;
 	ttl?: Partial<CacheTtlPolicy>;
 }): boolean {
@@ -241,11 +243,16 @@ export function shouldPersistDocumentCache(input: {
 	if ((input.shared ?? false) && directives.isPrivate) {
 		return false;
 	}
+	if (directives.noCache) {
+		return true;
+	}
 	const lifetimeSec = originFreshnessLifetimeSec(
 		directives,
 		input.expires,
 		input.fetchedAt ?? Date.now(),
 		input.shared ?? false,
+		input.ageSec ?? 0,
+		input.date,
 	);
 	if (lifetimeSec === undefined) {
 		return true;

@@ -13,6 +13,7 @@ import {
 import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {createMemoryFeatureSourceCache} from "@/lib/feature-sources/cache/memory-cache";
 import {purgeDocumentCacheEntries} from "@/lib/feature-sources/cache/purge";
+import {warmFeatureSourceUrl} from "@/lib/feature-sources/cache/warm";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
 import {ERROR_COLD_CACHE} from "@/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
@@ -321,6 +322,62 @@ describe("load with FeatureSourceCache", () => {
 		await Promise.all([first, second]);
 
 		expect(fetch).toHaveBeenCalledOnce();
+	});
+
+	it("does not dispatch a warm boolean as feature-source data", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		let resolveFetch: (value: {
+			ok: boolean;
+			status: number;
+			headers: {get: (name: string) => string | null};
+			json: () => Promise<typeof schoolsCollection>;
+		}) => void;
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise((resolve) => {
+							resolveStarted();
+							resolveFetch = resolve;
+						}),
+				),
+			);
+		});
+
+		const extra = {featureSourceCache: cache};
+		const warming = warmFeatureSourceUrl(
+			cache,
+			"/geojson/schools.geojson",
+			undefined,
+			{shared: false},
+		);
+		await fetchStarted;
+		const dispatch = vi.fn();
+		const loading = load(controllerName, "schools")(
+			dispatch,
+			() => xhrJsonState(),
+			extra,
+		);
+
+		resolveFetch!({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "Cache-Control" ? "max-age=60" : null;
+				},
+			},
+			json: () => Promise.resolve(schoolsCollection),
+		});
+		await expect(warming).resolves.toBe(true);
+		await loading;
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
 	});
 
 	it("does not put a fetch that started before purge", async () => {

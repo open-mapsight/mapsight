@@ -29,6 +29,9 @@ function defaultSharedCache(): boolean {
 /**
  * Fetch one xhr-json URL through the shared loader and `cache.put`.
  * Failed entries stay cold. Returns whether the document is now cached.
+ *
+ * Shares the same `singleFlight` slot as `load()` and returns the document
+ * body from that flight so a concurrent load cannot observe `true`.
  */
 export async function warmFeatureSourceUrl(
 	cache: FeatureSourceCache,
@@ -38,32 +41,36 @@ export async function warmFeatureSourceUrl(
 ): Promise<boolean> {
 	const key = buildDocumentCacheKey({url, revision});
 	try {
-		return await singleFlight(cache, key, async () => {
-			if (await cache.get(key)) {
-				return true;
+		const data = await singleFlight(cache, key, async () => {
+			const existing = await cache.get(key).catch(() => null);
+			if (existing) {
+				return existing.data;
 			}
 
 			const shared = options?.shared ?? defaultSharedCache();
 			const generation = captureCacheWriteGeneration(cache, url);
 			const result = await fetchXhrJson(url);
-			return await withDocumentCacheWrite(cache, async () => {
+			await withDocumentCacheWrite(cache, async () => {
 				if (!isCacheWriteGenerationCurrent(cache, url, generation)) {
-					return false;
+					return;
 				}
 				if (
 					!result.data ||
 					!shouldPersistDocumentCache({
 						cacheControl: result.cacheControl,
 						expires: result.expires,
+						fetchedAt: result.fetchedAt,
+						date: result.date,
+						ageSec: result.ageSec,
 						shared,
 						ttl: options?.ttl,
 					})
 				) {
-					return false;
+					return;
 				}
 				await cache.put(key, {
 					data: result.data,
-					fetchedAt: Date.now(),
+					fetchedAt: result.fetchedAt,
 					ageSec: result.ageSec,
 					date: result.date,
 					bytes: estimateFeatureSourceBytes(result.data),
@@ -72,9 +79,13 @@ export async function warmFeatureSourceUrl(
 					cacheControl: result.cacheControl,
 					expires: result.expires,
 				});
-				return true;
 			});
+			return result.data;
 		});
+		if (data === undefined) {
+			return false;
+		}
+		return (await cache.get(key).catch(() => null)) != null;
 	} catch {
 		return false;
 	}

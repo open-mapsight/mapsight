@@ -52,7 +52,7 @@ describe("warmFeatureSourceUrl", () => {
 		const cache = createMemoryFeatureSourceCache();
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(() => jsonResponse({"Cache-Control": "no-cache"})),
+			vi.fn(() => jsonResponse({"Cache-Control": "no-cache, max-age=0"})),
 		);
 
 		await expect(

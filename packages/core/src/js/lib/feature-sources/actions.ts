@@ -540,6 +540,7 @@ async function putDocumentCacheEntry(
 		age?: string;
 		date?: string;
 		ageSec?: number;
+		fetchedAt?: number;
 	},
 	generation?: CacheWriteGeneration,
 	url?: string,
@@ -561,6 +562,9 @@ async function putDocumentCacheEntry(
 				!shouldPersistDocumentCache({
 					cacheControl: meta.cacheControl,
 					expires: meta.expires,
+					fetchedAt: meta.fetchedAt,
+					date: meta.date,
+					ageSec: meta.ageSec,
 					shared: isSharedDocumentCache(extra),
 					ttl: extra.featureSourceCacheTtl,
 				})
@@ -570,7 +574,7 @@ async function putDocumentCacheEntry(
 			}
 			await cache.put(key, {
 				data,
-				fetchedAt: Date.now(),
+				fetchedAt: meta.fetchedAt ?? Date.now(),
 				ageSec:
 					meta.ageSec ??
 					correctedInitialAgeSec({
@@ -620,6 +624,7 @@ async function revalidateDocumentCache(
 				age: result.age,
 				date: result.date ?? entry.date,
 				ageSec: result.ageSec,
+				fetchedAt: result.fetchedAt,
 			},
 			generation,
 			url,

@@ -9,6 +9,7 @@ import {
 describe("xhr-json loader", () => {
 	afterEach(() => {
 		vi.unstubAllGlobals();
+		vi.restoreAllMocks();
 	});
 
 	it("rejects with an HTTP status when statusText is empty", async () => {
@@ -134,5 +135,32 @@ describe("xhr-json loader", () => {
 		const result = await fetchXhrJson("/schools.geojson");
 		expect(result.age).toBe("59");
 		expect(result.date).toBe("Wed, 09 Sep 2026 18:59:00 GMT");
+	});
+
+	it("returns header receipt time as fetchedAt, not a later Date.now()", async () => {
+		let now = 1_000;
+		vi.spyOn(Date, "now").mockImplementation(() => now);
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => {
+				now = 1_050;
+				return {
+					ok: true,
+					status: 200,
+					statusText: "OK",
+					headers: {get: () => null},
+					json: () => {
+						now = 2_000;
+						return Promise.resolve({
+							type: "FeatureCollection",
+							features: [],
+						});
+					},
+				};
+			}),
+		);
+
+		const result = await fetchXhrJson("/schools.geojson");
+		expect(result.fetchedAt).toBe(1_050);
 	});
 });
