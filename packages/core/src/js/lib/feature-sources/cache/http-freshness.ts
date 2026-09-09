@@ -16,6 +16,7 @@ export type CacheControlDirectives = {
 	noCache: boolean;
 	noStore: boolean;
 	immutable: boolean;
+	isPrivate: boolean;
 };
 
 export type FreshnessDecision =
@@ -51,6 +52,8 @@ export function resolveCacheTtlPolicy(
 
 export type FreshnessInput = {
 	fetchedAt: number;
+	/** Corrected initial age at fetch (RFC 9111 Age / Date). */
+	ageSec?: number;
 	cacheControl?: string;
 	expires?: string;
 	now?: number;
@@ -76,6 +79,7 @@ export function parseCacheControl(
 		noCache: false,
 		noStore: false,
 		immutable: false,
+		isPrivate: false,
 	};
 	if (!header) {
 		return directives;
@@ -119,6 +123,9 @@ export function parseCacheControl(
 			case "immutable":
 				directives.immutable = true;
 				break;
+			case "private":
+				directives.isPrivate = true;
+				break;
 			default:
 				break;
 		}
@@ -127,11 +134,37 @@ export function parseCacheControl(
 	return directives;
 }
 
+/**
+ * RFC 9111 corrected initial age: max(Age, apparent_age from Date).
+ */
+export function correctedInitialAgeSec(input: {
+	ageHeader?: string;
+	dateHeader?: string;
+	now?: number;
+}): number {
+	const ageHeaderSec = parseDeltaSeconds(input.ageHeader) ?? 0;
+	if (!input.dateHeader) {
+		return ageHeaderSec;
+	}
+	const dateAt = Date.parse(input.dateHeader);
+	if (!Number.isFinite(dateAt)) {
+		return ageHeaderSec;
+	}
+	const now = input.now ?? Date.now();
+	const apparentAgeSec = Math.max(0, Math.floor((now - dateAt) / 1000));
+	return Math.max(ageHeaderSec, apparentAgeSec);
+}
+
+function currentAgeSec(fetchedAt: number, ageSec: number, now: number): number {
+	return Math.max(0, (now - fetchedAt) / 1000) + Math.max(0, ageSec);
+}
+
 function freshnessLifetimeSec(
 	directives: CacheControlDirectives,
 	expires: string | undefined,
 	fetchedAt: number,
 	shared: boolean,
+	ageSec: number,
 ): number | undefined {
 	if (shared && directives.sMaxAgeSec !== undefined) {
 		return directives.sMaxAgeSec;
@@ -146,7 +179,8 @@ function freshnessLifetimeSec(
 	if (!Number.isFinite(expiresAt)) {
 		return undefined;
 	}
-	return Math.max(0, Math.floor((expiresAt - fetchedAt) / 1000));
+	const dateAt = fetchedAt - Math.max(0, ageSec) * 1000;
+	return Math.max(0, Math.floor((expiresAt - dateAt) / 1000));
 }
 
 function originFreshnessLifetimeSec(
@@ -154,13 +188,15 @@ function originFreshnessLifetimeSec(
 	expires: string | undefined,
 	fetchedAt: number,
 	shared: boolean,
+	ageSec = 0,
 ): number | undefined {
-	return freshnessLifetimeSec(directives, expires, fetchedAt, shared);
+	return freshnessLifetimeSec(directives, expires, fetchedAt, shared, ageSec);
 }
 
 /**
- * Whether a response is worth keeping. Skip `no-store` / `no-cache` and
- * documents whose origin lifetime is shorter than `minMs`.
+ * Whether a response is worth keeping. Skip `no-store` / `no-cache`,
+ * `private` on shared caches, and documents whose origin lifetime is shorter
+ * than `minMs`.
  */
 export function shouldPersistDocumentCache(input: {
 	cacheControl?: string;
@@ -172,6 +208,9 @@ export function shouldPersistDocumentCache(input: {
 	const ttl = resolveCacheTtlPolicy(input.ttl);
 	const directives = parseCacheControl(input.cacheControl);
 	if (directives.noStore || directives.noCache) {
+		return false;
+	}
+	if ((input.shared ?? false) && directives.isPrivate) {
 		return false;
 	}
 	const lifetimeSec = originFreshnessLifetimeSec(
@@ -207,12 +246,15 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 	const shared = input.shared ?? false;
 	const ttl = resolveCacheTtlPolicy(input.ttl);
 	const directives = parseCacheControl(input.cacheControl);
-	const ageSec = Math.max(0, (now - input.fetchedAt) / 1000);
+	const ageSec = currentAgeSec(input.fetchedAt, input.ageSec ?? 0, now);
 
 	if (directives.noStore) {
 		return "must-revalidate";
 	}
 	if (directives.noCache) {
+		return "must-revalidate";
+	}
+	if (shared && directives.isPrivate) {
 		return "must-revalidate";
 	}
 
@@ -221,6 +263,7 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 		input.expires,
 		input.fetchedAt,
 		shared,
+		input.ageSec ?? 0,
 	);
 	const mustRevalidate =
 		directives.mustRevalidate || (shared && directives.proxyRevalidate);
@@ -257,12 +300,13 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 	if (directives.staleIfErrorSec === undefined) {
 		return false;
 	}
-	const ageSec = Math.max(0, (now - input.fetchedAt) / 1000);
+	const ageSec = currentAgeSec(input.fetchedAt, input.ageSec ?? 0, now);
 	const originLifetime = originFreshnessLifetimeSec(
 		directives,
 		input.expires,
 		input.fetchedAt,
 		shared,
+		input.ageSec ?? 0,
 	);
 	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
 	return ageSec < lifetime + directives.staleIfErrorSec;

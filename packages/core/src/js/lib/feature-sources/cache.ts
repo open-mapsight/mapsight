@@ -22,6 +22,7 @@ export {
 	parseCacheControl,
 	resolveCacheTtlPolicy,
 	shouldPersistDocumentCache,
+	correctedInitialAgeSec,
 	type CacheControlDirectives,
 	type CacheTtlPolicy,
 	type FreshnessDecision,

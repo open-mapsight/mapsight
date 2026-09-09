@@ -3,6 +3,7 @@ import {describe, expect, it} from "vitest";
 import {
 	DEFAULT_CACHE_TTL,
 	allowsStaleOnError,
+	correctedInitialAgeSec,
 	evaluateFreshness,
 	parseCacheControl,
 	shouldPersistDocumentCache,
@@ -20,6 +21,13 @@ describe("parseCacheControl", () => {
 			maxAgeSec: 60,
 			staleWhileRevalidateSec: 120,
 			mustRevalidate: true,
+		});
+	});
+
+	it("reads private", () => {
+		expect(parseCacheControl("max-age=60, private")).toMatchObject({
+			maxAgeSec: 60,
+			isPrivate: true,
 		});
 	});
 });
@@ -109,6 +117,44 @@ describe("evaluateFreshness", () => {
 			}),
 		).toBe("stale");
 	});
+
+	it("includes Age in current age so CDN-aged responses are not treated as new", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 59,
+				cacheControl: "max-age=60",
+				now: fetchedAt + 2_000,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 59,
+				cacheControl: "max-age=60",
+				now: fetchedAt,
+			}),
+		).toBe("fresh");
+	});
+
+	it("must-revalidate private responses on shared caches", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60, private",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60, private",
+				now: fetchedAt + 1,
+				shared: false,
+			}),
+		).toBe("fresh");
+	});
 });
 
 describe("shouldPersistDocumentCache", () => {
@@ -126,6 +172,21 @@ describe("shouldPersistDocumentCache", () => {
 		expect(shouldPersistDocumentCache({cacheControl: "max-age=60"})).toBe(
 			true,
 		);
+	});
+
+	it("does not persist private responses in a shared cache", () => {
+		expect(
+			shouldPersistDocumentCache({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			shouldPersistDocumentCache({
+				cacheControl: "max-age=60, private",
+				shared: false,
+			}),
+		).toBe(true);
 	});
 });
 
@@ -145,5 +206,19 @@ describe("allowsStaleOnError", () => {
 				now: fetchedAt + 3_670_000,
 			}),
 		).toBe(false);
+	});
+});
+
+describe("correctedInitialAgeSec", () => {
+	it("uses the greater of Age and apparent age from Date", () => {
+		const now = Date.parse("Wed, 09 Sep 2026 19:00:00 GMT");
+		expect(
+			correctedInitialAgeSec({
+				ageHeader: "10",
+				dateHeader: "Wed, 09 Sep 2026 18:59:00 GMT",
+				now,
+			}),
+		).toBe(60);
+		expect(correctedInitialAgeSec({ageHeader: "59"})).toBe(59);
 	});
 });

@@ -3,10 +3,16 @@ import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	allowsStaleOnError,
+	correctedInitialAgeSec,
 	evaluateFreshness,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
-import {singleFlight} from "@/lib/feature-sources/cache/single-flight";
+import {
+	type CacheWriteGeneration,
+	captureCacheWriteGeneration,
+	isCacheWriteGenerationCurrent,
+	singleFlight,
+} from "@/lib/feature-sources/cache/single-flight";
 import type {
 	FeatureSourceCache,
 	FeatureSourceCacheEntry,
@@ -530,9 +536,20 @@ async function putDocumentCacheEntry(
 		lastModified?: string;
 		cacheControl?: string;
 		expires?: string;
+		age?: string;
+		date?: string;
+		ageSec?: number;
 	},
+	generation?: CacheWriteGeneration,
 ) {
 	const cache = extra.featureSourceCache;
+	if (
+		generation &&
+		cache &&
+		!isCacheWriteGenerationCurrent(cache, key, generation)
+	) {
+		return;
+	}
 	if (
 		!cache ||
 		!shouldPersistDocumentCache({
@@ -548,6 +565,12 @@ async function putDocumentCacheEntry(
 	await cache.put(key, {
 		data,
 		fetchedAt: Date.now(),
+		ageSec:
+			meta.ageSec ??
+			correctedInitialAgeSec({
+				ageHeader: meta.age,
+				dateHeader: meta.date,
+			}),
 		bytes: estimateFeatureSourceBytes(data),
 		etag: meta.etag,
 		lastModified: meta.lastModified,
@@ -563,18 +586,30 @@ async function revalidateDocumentCache(
 	entry: FeatureSourceCacheEntry | null,
 	forceRefresh: boolean,
 ): Promise<FeatureSourceData | undefined> {
+	const cache = extra.featureSourceCache;
+	const generation = cache
+		? captureCacheWriteGeneration(cache, key)
+		: undefined;
 	const result = await xhrJson.fetchXhrJson(state.url ?? "", {
 		ifNoneMatch: forceRefresh ? undefined : entry?.etag,
 		ifModifiedSince: forceRefresh ? undefined : entry?.lastModified,
 	});
 
 	if (result.notModified && entry) {
-		await putDocumentCacheEntry(extra, key, entry.data, {
-			etag: result.etag ?? entry.etag,
-			lastModified: result.lastModified ?? entry.lastModified,
-			cacheControl: result.cacheControl ?? entry.cacheControl,
-			expires: result.expires ?? entry.expires,
-		});
+		await putDocumentCacheEntry(
+			extra,
+			key,
+			entry.data,
+			{
+				etag: result.etag ?? entry.etag,
+				lastModified: result.lastModified ?? entry.lastModified,
+				cacheControl: result.cacheControl ?? entry.cacheControl,
+				expires: result.expires ?? entry.expires,
+				age: result.age,
+				date: result.date,
+			},
+			generation,
+		);
 		return entry.data;
 	}
 
@@ -582,7 +617,7 @@ async function revalidateDocumentCache(
 		return entry?.data;
 	}
 
-	await putDocumentCacheEntry(extra, key, result.data, result);
+	await putDocumentCacheEntry(extra, key, result.data, result, generation);
 	return result.data;
 }
 
@@ -615,6 +650,7 @@ async function loadWithCache(
 		if (entry && !forceRefresh) {
 			const decision = evaluateFreshness({
 				fetchedAt: entry.fetchedAt,
+				ageSec: entry.ageSec,
 				cacheControl: entry.cacheControl,
 				expires: entry.expires,
 				shared: isSharedDocumentCache(extra),
@@ -640,6 +676,7 @@ async function loadWithCache(
 				if (
 					allowsStaleOnError({
 						fetchedAt: entry.fetchedAt,
+						ageSec: entry.ageSec,
 						cacheControl: entry.cacheControl,
 						expires: entry.expires,
 						shared: isSharedDocumentCache(extra),

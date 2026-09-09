@@ -97,4 +97,19 @@ describe("warmFeatureSourceUrl", () => {
 		).resolves.toBe(true);
 		expect(cache.keys()).toHaveLength(1);
 	});
+
+	it("does not persist private responses in a shared cache", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "max-age=60, private"})),
+		);
+
+		await expect(
+			warmFeatureSourceUrl(cache, "/schools.geojson", undefined, {
+				shared: true,
+			}),
+		).resolves.toBe(false);
+		expect(cache.keys()).toEqual([]);
+	});
 });

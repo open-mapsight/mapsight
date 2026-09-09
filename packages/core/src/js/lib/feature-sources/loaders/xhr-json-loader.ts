@@ -17,6 +17,8 @@ export type XhrJsonFetchResult = {
 	lastModified?: string;
 	cacheControl?: string;
 	expires?: string;
+	age?: string;
+	date?: string;
 };
 
 const locationBaseUrl = (() => {
@@ -74,6 +76,8 @@ export async function fetchXhrJson(
 		lastModified: readHeader(response.headers, "Last-Modified"),
 		cacheControl: readHeader(response.headers, "Cache-Control"),
 		expires: readHeader(response.headers, "Expires"),
+		age: readHeader(response.headers, "Age"),
+		date: readHeader(response.headers, "Date"),
 	};
 
 	if (response.status === 304) {

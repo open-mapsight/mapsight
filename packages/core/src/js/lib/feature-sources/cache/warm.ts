@@ -2,8 +2,13 @@ import {buildDocumentCacheKey} from "@/lib/feature-sources/cache/build-cache-key
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	type CacheTtlPolicy,
+	correctedInitialAgeSec,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
+import {
+	captureCacheWriteGeneration,
+	isCacheWriteGenerationCurrent,
+} from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
 import {fetchXhrJson} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
@@ -36,8 +41,12 @@ export async function warmFeatureSourceUrl(
 	}
 
 	const shared = options?.shared ?? defaultSharedCache();
+	const generation = captureCacheWriteGeneration(cache, key);
 	try {
 		const result = await fetchXhrJson(url);
+		if (!isCacheWriteGenerationCurrent(cache, key, generation)) {
+			return false;
+		}
 		if (
 			!result.data ||
 			!shouldPersistDocumentCache({
@@ -52,6 +61,10 @@ export async function warmFeatureSourceUrl(
 		await cache.put(key, {
 			data: result.data,
 			fetchedAt: Date.now(),
+			ageSec: correctedInitialAgeSec({
+				ageHeader: result.age,
+				dateHeader: result.date,
+			}),
 			bytes: estimateFeatureSourceBytes(result.data),
 			etag: result.etag,
 			lastModified: result.lastModified,

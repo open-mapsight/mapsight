@@ -100,4 +100,32 @@ describe("xhr-json loader", () => {
 		expect(result.etag).toBe('"abc"');
 		expect(result.cacheControl).toBe("max-age=60");
 	});
+
+	it("returns Age and Date so freshness can account for CDN age", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				headers: {
+					get(name: string) {
+						if (name === "Age") {
+							return "59";
+						}
+						if (name === "Date") {
+							return "Wed, 09 Sep 2026 18:59:00 GMT";
+						}
+						return null;
+					},
+				},
+				json: () =>
+					Promise.resolve({type: "FeatureCollection", features: []}),
+			})),
+		);
+
+		const result = await fetchXhrJson("/schools.geojson");
+		expect(result.age).toBe("59");
+		expect(result.date).toBe("Wed, 09 Sep 2026 18:59:00 GMT");
+	});
 });

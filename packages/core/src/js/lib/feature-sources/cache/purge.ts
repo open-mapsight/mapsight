@@ -1,4 +1,5 @@
 import {documentCacheKeyMatchesUrl} from "@/lib/feature-sources/cache/build-cache-key";
+import {bumpDocumentCacheGeneration} from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
 
 export type PurgeableFeatureSourceCache = FeatureSourceCache & {
@@ -17,6 +18,7 @@ export async function purgeDocumentCacheEntries(
 	const unique = [
 		...new Set((urls ?? []).map((url) => url.trim()).filter(Boolean)),
 	];
+	bumpDocumentCacheGeneration(cache, unique);
 	const keys =
 		unique.length === 0
 			? cache.keys()

@@ -12,6 +12,7 @@ import {
 } from "@/lib/feature-sources/actions";
 import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {createMemoryFeatureSourceCache} from "@/lib/feature-sources/cache/memory-cache";
+import {purgeDocumentCacheEntries} from "@/lib/feature-sources/cache/purge";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
 import {ERROR_COLD_CACHE} from "@/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
@@ -320,6 +321,56 @@ describe("load with FeatureSourceCache", () => {
 		await Promise.all([first, second]);
 
 		expect(fetch).toHaveBeenCalledOnce();
+	});
+
+	it("does not put a fetch that started before purge", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		let resolveFetch: (value: {
+			ok: boolean;
+			status: number;
+			headers: {get: () => null};
+			json: () => Promise<typeof schoolsCollection>;
+		}) => void;
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise((resolve) => {
+							resolveStarted();
+							resolveFetch = resolve;
+						}),
+				),
+			);
+		});
+
+		const extra = {
+			featureSourceCache: cache,
+			featureSourceRevision: "rev-1",
+		};
+		const pending = load(controllerName, "schools")(
+			vi.fn(),
+			() => xhrJsonState(),
+			extra,
+		);
+		await fetchStarted;
+		await purgeDocumentCacheEntries(cache, ["/geojson/schools.geojson"]);
+
+		resolveFetch!({
+			ok: true,
+			status: 200,
+			headers: emptyHeaders(),
+			json: () => Promise.resolve(schoolsCollection),
+		});
+		await pending;
+
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+			appVersion: "rev-1",
+		});
+		expect(await cache.get(key)).toBeNull();
 	});
 
 	it("serves stale-while-revalidate immediately and revalidates in the background", async () => {

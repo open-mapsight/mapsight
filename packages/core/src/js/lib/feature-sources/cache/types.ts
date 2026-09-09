@@ -10,6 +10,8 @@ export type FeatureSourceCacheEntry = {
 	ids?: FeatureId[];
 	featuresById?: Record<FeatureId, Feature>;
 	fetchedAt: number;
+	/** RFC 9111 corrected initial age at `fetchedAt`. */
+	ageSec?: number;
 	etag?: string;
 	lastModified?: string;
 	cacheControl?: string;

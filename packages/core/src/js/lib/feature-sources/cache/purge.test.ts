@@ -3,6 +3,10 @@ import {describe, expect, it} from "vitest";
 import {buildDocumentCacheKey} from "./build-cache-key";
 import {createMemoryFeatureSourceCache} from "./memory-cache";
 import {purgeDocumentCacheEntries} from "./purge";
+import {
+	captureCacheWriteGeneration,
+	isCacheWriteGenerationCurrent,
+} from "./single-flight";
 
 const emptyCollection = {type: "FeatureCollection" as const, features: []};
 
@@ -49,5 +53,17 @@ describe("purgeDocumentCacheEntries", () => {
 		const deleted = await purgeDocumentCacheEntries(cache);
 		expect(deleted).toHaveLength(2);
 		expect(cache.keys()).toEqual([]);
+	});
+
+	it("rejects a later put from work started before the purge", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const url = "https://example.test/schools.geojson";
+		const key = buildDocumentCacheKey({url, revision: "pub-1"});
+		const generation = captureCacheWriteGeneration(cache, key);
+
+		await purgeDocumentCacheEntries(cache, [url]);
+		expect(isCacheWriteGenerationCurrent(cache, key, generation)).toBe(
+			false,
+		);
 	});
 });
