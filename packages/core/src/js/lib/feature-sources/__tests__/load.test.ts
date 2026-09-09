@@ -568,7 +568,9 @@ describe("load with FeatureSourceCache", () => {
 					features: [{id: "stale"}],
 				}),
 		});
-		await Promise.resolve();
+		await new Promise((resolve) => {
+			setTimeout(resolve, 0);
+		});
 		expect((await cache.get(key))?.etag).toBe('"v3"');
 	});
 

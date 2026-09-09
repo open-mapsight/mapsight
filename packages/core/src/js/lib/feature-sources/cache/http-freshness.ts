@@ -111,10 +111,16 @@ export function parseCacheControl(
 						: 0;
 				break;
 			case "stale-while-revalidate":
-				directives.staleWhileRevalidateSec = parseDeltaSeconds(value);
+				directives.staleWhileRevalidateSec =
+					directives.staleWhileRevalidateSec === undefined
+						? parseDeltaSeconds(value)
+						: 0;
 				break;
 			case "stale-if-error":
-				directives.staleIfErrorSec = parseDeltaSeconds(value);
+				directives.staleIfErrorSec =
+					directives.staleIfErrorSec === undefined
+						? parseDeltaSeconds(value)
+						: 0;
 				break;
 			case "must-revalidate":
 				directives.mustRevalidate = true;

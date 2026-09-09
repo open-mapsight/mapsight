@@ -54,6 +54,13 @@ describe("parseCacheControl", () => {
 		).toBe("stale");
 	});
 
+	it("treats duplicate stale-if-error as zero extra lifetime", () => {
+		expect(
+			parseCacheControl("stale-if-error=0, stale-if-error=3600")
+				.staleIfErrorSec,
+		).toBe(0);
+	});
+
 	it("reads private", () => {
 		expect(parseCacheControl("max-age=60, private")).toMatchObject({
 			maxAgeSec: 60,

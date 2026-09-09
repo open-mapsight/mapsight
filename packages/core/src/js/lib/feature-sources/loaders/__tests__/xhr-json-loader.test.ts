@@ -81,6 +81,29 @@ describe("xhr-json loader", () => {
 		);
 	});
 
+	it("does not send validators on browser cross-origin requests", async () => {
+		const fetchMock = vi.fn(() => ({
+			ok: true,
+			status: 200,
+			statusText: "OK",
+			headers: {get: () => null},
+			json: () =>
+				Promise.resolve({type: "FeatureCollection", features: []}),
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		await fetchXhrJson("https://cdn.example/schools.geojson", {
+			ifNoneMatch: '"abc"',
+		});
+
+		expect(fetchMock).toHaveBeenCalledWith(
+			"https://cdn.example/schools.geojson",
+			expect.objectContaining({
+				headers: {},
+			}),
+		);
+	});
+
 	it("trims validator and freshness headers", async () => {
 		vi.stubGlobal(
 			"fetch",

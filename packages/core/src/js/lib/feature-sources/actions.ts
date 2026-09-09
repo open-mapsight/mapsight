@@ -739,11 +739,15 @@ async function loadWithCache(
 
 		if (useCache !== USE_CACHE_ONLY) {
 			if (forceRefresh) {
+				let pending: Promise<FeatureSourceData | undefined>;
 				await withDocumentCacheWrite(cache, () => {
 					bumpDocumentCacheGeneration(cache, [url]);
+					pending = singleFlight(cache, key, () =>
+						revalidateDocumentCache(extra, key, null, true, url),
+					);
 					return Promise.resolve();
 				});
-				return revalidateDocumentCache(extra, key, null, true, url);
+				return pending!;
 			}
 			return singleFlight(cache, key, async () => {
 				const replay = await readDocumentCacheEntry(cache, key);

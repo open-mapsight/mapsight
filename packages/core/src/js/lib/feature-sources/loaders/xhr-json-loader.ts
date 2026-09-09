@@ -63,6 +63,19 @@ export function resolveXhrJsonUrl(url: string): string {
 	).href;
 }
 
+function maySendConditionalHeaders(url: string): boolean {
+	if (typeof window === "undefined" || !window.location) {
+		return true;
+	}
+	try {
+		return (
+			new URL(resolveXhrJsonUrl(url)).origin === window.location.origin
+		);
+	} catch {
+		return false;
+	}
+}
+
 function readHeader(
 	headers: {get(name: string): string | null} | undefined,
 	name: string,
@@ -76,11 +89,13 @@ export async function fetchXhrJson(
 	conditional: XhrJsonConditionalRequest = {},
 ): Promise<XhrJsonFetchResult> {
 	const headers: Record<string, string> = {};
-	if (conditional.ifNoneMatch) {
-		headers["If-None-Match"] = conditional.ifNoneMatch;
-	}
-	if (conditional.ifModifiedSince) {
-		headers["If-Modified-Since"] = conditional.ifModifiedSince;
+	if (maySendConditionalHeaders(url)) {
+		if (conditional.ifNoneMatch) {
+			headers["If-None-Match"] = conditional.ifNoneMatch;
+		}
+		if (conditional.ifModifiedSince) {
+			headers["If-Modified-Since"] = conditional.ifModifiedSince;
+		}
 	}
 
 	const requestTime = Date.now();
