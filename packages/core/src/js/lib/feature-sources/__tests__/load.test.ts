@@ -1,5 +1,8 @@
+import type {Middleware} from "@reduxjs/toolkit";
+import {applyMiddleware} from "@reduxjs/toolkit";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {createMapsightStore} from "@/index";
 import {
 	LOAD_FEATURE_SOURCE,
 	LOAD_FEATURE_SOURCE_ERROR,
@@ -9,6 +12,7 @@ import {
 } from "@/lib/feature-sources/actions";
 import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {createMemoryFeatureSourceCache} from "@/lib/feature-sources/cache/memory-cache";
+import {FeatureSourcesController} from "@/lib/feature-sources/controller";
 import {ERROR_COLD_CACHE} from "@/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 
@@ -488,5 +492,64 @@ describe("load with FeatureSourceCache", () => {
 				data: schoolsCollection,
 			}),
 		);
+	});
+
+	it("reaches load() extraArgument even when redux-thunk is the app enhancer", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+			appVersion: "rev-1",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now(),
+			bytes: 10,
+		});
+
+		const fetchMock = vi.fn();
+		vi.stubGlobal("fetch", fetchMock);
+
+		const thunkWithoutExtra: Middleware =
+			({dispatch, getState}) =>
+			(next) =>
+			(action) => {
+				if (typeof action === "function") {
+					return (
+						action as (
+							dispatch: unknown,
+							getState: unknown,
+						) => unknown
+					)(dispatch, getState);
+				}
+				return next(action);
+			};
+
+		const store = createMapsightStore(
+			{featureSources: new FeatureSourcesController("featureSources")},
+			{},
+			xhrJsonState(),
+			applyMiddleware(thunkWithoutExtra),
+			{
+				extraArgument: {
+					featureSourceCache: cache,
+					featureSourceRevision: "rev-1",
+				},
+			},
+		);
+
+		store.dispatch(load(controllerName, "schools"));
+
+		await vi.waitFor(() => {
+			expect(
+				(
+					store.getState() as {
+						featureSources: FeatureSourcesState;
+					}
+				).featureSources.schools?.data,
+			).toEqual(schoolsCollection);
+		});
+		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });
