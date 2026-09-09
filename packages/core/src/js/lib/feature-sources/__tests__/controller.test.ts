@@ -137,6 +137,44 @@ describe("FeatureSourcesController", () => {
 		expect(withCrs.smartCity?.ids).toEqual(["sensor-1"]);
 	});
 
+	it("refreshes other fingerprints when a bulk merge also changes a loader url", () => {
+		const initial = controller.reduce(
+			{
+				...loadedState,
+				parking: {
+					type: "local",
+					data: {
+						type: "FeatureCollection",
+						features: [sensorFeature],
+					},
+					lastUpdate: 1,
+					lastActionType: null,
+				},
+			},
+			mergeAt(["smartCity"], {type: "xhr-json"}),
+		);
+		const next = controller.reduce(
+			initial,
+			mergeAt([], {
+				smartCity: {url: "/smart-city-v2.geojson"},
+				parking: {
+					data: {
+						type: "FeatureCollection",
+						features: [sensorFeature],
+						crs: {type: "name", properties: {name: "EPSG:25832"}},
+					},
+				},
+			}),
+		);
+
+		expect(next.smartCity?.data).toBeNull();
+		expect(next.smartCity?.url).toBe("/smart-city-v2.geojson");
+		expect(next.parking?.featuresKey).toBeDefined();
+		expect(next.parking?.featuresKey).not.toBe(
+			initial.parking?.featuresKey,
+		);
+	});
+
 	it("limits data history when historyLimit is configured", () => {
 		const state: FeatureSourcesState = {
 			editor: {

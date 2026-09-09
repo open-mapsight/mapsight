@@ -261,6 +261,7 @@ function reduceUncontrolledFeatureSourceChanges(
 	state: FeatureSourcesState,
 	oldState: FeatureSourcesState = {},
 ) {
+	let next = state;
 	for (const [id, source] of Object.entries(state)) {
 		const oldSource = oldState[id];
 		if (
@@ -268,7 +269,7 @@ function reduceUncontrolledFeatureSourceChanges(
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
 		) {
-			return mergeSource(state, id, {
+			next = mergeSource(next, id, {
 				data: null,
 				featuresKey: undefined,
 				featuresCount: undefined,
@@ -276,8 +277,7 @@ function reduceUncontrolledFeatureSourceChanges(
 		}
 	}
 
-	let next = state;
-	for (const [id, source] of Object.entries(state)) {
+	for (const [id, source] of Object.entries(next)) {
 		const oldSource = oldState[id];
 		if (!oldSource || oldSource.data === source.data) {
 			continue;
