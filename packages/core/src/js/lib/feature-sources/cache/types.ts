@@ -48,7 +48,7 @@ export type FeatureSourceCacheExtra = {
 	 */
 	sharedCache?: boolean;
 	/** Clamp / skip-persist policy. Defaults: 10s min, 5min default, 1h max. */
-	cacheTtl?: Partial<CacheTtlPolicy>;
+	featureSourceCacheTtl?: Partial<CacheTtlPolicy>;
 };
 
 export type BuildCacheKeyInput = {

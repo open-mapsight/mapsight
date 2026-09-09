@@ -561,7 +561,7 @@ async function putDocumentCacheEntry(
 				cacheControl: meta.cacheControl,
 				expires: meta.expires,
 				shared: isSharedDocumentCache(extra),
-				ttl: extra.cacheTtl,
+				ttl: extra.featureSourceCacheTtl,
 			})
 		) {
 			await cache.delete(key);
@@ -669,7 +669,7 @@ async function loadWithCache(
 				cacheControl: entry.cacheControl,
 				expires: entry.expires,
 				shared: isSharedDocumentCache(extra),
-				ttl: extra.cacheTtl,
+				ttl: extra.featureSourceCacheTtl,
 			});
 			if (isFeatureSourceCacheDebugEnabled()) {
 				console.info("[mapsight-feature-source-cache]", decision, key);
@@ -695,7 +695,7 @@ async function loadWithCache(
 						cacheControl: entry.cacheControl,
 						expires: entry.expires,
 						shared: isSharedDocumentCache(extra),
-						ttl: extra.cacheTtl,
+						ttl: extra.featureSourceCacheTtl,
 					})
 				) {
 					return entry.data;

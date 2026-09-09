@@ -242,7 +242,8 @@ export function create(
 				featureSourceCache: context.createOptions.featureSourceCache,
 				featureSourceRevision:
 					context.createOptions.featureSourceRevision,
-				cacheTtl: context.createOptions.featureSourceCacheTtl,
+				featureSourceCacheTtl:
+					context.createOptions.featureSourceCacheTtl,
 			},
 		},
 	);
