@@ -283,6 +283,21 @@ export function isShareableCachedResponse(input: {
 	return !directives.noStore && !directives.isPrivate;
 }
 
+/** Stored entries that must not be served for this cache policy. */
+export function canServeDocumentCacheEntry(input: {
+	cacheControl?: string;
+	shared?: boolean;
+}): boolean {
+	const directives = parseCacheControl(input.cacheControl);
+	if (directives.noStore) {
+		return false;
+	}
+	if ((input.shared ?? false) && directives.isPrivate) {
+		return false;
+	}
+	return true;
+}
+
 function effectiveFreshnessLifetimeSec(
 	originLifetimeSec: number | undefined,
 	ttl: CacheTtlPolicy,

@@ -3,6 +3,7 @@ import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	allowsStaleOnError,
+	canServeDocumentCacheEntry,
 	correctedInitialAgeSec,
 	evaluateFreshness,
 	isShareableCachedResponse,
@@ -687,9 +688,20 @@ function documentCacheFlight(
 async function readDocumentCacheEntry(
 	cache: FeatureSourceCache,
 	key: string,
+	extra: FeatureSourceCacheExtra,
 ): Promise<FeatureSourceCacheEntry | null> {
 	try {
-		return await cache.get(key);
+		const entry = await cache.get(key);
+		if (
+			entry &&
+			!canServeDocumentCacheEntry({
+				cacheControl: entry.cacheControl,
+				shared: isSharedDocumentCache(extra),
+			})
+		) {
+			return null;
+		}
+		return entry;
 	} catch {
 		return null;
 	}
@@ -717,7 +729,7 @@ async function loadWithCache(
 		const url = xhrJson.resolveXhrJsonUrl(state.url);
 		const key = documentCacheKey(url, id, controllerName, extra);
 		const entry = !forceRefresh
-			? await readDocumentCacheEntry(cache, key)
+			? await readDocumentCacheEntry(cache, key, extra)
 			: null;
 
 		if (entry && useCache === USE_CACHE_ONLY) {
@@ -803,7 +815,11 @@ async function loadWithCache(
 				cache,
 				key,
 				async () => {
-					const replay = await readDocumentCacheEntry(cache, key);
+					const replay = await readDocumentCacheEntry(
+						cache,
+						key,
+						extra,
+					);
 					if (replay) {
 						return {
 							data: replay.data,

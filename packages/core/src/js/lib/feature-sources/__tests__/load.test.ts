@@ -256,6 +256,36 @@ describe("load with FeatureSourceCache", () => {
 		expect(failure?.error?.message).toBe(ERROR_COLD_CACHE);
 	});
 
+	it("does not serve a private document to a shared USE_CACHE_ONLY load", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now(),
+			bytes: 10,
+			cacheControl: "max-age=60, private",
+		});
+		const fetchMock = vi.fn();
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools", {useCache: USE_CACHE_ONLY})(
+			dispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache, sharedCache: true},
+		);
+
+		expect(fetchMock).not.toHaveBeenCalled();
+		const failure = dispatch.mock.calls
+			.map(([action]) => action as {type?: string; error?: Error})
+			.find((action) => action.type === LOAD_FEATURE_SOURCE_ERROR);
+		expect(failure?.error?.message).toBe(ERROR_COLD_CACHE);
+	});
+
 	it("invalidates the document cache after a cache-bypassing fetch", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const key = buildCacheKey({

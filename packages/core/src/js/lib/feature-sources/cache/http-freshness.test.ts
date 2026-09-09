@@ -3,6 +3,7 @@ import {describe, expect, it} from "vitest";
 import {
 	DEFAULT_CACHE_TTL,
 	allowsStaleOnError,
+	canServeDocumentCacheEntry,
 	correctedInitialAgeSec,
 	evaluateFreshness,
 	isShareableCachedResponse,
@@ -425,6 +426,29 @@ describe("isShareableCachedResponse", () => {
 			isShareableCachedResponse({
 				cacheControl: "max-age=60, private",
 				shared: false,
+			}),
+		).toBe(true);
+	});
+});
+
+describe("canServeDocumentCacheEntry", () => {
+	it("does not serve no-store or shared private entries", () => {
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "no-store",
+				shared: false,
+			}),
+		).toBe(false);
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "max-age=60",
+				shared: true,
 			}),
 		).toBe(true);
 	});

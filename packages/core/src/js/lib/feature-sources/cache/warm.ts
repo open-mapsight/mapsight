@@ -2,6 +2,8 @@ import {buildDocumentCacheKey} from "@/lib/feature-sources/cache/build-cache-key
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
 	type CacheTtlPolicy,
+	canServeDocumentCacheEntry,
+	evaluateFreshness,
 	isShareableCachedResponse,
 	shouldPersistDocumentCache,
 } from "@/lib/feature-sources/cache/http-freshness";
@@ -53,7 +55,22 @@ export async function warmFeatureSourceUrl(
 			key,
 			async () => {
 				const existing = await cache.get(key).catch(() => null);
-				if (existing) {
+				if (
+					existing &&
+					canServeDocumentCacheEntry({
+						cacheControl: existing.cacheControl,
+						shared,
+					}) &&
+					evaluateFreshness({
+						fetchedAt: existing.fetchedAt,
+						ageSec: existing.ageSec,
+						date: existing.date,
+						cacheControl: existing.cacheControl,
+						expires: existing.expires,
+						shared,
+						ttl: options?.ttl,
+					}) === "fresh"
+				) {
 					return {
 						value: existing.data,
 						share: isShareableCachedResponse({
@@ -67,9 +84,20 @@ export async function warmFeatureSourceUrl(
 					cache,
 					resolvedUrl,
 				);
-				const result = await fetchXhrJson(resolvedUrl);
+				const result = await fetchXhrJson(resolvedUrl, {
+					ifNoneMatch: existing?.etag,
+					ifModifiedSince: existing?.lastModified,
+				});
+				const data =
+					result.notModified && existing
+						? existing.data
+						: result.data;
+				const cacheControl =
+					result.notModified && existing
+						? (result.cacheControl ?? existing.cacheControl)
+						: result.cacheControl;
 				const share = isShareableCachedResponse({
-					cacheControl: result.cacheControl,
+					cacheControl,
 					shared,
 				});
 				await withDocumentCacheWrite(cache, async () => {
@@ -83,10 +111,14 @@ export async function warmFeatureSourceUrl(
 						return;
 					}
 					if (
-						!result.data ||
+						!data ||
 						!shouldPersistDocumentCache({
-							cacheControl: result.cacheControl,
-							expires: result.expires,
+							cacheControl,
+							expires:
+								result.expires ??
+								(result.notModified
+									? existing?.expires
+									: undefined),
 							fetchedAt: result.fetchedAt,
 							date: result.date,
 							ageSec: result.ageSec,
@@ -97,18 +129,26 @@ export async function warmFeatureSourceUrl(
 						return;
 					}
 					await cache.put(key, {
-						data: result.data,
+						data,
 						fetchedAt: result.fetchedAt,
 						ageSec: result.ageSec,
 						date: result.date,
-						bytes: estimateFeatureSourceBytes(result.data),
-						etag: result.etag,
-						lastModified: result.lastModified,
-						cacheControl: result.cacheControl,
-						expires: result.expires,
+						bytes:
+							result.notModified && existing
+								? existing.bytes
+								: estimateFeatureSourceBytes(data),
+						etag: result.etag ?? existing?.etag,
+						lastModified:
+							result.lastModified ?? existing?.lastModified,
+						cacheControl,
+						expires:
+							result.expires ??
+							(result.notModified
+								? existing?.expires
+								: undefined),
 					});
 				});
-				return {value: result.data, share};
+				return {value: data, share};
 			},
 			shared,
 		);
