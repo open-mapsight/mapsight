@@ -180,7 +180,7 @@ function buildSummary(
 		(bump) =>
 			`- \`${bump.name}\` \`${bump.from}\` → \`${bump.to}\` (${bump.kind})`,
 	);
-	return [header, ...lines].join("\n");
+	return [header, "", ...lines].join("\n");
 }
 
 function removeStaleDependabotChangesets(keepPaths: Set<string>): void {

@@ -34,10 +34,16 @@ jobs:
         run: git branch -f main "${BASE_SHA}"
         shell: bash
 
-      - uses: ./.github/actions/setup/
+      - uses: $/.github/actions/setup/
 
       - name: Write Dependabot changeset
-        run: node scripts/write-dependabot-changeset.mts
+        run: |
+          node scripts/write-dependabot-changeset.mts
+          shopt -s nullglob
+          files=(.changeset/dependabot-"${PR_NUMBER}"*.md)
+          if ((${#files[@]} > 0)); then
+            pnpm exec prettier --write -- "${files[@]}"
+          fi
         shell: bash
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -46,6 +52,8 @@ jobs:
 
       - name: Commit and push changeset
         env:
+          # lint-staged treats newly added .changeset files as an empty commit.
+          HUSKY: "0"
           GH_TOKEN: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
