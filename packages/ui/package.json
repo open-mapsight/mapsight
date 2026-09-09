@@ -32,7 +32,7 @@
 	},
 	"devDependencies": {
 		"@tanstack/react-query": "^5.102.4",
-		"@testing-library/react": "^16.3.2",
+		"@testing-library/react": "^16.3.3",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
