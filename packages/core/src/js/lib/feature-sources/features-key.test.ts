@@ -1,6 +1,9 @@
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 
-import {featureCollectionFeaturesKey} from "./features-key";
+import {
+	featureCollectionFeaturesKey,
+	nextFeatureCollectionFeaturesKey,
+} from "./features-key";
 
 const placeFeature = {
 	id: "place-1",
@@ -63,8 +66,34 @@ describe("featureCollectionFeaturesKey", () => {
 		const json = JSON.stringify(features);
 		const key = featureCollectionFeaturesKey({features});
 
-		expect(key).toMatch(/^[0-9a-z]+:[0-9a-z]+$/);
-		expect(key?.length).toBeLessThan(40);
+		expect(key).toMatch(/^[0-9a-z]+$/);
+		expect(key?.length).toBeLessThan(20);
 		expect(json.length).toBeGreaterThan(1000);
+	});
+
+	it("skips stringify when the feature count changed", () => {
+		const stringify = vi.spyOn(JSON, "stringify");
+		const next = nextFeatureCollectionFeaturesKey(
+			{features: [placeFeature, {...placeFeature, id: "place-2"}]},
+			1,
+		);
+
+		expect(stringify).not.toHaveBeenCalled();
+		expect(next).toEqual({count: 2, key: "n:2"});
+		stringify.mockRestore();
+	});
+
+	it("hashes when the feature count is unchanged", () => {
+		const stringify = vi.spyOn(JSON, "stringify");
+		const next = nextFeatureCollectionFeaturesKey(
+			{features: [placeFeature]},
+			1,
+		);
+		const hashed = featureCollectionFeaturesKey({features: [placeFeature]});
+
+		expect(stringify).toHaveBeenCalled();
+		stringify.mockRestore();
+		expect(next.count).toBe(1);
+		expect(next.key).toBe(hashed);
 	});
 });

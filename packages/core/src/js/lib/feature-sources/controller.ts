@@ -29,7 +29,7 @@ import {
 	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
 	setDataOrError,
 } from "@/lib/feature-sources/actions";
-import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
+import {nextFeatureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
 import {
 	createCombinedFeatureSourceSelector,
 	getCombinedFeatureSourceBindings,
@@ -153,10 +153,13 @@ function normalizeFeatureSourceState(
 			? null
 			: normalizeFeatureSourceData(source.data);
 
+	const fingerprint = nextFeatureCollectionFeaturesKey(data);
+
 	return {
 		...source,
 		data,
-		featuresKey: featureCollectionFeaturesKey(data),
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
 		ids: getIdsFromData(data),
 		featuresById: getFeaturesByIdFromData(data),
 		lastUpdate: source.lastUpdate === undefined ? null : source.lastUpdate,
@@ -225,9 +228,15 @@ function updateSourceData(
 	const oldData = getSourceData(source);
 	const newData = normalizeFeatureSourceData(reduceData(oldData));
 
+	const fingerprint = nextFeatureCollectionFeaturesKey(
+		newData,
+		source.featuresCount,
+	);
+
 	return mergeSource(state, id, {
 		data: newData,
-		featuresKey: featureCollectionFeaturesKey(newData),
+		featuresKey: fingerprint.key,
+		featuresCount: fingerprint.count,
 		ids: getIdsFromData(newData),
 		featuresById: getFeaturesByIdFromData(newData),
 		error: undefined,
@@ -249,7 +258,11 @@ function reduceUncontrolledFeatureSourceChanges(
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
 		) {
-			return mergeSource(state, id, {data: null, featuresKey: undefined});
+			return mergeSource(state, id, {
+				data: null,
+				featuresKey: undefined,
+				featuresCount: undefined,
+			});
 		}
 	}
 

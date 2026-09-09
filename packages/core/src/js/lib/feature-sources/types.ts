@@ -18,6 +18,8 @@ export interface FeatureSourceState extends FeatureSourceConfig {
 	data: FeatureSourceData | null;
 	/** Fingerprint of `data.features`; unchanged when only collection metadata polls. */
 	featuresKey?: string;
+	/** `data.features.length` at the last write; used to skip stringify on count changes. */
+	featuresCount?: number;
 	ids?: Array<FeatureId>;
 	featuresById?: Record<FeatureId, Feature>;
 	error?: string;

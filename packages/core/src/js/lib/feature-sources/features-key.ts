@@ -1,14 +1,20 @@
 /**
- * Stable fingerprint for a FeatureCollection’s `features` array.
+ * Fingerprint of a FeatureCollection’s `features` array.
  *
  * Pulp / xhr-json bodies often change top-level metadata (`buildTimestamp`)
  * on every poll. Compare this key, not the whole collection, before
  * `GeoJSON.readFeatures`.
  *
- * Computed when feature-source data is written (load success / mutations /
- * SSR normalize), not in the map observer. The fingerprint is length plus a
- * 53-bit hash of `JSON.stringify(features)` — not the JSON itself.
+ * Computed when feature-source data is written. Array length is compared to
+ * the previous write first; stringify + hash only run when the count is
+ * unchanged (metadata-only polls and in-place property edits).
  */
+export function featureCollectionFeaturesCount(
+	data: {features?: unknown} | null | undefined,
+): number | undefined {
+	return Array.isArray(data?.features) ? data.features.length : undefined;
+}
+
 export function featureCollectionFeaturesKey(
 	data: {features?: unknown; [key: string]: unknown} | null | undefined,
 ): string | undefined {
@@ -16,13 +22,30 @@ export function featureCollectionFeaturesKey(
 		return undefined;
 	}
 
-	const json = JSON.stringify(data.features);
-	return `${json.length.toString(36)}:${hashString(json).toString(36)}`;
+	return hashString(JSON.stringify(data.features)).toString(36);
+}
+
+/**
+ * Next fingerprint for a store write. When `previousCount` is set and the
+ * feature count changed, skip stringify — the map must reread anyway.
+ */
+export function nextFeatureCollectionFeaturesKey(
+	data: {features?: unknown; [key: string]: unknown} | null | undefined,
+	previousCount?: number,
+): {count: number | undefined; key: string | undefined} {
+	const count = featureCollectionFeaturesCount(data);
+	if (data?.features === undefined) {
+		return {count: undefined, key: undefined};
+	}
+	if (typeof previousCount === "number" && count !== previousCount) {
+		return {count, key: `n:${count}`};
+	}
+	return {count, key: featureCollectionFeaturesKey(data)};
 }
 
 /**
  * cyrb53 (bryc) — 53-bit string hash that fits in a JS number.
- * Collision with the same byte length is not a practical risk for poll skips.
+ * Collision at a given feature count is not a practical risk for poll skips.
  */
 function hashString(str: string): number {
 	let h1 = 0xdeadbeef;
