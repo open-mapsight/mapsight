@@ -27,7 +27,7 @@ catalog:
   "ol": "^10.10.0"
   "pidusage": "^4.0.1"
   "playwright": "^1.62.1"
-  "proj4": "^2.21.0"
+  "proj4": "^2.22.0"
   "react": "^19.2.8"
   "react-dom": "^19.2.8"
   "react-redux": "^9.3.0"
@@ -38,7 +38,7 @@ catalog:
   "tailwindcss": "^4.3.3"
   "typescript": "^6.0.3"
   "vitest": "^4.1.11"
-  "zod": "^4.4.3"
+  "zod": "^4.5.4"
 minimumReleaseAgeExclude:
   - postcss@8.5.10
 overrides:
