@@ -1,17 +1,20 @@
 import type {BuildCacheKeyInput} from "@/lib/feature-sources/cache/types";
+import {resolveXhrJsonUrl} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
 /**
- * Document identity for xhr-json bodies: URL + revision.
+ * Document identity for xhr-json bodies: resolved URL + revision.
  *
  * Placement ids (`controllerName` / `featureSourceId`) differ per embed; two
- * presets that share one GeoJSON must share one entry.
+ * presets that share one GeoJSON must share one entry. The URL is the fetch
+ * target (`resolveXhrJsonUrl`), not the raw config string, so relative paths
+ * and SSR `baseUrl` cannot alias two hosts onto one key.
  */
 export function buildDocumentCacheKey(input: {
 	url: string;
 	revision?: string;
 }): string {
 	const revision = input.revision ?? "";
-	return `doc:${revision}:${input.url}`;
+	return `doc:${revision}:${resolveXhrJsonUrl(input.url)}`;
 }
 
 /** True when `key` is a document entry for `url`, any revision. */
@@ -19,7 +22,7 @@ export function documentCacheKeyMatchesUrl(key: string, url: string): boolean {
 	if (url === "" || !key.startsWith("doc:")) {
 		return false;
 	}
-	return key.endsWith(`:${url}`);
+	return key.endsWith(`:${resolveXhrJsonUrl(url)}`);
 }
 
 /**

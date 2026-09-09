@@ -1,5 +1,7 @@
 import {describe, expect, it} from "vitest";
 
+import {resolveXhrJsonUrl} from "@/lib/feature-sources/loaders/xhr-json-loader";
+
 import {
 	buildCacheKey,
 	buildDocumentCacheKey,
@@ -19,9 +21,28 @@ describe("buildDocumentCacheKey", () => {
 	it("omits revision when unset", () => {
 		expect(
 			buildDocumentCacheKey({
-				url: "/geojson/schools.geojson",
+				url: "https://example.test/geojson/schools.geojson",
 			}),
-		).toBe("doc::/geojson/schools.geojson");
+		).toBe("doc::https://example.test/geojson/schools.geojson");
+	});
+
+	it("resolves relative urls the same way the loader fetches", () => {
+		const relative = "/geojson/schools.geojson";
+		const resolved = resolveXhrJsonUrl(relative);
+		expect(buildDocumentCacheKey({url: relative})).toBe(
+			buildDocumentCacheKey({url: resolved}),
+		);
+		expect(
+			documentCacheKeyMatchesUrl(
+				buildDocumentCacheKey({url: relative, revision: "pub-12"}),
+				resolved,
+			),
+		).toBe(true);
+		expect(buildDocumentCacheKey({url: relative})).not.toBe(
+			buildDocumentCacheKey({
+				url: "https://other.test/geojson/schools.geojson",
+			}),
+		);
 	});
 
 	it("matches a document key for the same url under any revision", () => {
