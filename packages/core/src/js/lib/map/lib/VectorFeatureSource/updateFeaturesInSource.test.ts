@@ -72,7 +72,9 @@ describe("updateFeaturesInSource", () => {
 		const {source, sourceChanged, changeFeature} =
 			sourceWithFeature(feature);
 		const geometryChanged = vi.fn();
+		const featureChanged = vi.fn();
 		feature.on("change:geometry", geometryChanged);
+		feature.on("change", featureChanged);
 
 		const next = rereadFeature(feature);
 		next.setGeometry(new Point([11, 53]));
@@ -81,7 +83,8 @@ describe("updateFeaturesInSource", () => {
 
 		expect(result.changed).toBe(true);
 		expect(feature.getGeometry()?.getFlatCoordinates()).toEqual([11, 53]);
-		expect(geometryChanged).toHaveBeenCalled();
+		expect(geometryChanged).toHaveBeenCalledTimes(1);
+		expect(featureChanged).toHaveBeenCalledTimes(1);
 		expect(changeFeature).toHaveBeenCalled();
 		expect(sourceChanged).toHaveBeenCalled();
 	});

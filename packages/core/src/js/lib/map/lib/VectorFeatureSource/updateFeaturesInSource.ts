@@ -7,9 +7,10 @@ import geometriesEqual from "@mapsight/lib-ol/geometry/geometriesEqual";
 import {getOlFeatureId} from "@/lib/helpers/ol";
 
 /**
- * Modifies the openlayers feature with the given properties.
- * Will trigger openlayers observe events when appropriate. Changes to geometry will trigger an change:geometry event otherwise
- * only one change event will be triggered if any of the props changed.
+ * Updates an OpenLayers feature with the given properties.
+ * Will trigger OpenLayers observe events when appropriate. Geometry changes
+ * dispatch `change:geometry` (and `change`). Other applied keys are set
+ * silently, then a single `change` is dispatched if anything changed.
  *
  * Geometry is compared by value (type, layout, flat coordinates). Other keys
  * are applied only when they are in the core / style / identity set; UI-only
@@ -31,7 +32,9 @@ function modifyFeature(
 	const oldProps = baseFeature.getProperties();
 
 	// TODO: Should we remove old properties not existing in new properties?
-	let featureChanged = false;
+	let silentChanged = false;
+	let nextGeometry: unknown;
+	let geometryChanged = false;
 	for (const key of Object.keys(newProps)) {
 		if (key !== "geometry" && !coreKeys.has(key)) {
 			continue;
@@ -46,14 +49,25 @@ function modifyFeature(
 			continue;
 		}
 
-		featureChanged = true;
-		baseFeature.set(key, newValue, key !== "geometry");
+		if (key === "geometry") {
+			nextGeometry = newValue;
+			geometryChanged = true;
+			continue;
+		}
+
+		silentChanged = true;
+		baseFeature.set(key, newValue, true);
 	}
 
-	if (featureChanged) {
-		baseFeature.changed();
+	if (geometryChanged) {
+		baseFeature.set("geometry", nextGeometry);
+		return true;
 	}
-	return featureChanged;
+	if (silentChanged) {
+		baseFeature.changed();
+		return true;
+	}
+	return false;
 }
 
 /**
