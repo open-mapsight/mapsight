@@ -8,6 +8,7 @@ import {
 } from "@/lib/feature-sources/cache/http-freshness";
 import {singleFlight} from "@/lib/feature-sources/cache/single-flight";
 import type {
+	FeatureSourceCache,
 	FeatureSourceCacheEntry,
 	FeatureSourceCacheExtra,
 } from "@/lib/feature-sources/cache/types";
@@ -450,13 +451,34 @@ function isFeatureSourceCacheDebugEnabled() {
 	);
 }
 
+function isFeatureSourceCache(value: unknown): value is FeatureSourceCache {
+	if (!value || typeof value !== "object") {
+		return false;
+	}
+	const cache = value as FeatureSourceCache;
+	return (
+		typeof cache.get === "function" &&
+		typeof cache.put === "function" &&
+		typeof cache.delete === "function" &&
+		typeof cache.estimateTotalBytes === "function" &&
+		typeof cache.evictLRU === "function"
+	);
+}
+
 function asFeatureSourceCacheExtra(
 	extraArgument: unknown,
 ): FeatureSourceCacheExtra | undefined {
 	if (!extraArgument || typeof extraArgument !== "object") {
 		return undefined;
 	}
-	return extraArgument;
+	const extra = extraArgument as FeatureSourceCacheExtra;
+	if (
+		extra.featureSourceCache !== undefined &&
+		!isFeatureSourceCache(extra.featureSourceCache)
+	) {
+		return {...extra, featureSourceCache: undefined};
+	}
+	return extra;
 }
 
 function shouldUseDocumentCache(state: FeatureSourceState): boolean {
@@ -578,11 +600,6 @@ async function loadWithCache(
 		...loaderOptions
 	} = options;
 
-	const canUseReduxCache = !forceRefresh && state.data;
-	if (useCache !== USE_CACHE_NO && canUseReduxCache) {
-		return Promise.resolve(state.data);
-	}
-
 	const cache = extra?.featureSourceCache;
 	const canUseDocumentCache =
 		useCache !== USE_CACHE_NO && cache && shouldUseDocumentCache(state);
@@ -645,6 +662,11 @@ async function loadWithCache(
 				forceRefresh,
 			);
 		});
+	}
+
+	const canUseReduxCache = !forceRefresh && state.data;
+	if (useCache !== USE_CACHE_NO && canUseReduxCache) {
+		return Promise.resolve(state.data);
 	}
 
 	if (useCache === USE_CACHE_ONLY) {

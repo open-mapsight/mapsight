@@ -404,4 +404,68 @@ describe("load with FeatureSourceCache", () => {
 			}),
 		);
 	});
+
+	it("revalidates the document cache even when Redux already has data", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 1000,
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "max-age=0, must-revalidate",
+		});
+
+		const fetchMock = vi.fn(() => ({
+			ok: false,
+			status: 304,
+			headers: {
+				get(name: string) {
+					return name === "ETag" ? '"v1"' : null;
+				},
+			},
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(
+			dispatch,
+			() => xhrJsonState({data: schoolsCollection, lastUpdate: 1}),
+			{featureSourceCache: cache},
+		);
+
+		expect(fetchMock).toHaveBeenCalledWith(
+			expect.stringContaining("/geojson/schools.geojson"),
+			expect.objectContaining({
+				headers: {"If-None-Match": '"v1"'},
+			}),
+		);
+	});
+
+	it("ignores a non-adapter featureSourceCache and loads from the network", async () => {
+		const fetchMock = vi.fn(() => ({
+			ok: true,
+			status: 200,
+			headers: emptyHeaders(),
+			json: () => Promise.resolve(schoolsCollection),
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools")(dispatch, () => xhrJsonState(), {
+			featureSourceCache: true as never,
+		});
+
+		expect(fetchMock).toHaveBeenCalledOnce();
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: schoolsCollection,
+			}),
+		);
+	});
 });
