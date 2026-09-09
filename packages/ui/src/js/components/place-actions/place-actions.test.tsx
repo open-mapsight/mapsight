@@ -360,6 +360,24 @@ describe("PlaceActions", () => {
 		);
 	});
 
+	it("names a labeled action from its visible text, not the tooltip", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature()}
+				config={{
+					permalink: "https://example.de/plan?feature=schlosspark",
+					navigation: {fromGeometry: false},
+				}}
+			>
+				<PlaceActions.Share label="Teilen" />
+			</PlaceActions.Root>,
+		);
+
+		const share = screen.getByRole("button", {name: "Teilen"});
+		expect(share.getAttribute("aria-label")).toBeNull();
+		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
+	});
+
 	it("keeps a permalink anchor in the document for share", () => {
 		render(
 			<PlaceActions.Root

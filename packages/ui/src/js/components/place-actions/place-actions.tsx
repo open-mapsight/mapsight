@@ -58,7 +58,7 @@ function classNames(
 
 type ActionChrome = {
 	title: string;
-	ariaLabel: string;
+	ariaLabel?: string;
 	visible: ReactNode;
 	iconOnly: boolean;
 };
@@ -70,7 +70,6 @@ function actionChrome(
 	if (label != null) {
 		return {
 			title: tooltip,
-			ariaLabel: typeof label === "string" ? label : tooltip,
 			visible: label,
 			iconOnly: false,
 		};
@@ -440,7 +439,7 @@ function Call({
 				className,
 			)}
 			title={tooltip}
-			aria-label={tooltip}
+			aria-label={chrome.ariaLabel}
 		>
 			{icon ? (
 				<span className="ms3-place-actions__icon">{icon}</span>
