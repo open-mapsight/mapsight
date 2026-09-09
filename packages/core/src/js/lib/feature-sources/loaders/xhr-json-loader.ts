@@ -125,6 +125,12 @@ export async function fetchXhrJson(
 	};
 
 	if (response.status === 304) {
+		if (!("If-None-Match" in headers || "If-Modified-Since" in headers)) {
+			throw new XhrJsonHttpError(
+				304,
+				response.statusText || "Not Modified",
+			);
+		}
 		return {...meta, notModified: true};
 	}
 

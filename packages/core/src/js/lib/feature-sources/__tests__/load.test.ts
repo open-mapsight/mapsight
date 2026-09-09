@@ -7,6 +7,7 @@ import {
 	LOAD_FEATURE_SOURCE,
 	LOAD_FEATURE_SOURCE_ERROR,
 	LOAD_FEATURE_SOURCE_SUCCESS,
+	USE_CACHE_NO,
 	USE_CACHE_ONLY,
 	load,
 } from "@/lib/feature-sources/actions";
@@ -253,6 +254,62 @@ describe("load with FeatureSourceCache", () => {
 			.find((action) => action.type === LOAD_FEATURE_SOURCE_ERROR);
 		expect(failure?.error).toBeInstanceOf(Error);
 		expect(failure?.error?.message).toBe(ERROR_COLD_CACHE);
+	});
+
+	it("invalidates the document cache after a cache-bypassing fetch", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now(),
+			bytes: 10,
+		});
+		const freshCollection = {
+			type: "FeatureCollection" as const,
+			features: [],
+		};
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				headers: emptyHeaders(),
+				json: () => Promise.resolve(freshCollection),
+			})),
+		);
+
+		const dispatch = vi.fn();
+		await load(controllerName, "schools", {useCache: USE_CACHE_NO})(
+			dispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache},
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: freshCollection,
+			}),
+		);
+		expect(await cache.get(key)).toBeNull();
+
+		const nextDispatch = vi.fn();
+		await load(controllerName, "schools")(
+			nextDispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache},
+		);
+		expect(nextDispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: freshCollection,
+			}),
+		);
+		expect(fetch).toHaveBeenCalledTimes(2);
 	});
 
 	it("serves Redux data for USE_CACHE_ONLY when the document cache is cold", async () => {

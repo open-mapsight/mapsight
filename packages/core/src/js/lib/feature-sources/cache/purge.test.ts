@@ -59,6 +59,21 @@ describe("purgeDocumentCacheEntries", () => {
 		expect(cache.keys()).toEqual([]);
 	});
 
+	it("drops per-url generation counters on a full purge", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const url = "https://example.test/schools.geojson";
+		await putUrl(cache, url);
+		await purgeDocumentCacheEntries(cache, [url]);
+		const afterUrl = captureCacheWriteGeneration(cache, url);
+		expect(afterUrl.url).toBeGreaterThan(0);
+
+		await putUrl(cache, url);
+		await purgeDocumentCacheEntries(cache);
+		const afterAll = captureCacheWriteGeneration(cache, url);
+		expect(afterAll.url).toBe(0);
+		expect(afterAll.global).toBeGreaterThan(afterUrl.global);
+	});
+
 	it("rejects a later put from work started before the purge", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const url = "https://example.test/schools.geojson";

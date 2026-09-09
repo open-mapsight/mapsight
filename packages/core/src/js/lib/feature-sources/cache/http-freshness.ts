@@ -270,7 +270,7 @@ export function shouldPersistDocumentCache(input: {
 /**
  * Whether concurrent waiters on a shared cache may observe this response.
  * `no-store` and shared `private` are not stored; they must not be handed to
- * other SSR renders through `singleFlight` either.
+ * other SSR renders through in-flight coalescing either.
  */
 export function isShareableCachedResponse(input: {
 	cacheControl?: string;

@@ -27,7 +27,6 @@ export {
 	type CacheTtlPolicy,
 	type FreshnessDecision,
 } from "./cache/http-freshness";
-export {singleFlight} from "./cache/single-flight";
 export {
 	warmFeatureSourceUrl,
 	type WarmFeatureSourceUrlOptions,

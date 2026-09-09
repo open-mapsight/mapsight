@@ -67,6 +67,7 @@ export function bumpDocumentCacheGeneration(
 	if (unique.length === 0) {
 		state.generation += 1;
 		state.inflight.clear();
+		state.urlGeneration.clear();
 		return;
 	}
 
@@ -111,35 +112,13 @@ export function isCacheWriteGenerationCurrent(
 	);
 }
 
-/**
- * One in-flight loader per cache key so a stampede shares a single fetch.
- */
-export function singleFlight<T>(
-	cache: FeatureSourceCache,
-	key: string,
-	load: () => Promise<T>,
-): Promise<T> {
-	const state = flightState(cache);
-	const existing = state.inflight.get(key);
-	if (existing) {
-		return existing as Promise<T>;
-	}
-
-	const pending = load().finally(() => {
-		if (state.inflight.get(key) === pending) {
-			state.inflight.delete(key);
-		}
-	});
-	state.inflight.set(key, pending);
-	return pending;
-}
-
 type ShareableFlightResult<T> = {share: true; value: T} | {share: false};
 
 /**
- * Like `singleFlight`, but waiters do not observe `value` unless the leader
- * marked the result shareable. Unshareable bodies stay with the leader;
- * waiters run `load` themselves.
+ * One in-flight loader per cache key so a stampede shares a single fetch.
+ * Waiters do not observe `value` unless the leader marked the result
+ * shareable. Unshareable bodies stay with the leader; waiters run `load`
+ * themselves.
  */
 export async function singleFlightIfShareable<T>(
 	cache: FeatureSourceCache,

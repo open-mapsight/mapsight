@@ -801,5 +801,30 @@ async function loadWithCache(
 		throw new Error(ERROR_COLD_CACHE);
 	}
 
-	return loadFromLoader(state, getState, id, controllerName, loaderOptions);
+	const data = await loadFromLoader(
+		state,
+		getState,
+		id,
+		controllerName,
+		loaderOptions,
+	);
+	if (
+		useCache === USE_CACHE_NO &&
+		cache &&
+		extra &&
+		shouldUseDocumentCache(state) &&
+		state.url
+	) {
+		const url = xhrJson.resolveXhrJsonUrl(state.url);
+		const key = documentCacheKey(url, id, controllerName, extra);
+		await withDocumentCacheWrite(cache, async () => {
+			bumpDocumentCacheGeneration(cache, [url]);
+			try {
+				await cache.delete(key);
+			} catch {
+				// Optional adapter: the origin document still returns.
+			}
+		});
+	}
+	return data;
 }

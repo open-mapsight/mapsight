@@ -81,6 +81,22 @@ describe("xhr-json loader", () => {
 		);
 	});
 
+	it("rejects an unsolicited 304 when no validator was sent", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: false,
+				status: 304,
+				statusText: "Not Modified",
+				headers: {get: () => null},
+			})),
+		);
+
+		await expect(fetchXhrJson("/schools.geojson")).rejects.toMatchObject({
+			status: 304,
+		});
+	});
+
 	it("does not send validators on browser cross-origin requests", async () => {
 		const fetchMock = vi.fn(() => ({
 			ok: true,
