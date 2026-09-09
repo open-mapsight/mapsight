@@ -15,7 +15,7 @@
 		"ol": "^10.10.0",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
-		"zod": "^4.4.3"
+		"zod": "^4.5.4"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "^13.0.2",

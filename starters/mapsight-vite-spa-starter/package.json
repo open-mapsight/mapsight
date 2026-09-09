@@ -16,7 +16,7 @@
 		"react-dom": "^19.2.8",
 		"react-modal": "^3.16.3",
 		"react-router-dom": "^7.18.2",
-		"zod": "^4.4.3"
+		"zod": "^4.5.4"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "^13.0.2",
