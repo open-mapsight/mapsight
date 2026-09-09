@@ -4,6 +4,10 @@
 	position: relative;
 	clear: both;
 	flex-grow: 1;
+	// Shrink beside a docked list in every view (desktop/fullscreen/mapOnly).
+	// View classes are exclusive (`ms3-wrapper--${view}`), so this cannot be
+	// scoped to `--desktop` alone.
+	min-width: 0;
 	height: calc(100vh - var(--ms3-fullscreen-top));
 	height: calc(100svh - var(--ms3-fullscreen-top));
 	// No max-height transition: Safari cannot interpolate `33vh` ↔

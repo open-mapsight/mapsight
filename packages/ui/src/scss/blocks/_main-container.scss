@@ -1,6 +1,7 @@
 .ms3-main-container {
 	display: flex;
 	flex-direction: column;
+	min-width: 0;
 
 	.ms3-wrapper--mapOnly &,
 	.ms3-wrapper--fullscreen & {
