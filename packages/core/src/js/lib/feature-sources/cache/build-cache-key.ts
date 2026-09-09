@@ -13,8 +13,8 @@ export function buildDocumentCacheKey(input: {
 	url: string;
 	revision?: string;
 }): string {
-	const revision = input.revision ?? "";
-	return `doc:${revision}:${resolveXhrJsonUrl(input.url)}`;
+	const revision = encodeURIComponent(input.revision ?? "");
+	return `doc:${revision}:${encodeURIComponent(resolveXhrJsonUrl(input.url))}`;
 }
 
 /** True when `key` is a document entry for `url`, any revision. */
@@ -22,7 +22,12 @@ export function documentCacheKeyMatchesUrl(key: string, url: string): boolean {
 	if (url === "" || !key.startsWith("doc:")) {
 		return false;
 	}
-	return key.endsWith(`:${resolveXhrJsonUrl(url)}`);
+	const rest = key.slice(4);
+	const colon = rest.indexOf(":");
+	if (colon === -1) {
+		return false;
+	}
+	return rest.slice(colon + 1) === encodeURIComponent(resolveXhrJsonUrl(url));
 }
 
 /**

@@ -1,6 +1,9 @@
 import {describe, expect, it} from "vitest";
 
-import {buildDocumentCacheKey} from "./build-cache-key";
+import {
+	buildDocumentCacheKey,
+	documentCacheKeyMatchesUrl,
+} from "./build-cache-key";
 import {createMemoryFeatureSourceCache} from "./memory-cache";
 import {purgeDocumentCacheEntries} from "./purge";
 import {
@@ -76,8 +79,11 @@ describe("purgeDocumentCacheEntries", () => {
 		expect(isCacheWriteGenerationCurrent(cache, url, generation)).toBe(
 			false,
 		);
-		expect(buildDocumentCacheKey({url, revision}).includes(revision)).toBe(
-			true,
-		);
+		expect(
+			documentCacheKeyMatchesUrl(
+				buildDocumentCacheKey({url, revision}),
+				url,
+			),
+		).toBe(true);
 	});
 });

@@ -10,20 +10,34 @@ import {
 
 describe("buildDocumentCacheKey", () => {
 	it("keys by url and revision so placements share one document", () => {
+		const url = "https://example.test/geojson/schools.geojson";
 		expect(
 			buildDocumentCacheKey({
-				url: "https://example.test/geojson/schools.geojson",
+				url,
 				revision: "pub-12",
 			}),
-		).toBe("doc:pub-12:https://example.test/geojson/schools.geojson");
+		).toBe(`doc:pub-12:${encodeURIComponent(url)}`);
 	});
 
 	it("omits revision when unset", () => {
+		const url = "https://example.test/geojson/schools.geojson";
+		expect(buildDocumentCacheKey({url})).toBe(
+			`doc:${encodeURIComponent("")}:${encodeURIComponent(url)}`,
+		);
+	});
+
+	it("does not collide when revision text looks like a URL prefix", () => {
 		expect(
 			buildDocumentCacheKey({
-				url: "https://example.test/geojson/schools.geojson",
+				url: "https://example.com/b",
+				revision: "r:https://example.com/a",
 			}),
-		).toBe("doc::https://example.test/geojson/schools.geojson");
+		).not.toBe(
+			buildDocumentCacheKey({
+				url: "https://example.com/a:https://example.com/b",
+				revision: "r",
+			}),
+		);
 	});
 
 	it("resolves relative urls the same way the loader fetches", () => {
