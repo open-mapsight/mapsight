@@ -13,6 +13,7 @@ import {createFilteredFeatureSourceSelector} from "@/lib/feature-sources/selecto
 import type {FeatureSourceState} from "@/lib/feature-sources/types";
 import type {EnhancedStore} from "@/types";
 
+import {featureCollectionFeaturesKey} from "./featureCollectionFeaturesKey";
 import {updateFeaturesInSource} from "./updateFeaturesInSource";
 
 const listenerStoreMaps = new WeakMap();
@@ -40,6 +41,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _listeners: Array<FeatureSourceListener>;
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
 	private _format: GeoJSONFormat;
+	private _lastFeaturesKey: string | undefined;
 
 	constructor(
 		store: EnhancedStore,
@@ -158,6 +160,16 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
+				const featuresKey = featureCollectionFeaturesKey(
+					sourceState.data,
+				);
+				if (
+					featuresKey !== undefined &&
+					featuresKey === this._lastFeaturesKey
+				) {
+					return;
+				}
+
 				// try to read from feature source
 				let newFeatures;
 				try {
@@ -169,6 +181,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 					}) as Array<OlFeature>;
 
 					updateFeaturesInSource(this, newFeatures);
+					this._lastFeaturesKey = featuresKey;
 
 					this._listeners.forEach((listener) => listener());
 				} catch (_e) {

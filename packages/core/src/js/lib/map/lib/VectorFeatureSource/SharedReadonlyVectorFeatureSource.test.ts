@@ -34,7 +34,10 @@ function createStore(initial: State) {
 	};
 }
 
-function sourceState(features: (typeof placeFeature)[]): State {
+function sourceState(
+	features: (typeof placeFeature)[],
+	buildTimestamp?: string,
+): State {
 	return {
 		featureSources: {
 			parking: {
@@ -43,6 +46,7 @@ function sourceState(features: (typeof placeFeature)[]): State {
 				filters: [],
 				data: {
 					type: "FeatureCollection",
+					...(buildTimestamp ? {buildTimestamp} : {}),
 					features,
 				},
 				lastUpdate: 1,
@@ -134,5 +138,66 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 		);
 
 		expect(again).toHaveBeenCalled();
+	});
+
+	it("skips readFeatures when only collection metadata changed", () => {
+		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
+		const store = createStore(sourceState([placeFeature], "t1"));
+		const onUpdate = vi.fn();
+
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			onUpdate,
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(1);
+
+		store.setState(sourceState([placeFeature], "t2"));
+
+		expect(readFeatures).toHaveBeenCalledTimes(1);
+		expect(onUpdate).toHaveBeenCalledTimes(1);
+	});
+
+	it("reads again when a feature actually changes", () => {
+		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
+		const store = createStore(sourceState([placeFeature], "t1"));
+		const onUpdate = vi.fn();
+
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			onUpdate,
+		);
+
+		store.setState(
+			sourceState(
+				[
+					{
+						...placeFeature,
+						properties: {
+							...placeFeature.properties,
+							markerCaption: "208",
+						},
+					},
+				],
+				"t2",
+			),
+		);
+
+		expect(readFeatures).toHaveBeenCalledTimes(2);
+		expect(onUpdate).toHaveBeenCalledTimes(2);
 	});
 });
