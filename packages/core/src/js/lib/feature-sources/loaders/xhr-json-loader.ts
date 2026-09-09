@@ -47,8 +47,8 @@ function readHeader(
 	headers: {get(name: string): string | null} | undefined,
 	name: string,
 ): string | undefined {
-	const value = headers?.get(name);
-	return value && value.trim() !== "" ? value : undefined;
+	const value = headers?.get(name)?.trim();
+	return value ? value : undefined;
 }
 
 export async function fetchXhrJson(

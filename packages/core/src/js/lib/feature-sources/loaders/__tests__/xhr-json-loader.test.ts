@@ -71,4 +71,33 @@ describe("xhr-json loader", () => {
 			}),
 		);
 	});
+
+	it("trims validator and freshness headers", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				headers: {
+					get(name: string) {
+						if (name === "ETag") {
+							return '  "abc"  ';
+						}
+						if (name === "Cache-Control") {
+							return "  max-age=60  ";
+						}
+						return null;
+					},
+				},
+				json: () =>
+					Promise.resolve({type: "FeatureCollection", features: []}),
+			})),
+		);
+
+		const result = await fetchXhrJson("/schools.geojson");
+
+		expect(result.etag).toBe('"abc"');
+		expect(result.cacheControl).toBe("max-age=60");
+	});
 });
