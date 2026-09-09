@@ -378,6 +378,30 @@ describe("PlaceActions", () => {
 		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
 	});
 
+	it("keeps the telephone in a labeled call action's accessible name", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature({
+					properties: {
+						id: "schlosspark",
+						schema: {telephone: "+49 531 470 1"},
+					},
+				})}
+				config={isolated}
+			>
+				<PlaceActions.Call label="Anrufen" />
+			</PlaceActions.Root>,
+		);
+
+		const link = screen.getByRole("link", {
+			name: "Anrufen: +49 531 470 1",
+		});
+		expect(link.getAttribute("aria-label")).toBeNull();
+		expect(link.getAttribute("title")).toBe(
+			"Diesen Ort anrufen: +49 531 470 1",
+		);
+	});
+
 	it("keeps a permalink anchor in the document for share", () => {
 		render(
 			<PlaceActions.Root

@@ -428,6 +428,9 @@ function Call({
 
 	const tooltip = `${translate("ui.place-actions.call.tooltip")}: ${call.telephone}`;
 	const chrome = actionChrome(tooltip, label);
+	const hideTelephone =
+		!chrome.iconOnly &&
+		!(typeof label === "string" && label.includes(call.telephone));
 
 	return (
 		<T
@@ -445,6 +448,9 @@ function Call({
 				<span className="ms3-place-actions__icon">{icon}</span>
 			) : null}
 			{chrome.visible}
+			{hideTelephone ? (
+				<span className="ms3-visuallyhidden">{`: ${call.telephone}`}</span>
+			) : null}
 		</T>
 	);
 }
