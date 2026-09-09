@@ -161,9 +161,9 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
-				// Selector reuses the filtered `data` object when featuresKey is
-				// stable. Skip without hashing in that case. Hash is the fallback
-				// when a new collection object arrives (SSR hydrate, tests).
+				// Skip only when this is the same collection object. A metadata-only
+				// poll produces a new object with the same features key; hash
+				// that and skip GeoJSON.readFeatures.
 				if (sourceState.data === this._lastData) {
 					return;
 				}
