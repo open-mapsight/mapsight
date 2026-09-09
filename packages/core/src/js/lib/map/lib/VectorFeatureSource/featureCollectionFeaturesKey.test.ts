@@ -50,4 +50,21 @@ describe("featureCollectionFeaturesKey", () => {
 		expect(featureCollectionFeaturesKey(null)).toBeUndefined();
 		expect(featureCollectionFeaturesKey({})).toBeUndefined();
 	});
+
+	it("does not retain the stringified features array", () => {
+		const features = Array.from({length: 40}, (_, index) => ({
+			...placeFeature,
+			id: `place-${index}`,
+			properties: {
+				...placeFeature.properties,
+				name: `Place ${index}`,
+			},
+		}));
+		const json = JSON.stringify(features);
+		const key = featureCollectionFeaturesKey({features});
+
+		expect(key).toMatch(/^[0-9a-z]+:[0-9a-z]+$/);
+		expect(key?.length).toBeLessThan(40);
+		expect(json.length).toBeGreaterThan(1000);
+	});
 });
