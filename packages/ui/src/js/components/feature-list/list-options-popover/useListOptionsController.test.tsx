@@ -125,7 +125,8 @@ function renderController(
 			</FeatureListContextProvider>
 		</Provider>
 	);
-	return renderHook(() => useListOptionsController(), {wrapper});
+	const hook = renderHook(() => useListOptionsController(), {wrapper});
+	return {...hook, store};
 }
 
 describe("useListOptionsController", () => {
@@ -145,13 +146,19 @@ describe("useListOptionsController", () => {
 		expect(result.current.sorting).toBe("");
 	});
 
-	it("counts a list query as an active filter that can be reset", () => {
-		const {result} = renderController(
+	it("does not count a list query as an active popover filter", () => {
+		const {result, store} = renderController(
 			baseState({app: {listQuery: "cafe"}}),
 		);
 
-		expect(result.current.activeFilterCount).toBe(1);
-		expect(result.current.canResetOptions).toBe(true);
+		expect(result.current.activeFilterCount).toBe(0);
+		expect(result.current.canResetOptions).toBe(false);
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(store.getState().app.listQuery).toBe("cafe");
 	});
 
 	it("counts a visible tag as an active filter", () => {
@@ -178,8 +185,8 @@ describe("useListOptionsController", () => {
 		expect(result.current.sorting).toBe("center");
 	});
 
-	it("reset clears query, tags, and custom sorting", () => {
-		const {result} = renderController(
+	it("reset clears tags and custom sorting but leaves the list query", () => {
+		const {result, store} = renderController(
 			baseState({
 				app: {
 					listQuery: "cafe",
@@ -192,8 +199,9 @@ describe("useListOptionsController", () => {
 			}),
 		);
 
-		expect(result.current.activeFilterCount).toBe(2);
+		expect(result.current.activeFilterCount).toBe(1);
 		expect(result.current.canResetOptions).toBe(true);
+		expect(store.getState().app.listQuery).toBe("cafe");
 
 		act(() => {
 			result.current.reset();
@@ -203,5 +211,6 @@ describe("useListOptionsController", () => {
 		expect(result.current.hasCustomSorting).toBe(false);
 		expect(result.current.canResetOptions).toBe(false);
 		expect(result.current.sorting).toBe("");
+		expect(store.getState().app.listQuery).toBe("cafe");
 	});
 });

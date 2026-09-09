@@ -9,9 +9,15 @@ import FeaturesQueryInput from "./query-input";
 
 function FeatureFilter() {
 	const dispatch = useDispatch();
+	const listQuery = useSelector(listQuerySelector) ?? "";
 
-	const [input, setInput] = useState(useSelector(listQuerySelector));
+	const [input, setInput] = useState(listQuery);
 	const debouncedInput = useDebounce(input, 200);
+
+	useEffect(() => {
+		setInput((current) => (current === listQuery ? current : listQuery));
+	}, [listQuery]);
+
 	useEffect(() => {
 		if (debouncedInput !== "") {
 			dispatch(filterListQuery(debouncedInput));

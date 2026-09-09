@@ -1,6 +1,11 @@
 @use "../variables";
 
 .ms3-query-input-with-label {
+	display: block;
+	width: 100%;
+	min-width: 0;
+	border: 0;
+
 	&__label {
 		margin-right: 8px;
 	}
@@ -9,8 +14,9 @@
 		border: 0;
 		flex-grow: 1;
 		padding: 0;
-		display: inline-block;
+		display: block;
 		position: relative;
+		width: 100%;
 
 		@if variables.$ms3-option-queryInputWithLabelSearchIcon {
 			min-height: 34px;
@@ -28,6 +34,31 @@
 				pointer-events: none;
 			}
 		}
+	}
+
+	&__open {
+		box-sizing: border-box;
+		display: block;
+		width: 100%;
+		min-height: 34px;
+		margin: 0;
+		padding: 6px 8px;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		font-size: 1.23077rem;
+		line-height: 1.25;
+		text-align: left;
+		cursor: pointer;
+
+		@if variables.$ms3-option-queryInputWithLabelSearchIcon {
+			padding-left: 33px;
+		}
+	}
+
+	&__open-label {
+		color: #555;
 	}
 
 	&__input {
