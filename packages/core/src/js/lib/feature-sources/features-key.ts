@@ -5,9 +5,9 @@
  * on every poll. Compare this key, not the whole collection, before
  * `GeoJSON.readFeatures`.
  *
- * The fingerprint is length + a 53-bit hash of `JSON.stringify(features)`,
- * not the JSON itself — parking / places payloads are large, and the source
- * already holds the parsed collection in Redux.
+ * Computed when feature-source data is written (load success / mutations /
+ * SSR normalize), not in the map observer. The fingerprint is length plus a
+ * 53-bit hash of `JSON.stringify(features)` — not the JSON itself.
  */
 export function featureCollectionFeaturesKey(
 	data: {features?: unknown; [key: string]: unknown} | null | undefined,

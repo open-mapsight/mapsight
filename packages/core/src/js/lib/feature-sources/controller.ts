@@ -29,6 +29,7 @@ import {
 	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
 	setDataOrError,
 } from "@/lib/feature-sources/actions";
+import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
 import {
 	createCombinedFeatureSourceSelector,
 	getCombinedFeatureSourceBindings,
@@ -155,6 +156,7 @@ function normalizeFeatureSourceState(
 	return {
 		...source,
 		data,
+		featuresKey: featureCollectionFeaturesKey(data),
 		ids: getIdsFromData(data),
 		featuresById: getFeaturesByIdFromData(data),
 		lastUpdate: source.lastUpdate === undefined ? null : source.lastUpdate,
@@ -172,6 +174,7 @@ function shouldNormalizeFeatureSourceState(source: FeatureSourceState) {
 	return (
 		source.data === undefined ||
 		source.data !== data ||
+		(data?.features !== undefined && source.featuresKey === undefined) ||
 		!isEqual(source.ids, getIdsFromData(data)) ||
 		!isEqual(source.featuresById, getFeaturesByIdFromData(data)) ||
 		source.lastUpdate === undefined ||
@@ -224,6 +227,7 @@ function updateSourceData(
 
 	return mergeSource(state, id, {
 		data: newData,
+		featuresKey: featureCollectionFeaturesKey(newData),
 		ids: getIdsFromData(newData),
 		featuresById: getFeaturesByIdFromData(newData),
 		error: undefined,
@@ -245,7 +249,7 @@ function reduceUncontrolledFeatureSourceChanges(
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
 		) {
-			return mergeSource(state, id, {data: null});
+			return mergeSource(state, id, {data: null, featuresKey: undefined});
 		}
 	}
 

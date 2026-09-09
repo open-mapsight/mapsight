@@ -93,4 +93,36 @@ describe("feature source selectors", () => {
 		expect(result?.ids).toEqual(["visible"]);
 		expect(result?.featuresById).toEqual({visible: visibleFeature});
 	});
+
+	it("reuses the previous filtered state when only collection metadata changed", () => {
+		const selector = createFilteredFeatureSourceSelector(
+			"featureSources",
+			"places",
+		);
+		const featuresKey = "same-features";
+		const firstState = {
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+					lastUpdate: 1,
+				},
+			},
+		} satisfies State;
+		const secondState = {
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+					lastUpdate: 2,
+					isLoading: true,
+				},
+			},
+		} satisfies State;
+
+		const first = selector(firstState);
+		const second = selector(secondState);
+
+		expect(second).toBe(first);
+	});
 });

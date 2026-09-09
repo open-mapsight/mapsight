@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {featureCollectionFeaturesKey} from "./featureCollectionFeaturesKey";
+import {featureCollectionFeaturesKey} from "./features-key";
 
 const placeFeature = {
 	id: "place-1",

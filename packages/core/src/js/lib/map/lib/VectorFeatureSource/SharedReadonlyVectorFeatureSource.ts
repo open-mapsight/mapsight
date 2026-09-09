@@ -9,11 +9,11 @@ import type {Unsubscribe} from "@reduxjs/toolkit";
 
 import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 
+import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
 import {createFilteredFeatureSourceSelector} from "@/lib/feature-sources/selectors";
 import type {FeatureSourceState} from "@/lib/feature-sources/types";
 import type {EnhancedStore} from "@/types";
 
-import {featureCollectionFeaturesKey} from "./featureCollectionFeaturesKey";
 import {updateFeaturesInSource} from "./updateFeaturesInSource";
 
 const listenerStoreMaps = new WeakMap();
@@ -160,6 +160,9 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
+				// Fallback when the store has no featuresKey (SSR hydrate).
+				// Load/poll ticks with a stable featuresKey are skipped earlier:
+				// createFilteredFeatureSourceSelector reuses its previous state.
 				const featuresKey = featureCollectionFeaturesKey(
 					sourceState.data,
 				);

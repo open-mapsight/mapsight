@@ -105,6 +105,7 @@ describe("FeatureSourcesController", () => {
 
 		expect(state.smartCity?.data?.type).toBe("FeatureCollection");
 		expect(state.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(state.smartCity?.featuresKey).toBeDefined();
 		expect(state.smartCity?.featuresById).toEqual({
 			"sensor-1": sensorFeature,
 		});

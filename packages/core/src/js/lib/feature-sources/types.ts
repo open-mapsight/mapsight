@@ -16,6 +16,8 @@ export type FeatureSourceType = FeatureSourceState["type"];
 
 export interface FeatureSourceState extends FeatureSourceConfig {
 	data: FeatureSourceData | null;
+	/** Fingerprint of `data.features`; unchanged when only collection metadata polls. */
+	featuresKey?: string;
 	ids?: Array<FeatureId>;
 	featuresById?: Record<FeatureId, Feature>;
 	error?: string;

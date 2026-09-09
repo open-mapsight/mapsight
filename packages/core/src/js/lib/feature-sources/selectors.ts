@@ -124,6 +124,7 @@ type FilteredFeatureSourceSelectorCache = {
 	source?: FeatureSourceState;
 	filterNames?: Array<string>;
 	filters?: Record<string, string>;
+	featuresKey?: string;
 	state?: FeatureSourceState;
 };
 
@@ -186,6 +187,16 @@ export function createFilteredFeatureSourceSelector(
 		}
 
 		const filters = filtersSelector(state);
+		if (
+			cache.state &&
+			source?.featuresKey &&
+			source.featuresKey === cache.featuresKey &&
+			shallowEqualRecords(filters, cache.filters)
+		) {
+			cache.source = source;
+			return cache.state;
+		}
+
 		if (!shallowEqualRecords(filters, cache.filters)) {
 			cache.filters = filters;
 			hasChanged = true;
@@ -217,6 +228,7 @@ export function createFilteredFeatureSourceSelector(
 					? getFeaturesById(filteredFeatures)
 					: source.featuresById,
 			};
+			cache.featuresKey = source?.featuresKey;
 		}
 
 		return cache.state;
