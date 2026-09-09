@@ -821,13 +821,34 @@ async function loadWithCache(
 						extra,
 					);
 					if (replay) {
-						return {
-							data: replay.data,
-							share: isShareableCachedResponse({
-								cacheControl: replay.cacheControl,
-								shared: isSharedDocumentCache(extra),
-							}),
-						};
+						const decision = evaluateFreshness({
+							fetchedAt: replay.fetchedAt,
+							ageSec: replay.ageSec,
+							date: replay.date,
+							cacheControl: replay.cacheControl,
+							expires: replay.expires,
+							shared: isSharedDocumentCache(extra),
+							ttl: extra.featureSourceCacheTtl,
+						});
+						if (
+							decision === "fresh" ||
+							decision === "stale-while-revalidate"
+						) {
+							return {
+								data: replay.data,
+								share: isShareableCachedResponse({
+									cacheControl: replay.cacheControl,
+									shared: isSharedDocumentCache(extra),
+								}),
+							};
+						}
+						return revalidateDocumentCache(
+							extra,
+							key,
+							replay,
+							false,
+							url,
+						);
 					}
 					return revalidateDocumentCache(
 						extra,
@@ -852,24 +873,21 @@ async function loadWithCache(
 		throw new Error(ERROR_COLD_CACHE);
 	}
 
+	const bypassUrl =
+		useCache === USE_CACHE_NO && shouldUseDocumentCache(state) && state.url
+			? xhrJson.resolveXhrJsonUrl(state.url)
+			: undefined;
 	const data = await loadFromLoader(
-		state,
+		bypassUrl ? {...state, url: bypassUrl} : state,
 		getState,
 		id,
 		controllerName,
 		loaderOptions,
 	);
-	if (
-		useCache === USE_CACHE_NO &&
-		cache &&
-		extra &&
-		shouldUseDocumentCache(state) &&
-		state.url
-	) {
-		const url = xhrJson.resolveXhrJsonUrl(state.url);
-		const key = documentCacheKey(url, id, controllerName, extra);
+	if (useCache === USE_CACHE_NO && cache && extra && bypassUrl) {
+		const key = documentCacheKey(bypassUrl, id, controllerName, extra);
 		await withDocumentCacheWrite(cache, async () => {
-			bumpDocumentCacheGeneration(cache, [url]);
+			bumpDocumentCacheGeneration(cache, [bypassUrl]);
 			try {
 				await cache.delete(key);
 			} catch {
