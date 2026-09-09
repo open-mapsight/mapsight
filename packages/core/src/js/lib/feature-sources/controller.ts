@@ -241,10 +241,7 @@ function updateSourceData(
 	const oldData = getSourceData(source);
 	const newData = normalizeFeatureSourceData(reduceData(oldData));
 
-	const fingerprint = nextFeatureCollectionFeaturesKey(
-		newData,
-		source.featuresCount,
-	);
+	const fingerprint = nextFeatureCollectionFeaturesKey(newData);
 
 	return mergeSource(state, id, {
 		data: newData,

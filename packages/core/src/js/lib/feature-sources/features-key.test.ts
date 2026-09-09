@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from "vitest";
+import {describe, expect, it} from "vitest";
 
 import {
 	featureCollectionFeaturesKey,
@@ -71,29 +71,29 @@ describe("featureCollectionFeaturesKey", () => {
 		expect(json.length).toBeGreaterThan(1000);
 	});
 
-	it("skips stringify when the feature count changed", () => {
-		const stringify = vi.spyOn(JSON, "stringify");
-		const next = nextFeatureCollectionFeaturesKey(
-			{features: [placeFeature, {...placeFeature, id: "place-2"}]},
-			1,
-		);
+	it("changes when the collection crs changes", () => {
+		const features = [placeFeature];
+		const withoutCrs = featureCollectionFeaturesKey({features});
+		const withCrs = featureCollectionFeaturesKey({
+			features,
+			crs: {type: "name", properties: {name: "EPSG:25832"}},
+		});
 
-		expect(stringify).not.toHaveBeenCalled();
-		expect(next).toEqual({count: 2, key: "n:2"});
-		stringify.mockRestore();
+		expect(withoutCrs).toBeDefined();
+		expect(withCrs).not.toBe(withoutCrs);
 	});
 
-	it("hashes when the feature count is unchanged", () => {
-		const stringify = vi.spyOn(JSON, "stringify");
-		const next = nextFeatureCollectionFeaturesKey(
-			{features: [placeFeature]},
-			1,
-		);
-		const hashed = featureCollectionFeaturesKey({features: [placeFeature]});
+	it("hashes on count change so the next metadata-only poll can skip", () => {
+		const twoFeatures = {
+			features: [placeFeature, {...placeFeature, id: "place-2"}],
+		};
+		const afterCountChange = nextFeatureCollectionFeaturesKey(twoFeatures);
+		const laterMetadataPoll = nextFeatureCollectionFeaturesKey(twoFeatures);
 
-		expect(stringify).toHaveBeenCalled();
-		stringify.mockRestore();
-		expect(next.count).toBe(1);
-		expect(next.key).toBe(hashed);
+		expect(afterCountChange.key).toBe(
+			featureCollectionFeaturesKey(twoFeatures),
+		);
+		expect(afterCountChange.key).toBe(laterMetadataPoll.key);
+		expect(afterCountChange.count).toBe(2);
 	});
 });

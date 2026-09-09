@@ -44,6 +44,16 @@ function getFeaturesById(features: Feature[]) {
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
 
+function sameFilterNameOrder(left?: Array<string>, right?: Array<string>) {
+	if (left === right) {
+		return true;
+	}
+	if (!left || !right || left.length !== right.length) {
+		return false;
+	}
+	return left.every((name, index) => name === right[index]);
+}
+
 export const canUndo = (source: FeatureSourceState) =>
 	!!(source.dataHistory?.past && source.dataHistory.past.length > 0);
 export const canRedo = (source: FeatureSourceState) =>
@@ -147,6 +157,7 @@ export function createFilteredFeatureSourceSelector(
 
 	return function (state: State) {
 		let hasChanged = false;
+		let filterNamesUnchanged = true;
 
 		const source = featureSourceSelector(state);
 		if (source !== cache.source) {
@@ -173,6 +184,11 @@ export function createFilteredFeatureSourceSelector(
 					: undefined;
 			})();
 
+			filterNamesUnchanged = sameFilterNameOrder(
+				filterNames,
+				cache.filterNames,
+			);
+
 			if (filterNames !== cache.filterNames) {
 				cache.filterNames = filterNames;
 
@@ -191,7 +207,8 @@ export function createFilteredFeatureSourceSelector(
 			cache.state &&
 			source?.featuresKey &&
 			source.featuresKey === cache.featuresKey &&
-			shallowEqualRecords(filters, cache.filters)
+			shallowEqualRecords(filters, cache.filters) &&
+			filterNamesUnchanged
 		) {
 			cache.source = source;
 			cache.state = source && {

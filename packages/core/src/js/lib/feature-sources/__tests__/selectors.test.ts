@@ -160,4 +160,35 @@ describe("feature source selectors", () => {
 		expect(failed?.data?.features).toEqual([visibleFeature]);
 		expect(failed?.isLoading).toBe(false);
 	});
+
+	it("reapplies filters when their configured order changes", () => {
+		addFilterFunction("testTakeFirst", (features) => features.slice(0, 1));
+		addFilterFunction("testTakeLast", (features) => features.slice(-1));
+		const selector = createFilteredFeatureSourceSelector(
+			"featureSources",
+			"places",
+		);
+		const featuresKey = "same-features";
+		const first = selector({
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+					filters: ["testTakeFirst", "testTakeLast"],
+				},
+			},
+		} satisfies State);
+		const reordered = selector({
+			featureSources: {
+				places: {
+					...featureSources.places,
+					featuresKey,
+					filters: ["testTakeLast", "testTakeFirst"],
+				},
+			},
+		} satisfies State);
+
+		expect(first?.data?.features).toEqual([visibleFeature]);
+		expect(reordered?.data?.features).toEqual([hiddenFeature]);
+	});
 });

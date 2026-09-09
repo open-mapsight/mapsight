@@ -1,13 +1,9 @@
 /**
- * Fingerprint of a FeatureCollection’s `features` array.
+ * Fingerprint of a FeatureCollection’s `features` array plus parsing-relevant
+ * metadata (`crs`). Volatile poll fields such as `buildTimestamp` are excluded.
  *
- * Pulp / xhr-json bodies often change top-level metadata (`buildTimestamp`)
- * on every poll. Compare this key, not the whole collection, before
- * `GeoJSON.readFeatures`.
- *
- * Computed when feature-source data is written. Array length is compared to
- * the previous write first; stringify + hash only run when the count is
- * unchanged (metadata-only polls and in-place property edits).
+ * Pulp / xhr-json bodies often change top-level metadata on every poll.
+ * Compare this key, not the whole collection, before `GeoJSON.readFeatures`.
  */
 export function featureCollectionFeaturesCount(
 	data: {features?: unknown} | null | undefined,
@@ -22,23 +18,21 @@ export function featureCollectionFeaturesKey(
 		return undefined;
 	}
 
-	return hashString(JSON.stringify(data.features)).toString(36);
+	const featuresJson = JSON.stringify(data.features);
+	const payload =
+		"crs" in data && data.crs !== undefined
+			? `${featuresJson}\0crs:${JSON.stringify(data.crs)}`
+			: featuresJson;
+	return hashString(payload).toString(36);
 }
 
-/**
- * Next fingerprint for a store write. When `previousCount` is set and the
- * feature count changed, skip stringify — the map must reread anyway.
- */
+/** Next fingerprint for a store write. Always the real hash so a later metadata-only poll can skip. */
 export function nextFeatureCollectionFeaturesKey(
 	data: {features?: unknown; [key: string]: unknown} | null | undefined,
-	previousCount?: number,
 ): {count: number | undefined; key: string | undefined} {
 	const count = featureCollectionFeaturesCount(data);
 	if (data?.features === undefined) {
 		return {count: undefined, key: undefined};
-	}
-	if (typeof previousCount === "number" && count !== previousCount) {
-		return {count, key: `n:${count}`};
 	}
 	return {count, key: featureCollectionFeaturesKey(data)};
 }
