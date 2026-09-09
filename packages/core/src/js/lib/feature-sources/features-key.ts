@@ -11,6 +11,24 @@ export function featureCollectionFeaturesCount(
 	return Array.isArray(data?.features) ? data.features.length : undefined;
 }
 
+function fingerprintJson(value: unknown): string {
+	return (
+		JSON.stringify(value, (_key, current) => {
+			if (current === undefined) {
+				return "__undefined__";
+			}
+			if (typeof current === "number" && !Number.isFinite(current)) {
+				return Number.isNaN(current)
+					? "__NaN__"
+					: current > 0
+						? "__Infinity__"
+						: "__-Infinity__";
+			}
+			return current;
+		}) ?? "null"
+	);
+}
+
 export function featureCollectionFeaturesKey(
 	data: {features?: unknown; [key: string]: unknown} | null | undefined,
 ): string | undefined {
@@ -18,10 +36,10 @@ export function featureCollectionFeaturesKey(
 		return undefined;
 	}
 
-	const featuresJson = JSON.stringify(data.features);
+	const featuresJson = fingerprintJson(data.features);
 	const payload =
 		"crs" in data && data.crs !== undefined
-			? `${featuresJson}\0crs:${JSON.stringify(data.crs)}`
+			? `${featuresJson}\0crs:${fingerprintJson(data.crs)}`
 			: featuresJson;
 	return hashString(payload).toString(36);
 }
@@ -51,7 +69,7 @@ function hashString(str: string): number {
 	}
 	h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
 	h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-	h2 = Math.imul(h2 ^ (h2 >>> 16), 1597334677);
-	h2 ^= Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+	h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+	h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
 	return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }

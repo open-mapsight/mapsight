@@ -83,6 +83,29 @@ describe("featureCollectionFeaturesKey", () => {
 		expect(withCrs).not.toBe(withoutCrs);
 	});
 
+	it("changes when a property is cleared to undefined or NaN", () => {
+		const emptyProperties = featureCollectionFeaturesKey({
+			features: [{...placeFeature, properties: {}}],
+		});
+		const clearedCaption = featureCollectionFeaturesKey({
+			features: [{...placeFeature, properties: {caption: undefined}}],
+		});
+		const notANumber = featureCollectionFeaturesKey({
+			features: [
+				{...placeFeature, properties: {markerCaption: Number.NaN}},
+			],
+		});
+
+		expect(clearedCaption).not.toBe(emptyProperties);
+		expect(notANumber).not.toBe(
+			featureCollectionFeaturesKey({
+				features: [
+					{...placeFeature, properties: {markerCaption: null}},
+				],
+			}),
+		);
+	});
+
 	it("hashes on count change so the next metadata-only poll can skip", () => {
 		const twoFeatures = {
 			features: [placeFeature, {...placeFeature, id: "place-2"}],
