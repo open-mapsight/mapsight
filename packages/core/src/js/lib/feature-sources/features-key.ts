@@ -36,6 +36,9 @@ function encodeFingerprint(value: unknown): unknown {
 		}
 		return ["d", value];
 	}
+	if (typeof value === "bigint") {
+		return ["g", value.toString()];
+	}
 	if (Array.isArray(value)) {
 		return ["a", value.map(encodeFingerprint)];
 	}

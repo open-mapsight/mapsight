@@ -106,6 +106,10 @@ describe("feature source selectors", () => {
 					...featureSources.places,
 					featuresKey,
 					lastUpdate: 1,
+					data: {
+						...featureSources.places.data,
+						buildTimestamp: "t1",
+					},
 				},
 			},
 		} satisfies State;
@@ -116,6 +120,10 @@ describe("feature source selectors", () => {
 					featuresKey,
 					lastUpdate: 2,
 					isLoading: true,
+					data: {
+						...featureSources.places.data,
+						buildTimestamp: "t2",
+					},
 				},
 			},
 		} satisfies State;
@@ -124,7 +132,11 @@ describe("feature source selectors", () => {
 		const second = selector(secondState);
 
 		expect(second).not.toBe(first);
-		expect(second?.data).toBe(first?.data);
+		expect(second?.data?.features).toBe(first?.data?.features);
+		expect(
+			(second?.data as {buildTimestamp?: string} | undefined)
+				?.buildTimestamp,
+		).toBe("t2");
 		expect(second?.ids).toEqual(first?.ids);
 		expect(second?.isLoading).toBe(true);
 		expect(first?.isLoading).not.toBe(true);

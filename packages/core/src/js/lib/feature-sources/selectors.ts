@@ -213,7 +213,12 @@ export function createFilteredFeatureSourceSelector(
 			cache.source = source;
 			cache.state = source && {
 				...source,
-				data: cache.state.data,
+				data: cache.state.data
+					? {
+							...source.data,
+							features: cache.state.data.features,
+						}
+					: source.data,
 				ids: cache.state.ids,
 				featuresById: cache.state.featuresById,
 			};
