@@ -187,6 +187,37 @@ function resolveShareTitle(
 	return featureTitle(feature);
 }
 
+/** `[west, south, east, north]` from a GeoJSON 2D (4) or 3D (6) bbox. */
+export function lonLatBbox(
+	bbox: number[] | undefined,
+): [number, number, number, number] | null {
+	if (!bbox) {
+		return null;
+	}
+	const west = bbox[0];
+	const south = bbox[1];
+	if (typeof west !== "number" || typeof south !== "number") {
+		return null;
+	}
+	if (bbox.length === 4) {
+		const east = bbox[2];
+		const north = bbox[3];
+		if (typeof east !== "number" || typeof north !== "number") {
+			return null;
+		}
+		return [west, south, east, north];
+	}
+	if (bbox.length === 6) {
+		const east = bbox[3];
+		const north = bbox[4];
+		if (typeof east !== "number" || typeof north !== "number") {
+			return null;
+		}
+		return [west, south, east, north];
+	}
+	return null;
+}
+
 export function lonLatFromGeometry(
 	feature: MapsightUiFeature,
 ): {lon: number; lat: number} | null {
@@ -199,20 +230,9 @@ export function lonLatFromGeometry(
 			return {lon, lat};
 		}
 	}
-	const bbox = feature.bbox;
-	if (bbox && bbox.length >= 4) {
-		const minX = bbox[0];
-		const minY = bbox[1];
-		const maxX = bbox[2];
-		const maxY = bbox[3];
-		if (
-			typeof minX === "number" &&
-			typeof minY === "number" &&
-			typeof maxX === "number" &&
-			typeof maxY === "number"
-		) {
-			return {lon: (minX + maxX) / 2, lat: (minY + maxY) / 2};
-		}
+	const bbox = lonLatBbox(feature.bbox);
+	if (bbox) {
+		return {lon: (bbox[0] + bbox[2]) / 2, lat: (bbox[1] + bbox[3]) / 2};
 	}
 	return null;
 }

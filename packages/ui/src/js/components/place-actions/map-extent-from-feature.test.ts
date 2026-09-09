@@ -30,6 +30,23 @@ describe("mapExtentFromFeature", () => {
 		expect(extent?.[3]).toBeGreaterThan(extent?.[1] ?? 0);
 	});
 
+	it("projects a 3D bbox using lon/lat, not altitude", () => {
+		const twoD = mapExtentFromFeature({
+			type: "Feature",
+			bbox: [10.5, 52.2, 10.6, 52.3],
+			geometry: {type: "Point", coordinates: [10.52, 52.26]},
+			properties: {},
+		} as MapsightUiFeature);
+		const threeD = mapExtentFromFeature({
+			type: "Feature",
+			bbox: [10.5, 52.2, 12, 10.6, 52.3, 80],
+			geometry: {type: "Point", coordinates: [10.52, 52.26]},
+			properties: {},
+		} as MapsightUiFeature);
+
+		expect(threeD).toEqual(twoD);
+	});
+
 	it("returns null without locatable geometry", () => {
 		expect(
 			mapExtentFromFeature({
