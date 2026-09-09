@@ -637,7 +637,15 @@ async function loadWithCache(
 					revalidateDocumentCache(state, extra, key, entry, false),
 				);
 			} catch (error) {
-				if (allowsStaleOnError(entry.cacheControl, entry.fetchedAt)) {
+				if (
+					allowsStaleOnError({
+						fetchedAt: entry.fetchedAt,
+						cacheControl: entry.cacheControl,
+						expires: entry.expires,
+						shared: isSharedDocumentCache(extra),
+						ttl: extra.cacheTtl,
+					})
+				) {
 					return entry.data;
 				}
 				throw error;

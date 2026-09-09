@@ -2,6 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {
 	DEFAULT_CACHE_TTL,
+	allowsStaleOnError,
 	evaluateFreshness,
 	parseCacheControl,
 	shouldPersistDocumentCache,
@@ -125,5 +126,24 @@ describe("shouldPersistDocumentCache", () => {
 		expect(shouldPersistDocumentCache({cacheControl: "max-age=60"})).toBe(
 			true,
 		);
+	});
+});
+
+describe("allowsStaleOnError", () => {
+	it("extends stale-if-error from the freshness lifetime, not from fetch", () => {
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, stale-if-error=3600",
+				now: fetchedAt + 3_650_000,
+			}),
+		).toBe(true);
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, stale-if-error=3600",
+				now: fetchedAt + 3_670_000,
+			}),
+		).toBe(false);
 	});
 });

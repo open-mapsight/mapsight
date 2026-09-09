@@ -249,15 +249,21 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 	return "stale";
 }
 
-export function allowsStaleOnError(
-	cacheControl: string | undefined,
-	fetchedAt: number,
-	now = Date.now(),
-): boolean {
-	const directives = parseCacheControl(cacheControl);
+export function allowsStaleOnError(input: FreshnessInput): boolean {
+	const now = input.now ?? Date.now();
+	const shared = input.shared ?? false;
+	const ttl = resolveCacheTtlPolicy(input.ttl);
+	const directives = parseCacheControl(input.cacheControl);
 	if (directives.staleIfErrorSec === undefined) {
 		return false;
 	}
-	const ageSec = Math.max(0, (now - fetchedAt) / 1000);
-	return ageSec < directives.staleIfErrorSec;
+	const ageSec = Math.max(0, (now - input.fetchedAt) / 1000);
+	const originLifetime = originFreshnessLifetimeSec(
+		directives,
+		input.expires,
+		input.fetchedAt,
+		shared,
+	);
+	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
+	return ageSec < lifetime + directives.staleIfErrorSec;
 }
