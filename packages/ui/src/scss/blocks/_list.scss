@@ -85,6 +85,19 @@
 		white-space: nowrap;
 	}
 
+	&__group {
+		&--name {
+			position: sticky;
+			top: 0;
+			z-index: 1;
+			margin: 0;
+			padding: 4px 10px;
+			background: var(--ms3-background-color-offset);
+			border-bottom: 1px solid var(--ms3-border-color);
+			font-size: inherit;
+		}
+	}
+
 	&__info {
 		.ms3-wrapper--mobile &,
 		.ms3-wrapper--fullscreen & {
