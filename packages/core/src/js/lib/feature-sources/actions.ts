@@ -12,6 +12,7 @@ import {
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
 	singleFlight,
+	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {
 	FeatureSourceCache,
@@ -541,41 +542,46 @@ async function putDocumentCacheEntry(
 		ageSec?: number;
 	},
 	generation?: CacheWriteGeneration,
+	url?: string,
 ) {
 	const cache = extra.featureSourceCache;
-	if (
-		generation &&
-		cache &&
-		!isCacheWriteGenerationCurrent(cache, key, generation)
-	) {
+	if (!cache) {
 		return;
 	}
-	if (
-		!cache ||
-		!shouldPersistDocumentCache({
+	await withDocumentCacheWrite(cache, async () => {
+		if (
+			generation &&
+			url &&
+			!isCacheWriteGenerationCurrent(cache, url, generation)
+		) {
+			return;
+		}
+		if (
+			!shouldPersistDocumentCache({
+				cacheControl: meta.cacheControl,
+				expires: meta.expires,
+				shared: isSharedDocumentCache(extra),
+				ttl: extra.cacheTtl,
+			})
+		) {
+			await cache.delete(key);
+			return;
+		}
+		await cache.put(key, {
+			data,
+			fetchedAt: Date.now(),
+			ageSec:
+				meta.ageSec ??
+				correctedInitialAgeSec({
+					ageHeader: meta.age,
+					dateHeader: meta.date,
+				}),
+			bytes: estimateFeatureSourceBytes(data),
+			etag: meta.etag,
+			lastModified: meta.lastModified,
 			cacheControl: meta.cacheControl,
 			expires: meta.expires,
-			shared: isSharedDocumentCache(extra),
-			ttl: extra.cacheTtl,
-		})
-	) {
-		await cache?.delete(key);
-		return;
-	}
-	await cache.put(key, {
-		data,
-		fetchedAt: Date.now(),
-		ageSec:
-			meta.ageSec ??
-			correctedInitialAgeSec({
-				ageHeader: meta.age,
-				dateHeader: meta.date,
-			}),
-		bytes: estimateFeatureSourceBytes(data),
-		etag: meta.etag,
-		lastModified: meta.lastModified,
-		cacheControl: meta.cacheControl,
-		expires: meta.expires,
+		});
 	});
 }
 
@@ -587,10 +593,11 @@ async function revalidateDocumentCache(
 	forceRefresh: boolean,
 ): Promise<FeatureSourceData | undefined> {
 	const cache = extra.featureSourceCache;
+	const url = state.url ?? "";
 	const generation = cache
-		? captureCacheWriteGeneration(cache, key)
+		? captureCacheWriteGeneration(cache, url)
 		: undefined;
-	const result = await xhrJson.fetchXhrJson(state.url ?? "", {
+	const result = await xhrJson.fetchXhrJson(url, {
 		ifNoneMatch: forceRefresh ? undefined : entry?.etag,
 		ifModifiedSince: forceRefresh ? undefined : entry?.lastModified,
 	});
@@ -609,6 +616,7 @@ async function revalidateDocumentCache(
 				date: result.date,
 			},
 			generation,
+			url,
 		);
 		return entry.data;
 	}
@@ -617,7 +625,14 @@ async function revalidateDocumentCache(
 		return entry?.data;
 	}
 
-	await putDocumentCacheEntry(extra, key, result.data, result, generation);
+	await putDocumentCacheEntry(
+		extra,
+		key,
+		result.data,
+		result,
+		generation,
+		url,
+	);
 	return result.data;
 }
 

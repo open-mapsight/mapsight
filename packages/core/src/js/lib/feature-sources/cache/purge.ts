@@ -1,5 +1,8 @@
 import {documentCacheKeyMatchesUrl} from "@/lib/feature-sources/cache/build-cache-key";
-import {bumpDocumentCacheGeneration} from "@/lib/feature-sources/cache/single-flight";
+import {
+	bumpDocumentCacheGeneration,
+	withDocumentCacheWrite,
+} from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
 
 export type PurgeableFeatureSourceCache = FeatureSourceCache & {
@@ -18,18 +21,20 @@ export async function purgeDocumentCacheEntries(
 	const unique = [
 		...new Set((urls ?? []).map((url) => url.trim()).filter(Boolean)),
 	];
-	bumpDocumentCacheGeneration(cache, unique);
-	const keys =
-		unique.length === 0
-			? cache.keys()
-			: cache
-					.keys()
-					.filter((key) =>
-						unique.some((url) =>
-							documentCacheKeyMatchesUrl(key, url),
-						),
-					);
+	return withDocumentCacheWrite(cache, async () => {
+		bumpDocumentCacheGeneration(cache, unique);
+		const keys =
+			unique.length === 0
+				? cache.keys()
+				: cache
+						.keys()
+						.filter((key) =>
+							unique.some((url) =>
+								documentCacheKeyMatchesUrl(key, url),
+							),
+						);
 
-	await Promise.all(keys.map((key) => cache.delete(key)));
-	return keys;
+		await Promise.all(keys.map((key) => cache.delete(key)));
+		return keys;
+	});
 }

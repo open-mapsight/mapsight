@@ -8,6 +8,7 @@ import {
 import {
 	captureCacheWriteGeneration,
 	isCacheWriteGenerationCurrent,
+	withDocumentCacheWrite,
 } from "@/lib/feature-sources/cache/single-flight";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
 import {fetchXhrJson} from "@/lib/feature-sources/loaders/xhr-json-loader";
@@ -41,37 +42,39 @@ export async function warmFeatureSourceUrl(
 	}
 
 	const shared = options?.shared ?? defaultSharedCache();
-	const generation = captureCacheWriteGeneration(cache, key);
+	const generation = captureCacheWriteGeneration(cache, url);
 	try {
 		const result = await fetchXhrJson(url);
-		if (!isCacheWriteGenerationCurrent(cache, key, generation)) {
-			return false;
-		}
-		if (
-			!result.data ||
-			!shouldPersistDocumentCache({
+		return await withDocumentCacheWrite(cache, async () => {
+			if (!isCacheWriteGenerationCurrent(cache, url, generation)) {
+				return false;
+			}
+			if (
+				!result.data ||
+				!shouldPersistDocumentCache({
+					cacheControl: result.cacheControl,
+					expires: result.expires,
+					shared,
+					ttl: options?.ttl,
+				})
+			) {
+				return false;
+			}
+			await cache.put(key, {
+				data: result.data,
+				fetchedAt: Date.now(),
+				ageSec: correctedInitialAgeSec({
+					ageHeader: result.age,
+					dateHeader: result.date,
+				}),
+				bytes: estimateFeatureSourceBytes(result.data),
+				etag: result.etag,
+				lastModified: result.lastModified,
 				cacheControl: result.cacheControl,
 				expires: result.expires,
-				shared,
-				ttl: options?.ttl,
-			})
-		) {
-			return false;
-		}
-		await cache.put(key, {
-			data: result.data,
-			fetchedAt: Date.now(),
-			ageSec: correctedInitialAgeSec({
-				ageHeader: result.age,
-				dateHeader: result.date,
-			}),
-			bytes: estimateFeatureSourceBytes(result.data),
-			etag: result.etag,
-			lastModified: result.lastModified,
-			cacheControl: result.cacheControl,
-			expires: result.expires,
+			});
+			return true;
 		});
-		return true;
 	} catch {
 		return false;
 	}

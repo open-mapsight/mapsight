@@ -2,6 +2,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {buildDocumentCacheKey} from "./build-cache-key";
 import {createMemoryFeatureSourceCache} from "./memory-cache";
+import {purgeDocumentCacheEntries} from "./purge";
 import {warmFeatureSourceUrl} from "./warm";
 
 const collection = {
@@ -110,6 +111,47 @@ describe("warmFeatureSourceUrl", () => {
 				shared: true,
 			}),
 		).resolves.toBe(false);
+		expect(cache.keys()).toEqual([]);
+	});
+
+	it("does not keep a delayed put after purge", async () => {
+		const inner = createMemoryFeatureSourceCache();
+		let releasePut: () => void = () => undefined;
+		const putGate = new Promise<void>((resolve) => {
+			releasePut = resolve;
+		});
+		let putEntered: () => void = () => undefined;
+		const putStarted = new Promise<void>((resolve) => {
+			putEntered = resolve;
+		});
+		const cache = {
+			get: inner.get.bind(inner),
+			async put(
+				...args: Parameters<typeof inner.put>
+			): ReturnType<typeof inner.put> {
+				putEntered();
+				await putGate;
+				return inner.put(...args);
+			},
+			delete: inner.delete.bind(inner),
+			estimateTotalBytes: inner.estimateTotalBytes.bind(inner),
+			evictLRU: inner.evictLRU.bind(inner),
+			keys: inner.keys.bind(inner),
+		};
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => jsonResponse({"Cache-Control": "max-age=60"})),
+		);
+
+		const url = "/schools.geojson";
+		const warming = warmFeatureSourceUrl(cache, url, "rev-1", {
+			shared: false,
+		});
+		await putStarted;
+		const purged = purgeDocumentCacheEntries(cache, [url]);
+		releasePut();
+		await warming;
+		await purged;
 		expect(cache.keys()).toEqual([]);
 	});
 });

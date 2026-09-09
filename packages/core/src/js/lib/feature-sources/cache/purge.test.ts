@@ -58,12 +58,26 @@ describe("purgeDocumentCacheEntries", () => {
 	it("rejects a later put from work started before the purge", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const url = "https://example.test/schools.geojson";
-		const key = buildDocumentCacheKey({url, revision: "pub-1"});
-		const generation = captureCacheWriteGeneration(cache, key);
+		const generation = captureCacheWriteGeneration(cache, url);
 
 		await purgeDocumentCacheEntries(cache, [url]);
-		expect(isCacheWriteGenerationCurrent(cache, key, generation)).toBe(
+		expect(isCacheWriteGenerationCurrent(cache, url, generation)).toBe(
 			false,
+		);
+	});
+
+	it("busts writes even when the revision token contains colons", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const url = "https://example.test/schools.geojson";
+		const revision = "2026-09-09T19:36:49Z";
+		const generation = captureCacheWriteGeneration(cache, url);
+
+		await purgeDocumentCacheEntries(cache, [url]);
+		expect(isCacheWriteGenerationCurrent(cache, url, generation)).toBe(
+			false,
+		);
+		expect(buildDocumentCacheKey({url, revision}).includes(revision)).toBe(
+			true,
 		);
 	});
 });

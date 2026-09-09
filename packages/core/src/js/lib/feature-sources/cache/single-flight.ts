@@ -6,6 +6,7 @@ type CacheFlightState = {
 	generation: number;
 	urlGeneration: Map<string, number>;
 	inflight: Map<string, Promise<unknown>>;
+	writeChain: Promise<void>;
 };
 
 const stateByCache = new WeakMap<FeatureSourceCache, CacheFlightState>();
@@ -13,28 +14,43 @@ const stateByCache = new WeakMap<FeatureSourceCache, CacheFlightState>();
 function flightState(cache: FeatureSourceCache): CacheFlightState {
 	let state = stateByCache.get(cache);
 	if (!state) {
-		state = {generation: 0, urlGeneration: new Map(), inflight: new Map()};
+		state = {
+			generation: 0,
+			urlGeneration: new Map(),
+			inflight: new Map(),
+			writeChain: Promise.resolve(),
+		};
 		stateByCache.set(cache, state);
 	}
 	return state;
-}
-
-function documentUrlFromCacheKey(key: string): string | undefined {
-	if (!key.startsWith("doc:")) {
-		return undefined;
-	}
-	const rest = key.slice(4);
-	const colon = rest.indexOf(":");
-	if (colon === -1) {
-		return undefined;
-	}
-	return rest.slice(colon + 1);
 }
 
 export type CacheWriteGeneration = {
 	global: number;
 	url: number;
 };
+
+/**
+ * Serialize generation checks with `put`/`delete` so a purge cannot finish
+ * while an already-started adapter write is still pending.
+ */
+export async function withDocumentCacheWrite<T>(
+	cache: FeatureSourceCache,
+	fn: () => Promise<T>,
+): Promise<T> {
+	const state = flightState(cache);
+	const previous = state.writeChain;
+	let release: () => void = () => undefined;
+	state.writeChain = new Promise<void>((resolve) => {
+		release = resolve;
+	});
+	await previous;
+	try {
+		return await fn();
+	} finally {
+		release();
+	}
+}
 
 /**
  * Drop in-flight joins and reject later `put`s for work started before this
@@ -70,30 +86,29 @@ export function bumpDocumentCacheGeneration(
 
 export function captureCacheWriteGeneration(
 	cache: FeatureSourceCache,
-	key: string,
+	url: string,
 ): CacheWriteGeneration {
 	const state = flightState(cache);
-	const url = documentUrlFromCacheKey(key);
+	const resolved = resolveXhrJsonUrl(url);
 	return {
 		global: state.generation,
-		url: url ? (state.urlGeneration.get(url) ?? 0) : 0,
+		url: state.urlGeneration.get(resolved) ?? 0,
 	};
 }
 
 export function isCacheWriteGenerationCurrent(
 	cache: FeatureSourceCache,
-	key: string,
+	url: string,
 	generation: CacheWriteGeneration,
 ): boolean {
 	const state = flightState(cache);
 	if (generation.global !== state.generation) {
 		return false;
 	}
-	const url = documentUrlFromCacheKey(key);
-	if (!url) {
-		return true;
-	}
-	return generation.url === (state.urlGeneration.get(url) ?? 0);
+	return (
+		generation.url ===
+		(state.urlGeneration.get(resolveXhrJsonUrl(url)) ?? 0)
+	);
 }
 
 /**
