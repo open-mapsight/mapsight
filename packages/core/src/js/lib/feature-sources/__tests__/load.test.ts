@@ -601,6 +601,83 @@ describe("load with FeatureSourceCache", () => {
 		expect(await cache.get(key)).toBeNull();
 	});
 
+	it("does not restore a purged body after a delayed cache read", async () => {
+		const inner = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await inner.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now(),
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "max-age=60",
+		});
+		let releaseGet: () => void = () => undefined;
+		const getGate = new Promise<void>((resolve) => {
+			releaseGet = resolve;
+		});
+		let getEntered: () => void = () => undefined;
+		const getStarted = new Promise<void>((resolve) => {
+			getEntered = resolve;
+		});
+		const cache = {
+			async get(
+				...args: Parameters<typeof inner.get>
+			): ReturnType<typeof inner.get> {
+				const snapshot = await inner.get(...args);
+				getEntered();
+				await getGate;
+				return snapshot;
+			},
+			put: inner.put.bind(inner),
+			delete: inner.delete.bind(inner),
+			estimateTotalBytes: inner.estimateTotalBytes.bind(inner),
+			evictLRU: inner.evictLRU.bind(inner),
+			keys: inner.keys.bind(inner),
+		};
+		const updated = {
+			type: "FeatureCollection" as const,
+			features: [],
+		};
+		const fetchMock = vi.fn(() => ({
+			ok: true,
+			status: 200,
+			headers: {
+				get(name: string) {
+					return name === "Cache-Control" ? "max-age=60" : null;
+				},
+			},
+			json: () => Promise.resolve(updated),
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const dispatch = vi.fn();
+		const pending = load(controllerName, "schools")(
+			dispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache},
+		);
+		await getStarted;
+		await purgeDocumentCacheEntries(cache, ["/geojson/schools.geojson"]);
+		releaseGet();
+		await pending;
+
+		expect(fetchMock).toHaveBeenCalledWith(
+			expect.stringContaining("/geojson/schools.geojson"),
+			expect.objectContaining({headers: {}}),
+		);
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				data: updated,
+			}),
+		);
+		expect((await inner.get(key))?.data).toEqual(updated);
+	});
+
 	it("serves stale-while-revalidate immediately and revalidates in the background", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const key = buildCacheKey({

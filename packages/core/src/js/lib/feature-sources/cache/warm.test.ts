@@ -271,4 +271,108 @@ describe("warmFeatureSourceUrl", () => {
 		expect(fetch).toHaveBeenCalledTimes(2);
 		expect(cache.keys()).toEqual([]);
 	});
+
+	it("does not restore a purged body via 304 after a delayed cache read", async () => {
+		const inner = createMemoryFeatureSourceCache();
+		const key = buildDocumentCacheKey({
+			url: "/schools.geojson",
+			revision: "rev-1",
+		});
+		await inner.put(key, {
+			data: collection,
+			fetchedAt: Date.now() - 120_000,
+			bytes: 8,
+			etag: '"v1"',
+			cacheControl: "max-age=0, must-revalidate",
+		});
+		let releaseGet: () => void = () => undefined;
+		const getGate = new Promise<void>((resolve) => {
+			releaseGet = resolve;
+		});
+		let getEntered: () => void = () => undefined;
+		const getStarted = new Promise<void>((resolve) => {
+			getEntered = resolve;
+		});
+		const cache = {
+			async get(
+				...args: Parameters<typeof inner.get>
+			): ReturnType<typeof inner.get> {
+				const snapshot = await inner.get(...args);
+				getEntered();
+				await getGate;
+				return snapshot;
+			},
+			put: inner.put.bind(inner),
+			delete: inner.delete.bind(inner),
+			estimateTotalBytes: inner.estimateTotalBytes.bind(inner),
+			evictLRU: inner.evictLRU.bind(inner),
+			keys: inner.keys.bind(inner),
+		};
+		const fetchMock = vi.fn(() => ({
+			ok: false,
+			status: 304,
+			statusText: "Not Modified",
+			headers: {get: () => null},
+		}));
+		vi.stubGlobal("fetch", fetchMock);
+
+		const warming = warmFeatureSourceUrl(
+			cache,
+			"/schools.geojson",
+			"rev-1",
+			{shared: false},
+		);
+		await getStarted;
+		await purgeDocumentCacheEntries(cache, ["/schools.geojson"]);
+		releaseGet();
+		await expect(warming).resolves.toBe(false);
+		expect(fetchMock).toHaveBeenCalledWith(
+			expect.stringContaining("/schools.geojson"),
+			expect.objectContaining({headers: {}}),
+		);
+		expect(await inner.get(key)).toBeNull();
+	});
+
+	it("does not join concurrent warms that use a different TTL policy", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const resolvers: Array<
+			(value: ReturnType<typeof jsonResponse>) => void
+		> = [];
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(
+				() =>
+					new Promise((resolve) => {
+						resolvers.push(resolve);
+					}),
+			),
+		);
+
+		const loose = warmFeatureSourceUrl(cache, "/schools.geojson", "rev-1", {
+			shared: false,
+			ttl: {minMs: 10_000},
+		});
+		await vi.waitFor(() => {
+			expect(resolvers).toHaveLength(1);
+		});
+		const strict = warmFeatureSourceUrl(
+			cache,
+			"/schools.geojson",
+			"rev-1",
+			{
+				shared: false,
+				ttl: {minMs: 60_000},
+			},
+		);
+		await vi.waitFor(() => {
+			expect(resolvers).toHaveLength(2);
+		});
+		resolvers[0]!(jsonResponse({"Cache-Control": "max-age=60"}));
+		resolvers[1]!(jsonResponse({"Cache-Control": "max-age=60"}));
+		await expect(Promise.all([loose, strict])).resolves.toEqual([
+			true,
+			true,
+		]);
+		expect(fetch).toHaveBeenCalledTimes(2);
+	});
 });

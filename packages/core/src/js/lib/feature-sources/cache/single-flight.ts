@@ -1,4 +1,8 @@
 import {documentCacheKeyMatchesUrl} from "@/lib/feature-sources/cache/build-cache-key";
+import {
+	type CacheTtlPolicy,
+	resolveCacheTtlPolicy,
+} from "@/lib/feature-sources/cache/http-freshness";
 import type {FeatureSourceCache} from "@/lib/feature-sources/cache/types";
 import {resolveXhrJsonUrl} from "@/lib/feature-sources/loaders/xhr-json-loader";
 
@@ -56,12 +60,17 @@ export async function withDocumentCacheWrite<T>(
  * Drop in-flight joins and reject later `put`s for work started before this
  * call. Omit `urls` (or pass []) to bust the whole adapter.
  */
-function inflightSlot(shared: boolean, key: string): string {
-	return `${shared ? "s" : "p"}\0${key}`;
+function inflightSlot(
+	shared: boolean,
+	key: string,
+	ttl?: Partial<CacheTtlPolicy>,
+): string {
+	const policy = resolveCacheTtlPolicy(ttl);
+	return `${shared ? "s" : "p"}\0${policy.minMs},${policy.defaultMs},${policy.maxMs}\0${key}`;
 }
 
 function inflightDocumentKey(slot: string): string {
-	const sep = slot.indexOf("\0");
+	const sep = slot.lastIndexOf("\0");
 	return sep === -1 ? slot : slot.slice(sep + 1);
 }
 
@@ -134,9 +143,10 @@ export async function singleFlightIfShareable<T>(
 	key: string,
 	load: () => Promise<{value: T; share: boolean}>,
 	shared = false,
+	ttl?: Partial<CacheTtlPolicy>,
 ): Promise<T> {
 	const state = flightState(cache);
-	const slot = inflightSlot(shared, key);
+	const slot = inflightSlot(shared, key, ttl);
 	const existing = state.inflight.get(slot);
 	if (existing) {
 		const joined = (await existing) as ShareableFlightResult<T>;

@@ -607,14 +607,15 @@ async function revalidateDocumentCache(
 	entry: FeatureSourceCacheEntry | null,
 	forceRefresh: boolean,
 	url: string,
+	generation?: CacheWriteGeneration,
 ): Promise<{
 	data: FeatureSourceData | undefined;
 	share: boolean;
 }> {
 	const cache = extra.featureSourceCache;
-	const generation = cache
-		? captureCacheWriteGeneration(cache, url)
-		: undefined;
+	const writeGeneration =
+		generation ??
+		(cache ? captureCacheWriteGeneration(cache, url) : undefined);
 	const result = await xhrJson.fetchXhrJson(url, {
 		ifNoneMatch: forceRefresh ? undefined : entry?.etag,
 		ifModifiedSince: forceRefresh ? undefined : entry?.lastModified,
@@ -644,7 +645,7 @@ async function revalidateDocumentCache(
 				fetchedAt: result.fetchedAt,
 				bytes: entry.bytes,
 			},
-			generation,
+			writeGeneration,
 			url,
 		);
 		return {data: entry.data, share};
@@ -659,7 +660,7 @@ async function revalidateDocumentCache(
 		key,
 		result.data,
 		result,
-		generation,
+		writeGeneration,
 		url,
 	);
 	return {data: result.data, share};
@@ -673,6 +674,7 @@ function documentCacheFlight(
 		share: boolean;
 	}>,
 	shared: boolean,
+	ttl?: FeatureSourceCacheExtra["featureSourceCacheTtl"],
 ): Promise<FeatureSourceData | undefined> {
 	return singleFlightIfShareable(
 		cache,
@@ -682,6 +684,7 @@ function documentCacheFlight(
 			return {value: result.data, share: result.share};
 		},
 		shared,
+		ttl,
 	);
 }
 
@@ -728,9 +731,19 @@ async function loadWithCache(
 	if (canUseDocumentCache && state.url && extra) {
 		const url = xhrJson.resolveXhrJsonUrl(state.url);
 		const key = documentCacheKey(url, id, controllerName, extra);
-		const entry = !forceRefresh
+		const readGeneration = captureCacheWriteGeneration(cache, url);
+		let entry = !forceRefresh
 			? await readDocumentCacheEntry(cache, key, extra)
 			: null;
+		if (
+			entry &&
+			!isCacheWriteGenerationCurrent(cache, url, readGeneration)
+		) {
+			entry = null;
+		}
+		const writeGeneration = entry
+			? readGeneration
+			: captureCacheWriteGeneration(cache, url);
 
 		if (entry && useCache === USE_CACHE_ONLY) {
 			return entry.data;
@@ -757,8 +770,16 @@ async function loadWithCache(
 					cache,
 					key,
 					() =>
-						revalidateDocumentCache(extra, key, entry, false, url),
+						revalidateDocumentCache(
+							extra,
+							key,
+							entry,
+							false,
+							url,
+							writeGeneration,
+						),
 					isSharedDocumentCache(extra),
+					extra.featureSourceCacheTtl,
 				).catch(() => undefined);
 				return entry.data;
 			}
@@ -767,8 +788,16 @@ async function loadWithCache(
 					cache,
 					key,
 					() =>
-						revalidateDocumentCache(extra, key, entry, false, url),
+						revalidateDocumentCache(
+							extra,
+							key,
+							entry,
+							false,
+							url,
+							writeGeneration,
+						),
 					isSharedDocumentCache(extra),
+					extra.featureSourceCacheTtl,
 				);
 			} catch (error) {
 				if (
@@ -794,6 +823,10 @@ async function loadWithCache(
 				let pending: Promise<FeatureSourceData | undefined>;
 				await withDocumentCacheWrite(cache, () => {
 					bumpDocumentCacheGeneration(cache, [url]);
+					const refreshGeneration = captureCacheWriteGeneration(
+						cache,
+						url,
+					);
 					pending = documentCacheFlight(
 						cache,
 						key,
@@ -804,8 +837,10 @@ async function loadWithCache(
 								null,
 								true,
 								url,
+								refreshGeneration,
 							),
 						isSharedDocumentCache(extra),
+						extra.featureSourceCacheTtl,
 					);
 					return Promise.resolve();
 				});
@@ -815,11 +850,28 @@ async function loadWithCache(
 				cache,
 				key,
 				async () => {
-					const replay = await readDocumentCacheEntry(
+					const replayGeneration = captureCacheWriteGeneration(
+						cache,
+						url,
+					);
+					let replay = await readDocumentCacheEntry(
 						cache,
 						key,
 						extra,
 					);
+					if (
+						replay &&
+						!isCacheWriteGenerationCurrent(
+							cache,
+							url,
+							replayGeneration,
+						)
+					) {
+						replay = null;
+					}
+					const replayWriteGeneration = replay
+						? replayGeneration
+						: captureCacheWriteGeneration(cache, url);
 					if (replay) {
 						const decision = evaluateFreshness({
 							fetchedAt: replay.fetchedAt,
@@ -848,6 +900,7 @@ async function loadWithCache(
 							replay,
 							false,
 							url,
+							replayWriteGeneration,
 						);
 					}
 					return revalidateDocumentCache(
@@ -856,9 +909,11 @@ async function loadWithCache(
 						null,
 						false,
 						url,
+						replayWriteGeneration,
 					);
 				},
 				isSharedDocumentCache(extra),
+				extra.featureSourceCacheTtl,
 			);
 		}
 	}

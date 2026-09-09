@@ -54,7 +54,24 @@ export async function warmFeatureSourceUrl(
 			cache,
 			key,
 			async () => {
-				const existing = await cache.get(key).catch(() => null);
+				const generation = captureCacheWriteGeneration(
+					cache,
+					resolvedUrl,
+				);
+				let existing = await cache.get(key).catch(() => null);
+				if (
+					existing &&
+					!isCacheWriteGenerationCurrent(
+						cache,
+						resolvedUrl,
+						generation,
+					)
+				) {
+					existing = null;
+				}
+				const writeGeneration = existing
+					? generation
+					: captureCacheWriteGeneration(cache, resolvedUrl);
 				if (
 					existing &&
 					canServeDocumentCacheEntry({
@@ -80,10 +97,6 @@ export async function warmFeatureSourceUrl(
 					};
 				}
 
-				const generation = captureCacheWriteGeneration(
-					cache,
-					resolvedUrl,
-				);
 				const result = await fetchXhrJson(resolvedUrl, {
 					ifNoneMatch: existing?.etag,
 					ifModifiedSince: existing?.lastModified,
@@ -105,7 +118,7 @@ export async function warmFeatureSourceUrl(
 						!isCacheWriteGenerationCurrent(
 							cache,
 							resolvedUrl,
-							generation,
+							writeGeneration,
 						)
 					) {
 						return;
@@ -157,6 +170,7 @@ export async function warmFeatureSourceUrl(
 				return {value: data, share};
 			},
 			shared,
+			options?.ttl,
 		);
 		if (data === undefined) {
 			return false;
