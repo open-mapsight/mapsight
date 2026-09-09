@@ -493,6 +493,55 @@ describe("load with FeatureSourceCache", () => {
 		});
 	});
 
+	it("does not join an in-flight revalidate when forceRefresh is set", async () => {
+		const cache = createMemoryFeatureSourceCache();
+		const key = buildCacheKey({
+			controllerName,
+			featureSourceId: "schools",
+			url: "/geojson/schools.geojson",
+		});
+		await cache.put(key, {
+			data: schoolsCollection,
+			fetchedAt: Date.now() - 1000,
+			bytes: 10,
+			etag: '"v1"',
+			cacheControl: "max-age=0, stale-while-revalidate=60",
+		});
+
+		const fetchStarted = new Promise<void>((resolveStarted) => {
+			vi.stubGlobal(
+				"fetch",
+				vi.fn(
+					() =>
+						new Promise(() => {
+							resolveStarted();
+						}),
+				),
+			);
+		});
+
+		void load(controllerName, "schools")(vi.fn(), () => xhrJsonState(), {
+			featureSourceCache: cache,
+		});
+		await fetchStarted;
+		const forceDispatch = vi.fn();
+		void load(controllerName, "schools", {forceRefresh: true})(
+			forceDispatch,
+			() => xhrJsonState(),
+			{featureSourceCache: cache},
+		);
+		await vi.waitFor(() => {
+			expect(fetch).toHaveBeenCalledTimes(2);
+		});
+		expect(fetch).toHaveBeenNthCalledWith(
+			2,
+			expect.stringContaining("/geojson/schools.geojson"),
+			expect.objectContaining({
+				headers: {},
+			}),
+		);
+	});
+
 	it("blocks on must-revalidate and sends If-None-Match", async () => {
 		const cache = createMemoryFeatureSourceCache();
 		const key = buildCacheKey({

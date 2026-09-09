@@ -343,6 +343,13 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 	if (directives.staleIfErrorSec === undefined) {
 		return false;
 	}
+	if (
+		directives.noStore ||
+		directives.noCache ||
+		(shared && directives.isPrivate)
+	) {
+		return false;
+	}
 	const ageSec = currentAgeSec(input.fetchedAt, input.ageSec ?? 0, now);
 	const originLifetime = originFreshnessLifetimeSec(
 		directives,

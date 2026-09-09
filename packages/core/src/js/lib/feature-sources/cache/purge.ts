@@ -40,7 +40,16 @@ export async function purgeDocumentCacheEntries(
 							),
 						);
 
-		await Promise.all(keys.map((key) => cache.delete(key)));
+		const results = await Promise.allSettled(
+			keys.map((key) => cache.delete(key)),
+		);
+		const failed = results.find(
+			(result): result is PromiseRejectedResult =>
+				result.status === "rejected",
+		);
+		if (failed) {
+			throw failed.reason;
+		}
 		return keys;
 	});
 }

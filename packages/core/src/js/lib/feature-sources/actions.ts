@@ -737,20 +737,15 @@ async function loadWithCache(
 		}
 
 		if (useCache !== USE_CACHE_ONLY) {
+			if (forceRefresh) {
+				return revalidateDocumentCache(extra, key, null, true, url);
+			}
 			return singleFlight(cache, key, async () => {
-				const replay = !forceRefresh
-					? await readDocumentCacheEntry(cache, key)
-					: null;
+				const replay = await readDocumentCacheEntry(cache, key);
 				if (replay) {
 					return replay.data;
 				}
-				return revalidateDocumentCache(
-					extra,
-					key,
-					null,
-					forceRefresh,
-					url,
-				);
+				return revalidateDocumentCache(extra, key, null, false, url);
 			});
 		}
 	}

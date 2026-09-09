@@ -330,6 +330,24 @@ describe("allowsStaleOnError", () => {
 			}),
 		).toBe(false);
 	});
+
+	it("does not serve stale-if-error for no-cache or shared private", () => {
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "no-cache, stale-if-error=3600",
+				now: fetchedAt + 1,
+			}),
+		).toBe(false);
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, private, stale-if-error=3600",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe(false);
+	});
 });
 
 describe("correctedInitialAgeSec", () => {
