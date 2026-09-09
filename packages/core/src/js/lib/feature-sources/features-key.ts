@@ -39,6 +39,10 @@ function encodeFingerprint(value: unknown): unknown {
 	if (typeof value === "bigint") {
 		return ["g", value.toString()];
 	}
+	if (value instanceof Date) {
+		const time = value.getTime();
+		return Number.isNaN(time) ? ["D", "invalid"] : ["D", time];
+	}
 	if (Array.isArray(value)) {
 		return ["a", value.map(encodeFingerprint)];
 	}

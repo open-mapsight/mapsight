@@ -127,6 +127,25 @@ describe("featureCollectionFeaturesKey", () => {
 				features: [{...placeFeature, properties: {count: 2n}}],
 			}),
 		);
+		expect(
+			featureCollectionFeaturesKey({
+				features: [
+					{
+						...placeFeature,
+						properties: {updated: new Date("2026-01-01T00:00:00Z")},
+					},
+				],
+			}),
+		).not.toBe(
+			featureCollectionFeaturesKey({
+				features: [
+					{
+						...placeFeature,
+						properties: {updated: new Date("2026-01-02T00:00:00Z")},
+					},
+				],
+			}),
+		);
 	});
 
 	it("hashes on count change so the next metadata-only poll can skip", () => {
