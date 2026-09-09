@@ -24,8 +24,23 @@ describe("parseCacheControl", () => {
 		});
 	});
 
-	it("ignores malformed delta-seconds", () => {
-		expect(parseCacheControl("max-age=60junk").maxAgeSec).toBeUndefined();
+	it("treats malformed max-age as zero freshness, not the default TTL", () => {
+		expect(parseCacheControl("max-age=60junk").maxAgeSec).toBe(0);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60junk",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60junk",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
 	});
 
 	it("reads private", () => {

@@ -99,10 +99,10 @@ export function parseCacheControl(
 
 		switch (name) {
 			case "max-age":
-				directives.maxAgeSec = parseDeltaSeconds(value);
+				directives.maxAgeSec = parseDeltaSeconds(value) ?? 0;
 				break;
 			case "s-maxage":
-				directives.sMaxAgeSec = parseDeltaSeconds(value);
+				directives.sMaxAgeSec = parseDeltaSeconds(value) ?? 0;
 				break;
 			case "stale-while-revalidate":
 				directives.staleWhileRevalidateSec = parseDeltaSeconds(value);
