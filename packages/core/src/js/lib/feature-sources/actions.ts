@@ -695,8 +695,10 @@ async function readDocumentCacheEntry(
 ): Promise<FeatureSourceCacheEntry | null> {
 	try {
 		const entry = await cache.get(key);
+		if (!entry) {
+			return null;
+		}
 		if (
-			entry &&
 			!canServeDocumentCacheEntry({
 				cacheControl: entry.cacheControl,
 				shared: isSharedDocumentCache(extra),
@@ -710,217 +712,222 @@ async function readDocumentCacheEntry(
 	}
 }
 
-async function loadWithCache(
+function documentEntryFreshness(
+	entry: FeatureSourceCacheEntry,
+	extra: FeatureSourceCacheExtra,
+) {
+	return {
+		fetchedAt: entry.fetchedAt,
+		ageSec: entry.ageSec,
+		date: entry.date,
+		cacheControl: entry.cacheControl,
+		expires: entry.expires,
+		shared: isSharedDocumentCache(extra),
+		ttl: extra.featureSourceCacheTtl,
+	};
+}
+
+function keepCurrentGenerationEntry(
+	entry: FeatureSourceCacheEntry | null,
+	cache: FeatureSourceCache,
+	url: string,
+	generation: CacheWriteGeneration,
+): FeatureSourceCacheEntry | null {
+	if (!entry || !isCacheWriteGenerationCurrent(cache, url, generation)) {
+		return null;
+	}
+	return entry;
+}
+
+async function snapshotDocumentCache(
+	cache: FeatureSourceCache,
+	key: string,
+	extra: FeatureSourceCacheExtra,
+	url: string,
+	skipRead: boolean,
+): Promise<{
+	entry: FeatureSourceCacheEntry | null;
+	writeGeneration: CacheWriteGeneration;
+}> {
+	const readGeneration = captureCacheWriteGeneration(cache, url);
+	const entry = skipRead
+		? null
+		: keepCurrentGenerationEntry(
+				await readDocumentCacheEntry(cache, key, extra),
+				cache,
+				url,
+				readGeneration,
+			);
+	return {
+		entry,
+		writeGeneration: entry
+			? readGeneration
+			: captureCacheWriteGeneration(cache, url),
+	};
+}
+
+function revalidateDocumentFlight(
+	cache: FeatureSourceCache,
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	entry: FeatureSourceCacheEntry | null,
+	url: string,
+	generation: CacheWriteGeneration,
+	forceRefresh = false,
+): Promise<FeatureSourceData | undefined> {
+	return documentCacheFlight(
+		cache,
+		key,
+		() =>
+			revalidateDocumentCache(
+				extra,
+				key,
+				entry,
+				forceRefresh,
+				url,
+				generation,
+			),
+		isSharedDocumentCache(extra),
+		extra.featureSourceCacheTtl,
+	);
+}
+
+async function serveCachedDocument(
+	cache: FeatureSourceCache,
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	entry: FeatureSourceCacheEntry,
+	url: string,
+	writeGeneration: CacheWriteGeneration,
+): Promise<FeatureSourceData | undefined> {
+	const freshness = documentEntryFreshness(entry, extra);
+	const decision = evaluateFreshness(freshness);
+	if (isFeatureSourceCacheDebugEnabled()) {
+		console.info("[mapsight-feature-source-cache]", decision, key);
+	}
+	if (decision === "fresh") {
+		return entry.data;
+	}
+	if (decision === "stale-while-revalidate") {
+		void revalidateDocumentFlight(
+			cache,
+			extra,
+			key,
+			entry,
+			url,
+			writeGeneration,
+		).catch(() => undefined);
+		return entry.data;
+	}
+	try {
+		return await revalidateDocumentFlight(
+			cache,
+			extra,
+			key,
+			entry,
+			url,
+			writeGeneration,
+		);
+	} catch (error) {
+		if (
+			xhrJson.allowsStaleIfErrorForFailure(error) &&
+			allowsStaleOnError(freshness)
+		) {
+			return entry.data;
+		}
+		throw error;
+	}
+}
+
+async function forceRefreshDocumentCache(
+	cache: FeatureSourceCache,
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	url: string,
+): Promise<FeatureSourceData | undefined> {
+	let pending: Promise<FeatureSourceData | undefined>;
+	await withDocumentCacheWrite(cache, () => {
+		bumpDocumentCacheGeneration(cache, [url]);
+		pending = revalidateDocumentFlight(
+			cache,
+			extra,
+			key,
+			null,
+			url,
+			captureCacheWriteGeneration(cache, url),
+			true,
+		);
+		return Promise.resolve();
+	});
+	return pending!;
+}
+
+function missDocumentCache(
+	cache: FeatureSourceCache,
+	extra: FeatureSourceCacheExtra,
+	key: string,
+	url: string,
+): Promise<FeatureSourceData | undefined> {
+	return documentCacheFlight(
+		cache,
+		key,
+		async () => {
+			const {entry, writeGeneration} = await snapshotDocumentCache(
+				cache,
+				key,
+				extra,
+				url,
+				false,
+			);
+			if (!entry) {
+				return revalidateDocumentCache(
+					extra,
+					key,
+					null,
+					false,
+					url,
+					writeGeneration,
+				);
+			}
+			const decision = evaluateFreshness(
+				documentEntryFreshness(entry, extra),
+			);
+			if (decision === "fresh" || decision === "stale-while-revalidate") {
+				return {
+					data: entry.data,
+					share: isShareableCachedResponse({
+						cacheControl: entry.cacheControl,
+						shared: isSharedDocumentCache(extra),
+					}),
+				};
+			}
+			return revalidateDocumentCache(
+				extra,
+				key,
+				entry,
+				false,
+				url,
+				writeGeneration,
+			);
+		},
+		isSharedDocumentCache(extra),
+		extra.featureSourceCacheTtl,
+	);
+}
+
+async function loadFromReduxOrLoader(
 	state: FeatureSourceState,
 	getState: () => unknown,
 	id: string,
 	controllerName: string,
-	options: LoadOptions = {},
+	forceRefresh: boolean,
+	useCache: SharedLoadOptions["useCache"],
+	loaderOptions: object,
 	extra?: FeatureSourceCacheExtra,
-) {
-	const {
-		forceRefresh = false,
-		useCache = USE_CACHE_YES,
-		...loaderOptions
-	} = options;
-
+): Promise<FeatureSourceData | undefined> {
 	const cache = extra?.featureSourceCache;
-	const canUseDocumentCache =
-		useCache !== USE_CACHE_NO && cache && shouldUseDocumentCache(state);
-
-	if (canUseDocumentCache && state.url && extra) {
-		const url = xhrJson.resolveXhrJsonUrl(state.url);
-		const key = documentCacheKey(url, id, controllerName, extra);
-		const readGeneration = captureCacheWriteGeneration(cache, url);
-		let entry = !forceRefresh
-			? await readDocumentCacheEntry(cache, key, extra)
-			: null;
-		if (
-			entry &&
-			!isCacheWriteGenerationCurrent(cache, url, readGeneration)
-		) {
-			entry = null;
-		}
-		const writeGeneration = entry
-			? readGeneration
-			: captureCacheWriteGeneration(cache, url);
-
-		if (entry && useCache === USE_CACHE_ONLY) {
-			return entry.data;
-		}
-
-		if (entry && !forceRefresh) {
-			const decision = evaluateFreshness({
-				fetchedAt: entry.fetchedAt,
-				ageSec: entry.ageSec,
-				date: entry.date,
-				cacheControl: entry.cacheControl,
-				expires: entry.expires,
-				shared: isSharedDocumentCache(extra),
-				ttl: extra.featureSourceCacheTtl,
-			});
-			if (isFeatureSourceCacheDebugEnabled()) {
-				console.info("[mapsight-feature-source-cache]", decision, key);
-			}
-			if (decision === "fresh") {
-				return entry.data;
-			}
-			if (decision === "stale-while-revalidate") {
-				void documentCacheFlight(
-					cache,
-					key,
-					() =>
-						revalidateDocumentCache(
-							extra,
-							key,
-							entry,
-							false,
-							url,
-							writeGeneration,
-						),
-					isSharedDocumentCache(extra),
-					extra.featureSourceCacheTtl,
-				).catch(() => undefined);
-				return entry.data;
-			}
-			try {
-				return await documentCacheFlight(
-					cache,
-					key,
-					() =>
-						revalidateDocumentCache(
-							extra,
-							key,
-							entry,
-							false,
-							url,
-							writeGeneration,
-						),
-					isSharedDocumentCache(extra),
-					extra.featureSourceCacheTtl,
-				);
-			} catch (error) {
-				if (
-					xhrJson.allowsStaleIfErrorForFailure(error) &&
-					allowsStaleOnError({
-						fetchedAt: entry.fetchedAt,
-						ageSec: entry.ageSec,
-						date: entry.date,
-						cacheControl: entry.cacheControl,
-						expires: entry.expires,
-						shared: isSharedDocumentCache(extra),
-						ttl: extra.featureSourceCacheTtl,
-					})
-				) {
-					return entry.data;
-				}
-				throw error;
-			}
-		}
-
-		if (useCache !== USE_CACHE_ONLY) {
-			if (forceRefresh) {
-				let pending: Promise<FeatureSourceData | undefined>;
-				await withDocumentCacheWrite(cache, () => {
-					bumpDocumentCacheGeneration(cache, [url]);
-					const refreshGeneration = captureCacheWriteGeneration(
-						cache,
-						url,
-					);
-					pending = documentCacheFlight(
-						cache,
-						key,
-						() =>
-							revalidateDocumentCache(
-								extra,
-								key,
-								null,
-								true,
-								url,
-								refreshGeneration,
-							),
-						isSharedDocumentCache(extra),
-						extra.featureSourceCacheTtl,
-					);
-					return Promise.resolve();
-				});
-				return pending!;
-			}
-			return documentCacheFlight(
-				cache,
-				key,
-				async () => {
-					const replayGeneration = captureCacheWriteGeneration(
-						cache,
-						url,
-					);
-					let replay = await readDocumentCacheEntry(
-						cache,
-						key,
-						extra,
-					);
-					if (
-						replay &&
-						!isCacheWriteGenerationCurrent(
-							cache,
-							url,
-							replayGeneration,
-						)
-					) {
-						replay = null;
-					}
-					const replayWriteGeneration = replay
-						? replayGeneration
-						: captureCacheWriteGeneration(cache, url);
-					if (replay) {
-						const decision = evaluateFreshness({
-							fetchedAt: replay.fetchedAt,
-							ageSec: replay.ageSec,
-							date: replay.date,
-							cacheControl: replay.cacheControl,
-							expires: replay.expires,
-							shared: isSharedDocumentCache(extra),
-							ttl: extra.featureSourceCacheTtl,
-						});
-						if (
-							decision === "fresh" ||
-							decision === "stale-while-revalidate"
-						) {
-							return {
-								data: replay.data,
-								share: isShareableCachedResponse({
-									cacheControl: replay.cacheControl,
-									shared: isSharedDocumentCache(extra),
-								}),
-							};
-						}
-						return revalidateDocumentCache(
-							extra,
-							key,
-							replay,
-							false,
-							url,
-							replayWriteGeneration,
-						);
-					}
-					return revalidateDocumentCache(
-						extra,
-						key,
-						null,
-						false,
-						url,
-						replayWriteGeneration,
-					);
-				},
-				isSharedDocumentCache(extra),
-				extra.featureSourceCacheTtl,
-			);
-		}
-	}
-
-	const canUseReduxCache = !forceRefresh && state.data;
-	if (useCache !== USE_CACHE_NO && canUseReduxCache) {
-		return Promise.resolve(state.data);
+	if (useCache !== USE_CACHE_NO && !forceRefresh && state.data) {
+		return state.data;
 	}
 
 	if (useCache === USE_CACHE_ONLY) {
@@ -951,4 +958,72 @@ async function loadWithCache(
 		});
 	}
 	return data;
+}
+
+async function loadWithCache(
+	state: FeatureSourceState,
+	getState: () => unknown,
+	id: string,
+	controllerName: string,
+	options: LoadOptions = {},
+	extra?: FeatureSourceCacheExtra,
+) {
+	const {
+		forceRefresh = false,
+		useCache = USE_CACHE_YES,
+		...loaderOptions
+	} = options;
+
+	const cache = extra?.featureSourceCache;
+	const fallback = () =>
+		loadFromReduxOrLoader(
+			state,
+			getState,
+			id,
+			controllerName,
+			forceRefresh,
+			useCache,
+			loaderOptions,
+			extra,
+		);
+
+	if (
+		useCache === USE_CACHE_NO ||
+		!cache ||
+		!extra ||
+		!state.url ||
+		!shouldUseDocumentCache(state)
+	) {
+		return fallback();
+	}
+
+	const url = xhrJson.resolveXhrJsonUrl(state.url);
+	const key = documentCacheKey(url, id, controllerName, extra);
+	const {entry, writeGeneration} = await snapshotDocumentCache(
+		cache,
+		key,
+		extra,
+		url,
+		forceRefresh,
+	);
+
+	if (entry && useCache === USE_CACHE_ONLY) {
+		return entry.data;
+	}
+	if (entry && !forceRefresh) {
+		return serveCachedDocument(
+			cache,
+			extra,
+			key,
+			entry,
+			url,
+			writeGeneration,
+		);
+	}
+	if (useCache === USE_CACHE_ONLY) {
+		return fallback();
+	}
+	return forceRefresh
+		? forceRefreshDocumentCache(cache, extra, key, url)
+		: missDocumentCache(cache, extra, key, url);
 }
