@@ -4,6 +4,10 @@
  * `stale-while-revalidate`: serve the stored body now, revalidate in the background.
  * The opposite is `must-revalidate` / `proxy-revalidate` / `no-cache`: do not
  * serve stale until origin confirms (304) or replaces (200).
+ *
+ * Duplicate `Cache-Control` directives use the first occurrence (RFC 9111
+ * §4.2.1). Invalid delta-seconds are stale (0). `Pragma: no-cache` applies only
+ * when `Cache-Control` is absent. `immutable` may reuse until `maxMs`.
  */
 
 export type CacheControlDirectives = {
@@ -55,6 +59,8 @@ export type FreshnessInput = {
 	/** Corrected initial age at fetch (RFC 9111 Age / Date). */
 	ageSec?: number;
 	cacheControl?: string;
+	/** Used only when `cacheControl` is omitted (RFC 9111 `Pragma`). */
+	pragma?: string;
 	expires?: string;
 	/** HTTP Date of the stored response; used with Expires. */
 	date?: string;
@@ -63,6 +69,23 @@ export type FreshnessInput = {
 	shared?: boolean;
 	ttl?: Partial<CacheTtlPolicy>;
 };
+
+/**
+ * RFC 9111: `Pragma: no-cache` is equivalent to `Cache-Control: no-cache` only
+ * when `Cache-Control` is not present.
+ */
+export function cacheControlFromHeaders(input: {
+	cacheControl?: string;
+	pragma?: string;
+}): string | undefined {
+	if (input.cacheControl !== undefined) {
+		return input.cacheControl;
+	}
+	if (input.pragma && /(?:^|,)\s*no-cache\s*(?:,|$)/i.test(input.pragma)) {
+		return "no-cache";
+	}
+	return undefined;
+}
 
 function parseDeltaSeconds(value: string | undefined): number | undefined {
 	if (value === undefined || !/^\d+$/.test(value)) {
@@ -93,34 +116,33 @@ export function parseCacheControl(
 			continue;
 		}
 		const eq = trimmed.indexOf("=");
-		const name = (eq === -1 ? trimmed : trimmed.slice(0, eq)).toLowerCase();
+		const name = (eq === -1 ? trimmed : trimmed.slice(0, eq))
+			.trim()
+			.toLowerCase();
 		const raw = eq === -1 ? undefined : trimmed.slice(eq + 1).trim();
 		const value = raw?.replace(/^"(.*)"$/, "$1");
 
 		switch (name) {
 			case "max-age":
-				directives.maxAgeSec =
-					directives.maxAgeSec === undefined
-						? (parseDeltaSeconds(value) ?? 0)
-						: 0;
+				if (directives.maxAgeSec === undefined) {
+					directives.maxAgeSec = parseDeltaSeconds(value) ?? 0;
+				}
 				break;
 			case "s-maxage":
-				directives.sMaxAgeSec =
-					directives.sMaxAgeSec === undefined
-						? (parseDeltaSeconds(value) ?? 0)
-						: 0;
+				if (directives.sMaxAgeSec === undefined) {
+					directives.sMaxAgeSec = parseDeltaSeconds(value) ?? 0;
+				}
 				break;
 			case "stale-while-revalidate":
-				directives.staleWhileRevalidateSec =
-					directives.staleWhileRevalidateSec === undefined
-						? (parseDeltaSeconds(value) ?? 0)
-						: 0;
+				if (directives.staleWhileRevalidateSec === undefined) {
+					directives.staleWhileRevalidateSec =
+						parseDeltaSeconds(value) ?? 0;
+				}
 				break;
 			case "stale-if-error":
-				directives.staleIfErrorSec =
-					directives.staleIfErrorSec === undefined
-						? (parseDeltaSeconds(value) ?? 0)
-						: 0;
+				if (directives.staleIfErrorSec === undefined) {
+					directives.staleIfErrorSec = parseDeltaSeconds(value) ?? 0;
+				}
 				break;
 			case "must-revalidate":
 				directives.mustRevalidate = true;
@@ -152,6 +174,14 @@ export function parseCacheControl(
  * RFC 9111 corrected initial age:
  * max(apparent_age, Age + response_delay).
  */
+function parseAgeHeader(value: string | undefined): number {
+	if (!value) {
+		return 0;
+	}
+	const first = value.split(",")[0]?.trim();
+	return parseDeltaSeconds(first) ?? 0;
+}
+
 export function correctedInitialAgeSec(input: {
 	ageHeader?: string;
 	dateHeader?: string;
@@ -160,7 +190,7 @@ export function correctedInitialAgeSec(input: {
 	responseTime?: number;
 }): number {
 	const responseTime = input.responseTime ?? input.now ?? Date.now();
-	const ageHeaderSec = parseDeltaSeconds(input.ageHeader) ?? 0;
+	const ageHeaderSec = parseAgeHeader(input.ageHeader);
 	const responseDelaySec =
 		input.requestTime === undefined
 			? 0
@@ -236,6 +266,7 @@ function originFreshnessLifetimeSec(
  */
 export function shouldPersistDocumentCache(input: {
 	cacheControl?: string;
+	pragma?: string;
 	expires?: string;
 	fetchedAt?: number;
 	date?: string;
@@ -244,7 +275,12 @@ export function shouldPersistDocumentCache(input: {
 	ttl?: Partial<CacheTtlPolicy>;
 }): boolean {
 	const ttl = resolveCacheTtlPolicy(input.ttl);
-	const directives = parseCacheControl(input.cacheControl);
+	const directives = parseCacheControl(
+		cacheControlFromHeaders({
+			cacheControl: input.cacheControl,
+			pragma: input.pragma,
+		}),
+	);
 	if (directives.noStore) {
 		return false;
 	}
@@ -301,9 +337,10 @@ export function canServeDocumentCacheEntry(input: {
 function effectiveFreshnessLifetimeSec(
 	originLifetimeSec: number | undefined,
 	ttl: CacheTtlPolicy,
+	immutable: boolean,
 ): number {
 	if (originLifetimeSec === undefined) {
-		return ttl.defaultMs / 1000;
+		return (immutable ? ttl.maxMs : ttl.defaultMs) / 1000;
 	}
 	return Math.min(originLifetimeSec, ttl.maxMs / 1000);
 }
@@ -319,7 +356,12 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 	const now = input.now ?? Date.now();
 	const shared = input.shared ?? false;
 	const ttl = resolveCacheTtlPolicy(input.ttl);
-	const directives = parseCacheControl(input.cacheControl);
+	const directives = parseCacheControl(
+		cacheControlFromHeaders({
+			cacheControl: input.cacheControl,
+			pragma: input.pragma,
+		}),
+	);
 	const ageSec = currentAgeSec(input.fetchedAt, input.ageSec ?? 0, now);
 
 	if (directives.noStore) {
@@ -345,7 +387,11 @@ export function evaluateFreshness(input: FreshnessInput): FreshnessDecision {
 			(directives.proxyRevalidate ||
 				directives.sMaxAgeSec !== undefined));
 
-	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
+	const lifetime = effectiveFreshnessLifetimeSec(
+		originLifetime,
+		ttl,
+		directives.immutable,
+	);
 
 	if (ageSec < lifetime) {
 		return "fresh";
@@ -370,7 +416,12 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 	const now = input.now ?? Date.now();
 	const shared = input.shared ?? false;
 	const ttl = resolveCacheTtlPolicy(input.ttl);
-	const directives = parseCacheControl(input.cacheControl);
+	const directives = parseCacheControl(
+		cacheControlFromHeaders({
+			cacheControl: input.cacheControl,
+			pragma: input.pragma,
+		}),
+	);
 	if (directives.staleIfErrorSec === undefined) {
 		return false;
 	}
@@ -389,6 +440,10 @@ export function allowsStaleOnError(input: FreshnessInput): boolean {
 		shared,
 		input.date,
 	);
-	const lifetime = effectiveFreshnessLifetimeSec(originLifetime, ttl);
+	const lifetime = effectiveFreshnessLifetimeSec(
+		originLifetime,
+		ttl,
+		directives.immutable,
+	);
 	return ageSec < lifetime + directives.staleIfErrorSec;
 }

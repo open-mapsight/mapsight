@@ -1,4 +1,7 @@
-import {correctedInitialAgeSec} from "@/lib/feature-sources/cache/http-freshness";
+import {
+	cacheControlFromHeaders,
+	correctedInitialAgeSec,
+} from "@/lib/feature-sources/cache/http-freshness";
 import type {FeatureSourceData} from "@/lib/feature-sources/types";
 
 export type XhrJsonLoaderState = {
@@ -104,6 +107,8 @@ export async function fetchXhrJson(
 		headers,
 	});
 	const responseTime = Date.now();
+	const cacheControl = readHeader(response.headers, "Cache-Control");
+	const pragma = readHeader(response.headers, "Pragma");
 	const age = readHeader(response.headers, "Age");
 	const date = readHeader(response.headers, "Date");
 
@@ -111,7 +116,7 @@ export async function fetchXhrJson(
 		status: response.status,
 		etag: readHeader(response.headers, "ETag"),
 		lastModified: readHeader(response.headers, "Last-Modified"),
-		cacheControl: readHeader(response.headers, "Cache-Control"),
+		cacheControl: cacheControlFromHeaders({cacheControl, pragma}),
 		expires: readHeader(response.headers, "Expires"),
 		age,
 		date,

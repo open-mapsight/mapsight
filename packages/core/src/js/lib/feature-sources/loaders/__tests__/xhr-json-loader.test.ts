@@ -177,6 +177,55 @@ describe("xhr-json loader", () => {
 		expect(result.date).toBe("Wed, 09 Sep 2026 18:59:00 GMT");
 	});
 
+	it("treats Pragma no-cache as Cache-Control no-cache when Cache-Control is absent", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				headers: {
+					get(name: string) {
+						if (name === "Pragma") {
+							return "no-cache";
+						}
+						return null;
+					},
+				},
+				json: () =>
+					Promise.resolve({type: "FeatureCollection", features: []}),
+			})),
+		);
+
+		const result = await fetchXhrJson("/schools.geojson");
+		expect(result.cacheControl).toBe("no-cache");
+	});
+
+	it("uses the first Age value when the field is a list", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				headers: {
+					get(name: string) {
+						if (name === "Age") {
+							return "50, 999";
+						}
+						return null;
+					},
+				},
+				json: () =>
+					Promise.resolve({type: "FeatureCollection", features: []}),
+			})),
+		);
+
+		const result = await fetchXhrJson("/schools.geojson");
+		expect(result.age).toBe("50, 999");
+		expect(result.ageSec).toBe(50);
+	});
+
 	it("returns header receipt time as fetchedAt, not a later Date.now()", async () => {
 		let now = 1_000;
 		vi.spyOn(Date, "now").mockImplementation(() => now);

@@ -3,6 +3,7 @@ import {describe, expect, it} from "vitest";
 import {
 	DEFAULT_CACHE_TTL,
 	allowsStaleOnError,
+	cacheControlFromHeaders,
 	canServeDocumentCacheEntry,
 	correctedInitialAgeSec,
 	evaluateFreshness,
@@ -45,18 +46,21 @@ describe("parseCacheControl", () => {
 		).toBe("must-revalidate");
 	});
 
-	it("treats duplicate max-age as zero freshness", () => {
+	it("uses the first max-age occurrence", () => {
 		expect(parseCacheControl("max-age=0, max-age=3600").maxAgeSec).toBe(0);
+		expect(parseCacheControl("max-age=3600, max-age=0").maxAgeSec).toBe(
+			3600,
+		);
 		expect(
 			evaluateFreshness({
 				fetchedAt,
-				cacheControl: "max-age=0, max-age=3600",
+				cacheControl: "max-age=3600, max-age=0",
 				now: fetchedAt + 1,
 			}),
-		).toBe("stale");
+		).toBe("fresh");
 	});
 
-	it("treats duplicate stale-if-error as zero extra lifetime", () => {
+	it("uses the first stale-if-error occurrence", () => {
 		expect(
 			parseCacheControl("stale-if-error=0, stale-if-error=3600")
 				.staleIfErrorSec,
@@ -80,6 +84,12 @@ describe("parseCacheControl", () => {
 			maxAgeSec: 60,
 			isPrivate: true,
 		});
+	});
+
+	it("trims spaces around Cache-Control names and quoted values", () => {
+		expect(parseCacheControl("max-age = 456").maxAgeSec).toBe(456);
+		expect(parseCacheControl('max-age="678"').maxAgeSec).toBe(678);
+		expect(parseCacheControl(",,,,max-age=60,").maxAgeSec).toBe(60);
 	});
 });
 
@@ -285,6 +295,130 @@ describe("evaluateFreshness", () => {
 	});
 });
 
+describe("RFC 9111 freshness", () => {
+	it("ignores Expires when max-age is present", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+			}),
+		).toBe("fresh");
+	});
+
+	it("ignores Expires when s-maxage is present on a shared cache", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+				shared: true,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+				shared: false,
+			}),
+		).toBe("stale");
+	});
+
+	it("treats Age greater than max-age as stale", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 101,
+				cacheControl: "max-age=100",
+				now: fetchedAt,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 15,
+				cacheControl: "max-age=20",
+				now: fetchedAt,
+			}),
+		).toBe("fresh");
+	});
+
+	it("uses Pragma no-cache only when Cache-Control is absent", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				pragma: "no-cache",
+				now: fetchedAt + 1,
+			}),
+		).toBe("must-revalidate");
+		expect(shouldPersistDocumentCache({pragma: "no-cache"})).toBe(true);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60",
+				pragma: "no-cache",
+				now: fetchedAt + 1,
+			}),
+		).toBe("fresh");
+		expect(
+			cacheControlFromHeaders({
+				cacheControl: "",
+				pragma: "no-cache",
+			}),
+		).toBe("");
+	});
+
+	it("lets immutable reuse until the product max TTL", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable",
+				now: fetchedAt + DEFAULT_CACHE_TTL.defaultMs + 1,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable",
+				now: fetchedAt + DEFAULT_CACHE_TTL.maxMs + 1,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable, max-age=0",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+	});
+
+	it("still prefers max-age on a private cache over a lower s-maxage", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60, max-age=180",
+				now: fetchedAt + 120_000,
+				shared: false,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60, max-age=180",
+				now: fetchedAt + 120_000,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+	});
+});
+
 describe("shouldPersistDocumentCache", () => {
 	it("skips documents whose origin lifetime is shorter than the minimum TTL", () => {
 		expect(shouldPersistDocumentCache({cacheControl: "max-age=1"})).toBe(
@@ -472,5 +606,7 @@ describe("correctedInitialAgeSec", () => {
 				responseTime: 6_000,
 			}),
 		).toBe(5);
+		expect(correctedInitialAgeSec({ageHeader: "golden"})).toBe(0);
+		expect(correctedInitialAgeSec({ageHeader: "50, 999"})).toBe(50);
 	});
 });

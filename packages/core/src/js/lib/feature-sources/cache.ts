@@ -20,6 +20,7 @@ export {
 	DEFAULT_CACHE_TTL,
 	evaluateFreshness,
 	parseCacheControl,
+	cacheControlFromHeaders,
 	resolveCacheTtlPolicy,
 	shouldPersistDocumentCache,
 	correctedInitialAgeSec,
