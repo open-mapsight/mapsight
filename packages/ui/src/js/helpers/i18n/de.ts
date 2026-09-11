@@ -50,6 +50,9 @@ const de: Record<string, string> = {
 	"ui.place-actions.navigate.apple": "Apple Karten",
 	"ui.place-actions.show-on-map": "Auf der Karte zeigen",
 	"ui.place-actions.show-on-map.tooltip": "Diesen Ort auf der Karte zeigen",
+	"ui.place-actions.copy-coords": "Koordinaten kopieren",
+	"ui.place-actions.copy-coords.tooltip": "Diese Koordinaten kopieren",
+	"ui.place-actions.copy-coords.copied": "Kopiert",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Website dieses Ortes öffnen",
 	"ui.place-actions.call": "Anrufen",
@@ -194,6 +197,16 @@ const de: Record<string, string> = {
 	"ui.pagination.prevPageLabel": "Zur vorherigen Seite blättern",
 	"ui.pagination.goToSelectedPageLabel": "Sie sind aktuell auf Seite {page}",
 	"ui.pagination.goToPageLabel": "Zur Seite {page} blättern",
+
+	"ui.map-point.menu": "Kartenpunkt",
+	"ui.map-point.mark": "Diesen Punkt markieren",
+	"ui.map-point.copy-coords": "Koordinaten kopieren",
+	"ui.map-point.directions": "Route",
+	"ui.map-point.from-here": "Von hier…",
+	"ui.map-point.to-here": "Nach hier…",
+	"ui.map-point.marked": "Stecknadel gesetzt",
+	"ui.map-point.geocoded": "Nächste Adresse: {name}",
+	"ui.map-point.copied": "Koordinaten kopiert",
 
 	"ui.share-position-link.title": "Ort teilen",
 	"ui.share-position-link.instructions":

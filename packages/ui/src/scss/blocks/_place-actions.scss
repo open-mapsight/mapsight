@@ -13,6 +13,7 @@
 	&__item,
 	&__share-button,
 	&__show-on-map,
+	&__copy-coords,
 	&__navigate-button,
 	&__website,
 	&__call {
@@ -38,6 +39,10 @@
 
 	&__show-on-map &__icon:empty {
 		background-image: url(variables.$ms3-uiIconPath + "map.svg");
+	}
+
+	&__copy-coords &__icon:empty {
+		background-image: url(variables.$ms3-uiIconPath + "copy.svg");
 	}
 
 	&__navigate-button &__icon:empty {

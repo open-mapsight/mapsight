@@ -305,6 +305,90 @@ describe("resolvePlaceActions", () => {
 		).toEqual(["google", "apple"]);
 	});
 
+	it("adds copy coordinates only for the shared link-marker", () => {
+		expect(
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+
+		const marker = feature({
+			id: "link-marker",
+			properties: {id: "link-marker", name: "Pin"},
+		});
+		expect(
+			resolvePlaceActions(marker, {
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toEqual({
+			kind: "copyCoords",
+			text: "52.260000, 10.520000",
+		});
+	});
+
+	it("shares a custom-id marked point with the #lm hash", () => {
+		const marker = feature({
+			id: "host-marker",
+			properties: {
+				id: "host-marker",
+				name: "Pin",
+				mapsightMarkedPoint: true,
+			},
+		});
+
+		expect(
+			resolvePlaceActions(marker, {
+				location,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "share"),
+		).toEqual({
+			kind: "share",
+			href: "https://example.de/plan?module=home#lm=52.26/10.52",
+			title: "Pin",
+		});
+	});
+
+	it("shares the link-marker with the #lm hash instead of ?feature=", () => {
+		const marker = feature({
+			id: "link-marker",
+			properties: {id: "link-marker", name: "Burgplatz 2"},
+		});
+
+		expect(
+			resolvePlaceActions(marker, {
+				location,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "share"),
+		).toEqual({
+			kind: "share",
+			href: "https://example.de/plan?module=home#lm=52.26/10.52",
+			title: "Burgplatz 2",
+		});
+	});
+
+	it("omits copy coordinates without geometry or when disabled", () => {
+		expect(
+			resolvePlaceActions(
+				feature({geometry: {type: "Point", coordinates: []}}),
+				{permalink: () => null, navigation: {fromGeometry: false}},
+			).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+
+		expect(
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				copyCoords: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+	});
+
 	it("adds show on map when the feature has a point", () => {
 		const actions = resolvePlaceActions(feature(), {
 			permalink: () => null,
@@ -342,6 +426,42 @@ describe("resolvePlaceActions", () => {
 		expect(
 			actions.find((action) => action.kind === "navigate"),
 		).toBeUndefined();
+	});
+
+	it("resolves custom target originHref for from-here", () => {
+		const actions = resolvePlaceActions(feature(), {
+			permalink: () => null,
+			showOnMap: false,
+			copyCoords: false,
+			navigation: {
+				supportsGeo: false,
+				targets: [
+					{
+						id: "bsvg",
+						label: "BSVG",
+						href: ({lon, lat}) =>
+							lon == null || lat == null
+								? null
+								: `https://example.de/to/${lat},${lon}`,
+						originHref: ({lon, lat}) =>
+							lon == null || lat == null
+								? null
+								: `https://example.de/from/${lat},${lon}`,
+					},
+				],
+			},
+		});
+
+		expect(
+			actions.find((action) => action.kind === "navigate")?.targets,
+		).toEqual([
+			{
+				id: "bsvg",
+				label: "BSVG",
+				href: "https://example.de/to/52.26,10.52",
+				originHref: "https://example.de/from/52.26,10.52",
+			},
+		]);
 	});
 
 	it("lets the host remap the schema group", () => {

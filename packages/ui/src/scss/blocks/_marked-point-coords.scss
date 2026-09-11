@@ -1,0 +1,19 @@
+.ms3-marked-point-coords {
+	margin: 0.65em 0 0;
+	padding: 0;
+	color: var(--ms3-marked-point-coords-fg, #5c5c5c);
+	font-size: var(--ms3-marked-point-coords-size, 0.75rem);
+	line-height: 1.45;
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum" 1;
+
+	&__line {
+		display: block;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		letter-spacing: 0.01em;
+	}
+
+	&__line + &__line {
+		margin-top: 0.15em;
+	}
+}

@@ -1,10 +1,17 @@
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
+import {
+	formatCoordinateSpellings,
+	isMarkedPointFeature,
+} from "../../plugins/browser/marked-point";
+import {buildLinkMarkerShareHref} from "../../plugins/browser/share-position-link";
 import type {MapsightUiFeature} from "../../types";
 import {supportsGeoProtocol} from "./supports-geo-protocol";
 import type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
+	CopyCoordsPlaceAction,
+	CustomNavHref,
 	CustomNavTarget,
 	FeatureSchema,
 	NavigatePlaceAction,
@@ -161,6 +168,17 @@ function resolvePermalink(
 	if (permanentLink) {
 		return permanentLink;
 	}
+	if (isMarkedPointFeature(feature)) {
+		const coords = lonLatFromGeometry(feature);
+		if (coords && ctx.location?.origin && ctx.location.pathname) {
+			return buildLinkMarkerShareHref(
+				coords.lat,
+				coords.lon,
+				ctx.location,
+			);
+		}
+		return null;
+	}
 	return buildPermalinkFromLocation(feature, ctx.location);
 }
 
@@ -301,6 +319,22 @@ function isCustomNavTarget(target: unknown): target is CustomNavTarget {
 	);
 }
 
+function resolveCustomNavHref(
+	href: CustomNavHref | undefined,
+	ctx: {
+		feature: MapsightUiFeature;
+		lon: number | null;
+		lat: number | null;
+		address: string | null;
+	},
+): string | null {
+	if (href == null) {
+		return null;
+	}
+	const value = typeof href === "function" ? href(ctx) : href;
+	return asNonEmptyString(value ?? null);
+}
+
 function resolveNavTargets(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig | undefined,
@@ -336,17 +370,20 @@ function resolveNavTargets(
 		if (!isCustomNavTarget(target)) {
 			continue;
 		}
-		const href =
-			typeof target.href === "function"
-				? target.href({feature, lon, lat, address})
-				: target.href;
-		const resolvedHref = asNonEmptyString(href ?? null);
+		const ctx = {feature, lon, lat, address};
+		const resolvedHref = resolveCustomNavHref(target.href, ctx);
 		const label = asNonEmptyString(target.label);
 		const id = asNonEmptyString(target.id);
 		if (!resolvedHref || !label || !id) {
 			continue;
 		}
-		targets.push({id, label, href: resolvedHref});
+		const originHref = resolveCustomNavHref(target.originHref, ctx);
+		targets.push({
+			id,
+			label,
+			href: resolvedHref,
+			...(originHref ? {originHref} : {}),
+		});
 	}
 
 	return targets;
@@ -370,6 +407,27 @@ function resolveShare(
 		kind: "share",
 		href,
 		title: resolveShareTitle(feature, config),
+	};
+}
+
+function resolveCopyCoords(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+): CopyCoordsPlaceAction | null {
+	if (config?.copyCoords === false) {
+		return null;
+	}
+	const isLinkMarker = isMarkedPointFeature(feature);
+	if (config?.copyCoords !== true && !isLinkMarker) {
+		return null;
+	}
+	const coords = lonLatFromGeometry(feature);
+	if (!coords) {
+		return null;
+	}
+	return {
+		kind: "copyCoords",
+		text: formatCoordinateSpellings(coords.lat, coords.lon).text,
 	};
 }
 
@@ -445,6 +503,10 @@ export function resolvePlaceActions(
 	const share = resolveShare(feature, config, ctx);
 	if (share) {
 		actions.push(share);
+	}
+	const copyCoords = resolveCopyCoords(feature, config);
+	if (copyCoords) {
+		actions.push(copyCoords);
 	}
 	const showOnMap = resolveShowOnMap(feature, config);
 	if (showOnMap) {

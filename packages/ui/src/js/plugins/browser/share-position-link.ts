@@ -2,6 +2,7 @@ import {createSelector} from "@reduxjs/toolkit";
 import proj4 from "proj4";
 
 import {mergeAll, set} from "@mapsight/core/lib/base/actions";
+import {setData} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
 import {
 	activateInteraction,
@@ -24,9 +25,16 @@ import {
 	FEATURE_SOURCES,
 	MAP,
 } from "../../config/constants/controllers";
-import {features, metaData} from "../../config/map/layers";
 import {translate} from "../../helpers/i18n";
 import type {PluginInstance} from "../../types";
+import {
+	ensureMarkedPointLayerAction,
+	isMarkedPointFeature,
+	lonLatFromMapCoordinate,
+	markedPointCollection,
+	markedPointSourceId,
+	setMarkedPoint,
+} from "./marked-point";
 
 export const createActivateAction = (mapController, name) =>
 	activateInteraction(mapController, `${name}_drawInteraction`);
@@ -35,6 +43,84 @@ export const createDeactivateAction = (mapController, name) =>
 
 function geoJsonPointToMapViewCoordinates(pointGeometry): [number, number] {
 	return proj4(DEFAULT_PROJECTION, "EPSG:3857", pointGeometry.coordinates);
+}
+
+export function parseLinkMarkerHash(
+	hash: string,
+	linkParameter = "lm",
+): {lat: number; lon: number} | null {
+	const regex = new RegExp(
+		`[#&]${encodeURIComponent(
+			linkParameter,
+		)}=(-?\\d+(?:\\.\\d+)?)\\/(-?\\d+(?:\\.\\d+)?)(?:&|$)`,
+	);
+	const match = hash.match(regex);
+	if (!match) {
+		return null;
+	}
+	const lat = Number.parseFloat(match[1]!);
+	const lon = Number.parseFloat(match[2]!);
+	if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+		return null;
+	}
+	return {lat, lon};
+}
+
+function applyCoordinatePrecision(value: number): string {
+	if (!Number.isFinite(value)) {
+		return "0";
+	}
+	return value
+		.toFixed(6)
+		.replace(/(\.\d*?)0+$/, "$1")
+		.replace(/\.$/, "");
+}
+
+export function formatLinkMarkerHash(
+	lat: number,
+	lon: number,
+	linkParameter = "lm",
+): string {
+	return `#${linkParameter}=${applyCoordinatePrecision(lat)}/${applyCoordinatePrecision(lon)}`;
+}
+
+export function buildLinkMarkerShareHref(
+	lat: number,
+	lon: number,
+	location: {origin: string; pathname: string; search?: string},
+	linkParameter = "lm",
+): string {
+	const url = new URL(
+		`${location.origin}${location.pathname}${location.search ?? ""}`,
+	);
+	url.protocol = "https:";
+	url.hash = formatLinkMarkerHash(lat, lon, linkParameter);
+	return url.href;
+}
+
+/** Draw GeoJSON is WGS84; OL internals may still leak map-projection coords. */
+export function lonLatFromDrawnGeometry(
+	geometry: {
+		type?: string;
+		coordinates?: unknown;
+	} | null,
+): {lon: number; lat: number} | null {
+	if (geometry?.type !== "Point" || !Array.isArray(geometry.coordinates)) {
+		return null;
+	}
+	const [x, y] = geometry.coordinates;
+	if (
+		typeof x !== "number" ||
+		typeof y !== "number" ||
+		!Number.isFinite(x) ||
+		!Number.isFinite(y)
+	) {
+		return null;
+	}
+	if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
+		return {lon: x, lat: y};
+	}
+	return lonLatFromMapCoordinate([x, y]);
 }
 
 /**
@@ -54,11 +140,13 @@ function setupDrawInteraction({
 	featureSelectionsControllerName,
 	mapControllerName,
 	drawStyle,
-	displayStyle,
+	markerFeatureId,
+	markerName,
+	markerStyle,
+	markerLayerGroup,
 	zIndex,
 }) {
-	const fSId = `${name}_featureSource`;
-	const drawLayerId = `${name}_drawLayer`;
+	const fSId = markedPointSourceId(name);
 	const interactionId = `${name}_drawInteraction`;
 
 	const vFS = {
@@ -91,26 +179,6 @@ function setupDrawInteraction({
 						},
 					},
 				},
-				layers: {
-					[drawLayerId]: {
-						type: "VectorLayer",
-						options: {
-							visible: true,
-							style: displayStyle,
-							renderBuffer: 200,
-							selections: [],
-							source: vFS,
-							...(zIndex !== undefined ? {zIndex} : {}),
-						},
-					},
-				},
-			},
-			[featureSourcesControllerName]: {
-				[fSId]: {
-					enableHistory: false,
-					data: {},
-					isLoading: true,
-				},
 			},
 		}),
 	);
@@ -126,13 +194,39 @@ function setupDrawInteraction({
 	const deactivate = createDeactivateAction(mapControllerName, name);
 
 	observeState(store, featuresSelector, (createdFeatures) => {
-		if (createdFeatures?.length) {
-			const feature = createdFeatures[0];
-
-			if (feature?.geometry?.type === "Point") {
-				store.dispatch(deactivate);
-			}
+		if (!createdFeatures?.length) {
+			return;
 		}
+		const feature = createdFeatures[0];
+		if (feature?.geometry?.type !== "Point") {
+			return;
+		}
+
+		store.dispatch(deactivate);
+		if (isMarkedPointFeature(feature)) {
+			return;
+		}
+
+		const lonLat = lonLatFromDrawnGeometry(feature.geometry);
+		if (!lonLat) {
+			return;
+		}
+
+		store.dispatch(
+			setMarkedPoint({
+				pluginName: name,
+				mapControllerName,
+				featureSourcesControllerName,
+				featureSelectionsControllerName,
+				lon: lonLat.lon,
+				lat: lonLat.lat,
+				featureId: markerFeatureId,
+				featureName: markerName,
+				markerStyle,
+				markerLayerGroup,
+				zIndex,
+			}),
+		);
 	});
 }
 
@@ -167,6 +261,7 @@ function defaultCreateMarkerFeature(
 			id: id,
 			name: name,
 			mapsightIconId: iconId,
+			mapsightMarkedPoint: true,
 		},
 	};
 }
@@ -193,39 +288,31 @@ function setupMarker(options) {
 		linkParameter,
 		mapControllerName,
 		featureSourcesControllerName,
-		markerStyle,
+		featureSelectionsControllerName,
 		centerOnMarker,
 		markerZoom,
 		markerFeatureId,
 		markerName,
-		markerLayerGroup,
 		markerIconId,
 		createMarkerFeature,
+		markerStyle,
+		markerLayerGroup,
 		zIndex,
 	} = options;
 
-	const fSId = `${name}_markerFeatureSource`;
-	const layerId = `${name}_markerLayer`;
-
-	const regex = new RegExp(
-		`[#&]${encodeURIComponent(
-			linkParameter,
-		)}=(\\d+(?:\\.\\d+)?)\\/(\\d+(?:\\.\\d+)?)(?:&|$)`,
-		"",
-	);
-
 	// TODO: Handle on SSR?!
 	// TODO: Handle on-page-navigation (on hashchange/pushState)
-	const linkMarkerMatches =
-		typeof window !== "undefined" && window.location?.hash.match(regex);
-	if (!linkMarkerMatches) {
+	const parsed =
+		typeof window !== "undefined"
+			? parseLinkMarkerHash(window.location?.hash ?? "", linkParameter)
+			: null;
+	if (!parsed) {
 		return;
 	}
 
-	const [, lat, lon] = linkMarkerMatches;
 	const point = {
 		type: "Point",
-		coordinates: [parseFloat(lon!), parseFloat(lat!)],
+		coordinates: [parsed.lon, parsed.lat],
 	};
 
 	const feature = createMarkerFeature(point, {
@@ -234,38 +321,24 @@ function setupMarker(options) {
 		iconId: markerIconId,
 	});
 
-	const markerLayer = features(
-		fSId,
-		true,
-		true,
-		metaData(markerName, null, false, false, false, markerLayerGroup),
-		markerStyle,
-	);
-
 	store.dispatch(
-		mergeAll({
-			[mapControllerName]: {
-				layers: {
-					[layerId]: {
-						...markerLayer,
-						options: {
-							...markerLayer.options,
-							...(zIndex !== undefined ? {zIndex} : {}),
-						},
-					},
-				},
-			},
-			[featureSourcesControllerName]: {
-				[fSId]: {
-					enableHistory: false,
-					data: {
-						type: "FeatureCollection",
-						features: [feature],
-					},
-					ids: [feature.id],
-				},
-			},
+		ensureMarkedPointLayerAction({
+			pluginName: name,
+			mapControllerName,
+			featureSourcesControllerName,
+			featureSelectionsControllerName,
+			markerName,
+			markerStyle,
+			markerLayerGroup,
+			zIndex,
 		}),
+	);
+	store.dispatch(
+		setData(
+			featureSourcesControllerName,
+			markedPointSourceId(name),
+			markedPointCollection(feature),
+		),
 	);
 
 	if (centerOnMarker) {
@@ -320,9 +393,9 @@ export type Options = {
 	enableDrawing?: boolean;
 
 	/**
-	 * style for finished draw
+	 * style for the shared marked-point layer when `markerStyle` is omitted
 	 *
-	 * @default"features"
+	 * @default "features"
 	 */
 	displayStyle?: string;
 
@@ -424,7 +497,7 @@ export default function createShareLinkPlugin(
 		linkParameter = "lm",
 		showMarker = true,
 		centerOnMarker = true,
-		markerStyle = DEFAULT_DISPLAY_STYLE,
+		markerStyle = displayStyle,
 		markerZoom = 16,
 		markerFeatureId = "link-marker",
 		markerName = translate("marker"),
@@ -435,6 +508,22 @@ export default function createShareLinkPlugin(
 
 	return {
 		afterCreate({store}) {
+			if (!store) {
+				return;
+			}
+			store.dispatch(
+				ensureMarkedPointLayerAction({
+					pluginName: name,
+					mapControllerName,
+					featureSourcesControllerName,
+					featureSelectionsControllerName,
+					markerName,
+					markerStyle,
+					markerLayerGroup,
+					zIndex,
+				}),
+			);
+
 			if (enableDrawing) {
 				if (drawInteraction) {
 					di.injectDefinitions([drawInteraction]);
@@ -447,7 +536,10 @@ export default function createShareLinkPlugin(
 					featureSourcesControllerName,
 					featureSelectionsControllerName,
 					drawStyle,
-					displayStyle,
+					markerFeatureId,
+					markerName,
+					markerStyle,
+					markerLayerGroup,
 					zIndex,
 				});
 			}
@@ -458,7 +550,7 @@ export default function createShareLinkPlugin(
 					store,
 					mapControllerName,
 					featureSourcesControllerName,
-
+					featureSelectionsControllerName,
 					linkParameter,
 					centerOnMarker,
 					markerStyle,
@@ -466,6 +558,7 @@ export default function createShareLinkPlugin(
 					markerFeatureId,
 					markerName,
 					markerLayerGroup,
+					markerIconId: "marker",
 					createMarkerFeature,
 					zIndex,
 				});

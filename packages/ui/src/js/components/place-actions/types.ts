@@ -27,17 +27,22 @@ export type PlaceActionsResolveContext = {
 
 export type BuiltInNavTargetId = "geo" | "google" | "apple";
 
+export type CustomNavHrefContext = {
+	feature: MapsightUiFeature;
+	lon: number | null;
+	lat: number | null;
+	address: string | null;
+};
+
+export type CustomNavHref =
+	string | ((ctx: CustomNavHrefContext) => string | null | undefined);
+
 export type CustomNavTarget = {
 	id: string;
 	label: string;
-	href:
-		| string
-		| ((ctx: {
-				feature: MapsightUiFeature;
-				lon: number | null;
-				lat: number | null;
-				address: string | null;
-		  }) => string | null | undefined);
+	href: CustomNavHref;
+	/** Used by the map-point “from here” menu when the point is the origin. */
+	originHref?: CustomNavHref;
 };
 
 export type NavigationTarget = BuiltInNavTargetId | CustomNavTarget;
@@ -71,12 +76,18 @@ export type PlaceActionsConfig = {
 	share?: {title?: string | ((feature: MapsightUiFeature) => string)};
 	/** Default: show when the feature has a point or bbox. */
 	showOnMap?: boolean;
+	/**
+	 * Default: only the shared `link-marker`. Set `true` to show for any
+	 * point, or `false` to hide it even on the marker.
+	 */
+	copyCoords?: boolean;
 };
 
 export type ResolvedNavTarget = {
 	id: string;
 	label: string;
 	href: string;
+	originHref?: string;
 };
 
 export type SharePlaceAction = {
@@ -87,6 +98,11 @@ export type SharePlaceAction = {
 
 export type ShowOnMapPlaceAction = {
 	kind: "showOnMap";
+};
+
+export type CopyCoordsPlaceAction = {
+	kind: "copyCoords";
+	text: string;
 };
 
 export type NavigatePlaceAction = {
@@ -107,6 +123,7 @@ export type CallPlaceAction = {
 
 export type PlaceAction =
 	| SharePlaceAction
+	| CopyCoordsPlaceAction
 	| ShowOnMapPlaceAction
 	| NavigatePlaceAction
 	| WebsitePlaceAction

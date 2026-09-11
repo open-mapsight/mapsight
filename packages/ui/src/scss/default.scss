@@ -39,11 +39,13 @@
 @use "blocks/main-container";
 @use "blocks/map-overlay";
 @use "blocks/map-overlay-combined-buttons";
+@use "blocks/map-point-menu";
 @use "blocks/map-row";
 @use "blocks/map-synced-interlay";
 @use "blocks/map-target";
 @use "blocks/map-usage";
 @use "blocks/map-wrapper";
+@use "blocks/marked-point-coords";
 @use "blocks/marginal";
 @use "blocks/modal";
 @use "blocks/outbound-link";
