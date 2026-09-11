@@ -172,8 +172,8 @@ export default function FeatureListOptionsPopover({
 						"ms3-list-options__trigger",
 						"ms3-filter-button",
 						hasActiveState
-							? "ms3-filter-button--icon-sort-active"
-							: "ms3-filter-button--icon-sort",
+							? "ms3-filter-button--icon-sort-filter-active"
+							: "ms3-filter-button--icon-sort-filter",
 					].join(" ")}
 					title={triggerTitle}
 					aria-label={triggerTitle}
