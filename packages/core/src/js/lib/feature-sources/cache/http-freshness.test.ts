@@ -1,0 +1,612 @@
+import {describe, expect, it} from "vitest";
+
+import {
+	DEFAULT_CACHE_TTL,
+	allowsStaleOnError,
+	cacheControlFromHeaders,
+	canServeDocumentCacheEntry,
+	correctedInitialAgeSec,
+	evaluateFreshness,
+	isShareableCachedResponse,
+	parseCacheControl,
+	shouldPersistDocumentCache,
+} from "./http-freshness";
+
+const fetchedAt = 1_000_000;
+
+describe("parseCacheControl", () => {
+	it("reads SWR, max-age, and must-revalidate", () => {
+		expect(
+			parseCacheControl(
+				"max-age=60, stale-while-revalidate=120, must-revalidate",
+			),
+		).toMatchObject({
+			maxAgeSec: 60,
+			staleWhileRevalidateSec: 120,
+			mustRevalidate: true,
+		});
+	});
+
+	it("treats malformed max-age as zero freshness, not the default TTL", () => {
+		expect(parseCacheControl("max-age=60junk").maxAgeSec).toBe(0);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60junk",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60junk",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+	});
+
+	it("uses the first max-age occurrence", () => {
+		expect(parseCacheControl("max-age=0, max-age=3600").maxAgeSec).toBe(0);
+		expect(parseCacheControl("max-age=3600, max-age=0").maxAgeSec).toBe(
+			3600,
+		);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=3600, max-age=0",
+				now: fetchedAt + 1,
+			}),
+		).toBe("fresh");
+	});
+
+	it("uses the first stale-if-error occurrence", () => {
+		expect(
+			parseCacheControl("stale-if-error=0, stale-if-error=3600")
+				.staleIfErrorSec,
+		).toBe(0);
+	});
+
+	it("does not let a later valid SWR recover from a malformed first value", () => {
+		expect(
+			parseCacheControl(
+				"stale-while-revalidate=bad, stale-while-revalidate=3600",
+			).staleWhileRevalidateSec,
+		).toBe(0);
+		expect(
+			parseCacheControl("stale-if-error=bad, stale-if-error=3600")
+				.staleIfErrorSec,
+		).toBe(0);
+	});
+
+	it("reads private", () => {
+		expect(parseCacheControl("max-age=60, private")).toMatchObject({
+			maxAgeSec: 60,
+			isPrivate: true,
+		});
+	});
+
+	it("trims spaces around Cache-Control names and quoted values", () => {
+		expect(parseCacheControl("max-age = 456").maxAgeSec).toBe(456);
+		expect(parseCacheControl('max-age="678"').maxAgeSec).toBe(678);
+		expect(parseCacheControl(",,,,max-age=60,").maxAgeSec).toBe(60);
+	});
+});
+
+describe("evaluateFreshness", () => {
+	it("is fresh inside max-age", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60",
+				now: fetchedAt + 10_000,
+			}),
+		).toBe("fresh");
+	});
+
+	it("uses stale-while-revalidate after max-age", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60, stale-while-revalidate=30",
+				now: fetchedAt + 80_000,
+			}),
+		).toBe("stale-while-revalidate");
+	});
+
+	it("must-revalidate wins over SWR once stale", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl:
+					"max-age=60, stale-while-revalidate=30, must-revalidate",
+				now: fetchedAt + 80_000,
+			}),
+		).toBe("must-revalidate");
+	});
+
+	it("treats no-cache as must-revalidate", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "no-cache",
+				now: fetchedAt + 1,
+			}),
+		).toBe("must-revalidate");
+	});
+
+	it("must-revalidate without max-age still uses the default TTL while fresh", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "must-revalidate",
+				now: fetchedAt + 60_000,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "must-revalidate",
+				now: fetchedAt + 6 * 60_000,
+			}),
+		).toBe("must-revalidate");
+	});
+
+	it("honors s-maxage and proxy-revalidate on shared caches", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=3600, s-maxage=0, proxy-revalidate",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=3600, s-maxage=0, proxy-revalidate",
+				now: fetchedAt + 1,
+				shared: false,
+			}),
+		).toBe("fresh");
+	});
+
+	it("treats s-maxage as proxy-revalidate on shared caches once stale", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl:
+					"max-age=60, s-maxage=60, stale-while-revalidate=30",
+				now: fetchedAt + 80_000,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl:
+					"max-age=60, s-maxage=60, stale-while-revalidate=30",
+				now: fetchedAt + 80_000,
+				shared: false,
+			}),
+		).toBe("stale-while-revalidate");
+	});
+
+	it("uses the default TTL when freshness headers are missing", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				now: fetchedAt + 60_000,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				now: fetchedAt + DEFAULT_CACHE_TTL.defaultMs + 1,
+			}),
+		).toBe("stale");
+	});
+
+	it("treats an invalid Expires as already expired", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				expires: "not-a-date",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+		expect(
+			shouldPersistDocumentCache({
+				expires: "not-a-date",
+			}),
+		).toBe(false);
+	});
+
+	it("caps origin max-age at the maximum TTL", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=86400",
+				now: fetchedAt + DEFAULT_CACHE_TTL.maxMs + 1,
+			}),
+		).toBe("stale");
+	});
+
+	it("includes Age in current age so CDN-aged responses are not treated as new", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 59,
+				cacheControl: "max-age=60",
+				now: fetchedAt + 2_000,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 59,
+				cacheControl: "max-age=60",
+				now: fetchedAt,
+			}),
+		).toBe("fresh");
+	});
+
+	it("uses Expires minus Date, not fetchedAt minus Age", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:00 GMT"),
+				ageSec: 59,
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				now: Date.parse("Wed, 09 Sep 2026 19:00:00 GMT") + 2_000,
+			}),
+		).toBe("stale");
+	});
+
+	it("uses receipt time as Date when the Date header is absent", () => {
+		const received = Date.parse("Wed, 09 Sep 2026 19:00:00 GMT");
+		expect(
+			evaluateFreshness({
+				fetchedAt: received,
+				ageSec: 59,
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				now: received + 2_000,
+			}),
+		).toBe("stale");
+	});
+
+	it("must-revalidate private responses on shared caches", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60, private",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60, private",
+				now: fetchedAt + 1,
+				shared: false,
+			}),
+		).toBe("fresh");
+	});
+});
+
+describe("RFC 9111 freshness", () => {
+	it("ignores Expires when max-age is present", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+			}),
+		).toBe("fresh");
+	});
+
+	it("ignores Expires when s-maxage is present on a shared cache", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+				shared: true,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60",
+				expires: "Wed, 09 Sep 2026 15:00:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				now: fetchedAt + 10_000,
+				shared: false,
+			}),
+		).toBe("stale");
+	});
+
+	it("treats Age greater than max-age as stale", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 101,
+				cacheControl: "max-age=100",
+				now: fetchedAt,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				ageSec: 15,
+				cacheControl: "max-age=20",
+				now: fetchedAt,
+			}),
+		).toBe("fresh");
+	});
+
+	it("uses Pragma no-cache only when Cache-Control is absent", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				pragma: "no-cache",
+				now: fetchedAt + 1,
+			}),
+		).toBe("must-revalidate");
+		expect(shouldPersistDocumentCache({pragma: "no-cache"})).toBe(true);
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "max-age=60",
+				pragma: "no-cache",
+				now: fetchedAt + 1,
+			}),
+		).toBe("fresh");
+		expect(
+			cacheControlFromHeaders({
+				cacheControl: "",
+				pragma: "no-cache",
+			}),
+		).toBe("");
+	});
+
+	it("lets immutable reuse until the product max TTL", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable",
+				now: fetchedAt + DEFAULT_CACHE_TTL.defaultMs + 1,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable",
+				now: fetchedAt + DEFAULT_CACHE_TTL.maxMs + 1,
+			}),
+		).toBe("stale");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "immutable, max-age=0",
+				now: fetchedAt + 1,
+			}),
+		).toBe("stale");
+	});
+
+	it("still prefers max-age on a private cache over a lower s-maxage", () => {
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60, max-age=180",
+				now: fetchedAt + 120_000,
+				shared: false,
+			}),
+		).toBe("fresh");
+		expect(
+			evaluateFreshness({
+				fetchedAt,
+				cacheControl: "s-maxage=60, max-age=180",
+				now: fetchedAt + 120_000,
+				shared: true,
+			}),
+		).toBe("must-revalidate");
+	});
+});
+
+describe("shouldPersistDocumentCache", () => {
+	it("skips documents whose origin lifetime is shorter than the minimum TTL", () => {
+		expect(shouldPersistDocumentCache({cacheControl: "max-age=1"})).toBe(
+			false,
+		);
+	});
+
+	it("does not persist no-store", () => {
+		expect(shouldPersistDocumentCache({cacheControl: "no-store"})).toBe(
+			false,
+		);
+	});
+
+	it("persists no-cache so later loads can revalidate", () => {
+		expect(shouldPersistDocumentCache({cacheControl: "no-cache"})).toBe(
+			true,
+		);
+		expect(
+			shouldPersistDocumentCache({cacheControl: "no-cache, max-age=0"}),
+		).toBe(true);
+	});
+
+	it("uses the response Date for Expires persist lifetime", () => {
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				date: "Wed, 09 Sep 2026 19:00:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+			}),
+		).toBe(true);
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+			}),
+		).toBe(false);
+		expect(
+			shouldPersistDocumentCache({
+				expires: "Wed, 09 Sep 2026 19:01:00 GMT",
+				fetchedAt: Date.parse("Wed, 09 Sep 2026 19:00:55 GMT"),
+				ageSec: 59,
+			}),
+		).toBe(false);
+	});
+
+	it("keeps documents with no freshness headers or a long enough max-age", () => {
+		expect(shouldPersistDocumentCache({})).toBe(true);
+		expect(shouldPersistDocumentCache({cacheControl: "max-age=60"})).toBe(
+			true,
+		);
+	});
+
+	it("does not persist private responses in a shared cache", () => {
+		expect(
+			shouldPersistDocumentCache({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			shouldPersistDocumentCache({
+				cacheControl: "max-age=60, private",
+				shared: false,
+			}),
+		).toBe(true);
+	});
+});
+
+describe("allowsStaleOnError", () => {
+	it("extends stale-if-error from the freshness lifetime, not from fetch", () => {
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, stale-if-error=3600",
+				now: fetchedAt + 3_650_000,
+			}),
+		).toBe(true);
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, stale-if-error=3600",
+				now: fetchedAt + 3_670_000,
+			}),
+		).toBe(false);
+	});
+
+	it("does not serve stale-if-error for no-cache or shared private", () => {
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "no-cache, stale-if-error=3600",
+				now: fetchedAt + 1,
+			}),
+		).toBe(false);
+		expect(
+			allowsStaleOnError({
+				fetchedAt,
+				cacheControl: "max-age=60, private, stale-if-error=3600",
+				now: fetchedAt + 1,
+				shared: true,
+			}),
+		).toBe(false);
+	});
+});
+
+describe("isShareableCachedResponse", () => {
+	it("shares public responses on a shared cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60",
+				shared: true,
+			}),
+		).toBe(true);
+	});
+
+	it("does not share no-store or private responses on a shared cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "no-store",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+	});
+
+	it("still coalesces private and no-store on a private cache", () => {
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "no-store",
+				shared: false,
+			}),
+		).toBe(true);
+		expect(
+			isShareableCachedResponse({
+				cacheControl: "max-age=60, private",
+				shared: false,
+			}),
+		).toBe(true);
+	});
+});
+
+describe("canServeDocumentCacheEntry", () => {
+	it("does not serve no-store or shared private entries", () => {
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "no-store",
+				shared: false,
+			}),
+		).toBe(false);
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "max-age=60, private",
+				shared: true,
+			}),
+		).toBe(false);
+		expect(
+			canServeDocumentCacheEntry({
+				cacheControl: "max-age=60",
+				shared: true,
+			}),
+		).toBe(true);
+	});
+});
+
+describe("correctedInitialAgeSec", () => {
+	it("uses the greater of Age and apparent age from Date", () => {
+		const now = Date.parse("Wed, 09 Sep 2026 19:00:00 GMT");
+		expect(
+			correctedInitialAgeSec({
+				ageHeader: "10",
+				dateHeader: "Wed, 09 Sep 2026 18:59:00 GMT",
+				now,
+			}),
+		).toBe(60);
+		expect(correctedInitialAgeSec({ageHeader: "59"})).toBe(59);
+		expect(
+			correctedInitialAgeSec({
+				ageHeader: "0",
+				requestTime: 1_000,
+				responseTime: 6_000,
+			}),
+		).toBe(5);
+		expect(correctedInitialAgeSec({ageHeader: "golden"})).toBe(0);
+		expect(correctedInitialAgeSec({ageHeader: "50, 999"})).toBe(50);
+	});
+});

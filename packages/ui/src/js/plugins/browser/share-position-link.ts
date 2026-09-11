@@ -55,6 +55,7 @@ function setupDrawInteraction({
 	mapControllerName,
 	drawStyle,
 	displayStyle,
+	zIndex,
 }) {
 	const fSId = `${name}_featureSource`;
 	const drawLayerId = `${name}_drawLayer`;
@@ -99,6 +100,7 @@ function setupDrawInteraction({
 							renderBuffer: 200,
 							selections: [],
 							source: vFS,
+							...(zIndex !== undefined ? {zIndex} : {}),
 						},
 					},
 				},
@@ -199,6 +201,7 @@ function setupMarker(options) {
 		markerLayerGroup,
 		markerIconId,
 		createMarkerFeature,
+		zIndex,
 	} = options;
 
 	const fSId = `${name}_markerFeatureSource`;
@@ -231,24 +234,25 @@ function setupMarker(options) {
 		iconId: markerIconId,
 	});
 
+	const markerLayer = features(
+		fSId,
+		true,
+		true,
+		metaData(markerName, null, false, false, false, markerLayerGroup),
+		markerStyle,
+	);
+
 	store.dispatch(
 		mergeAll({
 			[mapControllerName]: {
 				layers: {
-					[layerId]: features(
-						fSId,
-						true,
-						true,
-						metaData(
-							markerName,
-							null,
-							false,
-							false,
-							false,
-							markerLayerGroup,
-						),
-						markerStyle,
-					),
+					[layerId]: {
+						...markerLayer,
+						options: {
+							...markerLayer.options,
+							...(zIndex !== undefined ? {zIndex} : {}),
+						},
+					},
 				},
 			},
 			[featureSourcesControllerName]: {
@@ -391,6 +395,11 @@ export type Options = {
 	 * factory for marker feature
 	 */
 	createMarkerFeature?: MarkerFeatureFactory;
+
+	/**
+	 * z-index for the draw and hash-marker layers
+	 */
+	zIndex?: number;
 };
 
 /**
@@ -421,6 +430,7 @@ export default function createShareLinkPlugin(
 		markerName = translate("marker"),
 		markerLayerGroup = null,
 		createMarkerFeature = defaultCreateMarkerFeature,
+		zIndex,
 	} = options;
 
 	return {
@@ -438,6 +448,7 @@ export default function createShareLinkPlugin(
 					featureSelectionsControllerName,
 					drawStyle,
 					displayStyle,
+					zIndex,
 				});
 			}
 
@@ -456,6 +467,7 @@ export default function createShareLinkPlugin(
 					markerName,
 					markerLayerGroup,
 					createMarkerFeature,
+					zIndex,
 				});
 			}
 		},

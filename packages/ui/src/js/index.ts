@@ -18,6 +18,7 @@ import type {MapsightConfig} from "./config/schema";
 import {validateMapsightConfig} from "./config/schema/validate";
 import {createDefaultControllers} from "./controllers/defaults";
 import {sanitizeRehydratedState} from "./embed/sanitize-rehydrated-state";
+import {mergeCreateOptions} from "./merge-create-options";
 import uiReducers from "./store/reducers";
 import type {
 	CreateOptions,
@@ -162,7 +163,10 @@ export function create(
 	baseMapsightConfig: Partial<MapsightConfig> = {},
 	createOptions: CreateOptions = {},
 ): MapsightUiContext {
-	const mergedCreateOptions = merge({}, defaultCreateOptions, createOptions);
+	const mergedCreateOptions = mergeCreateOptions(
+		defaultCreateOptions,
+		createOptions,
+	);
 	const shouldValidate =
 		mergedCreateOptions.validateConfig ?? isDevelopment();
 	const validatedBaseMapsightConfig = shouldValidate
@@ -237,6 +241,18 @@ export function create(
 		),
 		context.initialState,
 		context.storeEnhancer,
+		context.createOptions.featureSourceCache
+			? {
+					extraArgument: {
+						featureSourceCache:
+							context.createOptions.featureSourceCache,
+						featureSourceRevision:
+							context.createOptions.featureSourceRevision,
+						featureSourceCacheTtl:
+							context.createOptions.featureSourceCacheTtl,
+					},
+				}
+			: {},
 	);
 
 	// render

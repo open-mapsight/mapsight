@@ -48,6 +48,7 @@ function setupDrawInteraction({
 	mapControllerName,
 	drawStyle,
 	displayStyle,
+	zIndex,
 }: {
 	store: EnhancedStore;
 	name: string;
@@ -56,6 +57,7 @@ function setupDrawInteraction({
 	mapControllerName: string;
 	drawStyle: string;
 	displayStyle: string;
+	zIndex?: number;
 }) {
 	const fSId = `${name}_featureSource`;
 	const drawLayerId = `${name}_drawLayer`;
@@ -104,6 +106,7 @@ function setupDrawInteraction({
 							renderBuffer: 200,
 							selections: [],
 							source: vFS,
+							...(zIndex !== undefined ? {zIndex} : {}),
 						},
 					},
 				},
@@ -179,6 +182,7 @@ export default function createMeasureDistancePlugin(
 		displayStyle?: string;
 		drawStyle?: string;
 		drawInteraction?: Definition | null;
+		zIndex?: number;
 	} = {},
 ): PluginInstance {
 	const {
@@ -190,6 +194,7 @@ export default function createMeasureDistancePlugin(
 		displayStyle = DEFAULT_DISPLAY_STYLE,
 		drawStyle = "drawMeasure",
 		drawInteraction = DrawInteraction,
+		zIndex,
 	} = options;
 
 	const dict = getDictionary();
@@ -217,6 +222,7 @@ export default function createMeasureDistancePlugin(
 					featureSelectionsControllerName,
 				drawStyle: drawStyle,
 				displayStyle: displayStyle,
+				zIndex,
 			});
 		},
 	};

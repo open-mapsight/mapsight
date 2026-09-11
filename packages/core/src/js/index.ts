@@ -32,6 +32,11 @@ type StoreOptions = {
 	 * @see https://github.com/zalmoxisus/redux-devtools-extension/blob/master/docs/API/Arguments.md
 	 */
 	reduxDevToolsOptions?: Partial<DevToolsConfig>;
+	/**
+	 * Passed as the third argument to Mapsight async thunks (e.g. `load()`).
+	 * UI uses this for `featureSourceCache` / `featureSourceRevision`.
+	 */
+	extraArgument?: unknown;
 };
 
 /**
@@ -53,7 +58,7 @@ export function createMapsightStore<
 	appEnhancer: StoreEnhancer | null = null,
 	options: StoreOptions = {},
 ): TStore {
-	const {reduxDevToolsOptions = {}} = options;
+	const {reduxDevToolsOptions = {}, extraArgument} = options;
 
 	/**
 	 * Previous root state, passed as the historic 3rd `globalState` argument to
@@ -108,15 +113,24 @@ export function createMapsightStore<
 		return store;
 	}) as StoreEnhancer;
 	const coreMiddlewareEnhancer = applyMiddleware(
-		createPrefixedAsyncActionMiddleware(ASYNC_ACTION_FLAG),
+		createPrefixedAsyncActionMiddleware(
+			ASYNC_ACTION_FLAG,
+			undefined,
+			extraArgument,
+		),
 		batchDispatchMiddleware,
 	);
 
-	const enhancers = [
-		coreEnhancer,
-		appEnhancer,
-		coreMiddlewareEnhancer,
-	].filter(isNonNullable);
+	// When `extraArgument` is set, core async middleware must wrap `appEnhancer`.
+	// UI installs `redux-thunk` there; if thunk is outer, it intercepts flagged
+	// `load()` functions and calls them without this `extraArgument`.
+	// When it is omitted, keep the historical order so an app-provided thunk
+	// still sees flagged Mapsight thunks first.
+	const enhancers = (
+		extraArgument === undefined
+			? [coreEnhancer, appEnhancer, coreMiddlewareEnhancer]
+			: [coreEnhancer, coreMiddlewareEnhancer, appEnhancer]
+	).filter(isNonNullable);
 
 	let enhancer: StoreEnhancer;
 
