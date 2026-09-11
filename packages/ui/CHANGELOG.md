@@ -1,5 +1,60 @@
 # @mapsight/ui
 
+## 7.6.0
+
+### Minor Changes
+
+- e08f7c3: Add a map context menu that marks one shared point, copies coordinates, and opens directions
+
+### Patch Changes
+
+- 2ce2629: Add an opt-in FeatureSourceCache seam so xhr-json loads can reuse a process-memory (or later IDB) document cache keyed by URL and revision
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@tanstack/react-query` `^5.101.4` → `^5.102.4` (minor)
+    - `svgo` `^4.0.2` → `^4.1.0` (minor)
+
+- 2674b27: Bump dependencies from Dependabot ([#260](https://github.com/open-mapsight/mapsight/pull/260)):
+
+    - `react-aria` `^3.51.0` → `^3.52.0` (minor)
+    - `react-intersection-observer` `^11.0.0` → `^11.0.1` (patch)
+
+- 2674b27: Bump dependencies from Dependabot ([#261](https://github.com/open-mapsight/mapsight/pull/261)):
+
+    - `@testing-library/react` `^16.3.2` → `^16.3.3` (patch)
+
+- d45568d: Remount feature-details metric widgets after a source XHR refresh so charts do not stay empty
+- 43650f5: Apply Place and module page meta to the live document head after client route changes
+- 0ac9dc5: Deprecate hint.css control tooltips behind future.v8_ariaControlTooltip
+- b86fef3: Replace combined feature-source members instead of merging
+- 4ffedd1: Compose Mapsight UI icons as SVG on first paint, including compact 1–2 character labels
+- 696fbe4: Focus an autofocus field after opening a native dialog, instead of the first tabbable control
+- 691da32: Isolate render exceptions in list, details, and overlay regions so one failing component no longer unmounts the whole UI
+- 85af82f: Add CreateOptions.future flags for next-major behavior
+- d04c5e0: Move generic feature permalink, geo, nearest-address, and document-adjacent helpers off place-actions and plugin folders
+- 90ea3c9: Allow layer-switcher entries to render optional host content after the title
+- 95b10f7: Keep list distances off the panel edge
+- cd691ac: Opt into collapsed list search with future.v8_listSearchButton
+- 26ea30d: Use a sliders icon for list filter and sort
+- d45d5be: Keep the map slot inside its flex row in every view so a wide map-slot child cannot overflow fullscreen
+- e08f7c3: Let custom navigation targets supply an origin URL for the map-point “from here” menu
+- 2bbb899: Sort FeatureList group headers by a leading number so numbered sections keep a
+  fixed order after distance sort
+- 9ba015e: Trap keyboard focus in fullscreen and map-only chrome so host-page controls stay unreachable
+- 13c7a7a: Keep react-aria overlay portals clickable while fullscreen and map-only chrome is open
+- 0cdb4a1: Add a reusable hover/focus tooltip for controls
+- d851d54: Add share/route/show-on-map place actions as icon-only buttons with tooltips; keep NUNAV out of the default routing list
+- 85ad6ef: Add headless place actions (share, navigate, website, call) and an optional details slot for them
+- e6384ba: Add a generic text-only Place Open Graph card for hosts to render with Satori
+- 9602d5a: Add a generic page-meta utility and keep the selected-feature builder and OG card on their own entries
+- 51c4d1b: Add a pure place page-meta builder for selected-feature title, Open Graph, and Place JSON-LD
+- a717fb7: Reveal a place's owning layer on `?feature=` deep links, and add `?src=` only when that catalog source is not already implied
+- fc2abea: Allow hosts to set z-index on share-position and measure-distance draw layers.
+- Updated dependencies [`2ce2629`, `0a24a14`, `35b1990`, `587c6ff`, `d0e3c5c`, `99f002d`, `6a3871f`, `2674b27`, `0968fcd`, `d2e7d5f`, `4ffedd1`, `a717fb7`]:
+    - `@mapsight/core@14.6.0 → 14.6.1` (patch)
+    - `@mapsight/lib-ol@4.2.3 → 4.2.4` (patch)
+    - `@mapsight/traffic-style@5.5.0 → 5.5.1` (patch)
+
 ## 7.5.0
 
 ### Minor Changes

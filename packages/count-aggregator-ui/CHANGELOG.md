@@ -1,5 +1,24 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.1
+
+### Patch Changes
+
+- b33af3d: Show calendar dates on metric-widget chart axes for daily and coarser series
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@tanstack/react-query` `^5.101.4` → `^5.102.4` (minor)
+
+- 2674b27: Bump dependencies from Dependabot ([#261](https://github.com/open-mapsight/mapsight/pull/261)):
+
+    - `@testing-library/react` `^16.3.2` → `^16.3.3` (patch)
+
+- d45568d: Remount feature-details metric widgets after a source XHR refresh so charts do not stay empty
+- 4ffedd1: Compose Mapsight UI icons as SVG on first paint, including compact 1–2 character labels
+- Updated dependencies [`2ce2629`, `99f002d`, `2674b27`, `d45568d`, `d2e7d5f`, `43650f5`, `0ac9dc5`, `b86fef3`, `4ffedd1`, `696fbe4`, `691da32`, `85af82f`, `d04c5e0`, `90ea3c9`, `95b10f7`, `cd691ac`, `26ea30d`, `e08f7c3`, `d45d5be`, `2bbb899`, `9ba015e`, `13c7a7a`, `0cdb4a1`, `d851d54`, `85ad6ef`, `e6384ba`, `9602d5a`, `51c4d1b`, `a717fb7`, `fc2abea`]:
+    - `@mapsight/ui@7.5.0 → 7.6.0` (minor)
+    - `@mapsight/traffic-style@5.5.0 → 5.5.1` (patch)
+
 ## 3.1.0
 
 ### Minor Changes

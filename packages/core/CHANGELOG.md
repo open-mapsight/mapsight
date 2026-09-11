@@ -1,5 +1,27 @@
 # @mapsight/core
 
+## 14.6.1
+
+### Patch Changes
+
+- 2ce2629: Add an opt-in FeatureSourceCache seam so xhr-json loads can reuse a process-memory (or later IDB) document cache keyed by URL and revision
+- 0a24a14: Union compiled style `allowedProps` into the OpenLayers feature-update allowlist so host `attr()` keys restyle on poll.
+- 35b1990: Skip OpenLayers feature rewrites when a poll rereads the same geometry and core style keys.
+- 587c6ff: Skip GeoJSON feature rereads when a poll only changes collection metadata.
+- d0e3c5c: Copy SSR-hydrated feature data onto the OpenLayers source on first subscribe so map layers paint without a later navigation.
+- 6a3871f: Bump dependencies from Dependabot ([#241](https://github.com/open-mapsight/mapsight/pull/241)):
+
+    - `ol-mapbox-style` `^13.4.2` → `^13.4.3` (patch)
+    - `vite` `^8.2.1` → `^8.2.2` (patch)
+
+- 2674b27: Bump dependencies from Dependabot ([#261](https://github.com/open-mapsight/mapsight/pull/261)):
+
+    - `tsc-alias` `^1.9.2` → `^1.9.3` (patch)
+
+- a717fb7: Reveal a place's owning layer on `?feature=` deep links, and add `?src=` only when that catalog source is not already implied
+- Updated dependencies [`0a24a14`, `35b1990`, `2674b27`, `0968fcd`]:
+    - `@mapsight/lib-ol@4.2.3 → 4.2.4` (patch)
+
 ## 14.6.0
 
 ### Minor Changes

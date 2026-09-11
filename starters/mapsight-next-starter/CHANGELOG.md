@@ -1,5 +1,27 @@
 # mapsight-next-starter
 
+## 0.1.4
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `@types/react-dom` `^19.2.4` → `^19.2.5` (patch)
+    - `sass` `^1.102.0` → `^1.103.1` (minor)
+
+- 2674b27: Bump dependencies from Dependabot ([#258](https://github.com/open-mapsight/mapsight/pull/258)):
+
+    - `next` `^16.3.1` → `^16.3.4` (patch)
+
+- 2674b27: Bump dependencies from Dependabot ([#260](https://github.com/open-mapsight/mapsight/pull/260)):
+
+    - `zod` `^4.4.3` → `^4.5.4` (minor)
+
+- Updated dependencies [`2ce2629`, `0a24a14`, `35b1990`, `99f002d`, `2674b27`, `d45568d`, `0968fcd`, `d2e7d5f`, `43650f5`, `0ac9dc5`, `b86fef3`, `4ffedd1`, `696fbe4`, `691da32`, `85af82f`, `d04c5e0`, `90ea3c9`, `95b10f7`, `cd691ac`, `26ea30d`, `e08f7c3`, `d45d5be`, `2bbb899`, `9ba015e`, `13c7a7a`, `0cdb4a1`, `d851d54`, `85ad6ef`, `e6384ba`, `9602d5a`, `51c4d1b`, `a717fb7`, `fc2abea`]:
+    - `@mapsight/ui@7.5.0 → 7.6.0` (minor)
+    - `@mapsight/lib-ol@4.2.3 → 4.2.4` (patch)
+    - `@mapsight/traffic-style@5.5.0 → 5.5.1` (patch)
+
 ## 0.1.3
 
 ### Patch Changes
