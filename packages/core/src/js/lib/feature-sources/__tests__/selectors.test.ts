@@ -5,6 +5,7 @@ import {
 	STATUS_OK,
 	createFilteredFeatureSourceSelector,
 	findFeatureInFeatureSourcesById,
+	findFeatureSourceIdForFeatureId,
 	getFeatureSourceStatus,
 	hasFeatureSourceLoadError,
 } from "@/lib/feature-sources/selectors";
@@ -73,6 +74,36 @@ describe("feature source selectors", () => {
 		expect(
 			findFeatureInFeatureSourcesById(featureSources, "missing"),
 		).toBeNull();
+	});
+
+	it("prefers a concrete source id over a combined union", () => {
+		const withCombined = {
+			...featureSources,
+			listCombined: {
+				type: "combined",
+				featureSourceNames: ["places"],
+				data: {
+					type: "FeatureCollection",
+					features: [visibleFeature],
+				},
+				ids: ["visible"],
+				featuresById: {visible: visibleFeature},
+				lastUpdate: null,
+				lastActionType: null,
+			},
+		} satisfies FeatureSourcesState;
+
+		expect(findFeatureSourceIdForFeatureId(withCombined, "visible")).toBe(
+			"places",
+		);
+		expect(
+			findFeatureSourceIdForFeatureId(withCombined, "visible", {
+				skipIds: ["places"],
+			}),
+		).toBe("listCombined");
+		expect(findFeatureSourceIdForFeatureId(withCombined, "missing")).toBe(
+			null,
+		);
 	});
 
 	it("keeps filtered data and derived indexes in sync", () => {

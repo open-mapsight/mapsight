@@ -213,6 +213,57 @@ describe("resolvePlaceActions", () => {
 		});
 	});
 
+	it("adds src when the owning source is not implied", () => {
+		const actions = resolvePlaceActions(feature(), {
+			location,
+			navigation: {fromGeometry: false},
+			featureSourceId: "museen",
+			impliedFeatureSourceIds: ["kultur"],
+		});
+
+		expect(actions.find((action) => action.kind === "share")).toMatchObject(
+			{
+				href: "https://example.de/plan?module=home&feature=schlosspark&src=museen",
+			},
+		);
+	});
+
+	it("omits src when the owning source is already implied", () => {
+		const actions = resolvePlaceActions(feature(), {
+			location: {
+				...location,
+				search: "?module=home&src=museen",
+			},
+			navigation: {fromGeometry: false},
+			featureSourceId: "museen",
+			impliedFeatureSourceIds: ["museen", "kultur"],
+		});
+
+		expect(actions.find((action) => action.kind === "share")).toMatchObject(
+			{
+				href: "https://example.de/plan?module=home&feature=schlosspark",
+			},
+		);
+	});
+
+	it("drops a hostile src and skips utility sources", () => {
+		const actions = resolvePlaceActions(feature(), {
+			location: {
+				...location,
+				search: "?module=home&src=https://evil.example",
+			},
+			navigation: {fromGeometry: false},
+			featureSourceId: "searchResult",
+			impliedFeatureSourceIds: [],
+		});
+
+		expect(actions.find((action) => action.kind === "share")).toMatchObject(
+			{
+				href: "https://example.de/plan?module=home&feature=schlosspark",
+			},
+		);
+	});
+
 	it("keeps an existing feature param in the permalink fallback", () => {
 		const actions = resolvePlaceActions(feature(), {
 			location: {

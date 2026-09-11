@@ -7,6 +7,15 @@ export {
 	resolveFeatureSchema,
 	resolvePlaceActions,
 } from "./resolve-place-actions";
+export {
+	FEATURE_SOURCE_SEARCH_PARAM,
+	PERMALINK_SKIP_FEATURE_SOURCE_IDS,
+	allowlistedFeatureSourceId,
+	applyFeatureSourceReveal,
+	parseFeatureSourceSearchParam,
+	permalinkSourceId,
+	sanitizeFeatureSourceId,
+} from "../../plugins/common/reveal-feature-source";
 export {buildPlacePageMeta} from "./build-place-page-meta";
 export {
 	readGeoProtocolSupportEnv,

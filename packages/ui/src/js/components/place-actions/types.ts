@@ -74,6 +74,26 @@ export type PlaceActionsConfig = {
 		supportsGeo?: boolean | (() => boolean);
 	};
 	share?: {title?: string | ((feature: MapsightUiFeature) => string)};
+	/**
+	 * Owning catalog feature-source id. Written as `?src=` when it is not
+	 * implied by the landing view.
+	 */
+	featureSourceId?:
+		| string
+		| ((
+				feature: MapsightUiFeature,
+				ctx: PlaceActionsResolveContext,
+		  ) => string | null | undefined);
+	/**
+	 * Source ids the recipient already loads for this URL (module defaults
+	 * or host `layerVisible`). Those ids are omitted from `?src=`.
+	 */
+	impliedFeatureSourceIds?:
+		| readonly string[]
+		| ((
+				feature: MapsightUiFeature,
+				ctx: PlaceActionsResolveContext,
+		  ) => readonly string[]);
 	/** Default: show when the feature has a point or bbox. */
 	showOnMap?: boolean;
 	/**

@@ -5,6 +5,12 @@ import {
 	isMarkedPointFeature,
 } from "../../plugins/browser/marked-point";
 import {buildLinkMarkerShareHref} from "../../plugins/browser/share-position-link";
+import {
+	FEATURE_SOURCE_SEARCH_PARAM,
+	PERMALINK_SKIP_FEATURE_SOURCE_IDS,
+	permalinkSourceId,
+	sanitizeFeatureSourceId,
+} from "../../plugins/common/reveal-feature-source";
 import type {MapsightUiFeature} from "../../types";
 import {supportsGeoProtocol} from "./supports-geo-protocol";
 import type {
@@ -133,9 +139,70 @@ function featureId(feature: MapsightUiFeature): string | null {
 	return String(id);
 }
 
+function resolveConfiguredSourceId(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+	ctx: PlaceActionsResolveContext,
+): string | null {
+	const configured = config?.featureSourceId;
+	if (typeof configured === "function") {
+		return sanitizeFeatureSourceId(configured(feature, ctx) ?? null);
+	}
+	return sanitizeFeatureSourceId(configured);
+}
+
+function resolveImpliedSourceIds(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+	ctx: PlaceActionsResolveContext,
+): readonly string[] | null {
+	const configured = config?.impliedFeatureSourceIds;
+	if (configured == null) {
+		return null;
+	}
+	return typeof configured === "function"
+		? configured(feature, ctx)
+		: configured;
+}
+
+function resolvePermalinkSourceId(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+	ctx: PlaceActionsResolveContext,
+): string | null {
+	const sourceId = resolveConfiguredSourceId(feature, config, ctx);
+	if (
+		sourceId &&
+		(PERMALINK_SKIP_FEATURE_SOURCE_IDS as readonly string[]).includes(
+			sourceId,
+		)
+	) {
+		return null;
+	}
+	const hasSourceConfig =
+		config?.featureSourceId !== undefined ||
+		config?.impliedFeatureSourceIds !== undefined;
+	const computed = permalinkSourceId(
+		sourceId,
+		resolveImpliedSourceIds(feature, config, ctx),
+	);
+	if (computed || hasSourceConfig) {
+		return computed;
+	}
+	return sanitizeFeatureSourceId(
+		new URLSearchParams(
+			ctx.location?.search?.startsWith("?")
+				? ctx.location.search.slice(1)
+				: (ctx.location?.search ?? ""),
+		).get(FEATURE_SOURCE_SEARCH_PARAM),
+	);
+}
+
 function buildPermalinkFromLocation(
 	feature: MapsightUiFeature,
 	location: PlaceActionsLocation | null,
+	sourceId: string | null = null,
+	replaceSourceParam = false,
 ): string | null {
 	const id = featureId(feature);
 	if (!id || !location?.origin || !location.pathname) {
@@ -147,6 +214,15 @@ function buildPermalinkFromLocation(
 			: (location.search ?? ""),
 	);
 	params.set("feature", id);
+	const existingSource = params.get(FEATURE_SOURCE_SEARCH_PARAM);
+	if (existingSource && !sanitizeFeatureSourceId(existingSource)) {
+		params.delete(FEATURE_SOURCE_SEARCH_PARAM);
+	}
+	if (sourceId) {
+		params.set(FEATURE_SOURCE_SEARCH_PARAM, sourceId);
+	} else if (replaceSourceParam) {
+		params.delete(FEATURE_SOURCE_SEARCH_PARAM);
+	}
 	const query = params.toString();
 	return `${location.origin}${location.pathname}${query ? `?${query}` : ""}`;
 }
@@ -179,7 +255,15 @@ function resolvePermalink(
 		}
 		return null;
 	}
-	return buildPermalinkFromLocation(feature, ctx.location);
+	const hasSourceConfig =
+		config?.featureSourceId !== undefined ||
+		config?.impliedFeatureSourceIds !== undefined;
+	return buildPermalinkFromLocation(
+		feature,
+		ctx.location,
+		resolvePermalinkSourceId(feature, config, ctx),
+		hasSourceConfig,
+	);
 }
 
 function featureTitle(feature: MapsightUiFeature): string {
