@@ -18,7 +18,10 @@ import {setView} from "../../store/actions";
 import type {RootStateSlice} from "../../store/selectors";
 import {isViewMobile, viewSelector} from "../../store/selectors";
 import type {PluginInstance} from "../../types";
-import {applyFeatureSourceReveal} from "../common/reveal-feature-source";
+import {
+	applyFeatureSourceReveal,
+	parseFeatureSourceSearchParam,
+} from "../common/reveal-feature-source";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
@@ -134,9 +137,8 @@ export default function createPlugin(
 			if (featureId) {
 				applyFeatureSourceReveal(store, {
 					featureId,
-					sourceId: getQueryStringParameter(
+					sourceId: parseFeatureSourceSearchParam(
 						window.location.search,
-						"src",
 					),
 				});
 				selectFeature(

@@ -32,6 +32,21 @@ type RevealControllers = {
 	featureSourcesControllerName?: string;
 };
 
+function sourceNeedsLoad(
+	sourceRecord: Record<string, unknown> | null,
+): boolean {
+	if (!sourceRecord || sourceRecord.type === "combined") {
+		return false;
+	}
+	if (sourceRecord.isLoading) {
+		return false;
+	}
+	if (sourceRecord.data != null || Array.isArray(sourceRecord.ids)) {
+		return false;
+	}
+	return true;
+}
+
 function asRecord(value: unknown): Record<string, unknown> | null {
 	if (!value || typeof value !== "object" || Array.isArray(value)) {
 		return null;
@@ -123,7 +138,7 @@ export function revealFeatureSource(
 	const sources = asRecord(state?.[featureSourcesControllerName]);
 	const source = sources?.[allowed];
 	const sourceRecord = asRecord(source);
-	if (sourceRecord && sourceRecord.type !== "combined") {
+	if (sourceNeedsLoad(sourceRecord)) {
 		store.dispatch(
 			async(load(featureSourcesControllerName, allowed)) as never,
 		);

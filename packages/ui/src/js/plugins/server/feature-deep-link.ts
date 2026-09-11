@@ -11,7 +11,10 @@ import type {
 	ExternalMapsightUiRendererProps,
 	PluginInstance,
 } from "../../types";
-import {applyFeatureSourceReveal} from "../common/reveal-feature-source";
+import {
+	applyFeatureSourceReveal,
+	parseFeatureSourceSearchParam,
+} from "../common/reveal-feature-source";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
@@ -63,9 +66,8 @@ export default function createPlugin(
 			if (featureId != null) {
 				applyFeatureSourceReveal(store, {
 					featureId,
-					sourceId: getQueryStringParameter(
+					sourceId: parseFeatureSourceSearchParam(
 						rendererProps[rendererPropName],
-						"src",
 					),
 				});
 				store.dispatch(
