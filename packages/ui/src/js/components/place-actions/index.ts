@@ -27,6 +27,8 @@ export type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
 	CopyCoordsPlaceAction,
+	CustomNavHref,
+	CustomNavHrefContext,
 	CustomNavTarget,
 	FeatureSchema,
 	NavigatePlaceAction,

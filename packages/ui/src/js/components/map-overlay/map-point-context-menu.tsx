@@ -131,7 +131,7 @@ function fromHereTargets(
 ): ResolvedNavTarget[] {
 	const next: ResolvedNavTarget[] = [];
 	for (const target of targets) {
-		const href = originNavHref(target.id, lon, lat);
+		const href = target.originHref ?? originNavHref(target.id, lon, lat);
 		if (!href) {
 			continue;
 		}

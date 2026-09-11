@@ -11,6 +11,7 @@ import type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
 	CopyCoordsPlaceAction,
+	CustomNavHref,
 	CustomNavTarget,
 	FeatureSchema,
 	NavigatePlaceAction,
@@ -318,6 +319,22 @@ function isCustomNavTarget(target: unknown): target is CustomNavTarget {
 	);
 }
 
+function resolveCustomNavHref(
+	href: CustomNavHref | undefined,
+	ctx: {
+		feature: MapsightUiFeature;
+		lon: number | null;
+		lat: number | null;
+		address: string | null;
+	},
+): string | null {
+	if (href == null) {
+		return null;
+	}
+	const value = typeof href === "function" ? href(ctx) : href;
+	return asNonEmptyString(value ?? null);
+}
+
 function resolveNavTargets(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig | undefined,
@@ -353,17 +370,20 @@ function resolveNavTargets(
 		if (!isCustomNavTarget(target)) {
 			continue;
 		}
-		const href =
-			typeof target.href === "function"
-				? target.href({feature, lon, lat, address})
-				: target.href;
-		const resolvedHref = asNonEmptyString(href ?? null);
+		const ctx = {feature, lon, lat, address};
+		const resolvedHref = resolveCustomNavHref(target.href, ctx);
 		const label = asNonEmptyString(target.label);
 		const id = asNonEmptyString(target.id);
 		if (!resolvedHref || !label || !id) {
 			continue;
 		}
-		targets.push({id, label, href: resolvedHref});
+		const originHref = resolveCustomNavHref(target.originHref, ctx);
+		targets.push({
+			id,
+			label,
+			href: resolvedHref,
+			...(originHref ? {originHref} : {}),
+		});
 	}
 
 	return targets;
