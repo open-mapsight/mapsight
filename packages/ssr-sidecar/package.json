@@ -1,0 +1,42 @@
+{
+	"name": "@mapsight/ssr-sidecar",
+	"description": "Node 24 HTTP sidecar for Mapsight HTML embed SSR",
+	"version": "0.0.0",
+	"type": "module",
+	"bin": {
+		"mapsight-ssr-sidecar": "./dist/server.js"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"engines": {
+		"node": "^24.15.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"tag": "beta"
+	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"clean": "rm -rf dist",
+		"clean-build": "npm-run-all clean build",
+		"lint": "eslint",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit"
+	}
+}
