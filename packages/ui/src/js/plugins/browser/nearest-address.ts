@@ -28,7 +28,7 @@ function trimPart(value: unknown): string | null {
 		return null;
 	}
 	const trimmed = value.trim();
-	return trimmed.length > 0 ? escapeHtml(trimmed) : null;
+	return trimmed.length > 0 ? trimmed : null;
 }
 
 export function formatNearestAddress(
@@ -46,6 +46,7 @@ export function formatNearestAddress(
 		.join(" ");
 	const listInformation = [trimPart(hit.plz), trimPart(hit.ort)]
 		.filter((part): part is string => part != null)
+		.map(escapeHtml)
 		.join(" ");
 	return {
 		name,

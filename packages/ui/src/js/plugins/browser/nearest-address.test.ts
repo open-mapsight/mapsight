@@ -23,16 +23,16 @@ describe("formatNearestAddress", () => {
 		});
 	});
 
-	it("escapes markup in generated list information", () => {
+	it("escapes markup only in list information", () => {
 		expect(
 			formatNearestAddress({
-				name: "<b>Burgplatz</b>",
+				name: "Burgplatz & Markt",
 				nummer: "2",
 				plz: "38100",
 				ort: "<img src=x onerror=alert(1)>",
 			}),
 		).toEqual({
-			name: "&lt;b&gt;Burgplatz&lt;/b&gt; 2",
+			name: "Burgplatz & Markt 2",
 			listInformation: "38100 &lt;img src=x onerror=alert(1)&gt;",
 		});
 	});

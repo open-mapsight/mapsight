@@ -1,9 +1,12 @@
+import {fromLonLat} from "ol/proj";
+
 import {describe, expect, it} from "vitest";
 
 import {markedPointSourceId} from "./marked-point";
 import {
 	buildLinkMarkerShareHref,
 	formatLinkMarkerHash,
+	lonLatFromDrawnGeometry,
 	parseLinkMarkerHash,
 } from "./share-position-link";
 
@@ -64,5 +67,29 @@ describe("share-position-link source", () => {
 		expect(markedPointSourceId("sharePositionLink")).toBe(
 			"sharePositionLink_featureSource",
 		);
+	});
+});
+
+describe("lonLatFromDrawnGeometry", () => {
+	it("keeps WGS84 draw coordinates as lon/lat", () => {
+		expect(
+			lonLatFromDrawnGeometry({
+				type: "Point",
+				coordinates: [10.5236, 52.2647],
+			}),
+		).toEqual({lon: 10.5236, lat: 52.2647});
+	});
+
+	it("converts map-projection draw coordinates to WGS84", () => {
+		const [x, y] = fromLonLat([10.5236, 52.2647]);
+		expect(
+			lonLatFromDrawnGeometry({
+				type: "Point",
+				coordinates: [x, y],
+			}),
+		).toEqual({
+			lon: expect.closeTo(10.5236, 5),
+			lat: expect.closeTo(52.2647, 5),
+		});
 	});
 });

@@ -29,8 +29,11 @@ import {translate} from "../../helpers/i18n";
 import type {PluginInstance} from "../../types";
 import {
 	ensureMarkedPointLayerAction,
+	isMarkedPointFeature,
+	lonLatFromMapCoordinate,
 	markedPointCollection,
 	markedPointSourceId,
+	setMarkedPoint,
 } from "./marked-point";
 
 export const createActivateAction = (mapController, name) =>
@@ -95,6 +98,31 @@ export function buildLinkMarkerShareHref(
 	return url.href;
 }
 
+/** Draw GeoJSON is WGS84; OL internals may still leak map-projection coords. */
+export function lonLatFromDrawnGeometry(
+	geometry: {
+		type?: string;
+		coordinates?: unknown;
+	} | null,
+): {lon: number; lat: number} | null {
+	if (geometry?.type !== "Point" || !Array.isArray(geometry.coordinates)) {
+		return null;
+	}
+	const [x, y] = geometry.coordinates;
+	if (
+		typeof x !== "number" ||
+		typeof y !== "number" ||
+		!Number.isFinite(x) ||
+		!Number.isFinite(y)
+	) {
+		return null;
+	}
+	if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
+		return {lon: x, lat: y};
+	}
+	return lonLatFromMapCoordinate([x, y]);
+}
+
 /**
  * @param {object} options options
  * @param {import('redux').Store} options.store store
@@ -112,6 +140,11 @@ function setupDrawInteraction({
 	featureSelectionsControllerName,
 	mapControllerName,
 	drawStyle,
+	markerFeatureId,
+	markerName,
+	markerStyle,
+	markerLayerGroup,
+	zIndex,
 }) {
 	const fSId = markedPointSourceId(name);
 	const interactionId = `${name}_drawInteraction`;
@@ -161,13 +194,39 @@ function setupDrawInteraction({
 	const deactivate = createDeactivateAction(mapControllerName, name);
 
 	observeState(store, featuresSelector, (createdFeatures) => {
-		if (createdFeatures?.length) {
-			const feature = createdFeatures[0];
-
-			if (feature?.geometry?.type === "Point") {
-				store.dispatch(deactivate);
-			}
+		if (!createdFeatures?.length) {
+			return;
 		}
+		const feature = createdFeatures[0];
+		if (feature?.geometry?.type !== "Point") {
+			return;
+		}
+
+		store.dispatch(deactivate);
+		if (isMarkedPointFeature(feature)) {
+			return;
+		}
+
+		const lonLat = lonLatFromDrawnGeometry(feature.geometry);
+		if (!lonLat) {
+			return;
+		}
+
+		store.dispatch(
+			setMarkedPoint({
+				pluginName: name,
+				mapControllerName,
+				featureSourcesControllerName,
+				featureSelectionsControllerName,
+				lon: lonLat.lon,
+				lat: lonLat.lat,
+				featureId: markerFeatureId,
+				featureName: markerName,
+				markerStyle,
+				markerLayerGroup,
+				zIndex,
+			}),
+		);
 	});
 }
 
@@ -477,6 +536,11 @@ export default function createShareLinkPlugin(
 					featureSourcesControllerName,
 					featureSelectionsControllerName,
 					drawStyle,
+					markerFeatureId,
+					markerName,
+					markerStyle,
+					markerLayerGroup,
+					zIndex,
 				});
 			}
 
