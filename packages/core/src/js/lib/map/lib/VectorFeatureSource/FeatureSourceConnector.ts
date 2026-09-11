@@ -2,6 +2,8 @@ import type GeoJSONFormat from "ol/format/GeoJSON";
 import type {ProjectionLike} from "ol/proj";
 import type VectorSource from "ol/source/Vector";
 
+import {DEFAULT_CORE_PROPERTY_KEYS} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
+
 import {async, quiet as quietAction} from "@/lib/base/actions";
 import {
 	addFeature,
@@ -28,6 +30,7 @@ export default class FeatureSourceConnector {
 	private _controllerName: string | undefined = undefined;
 	private readonly _format: GeoJSONFormat;
 	private _source: SharedReadonlyVectorFeatureSource | null = null;
+	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
 
 	constructor({
 		onUpdate,
@@ -150,6 +153,11 @@ export default class FeatureSourceConnector {
 		);
 	}
 
+	setCorePropertyKeys(corePropertyKeys: ReadonlySet<string>) {
+		this._corePropertyKeys = corePropertyKeys;
+		this._source?.setCorePropertyKeys(corePropertyKeys);
+	}
+
 	setId(id: string) {
 		this._id = id;
 		this._subscribeFeatureSource();
@@ -208,6 +216,7 @@ export default class FeatureSourceConnector {
 							this._onUpdate();
 						}
 					},
+					this._corePropertyKeys,
 				);
 			this._source = instance;
 			this._unsubscribeFeatureSource = unsubscribe;

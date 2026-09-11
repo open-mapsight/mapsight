@@ -7,6 +7,10 @@ import VectorSource from "ol/source/Vector";
 
 import type {Unsubscribe} from "@reduxjs/toolkit";
 
+import {
+	DEFAULT_CORE_PROPERTY_KEYS,
+	corePropertyKeysEqual,
+} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
 import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 
 import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
@@ -41,6 +45,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _listeners: Array<FeatureSourceListener>;
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
 	private _format: GeoJSONFormat;
+	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
 	private _lastFeaturesKey: string | undefined;
 	private _lastData: FeatureSourceState["data"] | undefined;
 
@@ -52,6 +57,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		format: GeoJSONFormat,
 		internalProjection?: ProjectionLike,
 		externalProjection?: ProjectionLike,
+		corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 	) {
 		super({format});
 
@@ -63,6 +69,17 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		this._format = format;
 		this._internalProjection = internalProjection;
 		this._externalProjection = externalProjection;
+		this._corePropertyKeys = corePropertyKeys;
+	}
+
+	setCorePropertyKeys(corePropertyKeys: ReadonlySet<string>) {
+		if (corePropertyKeysEqual(this._corePropertyKeys, corePropertyKeys)) {
+			return;
+		}
+		this._corePropertyKeys = corePropertyKeys;
+		if (this._lastData) {
+			this._applyFeatureSourceData(this._lastData, {force: true});
+		}
 	}
 
 	static subscribe(
@@ -74,6 +91,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		internalProjection: ProjectionLike | undefined,
 		externalProjection: ProjectionLike | undefined,
 		listener: FeatureSourceListener,
+		corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 	) {
 		let map;
 		if (listenerStoreMaps.has(store)) {
@@ -102,11 +120,13 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 				format,
 				internalProjection,
 				externalProjection,
+				corePropertyKeys,
 			);
 			instance.__hash = hash;
 			map.set(hash, instance);
 		} else {
 			instance = map.get(hash);
+			instance.setCorePropertyKeys(corePropertyKeys);
 		}
 
 		return {instance: instance, unsubscribe: instance.subscribe(listener)};
@@ -144,6 +164,40 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		};
 	}
 
+	private _applyFeatureSourceData(
+		data: NonNullable<FeatureSourceState["data"]>,
+		{force = false}: {force?: boolean} = {},
+	) {
+		if (!force && data === this._lastData) {
+			return;
+		}
+		const featuresKey = featureCollectionFeaturesKey(data);
+		if (
+			!force &&
+			featuresKey !== undefined &&
+			featuresKey === this._lastFeaturesKey
+		) {
+			this._lastData = data;
+			return;
+		}
+
+		try {
+			const newFeatures = this._format.readFeatures(data, {
+				dataProjection:
+					this._format.readProjection(data) ||
+					this._externalProjection,
+				featureProjection: this._internalProjection,
+			}) as Array<OlFeature>;
+
+			updateFeaturesInSource(this, newFeatures, this._corePropertyKeys);
+			this._lastFeaturesKey = featuresKey;
+			this._lastData = data;
+			this._listeners.forEach((listener) => listener());
+		} catch (_e) {
+			// TODO: Should we report exceptions with reading the data?
+		}
+	}
+
 	private _subscribeToSource(): Unsubscribe {
 		const handleFeatureSourceStateChange = (
 			sourceState: FeatureSourceState | undefined,
@@ -161,41 +215,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			}
 
 			if (sourceState.data) {
-				// Skip only when this is the same collection object. A metadata-only
-				// poll produces a new object with the same features key; hash
-				// that and skip GeoJSON.readFeatures.
-				if (sourceState.data === this._lastData) {
-					return;
-				}
-				const featuresKey = featureCollectionFeaturesKey(
-					sourceState.data,
-				);
-				if (
-					featuresKey !== undefined &&
-					featuresKey === this._lastFeaturesKey
-				) {
-					this._lastData = sourceState.data;
-					return;
-				}
-
-				// try to read from feature source
-				let newFeatures;
-				try {
-					newFeatures = this._format.readFeatures(sourceState.data, {
-						dataProjection:
-							this._format.readProjection(sourceState.data) ||
-							this._externalProjection,
-						featureProjection: this._internalProjection,
-					}) as Array<OlFeature>;
-
-					updateFeaturesInSource(this, newFeatures);
-					this._lastFeaturesKey = featuresKey;
-					this._lastData = sourceState.data;
-
-					this._listeners.forEach((listener) => listener());
-				} catch (_e) {
-					// TODO: Should we report exceptions with reading the data?
-				}
+				this._applyFeatureSourceData(sourceState.data);
 			}
 		};
 		const selector = createFilteredFeatureSourceSelector(
