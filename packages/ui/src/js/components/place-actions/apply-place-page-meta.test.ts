@@ -12,6 +12,7 @@ const defaults = {
 	siteName: "Beispielstadt",
 	canonicalUrl: "https://www.example.de/plan/index.php",
 	ogImage: "https://www.example.de/plan/img/og-default.png",
+	description: "Der Stadtplan der Beispielstadt.",
 };
 
 const placeMeta: PlacePageMeta = {
@@ -87,6 +88,22 @@ describe("applyPlacePageMetaToDocument", () => {
 				.querySelector('meta[property="og:title"]')
 				?.getAttribute("content"),
 		).toBe("Stadtplan");
+		expect(
+			document
+				.querySelector('meta[property="og:description"]')
+				?.getAttribute("content"),
+		).toBe(defaults.description);
 		expect(document.getElementById(PLACE_JSON_LD_SCRIPT_ID)).toBeNull();
+	});
+
+	it("removes og:description when no article default is provided", () => {
+		const {description: _description, ...defaultsWithoutDescription} =
+			defaults;
+		applyPlacePageMetaToDocument(placeMeta, defaultsWithoutDescription);
+		applyPlacePageMetaToDocument(null, defaultsWithoutDescription);
+
+		expect(
+			document.querySelector('meta[property="og:description"]'),
+		).toBeNull();
 	});
 });

@@ -9,6 +9,8 @@ export type DocumentHeadDefaults = {
 	siteName?: string;
 	canonicalUrl?: string;
 	ogImage?: string;
+	/** Article `og:description` to restore when place meta is cleared. */
+	description?: string;
 };
 
 export function documentTitleForMeta(
@@ -61,6 +63,11 @@ export function applyPlacePageMetaToDocument(
 	setMetaProperty("og:type", "website");
 	if (defaults.ogImage) {
 		setMetaProperty("og:image", defaults.ogImage);
+	}
+	if (defaults.description) {
+		setMetaProperty("og:description", defaults.description);
+	} else {
+		document.querySelector('meta[property="og:description"]')?.remove();
 	}
 	removeJsonLd();
 }
