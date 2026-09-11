@@ -55,6 +55,9 @@ export function applyPlacePageMetaToDocument(
 	if (defaults.canonicalUrl) {
 		setCanonical(defaults.canonicalUrl);
 		setMetaProperty("og:url", defaults.canonicalUrl);
+	} else {
+		removeCanonical();
+		removeMetaProperty("og:url");
 	}
 	const headline = headlineFromDocumentTitle(defaults.title);
 	if (headline) {
@@ -63,11 +66,13 @@ export function applyPlacePageMetaToDocument(
 	setMetaProperty("og:type", "website");
 	if (defaults.ogImage) {
 		setMetaProperty("og:image", defaults.ogImage);
+	} else {
+		removeMetaProperty("og:image");
 	}
 	if (defaults.description) {
 		setMetaProperty("og:description", defaults.description);
 	} else {
-		document.querySelector('meta[property="og:description"]')?.remove();
+		removeMetaProperty("og:description");
 	}
 	removeJsonLd();
 }
@@ -80,6 +85,10 @@ function headlineFromDocumentTitle(title: string): string {
 	const separator = " | ";
 	const index = trimmed.indexOf(separator);
 	return index === -1 ? trimmed : trimmed.slice(0, index);
+}
+
+function removeCanonical(): void {
+	document.querySelector('link[rel="canonical"]')?.remove();
 }
 
 function setCanonical(href: string): void {
@@ -102,6 +111,10 @@ function setMetaProperty(property: string, content: string): void {
 		document.head.appendChild(meta);
 	}
 	meta.content = content;
+}
+
+function removeMetaProperty(property: string): void {
+	document.querySelector(`meta[property="${property}"]`)?.remove();
 }
 
 function setJsonLd(jsonLd: Record<string, unknown>): void {

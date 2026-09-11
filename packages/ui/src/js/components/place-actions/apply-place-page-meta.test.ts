@@ -96,12 +96,14 @@ describe("applyPlacePageMetaToDocument", () => {
 		expect(document.getElementById(PLACE_JSON_LD_SCRIPT_ID)).toBeNull();
 	});
 
-	it("removes og:description when no article default is provided", () => {
-		const {description: _description, ...defaultsWithoutDescription} =
-			defaults;
-		applyPlacePageMetaToDocument(placeMeta, defaultsWithoutDescription);
-		applyPlacePageMetaToDocument(null, defaultsWithoutDescription);
+	it("removes leftover place tags when article defaults omit them", () => {
+		const titleOnly = {title: defaults.title, siteName: defaults.siteName};
+		applyPlacePageMetaToDocument(placeMeta, titleOnly);
+		applyPlacePageMetaToDocument(null, titleOnly);
 
+		expect(document.querySelector('link[rel="canonical"]')).toBeNull();
+		expect(document.querySelector('meta[property="og:url"]')).toBeNull();
+		expect(document.querySelector('meta[property="og:image"]')).toBeNull();
 		expect(
 			document.querySelector('meta[property="og:description"]'),
 		).toBeNull();
