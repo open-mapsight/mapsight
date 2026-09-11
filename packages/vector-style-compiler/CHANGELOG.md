@@ -1,5 +1,21 @@
 # @mapsight/vector-style-compiler
 
+## 13.0.3
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `sass` `^1.102.0` → `^1.103.1` (minor)
+
+- 6a3871f: Bump dependencies from Dependabot ([#241](https://github.com/open-mapsight/mapsight/pull/241)):
+
+    - `vite` `^8.2.1` → `^8.2.2` (patch)
+
+- Updated dependencies [`2ce2629`, `0a24a14`, `35b1990`, `587c6ff`, `d0e3c5c`, `6a3871f`, `2674b27`, `0968fcd`, `a717fb7`]:
+    - `@mapsight/core@14.6.0 → 14.6.1` (patch)
+    - `@mapsight/lib-ol@4.2.3 → 4.2.4` (patch)
+
 ## 13.0.2
 
 ### Patch Changes

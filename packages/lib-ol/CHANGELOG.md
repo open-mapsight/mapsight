@@ -1,5 +1,17 @@
 # @mapsight/lib-ol
 
+## 4.2.4
+
+### Patch Changes
+
+- 0a24a14: Union compiled style `allowedProps` into the OpenLayers feature-update allowlist so host `attr()` keys restyle on poll.
+- 35b1990: Skip OpenLayers feature rewrites when a poll rereads the same geometry and core style keys.
+- 2674b27: Bump dependencies from Dependabot ([#261](https://github.com/open-mapsight/mapsight/pull/261)):
+
+    - `tsc-alias` `^1.9.2` → `^1.9.3` (patch)
+
+- 0968fcd: Skip OpenLayers `Icon` construction when `icon` is `none` or `src` is empty so area styles can still paint.
+
 ## 4.2.3
 
 ### Patch Changes

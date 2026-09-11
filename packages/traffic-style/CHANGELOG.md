@@ -1,5 +1,23 @@
 # @mapsight/traffic-style
 
+## 5.5.1
+
+### Patch Changes
+
+- 99f002d: Bump dependencies from Dependabot ([#240](https://github.com/open-mapsight/mapsight/pull/240)):
+
+    - `svgo` `^4.0.2` → `^4.1.0` (minor)
+
+- 2674b27: Bump dependencies from Dependabot ([#260](https://github.com/open-mapsight/mapsight/pull/260)):
+
+    - `sharp` `^0.35.3` → `^0.35.4` (patch)
+
+- d2e7d5f: Add Font Awesome pictograms for mobility, logistics, weather, water, and civic
+  POIs, and pre-bake their PNG/SVG catalog assets (including `fa-*-plain.png`)
+- 4ffedd1: Compose Mapsight UI icons as SVG on first paint, including compact 1–2 character labels
+- Updated dependencies [`0a24a14`, `35b1990`, `2674b27`, `0968fcd`]:
+    - `@mapsight/lib-ol@4.2.3 → 4.2.4` (patch)
+
 ## 5.5.0
 
 ### Minor Changes
