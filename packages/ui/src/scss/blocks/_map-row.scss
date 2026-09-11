@@ -4,6 +4,9 @@
 	display: flex;
 	flex-grow: 1;
 	flex-direction: row;
+	// Flex items default to min-width:auto. A wide map-slot child (chart)
+	// must not force this row past the wrapper.
+	min-width: 0;
 
 	.ms3-wrapper--mapOnly &,
 	.ms3-wrapper--fullscreen & {
