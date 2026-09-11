@@ -16,7 +16,13 @@ export {
 	permalinkSourceId,
 	sanitizeFeatureSourceId,
 } from "../../plugins/common/reveal-feature-source";
-export {buildPlacePageMeta} from "./build-place-page-meta";
+export {buildPlacePageMeta, placeFeatureTitle} from "./build-place-page-meta";
+export {default as PlaceOgCard} from "./place-og-card";
+export {
+	PLACE_OG_CARD_HEIGHT,
+	PLACE_OG_CARD_VERSION,
+	PLACE_OG_CARD_WIDTH,
+} from "./place-og-card";
 export {
 	readGeoProtocolSupportEnv,
 	supportsGeoProtocol,
@@ -32,6 +38,7 @@ export type {
 	PlacePageMeta,
 	PlacePageMetaOg,
 } from "./build-place-page-meta";
+export type {PlaceOgCardProps} from "./place-og-card";
 export type {
 	BuiltInNavTargetId,
 	CallPlaceAction,

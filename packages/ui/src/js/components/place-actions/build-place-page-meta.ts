@@ -39,7 +39,7 @@ function asNonEmptyString(value: unknown): string | null {
 	return trimmed.length > 0 ? trimmed : null;
 }
 
-function featureTitle(feature: MapsightUiFeature): string {
+export function placeFeatureTitle(feature: MapsightUiFeature): string {
 	return (
 		asNonEmptyString(getFeatureProperty(feature, "name")) ??
 		asNonEmptyString(getFeatureProperty(feature, "title")) ??
@@ -85,7 +85,7 @@ export function buildPlacePageMeta(
 	feature: MapsightUiFeature,
 	config: BuildPlacePageMetaConfig,
 ): PlacePageMeta | null {
-	const title = featureTitle(feature);
+	const title = placeFeatureTitle(feature);
 	const canonicalUrl = resolveFeaturePermalink(feature, config);
 	const ogImage = asNonEmptyString(config.ogImage);
 	if (!title || !canonicalUrl || !ogImage) {
