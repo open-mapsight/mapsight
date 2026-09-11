@@ -44,6 +44,9 @@ describe("parseFeatureSourceSearchParam", () => {
 		expect(
 			parseFeatureSourceSearchParam("?src=https://evil.example"),
 		).toBeNull();
+		expect(
+			parseFeatureSourceSearchParam("?feature=x&src=%E0%A4%A"),
+		).toBeNull();
 	});
 });
 
@@ -90,6 +93,36 @@ describe("revealFeatureSource", () => {
 				);
 			}),
 		).toBe(true);
+	});
+
+	it("does not reload a source that already has features", () => {
+		const dispatch = vi.fn();
+		const store = {
+			dispatch,
+			getState: () => ({
+				featureSources: {
+					museen: {
+						type: "xhr-json",
+						url: "/museen.json",
+						data: {type: "FeatureCollection", features: []},
+						ids: ["rathaus"],
+					},
+				},
+				map: {
+					layers: {
+						museen: {options: {visible: false}},
+					},
+				},
+			}),
+			subscribe: () => () => undefined,
+		};
+
+		expect(revealFeatureSource(store, "museen")).toBe(true);
+		expect(dispatch).toHaveBeenCalledTimes(1);
+		expect(
+			(dispatch.mock.calls[0]?.[0] as {meta?: {path?: unknown[]}}).meta
+				?.path,
+		).toContain("visible");
 	});
 
 	it("ignores unknown catalog ids", () => {
