@@ -27,6 +27,7 @@ Add a `future` object on `CreateOptions`, following the Remix / React Router **f
 createOptions: {
   future: {
     v8_ariaControlTooltip: true,
+    v8_listSearchButton: true,
   },
 }
 ```
@@ -41,8 +42,12 @@ Rules:
 - Add a key to `FutureFlags` only in the same change that reads it. An unused flag is a public no-op.
 - When that major ships, the flagged behavior becomes the only behavior and the key is deleted.
 
-The first flag is `v8_ariaControlTooltip`: leftover hint.css call sites (today: RegionSelector) keep CSS tooltips
-by default; hosts set the flag to use the ARIA `Tooltip` now.
+Current flags:
+
+- `v8_ariaControlTooltip`: leftover hint.css call sites (today: RegionSelector) keep CSS tooltips by default;
+  hosts set the flag to use the ARIA `Tooltip` now.
+- `v8_listSearchButton`: list text search keeps a visible label + input by default (7.x host CSS); hosts set
+  the flag to expand from a labeled button. That chrome becomes the only path in v8.
 
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 

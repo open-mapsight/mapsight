@@ -1,4 +1,4 @@
-import {memo, useEffect, useState} from "react";
+import {memo, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
 
@@ -13,13 +13,18 @@ function FeatureFilter() {
 
 	const [input, setInput] = useState(listQuery);
 	const debouncedInput = useDebounce(input, 200);
+	const lastDispatchedQuery = useRef(listQuery);
 
 	useEffect(() => {
-		setInput((current) => (current === listQuery ? current : listQuery));
+		if (listQuery !== lastDispatchedQuery.current) {
+			setInput(listQuery);
+			lastDispatchedQuery.current = listQuery;
+		}
 	}, [listQuery]);
 
 	useEffect(() => {
 		if (debouncedInput !== "") {
+			lastDispatchedQuery.current = debouncedInput;
 			dispatch(filterListQuery(debouncedInput));
 		}
 	}, [dispatch, debouncedInput]);
@@ -27,6 +32,7 @@ function FeatureFilter() {
 	// needed to "override" debounce if the value is ""
 	useEffect(() => {
 		if (input === "") {
+			lastDispatchedQuery.current = "";
 			dispatch(filterListQuery(""));
 		}
 	}, [dispatch, input]);

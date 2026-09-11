@@ -109,13 +109,18 @@ ships. See [Decision 012](../architecture/decisions/012-future-flags-for-next-ma
 createOptions: {
 	future: {
 		v8_ariaControlTooltip: true,
+		v8_listSearchButton: true,
 	},
 }
 ```
 
 `v8_ariaControlTooltip` switches leftover hint.css control tooltips (RegionSelector) to the ARIA `Tooltip`.
-Omitted or `false` keeps `ms3-hint--*` classes. New UI is not hidden behind flags; only leftover behavior that
-must stay dual-path in this major.
+Omitted or `false` keeps `ms3-hint--*` classes.
+
+`v8_listSearchButton` expands list text search from a labeled button. Omitted or `false` keeps the visible
+label + input so 7.x host CSS does not break. This will be the only list-search chrome in v8.
+
+New UI is not hidden behind flags; only leftover behavior that must stay dual-path in this major.
 
 ---
 

@@ -1,9 +1,11 @@
-import {useState} from "react";
+import {type ReactNode, useState} from "react";
 
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {FutureFlagsContext} from "../future/context";
 import {setDocumentLanguage} from "../helpers/i18n";
+import type {FutureFlags} from "../types";
 import QueryInputWithLabel from "./query-input-with-label";
 
 afterEach(() => {
@@ -13,16 +15,79 @@ afterEach(() => {
 
 const LABEL = "In Liste suchen …";
 
-function Harness({initialQuery = ""}: {initialQuery?: string}) {
+function Harness({
+	initialQuery = "",
+	future,
+	onChange,
+}: {
+	initialQuery?: string;
+	future?: FutureFlags;
+	onChange?: (query: string) => void;
+}) {
 	const [query, setQuery] = useState(initialQuery);
+	const input = (
+		<QueryInputWithLabel
+			label={LABEL}
+			query={query}
+			onChange={(next) => {
+				setQuery(next);
+				onChange?.(next);
+			}}
+		/>
+	);
+
+	return future ? (
+		<FutureFlagsContext.Provider value={future}>
+			{input}
+		</FutureFlagsContext.Provider>
+	) : (
+		input
+	);
+}
+
+function withListSearchButton(children: ReactNode) {
 	return (
-		<QueryInputWithLabel label={LABEL} query={query} onChange={setQuery} />
+		<FutureFlagsContext.Provider value={{v8_listSearchButton: true}}>
+			{children}
+		</FutureFlagsContext.Provider>
 	);
 }
 
 describe("QueryInputWithLabel", () => {
-	it("renders a labeled open button when the query is empty", () => {
+	it("keeps a visible label and searchbox when the future flag is off", () => {
 		render(<Harness />);
+
+		const input = screen.getByRole("searchbox");
+		expect(input).toBeTruthy();
+		expect(screen.getByText(LABEL).className).toContain(
+			"ms3-query-input-with-label__label",
+		);
+		expect(screen.getByText(LABEL).className).not.toContain(
+			"ms3-visuallyhidden",
+		);
+		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(
+			document.querySelector(
+				".ms3-query-input-with-label--list-search-button",
+			),
+		).toBeNull();
+	});
+
+	it("forwards typed text through onChange without opening a button", () => {
+		const onChange = vi.fn();
+		render(<Harness onChange={onChange} />);
+
+		fireEvent.change(screen.getByRole("searchbox"), {
+			target: {value: "markt"},
+		});
+
+		expect(onChange).toHaveBeenCalledWith("markt");
+	});
+});
+
+describe("QueryInputWithLabel with v8_listSearchButton", () => {
+	it("renders a labeled open button when the query is empty", () => {
+		render(<Harness future={{v8_listSearchButton: true}} />);
 
 		const openButton = screen.getByRole("button", {name: LABEL});
 		expect(openButton.className).toContain(
@@ -38,10 +103,20 @@ describe("QueryInputWithLabel", () => {
 				".ms3-query-input-with-label__input-container",
 			),
 		).not.toBeNull();
+		expect(
+			document.querySelector(
+				".ms3-query-input-with-label--list-search-button",
+			),
+		).not.toBeNull();
 	});
 
 	it("starts expanded when the query is already non-empty", () => {
-		render(<Harness initialQuery="cafe" />);
+		render(
+			<Harness
+				initialQuery="cafe"
+				future={{v8_listSearchButton: true}}
+			/>,
+		);
 
 		expect(screen.getByRole("searchbox")).toBeTruthy();
 		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
@@ -49,7 +124,9 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("replaces the button with a focused input in the same icon host", () => {
-		const {container} = render(<Harness />);
+		const {container} = render(
+			<Harness future={{v8_listSearchButton: true}} />,
+		);
 		const iconHost = container.querySelector(
 			".ms3-query-input-with-label__input-container",
 		);
@@ -64,7 +141,7 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("stays expanded while the input is focused even if the query is empty", () => {
-		render(<Harness />);
+		render(<Harness future={{v8_listSearchButton: true}} />);
 
 		fireEvent.click(screen.getByRole("button", {name: LABEL}));
 		expect(screen.getByRole("searchbox")).toBeTruthy();
@@ -72,7 +149,12 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("stays expanded after the query is cleared while the input remains focused", () => {
-		render(<Harness initialQuery="cafe" />);
+		render(
+			<Harness
+				initialQuery="cafe"
+				future={{v8_listSearchButton: true}}
+			/>,
+		);
 
 		fireEvent.blur(screen.getByRole("searchbox"));
 		fireEvent.focus(screen.getByRole("searchbox"));
@@ -85,7 +167,7 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("collapses on blur when the query is empty", () => {
-		render(<Harness />);
+		render(<Harness future={{v8_listSearchButton: true}} />);
 
 		fireEvent.click(screen.getByRole("button", {name: LABEL}));
 		fireEvent.blur(screen.getByRole("searchbox"));
@@ -95,7 +177,12 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("stays expanded on blur when the query is non-empty", () => {
-		render(<Harness initialQuery="cafe" />);
+		render(
+			<Harness
+				initialQuery="cafe"
+				future={{v8_listSearchButton: true}}
+			/>,
+		);
 
 		fireEvent.blur(screen.getByRole("searchbox"));
 
@@ -104,7 +191,7 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("collapses an empty input on Escape", () => {
-		render(<Harness />);
+		render(<Harness future={{v8_listSearchButton: true}} />);
 
 		fireEvent.click(screen.getByRole("button", {name: LABEL}));
 		fireEvent.keyDown(screen.getByRole("searchbox"), {key: "Escape"});
@@ -114,7 +201,12 @@ describe("QueryInputWithLabel", () => {
 	});
 
 	it("does not collapse on Escape when the query is non-empty", () => {
-		render(<Harness initialQuery="cafe" />);
+		render(
+			<Harness
+				initialQuery="cafe"
+				future={{v8_listSearchButton: true}}
+			/>,
+		);
 
 		fireEvent.keyDown(screen.getByRole("searchbox"), {key: "Escape"});
 
@@ -123,7 +215,12 @@ describe("QueryInputWithLabel", () => {
 
 	it("keeps the input focused after reset so the control stays expanded", () => {
 		setDocumentLanguage("de");
-		render(<Harness initialQuery="cafe" />);
+		render(
+			<Harness
+				initialQuery="cafe"
+				future={{v8_listSearchButton: true}}
+			/>,
+		);
 
 		fireEvent.blur(screen.getByRole("searchbox"));
 		fireEvent.focus(screen.getByRole("searchbox"));
@@ -140,7 +237,13 @@ describe("QueryInputWithLabel", () => {
 	it("forwards typed text through onChange", () => {
 		const onChange = vi.fn();
 		render(
-			<QueryInputWithLabel label={LABEL} query="" onChange={onChange} />,
+			withListSearchButton(
+				<QueryInputWithLabel
+					label={LABEL}
+					query=""
+					onChange={onChange}
+				/>,
+			),
 		);
 
 		fireEvent.click(screen.getByRole("button", {name: LABEL}));

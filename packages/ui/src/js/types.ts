@@ -351,6 +351,11 @@ export type FutureFlags = {
 	 * Default `false` (hint.css). This will be the only behavior in v8.
 	 */
 	v8_ariaControlTooltip?: boolean;
+	/**
+	 * Expand list text search from a labeled button. Default `false` keeps the
+	 * visible label + input (7.x host CSS). This will be the only behavior in v8.
+	 */
+	v8_listSearchButton?: boolean;
 };
 
 export type CreateOptions = {

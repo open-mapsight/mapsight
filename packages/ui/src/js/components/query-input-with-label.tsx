@@ -2,6 +2,7 @@ import type {ChangeEvent, KeyboardEvent, ReactNode} from "react";
 import {useCallback, useLayoutEffect, useRef, useState} from "react";
 import {useId} from "react-aria";
 
+import {useFutureFlag} from "../future/context";
 import {translate} from "../helpers/i18n";
 
 export type Props = {
@@ -12,10 +13,82 @@ export type Props = {
 };
 
 /**
- * List text search: collapsed labeled button, then a focused input in the same
- * icon slot. Distinct from the map/places search overlay.
+ * List text search. Distinct from the map/places search overlay.
+ * Default keeps a visible label + input for 7.x host CSS.
+ * `future.v8_listSearchButton` expands from a labeled button. Removed in v8.
  **/
 function QueryInputWithLabel({label, placeholder, query, onChange}: Props) {
+	const listSearchButton = useFutureFlag("v8_listSearchButton");
+	return listSearchButton ? (
+		<ListSearchButtonInput
+			label={label}
+			placeholder={placeholder}
+			query={query}
+			onChange={onChange}
+		/>
+	) : (
+		<VisibleLabelInput
+			label={label}
+			placeholder={placeholder}
+			query={query}
+			onChange={onChange}
+		/>
+	);
+}
+
+function VisibleLabelInput({label, placeholder, query, onChange}: Props) {
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const handleInput = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
+		[onChange],
+	);
+
+	const handleReset = useCallback(() => {
+		onChange("");
+		inputRef.current?.focus();
+	}, [onChange]);
+
+	const inputId = useId();
+
+	return (
+		<fieldset className="ms3-query-input-with-label">
+			<label
+				className="ms3-query-input-with-label__label"
+				htmlFor={inputId}
+			>
+				{label}
+			</label>
+
+			<div className="ms3-query-input-with-label__input-container">
+				<input
+					id={inputId}
+					ref={inputRef}
+					className="ms3-query-input-with-label__input"
+					placeholder={placeholder}
+					type="search"
+					value={query}
+					onChange={handleInput}
+					autoComplete="off"
+				/>
+
+				{query !== "" && (
+					<button
+						className="ms3-query-input-with-label__reset-button"
+						type="button"
+						onClick={handleReset}
+					>
+						<span className="ms3-visuallyhidden">
+							{translate("ui.query-input.reset")}
+						</span>
+					</button>
+				)}
+			</div>
+		</fieldset>
+	);
+}
+
+function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pendingFocusRef = useRef(false);
 	const [open, setOpen] = useState(() => query !== "");
@@ -64,7 +137,7 @@ function QueryInputWithLabel({label, placeholder, query, onChange}: Props) {
 	const inputId = useId();
 
 	return (
-		<fieldset className="ms3-query-input-with-label">
+		<fieldset className="ms3-query-input-with-label ms3-query-input-with-label--list-search-button">
 			{expanded ? (
 				<label
 					className="ms3-query-input-with-label__label ms3-visuallyhidden"

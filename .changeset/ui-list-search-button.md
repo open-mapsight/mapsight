@@ -2,4 +2,4 @@
 "@mapsight/ui": patch
 ---
 
-Expand list search from a labeled button
+Opt into collapsed list search with future.v8_listSearchButton
