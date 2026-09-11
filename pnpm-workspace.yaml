@@ -16,6 +16,7 @@ catalog:
   "@reduxjs/toolkit": "^2.11.2"
   "@playwright/test": "^1.62.1"
   "@types/jsdom": "^30.0.0"
+  "@napi-rs/canvas": "^1.0.8"
   "canvas": "^3.1.0"
   "@types/lodash": "^4.17.25"
   "@types/node": "^24.13.3"
@@ -53,6 +54,7 @@ overrides:
   shell-quote@<1.9.0: ^1.9.0
   undici@<7.29.0: ^7.29.0
   "@mapsight/core": "workspace:*"
+  "@mapsight/ol-bitmap": "workspace:*"
   "@mapsight/lib-js": "workspace:*"
   "@mapsight/lib-ol": "workspace:*"
   "@mapsight/lib-redux": "workspace:*"
