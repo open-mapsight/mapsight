@@ -12,12 +12,10 @@ import useControllableState from "../../hooks/useControllableState";
 import {
 	createActivateAction,
 	createDeactivateAction,
+	formatLinkMarkerHash,
 } from "../../plugins/browser/share-position-link";
 import LinkShare from "../link-share";
 import ToolOverlay from "./tool-overlay";
-
-const applyPrecisionToCoordinates = (num) =>
-	Number.parseFloat(num).toPrecision(6);
 
 /*
  TODO: aria? abort on escape key press?
@@ -72,12 +70,12 @@ const SharePositionLinkButton = ({
 			? feature.geometry.coordinates
 			: undefined;
 	const shareUrl = useMemo(() => {
-		if (coords) {
+		const lat = coords?.[1];
+		const lon = coords?.[0];
+		if (typeof lat === "number" && typeof lon === "number") {
 			const url = new URL(location.href);
 			url.protocol = "https:";
-			url.hash = `#lm=${applyPrecisionToCoordinates(
-				coords[1],
-			)}/${applyPrecisionToCoordinates(coords[0])}`;
+			url.hash = formatLinkMarkerHash(lat, lon);
 			return url.href;
 		}
 

@@ -71,6 +71,11 @@ export type PlaceActionsConfig = {
 	share?: {title?: string | ((feature: MapsightUiFeature) => string)};
 	/** Default: show when the feature has a point or bbox. */
 	showOnMap?: boolean;
+	/**
+	 * Default: only the shared `link-marker`. Set `true` to show for any
+	 * point, or `false` to hide it even on the marker.
+	 */
+	copyCoords?: boolean;
 };
 
 export type ResolvedNavTarget = {
@@ -87,6 +92,11 @@ export type SharePlaceAction = {
 
 export type ShowOnMapPlaceAction = {
 	kind: "showOnMap";
+};
+
+export type CopyCoordsPlaceAction = {
+	kind: "copyCoords";
+	text: string;
 };
 
 export type NavigatePlaceAction = {
@@ -107,6 +117,7 @@ export type CallPlaceAction = {
 
 export type PlaceAction =
 	| SharePlaceAction
+	| CopyCoordsPlaceAction
 	| ShowOnMapPlaceAction
 	| NavigatePlaceAction
 	| WebsitePlaceAction

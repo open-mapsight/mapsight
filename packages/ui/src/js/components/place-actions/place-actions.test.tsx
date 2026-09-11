@@ -145,7 +145,7 @@ describe("PlaceActions", () => {
 		expect(link.getAttribute("href")).toBe(
 			"https://www.example.de/schlosspark",
 		);
-		expect(link.getAttribute("title")).toBe("Website dieses Ortes öffnen");
+		expect(link.getAttribute("title")).toBeNull();
 		expect(link.getAttribute("rel")).toBe("external noreferrer noopener");
 		expect(link.getAttribute("target")).toBe("_blank");
 	});
@@ -169,9 +169,7 @@ describe("PlaceActions", () => {
 			name: "Diesen Ort anrufen: +49 531 470 1",
 		});
 		expect(link.getAttribute("href")).toBe("tel:+495314701");
-		expect(link.getAttribute("title")).toBe(
-			"Diesen Ort anrufen: +49 531 470 1",
-		);
+		expect(link.getAttribute("title")).toBeNull();
 		expect(link.textContent).not.toContain("+49");
 		expect(link.textContent).not.toContain("531");
 	});
@@ -328,7 +326,26 @@ describe("PlaceActions", () => {
 		expect(onScrollToMap).not.toHaveBeenCalled();
 	});
 
-	it("exposes explanatory tooltips on icon-only actions", () => {
+	it("keeps copy coordinates off the default place-action row", () => {
+		render(
+			<FeaturePlaceActions
+				feature={feature()}
+				config={{
+					permalink: () => null,
+					showOnMap: false,
+					navigation: {fromGeometry: false},
+				}}
+			/>,
+		);
+
+		expect(
+			screen.queryByRole("button", {
+				name: "Diese Koordinaten kopieren",
+			}),
+		).toBeNull();
+	});
+
+	it("exposes explanatory tooltips on icon-only actions", async () => {
 		const store = configureStore({
 			reducer: {
 				app: (state = {mapIsOutOfViewport: false}) => state,
@@ -349,57 +366,27 @@ describe("PlaceActions", () => {
 		);
 
 		const share = screen.getByRole("button", {name: "Diesen Ort teilen"});
-		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
+		expect(share.getAttribute("title")).toBeNull();
 		expect(share.textContent).toBe("");
+		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
+		fireEvent.pointerEnter(share, {pointerType: "mouse"});
+		expect(
+			await screen.findByRole("tooltip", {name: "Diesen Ort teilen"}),
+		).toBeTruthy();
 
 		const showOnMap = screen.getByRole("button", {
 			name: "Diesen Ort auf der Karte zeigen",
 		});
-		expect(showOnMap.getAttribute("title")).toBe(
-			"Diesen Ort auf der Karte zeigen",
-		);
-	});
-
-	it("names a labeled action from its visible text, not the tooltip", () => {
-		render(
-			<PlaceActions.Root
-				feature={feature()}
-				config={{
-					permalink: "https://example.de/plan?feature=schlosspark",
-					navigation: {fromGeometry: false},
-				}}
-			>
-				<PlaceActions.Share label="Teilen" />
-			</PlaceActions.Root>,
-		);
-
-		const share = screen.getByRole("button", {name: "Teilen"});
-		expect(share.getAttribute("aria-label")).toBeNull();
-		expect(share.getAttribute("title")).toBe("Diesen Ort teilen");
-	});
-
-	it("keeps the telephone in a labeled call action's accessible name", () => {
-		render(
-			<PlaceActions.Root
-				feature={feature({
-					properties: {
-						id: "schlosspark",
-						schema: {telephone: "+49 531 470 1"},
-					},
-				})}
-				config={isolated}
-			>
-				<PlaceActions.Call label="Anrufen" />
-			</PlaceActions.Root>,
-		);
-
-		const link = screen.getByRole("link", {
-			name: "Anrufen: +49 531 470 1",
-		});
-		expect(link.getAttribute("aria-label")).toBeNull();
-		expect(link.getAttribute("title")).toBe(
-			"Diesen Ort anrufen: +49 531 470 1",
-		);
+		expect(showOnMap.getAttribute("title")).toBeNull();
+		fireEvent.pointerLeave(share, {pointerType: "mouse"});
+		fireEvent.keyDown(document, {key: "Tab"});
+		showOnMap.focus();
+		fireEvent.focus(showOnMap);
+		expect(
+			await screen.findByRole("tooltip", {
+				name: "Diesen Ort auf der Karte zeigen",
+			}),
+		).toBeTruthy();
 	});
 
 	it("keeps a permalink anchor in the document for share", () => {

@@ -1,0 +1,76 @@
+@use "../variables";
+
+.ms3-map-point-menu__anchor {
+	position: fixed;
+	z-index: 40;
+	inline-size: 1px;
+	block-size: 1px;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: hidden;
+	background: transparent;
+	pointer-events: none;
+}
+
+.ms3-map-point-menu__crosshair {
+	position: fixed;
+	z-index: 39;
+	inline-size: 18px;
+	block-size: 18px;
+	margin: -9px 0 0 -9px;
+	border: 2px solid var(--ms3-map-point-menu-crosshair, #0e78ad);
+	border-radius: 50%;
+	box-shadow: 0 0 0 2px rgb(255 255 255 / 80%);
+	pointer-events: none;
+}
+
+.ms3-map-point-menu__popover {
+	z-index: 41;
+	// Body portal: 16px-root rem (0.875rem) is 8.75px when html is 10px.
+	font-size: variables.$ms3-fontSizeBase;
+	line-height: 1.3;
+}
+
+.ms3-map-point-menu {
+	min-inline-size: 12em;
+	margin: 0;
+	padding: 4px 0;
+	border: 1px solid rgb(0 0 0 / 10%);
+	border-radius: 5px;
+	background: #fff;
+	box-shadow:
+		0 2px 4px rgb(0 0 0 / 8%),
+		0 8px 20px rgb(0 0 0 / 14%);
+	font-size: inherit;
+	list-style: none;
+}
+
+.ms3-map-point-menu__item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75em;
+	width: 100%;
+	padding: 7px 12px;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	text-decoration: none;
+	cursor: pointer;
+
+	&[data-focused],
+	&:hover,
+	&:focus-visible {
+		background: var(--ms3-map-point-menu-hover, #f3f3f3);
+		outline: none;
+	}
+
+	&[data-has-submenu]::after {
+		content: "›";
+		font-size: 1.1em;
+		line-height: 1;
+	}
+}

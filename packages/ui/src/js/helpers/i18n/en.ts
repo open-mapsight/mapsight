@@ -50,6 +50,9 @@ const en: Record<string, string> = {
 	"ui.place-actions.navigate.apple": "Apple Maps",
 	"ui.place-actions.show-on-map": "Show on map",
 	"ui.place-actions.show-on-map.tooltip": "Show this place on the map",
+	"ui.place-actions.copy-coords": "Copy coordinates",
+	"ui.place-actions.copy-coords.tooltip": "Copy these coordinates",
+	"ui.place-actions.copy-coords.copied": "Copied",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Open this place’s website",
 	"ui.place-actions.call": "Call",
@@ -188,6 +191,16 @@ const en: Record<string, string> = {
 	"ui.pagination.prevPageLabel": "Go to previous page",
 	"ui.pagination.goToSelectedPageLabel": "You are on page {page}",
 	"ui.pagination.goToPageLabel": "Go to page {page}",
+
+	"ui.map-point.menu": "Map point",
+	"ui.map-point.mark": "Mark this point",
+	"ui.map-point.copy-coords": "Copy coordinates",
+	"ui.map-point.directions": "Directions",
+	"ui.map-point.from-here": "From here…",
+	"ui.map-point.to-here": "To here…",
+	"ui.map-point.marked": "Pin dropped",
+	"ui.map-point.geocoded": "Nearest address: {name}",
+	"ui.map-point.copied": "Coordinates copied",
 
 	"ui.share-position-link.title": "Share position",
 	"ui.share-position-link.instructions":

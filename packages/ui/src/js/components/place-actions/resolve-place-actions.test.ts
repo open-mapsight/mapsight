@@ -305,6 +305,71 @@ describe("resolvePlaceActions", () => {
 		).toEqual(["google", "apple"]);
 	});
 
+	it("adds copy coordinates only for the shared link-marker", () => {
+		expect(
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+
+		const marker = feature({
+			id: "link-marker",
+			properties: {id: "link-marker", name: "Pin"},
+		});
+		expect(
+			resolvePlaceActions(marker, {
+				permalink: () => null,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toEqual({
+			kind: "copyCoords",
+			text: [
+				"52.26000, 10.52000",
+				"52.26000° N, 10.52000° E",
+				"52° 15′ 36.0″ N, 10° 31′ 12.0″ E",
+			].join("\n"),
+		});
+	});
+
+	it("shares the link-marker with the #lm hash instead of ?feature=", () => {
+		const marker = feature({
+			id: "link-marker",
+			properties: {id: "link-marker", name: "Burgplatz 2"},
+		});
+
+		expect(
+			resolvePlaceActions(marker, {
+				location,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "share"),
+		).toEqual({
+			kind: "share",
+			href: "https://example.de/plan?module=home#lm=52.2600/10.5200",
+			title: "Burgplatz 2",
+		});
+	});
+
+	it("omits copy coordinates without geometry or when disabled", () => {
+		expect(
+			resolvePlaceActions(
+				feature({geometry: {type: "Point", coordinates: []}}),
+				{permalink: () => null, navigation: {fromGeometry: false}},
+			).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+
+		expect(
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				copyCoords: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "copyCoords"),
+		).toBeUndefined();
+	});
+
 	it("adds show on map when the feature has a point", () => {
 		const actions = resolvePlaceActions(feature(), {
 			permalink: () => null,

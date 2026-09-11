@@ -8,6 +8,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import {OverlayProvider} from "react-aria";
 import {useDispatch, useSelector} from "react-redux";
 
 import {animate} from "@mapsight/core/lib/map/actions";
@@ -24,6 +25,7 @@ import NativeDialog from "../native-dialog";
 import OutboundLink from "../outbound-link";
 import PopoverDialog from "../popover-dialog";
 import {mapExtentFromFeature} from "./map-extent-from-feature";
+import PlaceActionTooltip from "./place-action-tooltip";
 import {resolvePlaceActions} from "./resolve-place-actions";
 import type {PlaceAction, PlaceActionsConfig} from "./types";
 
@@ -56,13 +58,9 @@ function classNames(
 	return parts.filter(Boolean).join(" ");
 }
 
-function ActionIcon({icon}: {icon?: ReactNode}): ReactElement {
-	return <span className="ms3-place-actions__icon">{icon}</span>;
-}
-
 type ActionChrome = {
 	title: string;
-	ariaLabel?: string;
+	ariaLabel: string;
 	visible: ReactNode;
 	iconOnly: boolean;
 };
@@ -74,6 +72,7 @@ function actionChrome(
 	if (label != null) {
 		return {
 			title: tooltip,
+			ariaLabel: typeof label === "string" ? label : tooltip,
 			visible: label,
 			iconOnly: false,
 		};
@@ -116,12 +115,14 @@ function Root({
 
 	return (
 		<PlaceActionsContext.Provider value={value}>
-			<T
-				className={classNames("ms3-place-actions", className)}
-				aria-label={ariaLabel ?? translate("ui.place-actions.nav")}
-			>
-				{children}
-			</T>
+			<OverlayProvider style={{display: "contents"}}>
+				<T
+					className={classNames("ms3-place-actions", className)}
+					aria-label={ariaLabel ?? translate("ui.place-actions.nav")}
+				>
+					{children}
+				</T>
+			</OverlayProvider>
 		</PlaceActionsContext.Provider>
 	);
 }
@@ -197,20 +198,23 @@ function Share({
 
 	return (
 		<span className={classNames("ms3-place-actions__share", className)}>
-			<T
-				type={T === "button" ? "button" : undefined}
-				className={classNames(
-					"ms3-place-actions__item",
-					"ms3-place-actions__share-button",
-					chrome.iconOnly && "ms3-place-actions__item--icon-only",
-				)}
-				title={chrome.title}
-				aria-label={chrome.ariaLabel}
-				onClick={onShare}
-			>
-				<ActionIcon icon={icon} />
-				{chrome.visible}
-			</T>
+			<PlaceActionTooltip text={chrome.title}>
+				<T
+					type={T === "button" ? "button" : undefined}
+					className={classNames(
+						"ms3-place-actions__item",
+						"ms3-place-actions__share-button",
+						chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					)}
+					aria-label={chrome.ariaLabel}
+					onClick={onShare}
+				>
+					{icon ? (
+						<span className="ms3-place-actions__icon">{icon}</span>
+					) : null}
+					{chrome.visible}
+				</T>
+			</PlaceActionTooltip>
 			<a
 				className="ms3-place-actions__permalink ms3-visuallyhidden"
 				href={share.href}
@@ -277,21 +281,79 @@ function ShowOnMapButton({
 	);
 
 	return (
-		<T
-			type={T === "button" ? "button" : undefined}
-			className={classNames(
-				"ms3-place-actions__item",
-				"ms3-place-actions__show-on-map",
-				chrome.iconOnly && "ms3-place-actions__item--icon-only",
-				className,
-			)}
-			title={chrome.title}
-			aria-label={chrome.ariaLabel}
-			onClick={onShowOnMap}
-		>
-			<ActionIcon icon={icon} />
-			{chrome.visible}
-		</T>
+		<PlaceActionTooltip text={chrome.title}>
+			<T
+				type={T === "button" ? "button" : undefined}
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__show-on-map",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					className,
+				)}
+				aria-label={chrome.ariaLabel}
+				onClick={onShowOnMap}
+			>
+				{icon ? (
+					<span className="ms3-place-actions__icon">{icon}</span>
+				) : null}
+				{chrome.visible}
+			</T>
+		</PlaceActionTooltip>
+	);
+}
+
+function CopyCoords({
+	as: T = "button",
+	className,
+	label,
+	icon,
+}: PlaceActionPartProps): ReactElement | null {
+	const ctx = usePlaceActions();
+	const copyCoords = ctx ? actionOf(ctx.actions, "copyCoords") : null;
+	const [copied, setCopied] = useState(false);
+
+	const onCopy = useCallback(async () => {
+		if (!copyCoords) {
+			return;
+		}
+		try {
+			await window.navigator.clipboard.writeText(copyCoords.text);
+			setCopied(true);
+		} catch {
+			setCopied(false);
+		}
+	}, [copyCoords]);
+
+	if (!copyCoords) {
+		return null;
+	}
+
+	const tooltip = copied
+		? translate("ui.place-actions.copy-coords.copied")
+		: translate("ui.place-actions.copy-coords.tooltip");
+	const chrome = actionChrome(tooltip, label);
+
+	return (
+		<PlaceActionTooltip text={chrome.title}>
+			<T
+				type={T === "button" ? "button" : undefined}
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__copy-coords",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					className,
+				)}
+				aria-label={chrome.ariaLabel}
+				onClick={() => {
+					void onCopy();
+				}}
+			>
+				{icon ? (
+					<span className="ms3-place-actions__icon">{icon}</span>
+				) : null}
+				{chrome.visible}
+			</T>
+		</PlaceActionTooltip>
 	);
 }
 
@@ -327,24 +389,27 @@ function Navigate({
 
 	return (
 		<span className={classNames("ms3-place-actions__navigate", className)}>
-			<T
-				ref={T === "button" ? triggerRef : undefined}
-				type={T === "button" ? "button" : undefined}
-				className={classNames(
-					"ms3-place-actions__item",
-					"ms3-place-actions__navigate-button",
-					chrome.iconOnly && "ms3-place-actions__item--icon-only",
-				)}
-				title={chrome.title}
-				aria-label={chrome.ariaLabel}
-				aria-expanded={open}
-				aria-haspopup="dialog"
-				aria-controls={open ? menuId : undefined}
-				onClick={() => setOpen((current) => !current)}
-			>
-				<ActionIcon icon={icon} />
-				{chrome.visible}
-			</T>
+			<PlaceActionTooltip text={chrome.title}>
+				<T
+					ref={T === "button" ? triggerRef : undefined}
+					type={T === "button" ? "button" : undefined}
+					className={classNames(
+						"ms3-place-actions__item",
+						"ms3-place-actions__navigate-button",
+						chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					)}
+					aria-label={chrome.ariaLabel}
+					aria-expanded={open}
+					aria-haspopup="dialog"
+					aria-controls={open ? menuId : undefined}
+					onClick={() => setOpen((current) => !current)}
+				>
+					{icon ? (
+						<span className="ms3-place-actions__icon">{icon}</span>
+					) : null}
+					{chrome.visible}
+				</T>
+			</PlaceActionTooltip>
 			<PopoverDialog
 				isOpen={open}
 				onClose={() => setOpen(false)}
@@ -390,22 +455,25 @@ function Website({
 	);
 
 	return (
-		<T
-			href={website.href}
-			className={classNames(
-				"ms3-place-actions__item",
-				"ms3-place-actions__website",
-				chrome.iconOnly && "ms3-place-actions__item--icon-only",
-				className,
-			)}
-			title={chrome.title}
-			aria-label={chrome.ariaLabel}
-			rel="external noreferrer noopener"
-			target="_blank"
-		>
-			<ActionIcon icon={icon} />
-			{chrome.visible}
-		</T>
+		<PlaceActionTooltip text={chrome.title}>
+			<T
+				href={website.href}
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__website",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					className,
+				)}
+				aria-label={chrome.ariaLabel}
+				rel="external noreferrer noopener"
+				target="_blank"
+			>
+				{icon ? (
+					<span className="ms3-place-actions__icon">{icon}</span>
+				) : null}
+				{chrome.visible}
+			</T>
+		</PlaceActionTooltip>
 	);
 }
 
@@ -424,34 +492,32 @@ function Call({
 
 	const tooltip = `${translate("ui.place-actions.call.tooltip")}: ${call.telephone}`;
 	const chrome = actionChrome(tooltip, label);
-	const hideTelephone =
-		!chrome.iconOnly &&
-		!(typeof label === "string" && label.includes(call.telephone));
 
 	return (
-		<T
-			href={call.href}
-			className={classNames(
-				"ms3-place-actions__item",
-				"ms3-place-actions__call",
-				chrome.iconOnly && "ms3-place-actions__item--icon-only",
-				className,
-			)}
-			title={tooltip}
-			aria-label={chrome.ariaLabel}
-		>
-			<ActionIcon icon={icon} />
-			{chrome.visible}
-			{hideTelephone ? (
-				<span className="ms3-visuallyhidden">{`: ${call.telephone}`}</span>
-			) : null}
-		</T>
+		<PlaceActionTooltip text={tooltip}>
+			<T
+				href={call.href}
+				className={classNames(
+					"ms3-place-actions__item",
+					"ms3-place-actions__call",
+					chrome.iconOnly && "ms3-place-actions__item--icon-only",
+					className,
+				)}
+				aria-label={tooltip}
+			>
+				{icon ? (
+					<span className="ms3-place-actions__icon">{icon}</span>
+				) : null}
+				{chrome.visible}
+			</T>
+		</PlaceActionTooltip>
 	);
 }
 
 const PlaceActions = {
 	Root,
 	Share,
+	CopyCoords,
 	ShowOnMap,
 	Navigate,
 	Website,

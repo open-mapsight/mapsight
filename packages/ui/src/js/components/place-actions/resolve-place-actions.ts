@@ -1,10 +1,16 @@
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
+import {
+	DEFAULT_MARKED_POINT_FEATURE_ID,
+	formatCoordinateSpellings,
+} from "../../plugins/browser/marked-point";
+import {buildLinkMarkerShareHref} from "../../plugins/browser/share-position-link";
 import type {MapsightUiFeature} from "../../types";
 import {supportsGeoProtocol} from "./supports-geo-protocol";
 import type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
+	CopyCoordsPlaceAction,
 	CustomNavTarget,
 	FeatureSchema,
 	NavigatePlaceAction,
@@ -160,6 +166,17 @@ function resolvePermalink(
 	);
 	if (permanentLink) {
 		return permanentLink;
+	}
+	if (featureId(feature) === DEFAULT_MARKED_POINT_FEATURE_ID) {
+		const coords = lonLatFromGeometry(feature);
+		if (coords && ctx.location?.origin && ctx.location.pathname) {
+			return buildLinkMarkerShareHref(
+				coords.lat,
+				coords.lon,
+				ctx.location,
+			);
+		}
+		return null;
 	}
 	return buildPermalinkFromLocation(feature, ctx.location);
 }
@@ -373,6 +390,27 @@ function resolveShare(
 	};
 }
 
+function resolveCopyCoords(
+	feature: MapsightUiFeature,
+	config: PlaceActionsConfig | undefined,
+): CopyCoordsPlaceAction | null {
+	if (config?.copyCoords === false) {
+		return null;
+	}
+	const isLinkMarker = featureId(feature) === DEFAULT_MARKED_POINT_FEATURE_ID;
+	if (config?.copyCoords !== true && !isLinkMarker) {
+		return null;
+	}
+	const coords = lonLatFromGeometry(feature);
+	if (!coords) {
+		return null;
+	}
+	return {
+		kind: "copyCoords",
+		text: formatCoordinateSpellings(coords.lat, coords.lon).text,
+	};
+}
+
 function resolveShowOnMap(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig | undefined,
@@ -445,6 +483,10 @@ export function resolvePlaceActions(
 	const share = resolveShare(feature, config, ctx);
 	if (share) {
 		actions.push(share);
+	}
+	const copyCoords = resolveCopyCoords(feature, config);
+	if (copyCoords) {
+		actions.push(copyCoords);
 	}
 	const showOnMap = resolveShowOnMap(feature, config);
 	if (showOnMap) {
