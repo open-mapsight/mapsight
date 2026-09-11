@@ -1,4 +1,4 @@
-/** Google Maps “Copy coordinates”: lat, lon, six decimals, comma-space. */
+/** Decimal degrees: latitude, longitude, six decimals, comma-space. */
 export function formatLonLat(lat: number, lon: number): string {
 	return `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 }
@@ -33,7 +33,7 @@ export type CoordinateSpellings = {
 	text: string;
 };
 
-/** Display spellings plus `text` for the clipboard (Google Maps decimal). */
+/** Display spellings plus `text` for the clipboard (same as `decimal`). */
 export function formatCoordinateSpellings(
 	lat: number,
 	lon: number,
