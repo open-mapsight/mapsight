@@ -1,17 +1,14 @@
 import {
-	lonLatFromGeometry,
 	resolveFeaturePermalink,
 	resolveFeatureSchema,
-} from "../components/place-actions/resolve-place-actions";
-import type {
-	FeatureSchema,
-	PlaceActionsConfig,
-} from "../components/place-actions/types";
+} from "../feature-permalink";
+import type {FeaturePermalinkConfig, FeatureSchema} from "../feature-permalink";
+import {lonLatFromGeometry} from "../helpers/geo";
 import getFeatureProperty from "../helpers/get-feature-property";
 import type {MapsightUiFeature} from "../types";
 import type {PageMeta} from "./types";
 
-export type BuildPlacePageMetaConfig = PlaceActionsConfig & {
+export type BuildPlacePageMetaConfig = FeaturePermalinkConfig & {
 	/** Absolute or root-absolute URL for the static default card. */
 	ogImage: string;
 	ogType?: "place" | "website";

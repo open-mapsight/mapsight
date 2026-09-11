@@ -110,6 +110,42 @@
 			"types": "./dist/page-meta/place.d.ts",
 			"default": "./dist/page-meta/place.js"
 		},
+		"./feature-permalink": {
+			"types": "./dist/feature-permalink/index.d.ts",
+			"default": "./dist/feature-permalink/index.js"
+		},
+		"./plugins/common/reveal-feature-source": {
+			"types": "./dist/plugins/common/reveal-feature-source.d.ts",
+			"default": "./dist/plugins/common/reveal-feature-source.js"
+		},
+		"./helpers/geo": {
+			"types": "./dist/helpers/geo.d.ts",
+			"default": "./dist/helpers/geo.js"
+		},
+		"./helpers/geo-protocol": {
+			"types": "./dist/helpers/geo-protocol.d.ts",
+			"default": "./dist/helpers/geo-protocol.js"
+		},
+		"./helpers/coordinates": {
+			"types": "./dist/helpers/coordinates.d.ts",
+			"default": "./dist/helpers/coordinates.js"
+		},
+		"./helpers/nearest-address": {
+			"types": "./dist/helpers/nearest-address.d.ts",
+			"default": "./dist/helpers/nearest-address.js"
+		},
+		"./app-channel": {
+			"types": "./dist/app-channel.d.ts",
+			"default": "./dist/app-channel.js"
+		},
+		"./hooks/useMapViewportSync": {
+			"types": "./dist/hooks/useMapViewportSync.d.ts",
+			"default": "./dist/hooks/useMapViewportSync.js"
+		},
+		"./components/distance-label": {
+			"types": "./dist/components/distance-label/index.d.ts",
+			"default": "./dist/components/distance-label/index.js"
+		},
 		"./components/place-og-card": {
 			"types": "./dist/components/place-og-card/index.d.ts",
 			"default": "./dist/components/place-og-card/index.js"

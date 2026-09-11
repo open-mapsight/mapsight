@@ -223,7 +223,7 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
-	it("copies Google Maps decimal coordinates", async () => {
+	it("copies decimal coordinates as lat, lon with six decimals", async () => {
 		const mapTarget = document.createElement("div");
 		mapTarget.className = "ms3-map-target";
 		document.body.append(mapTarget);

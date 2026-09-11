@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {supportsGeoProtocol} from "./supports-geo-protocol";
+import {supportsGeoProtocol} from "./geo-protocol";
 
 describe("supportsGeoProtocol", () => {
 	it("trusts the Client Hint when the device is mobile", () => {

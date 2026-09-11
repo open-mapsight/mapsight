@@ -19,6 +19,7 @@ import {MAP} from "../../config/constants/controllers";
 import {announceStatus} from "../../helpers/announce-status";
 import {makeReplaceableComponent} from "../../helpers/components";
 import {translate} from "../../helpers/i18n";
+import {fetchNearestAddress} from "../../helpers/nearest-address";
 import {
 	DEFAULT_MARKED_POINT_PLUGIN,
 	createMarkedPointFeature,
@@ -32,7 +33,6 @@ import {
 	setMarkedPoint,
 	shouldOpenMapContextMenu,
 } from "../../plugins/browser/marked-point";
-import {fetchNearestAddress} from "../../plugins/browser/nearest-address";
 import {resolvePlaceActions} from "../place-actions/resolve-place-actions";
 import type {
 	PlaceActionsConfig,
