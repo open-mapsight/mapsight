@@ -1,8 +1,8 @@
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import {
-	DEFAULT_MARKED_POINT_FEATURE_ID,
 	formatCoordinateSpellings,
+	isMarkedPointFeature,
 } from "../../plugins/browser/marked-point";
 import {buildLinkMarkerShareHref} from "../../plugins/browser/share-position-link";
 import type {MapsightUiFeature} from "../../types";
@@ -168,7 +168,7 @@ function resolvePermalink(
 	if (permanentLink) {
 		return permanentLink;
 	}
-	if (featureId(feature) === DEFAULT_MARKED_POINT_FEATURE_ID) {
+	if (isMarkedPointFeature(feature)) {
 		const coords = lonLatFromGeometry(feature);
 		if (coords && ctx.location?.origin && ctx.location.pathname) {
 			return buildLinkMarkerShareHref(
@@ -417,7 +417,7 @@ function resolveCopyCoords(
 	if (config?.copyCoords === false) {
 		return null;
 	}
-	const isLinkMarker = featureId(feature) === DEFAULT_MARKED_POINT_FEATURE_ID;
+	const isLinkMarker = isMarkedPointFeature(feature);
 	if (config?.copyCoords !== true && !isLinkMarker) {
 		return null;
 	}

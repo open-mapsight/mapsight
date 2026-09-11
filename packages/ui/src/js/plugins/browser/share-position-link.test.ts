@@ -20,6 +20,16 @@ describe("parseLinkMarkerHash", () => {
 		expect(parseLinkMarkerHash("#other=1")).toBeNull();
 	});
 
+	it("keeps near-zero coordinates in decimal form", () => {
+		expect(formatLinkMarkerHash(0.000123, -0.000123)).toBe(
+			"#lm=0.000123/-0.000123",
+		);
+		expect(parseLinkMarkerHash("#lm=0.000123/-0.000123")).toEqual({
+			lat: 0.000123,
+			lon: -0.000123,
+		});
+	});
+
 	it("reads negative southern and western coordinates", () => {
 		expect(parseLinkMarkerHash("#lm=-33.8688/-70.6693")).toEqual({
 			lat: -33.8688,

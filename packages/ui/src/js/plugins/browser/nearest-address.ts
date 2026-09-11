@@ -12,6 +12,14 @@ export type FormattedNearestAddress = {
 	listInformation: string | null;
 };
 
+function escapeHtml(value: string): string {
+	return value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;");
+}
+
 function trimPart(value: unknown): string | null {
 	if (typeof value === "number" && Number.isFinite(value)) {
 		return String(value);
@@ -20,7 +28,7 @@ function trimPart(value: unknown): string | null {
 		return null;
 	}
 	const trimmed = value.trim();
-	return trimmed.length > 0 ? trimmed : null;
+	return trimmed.length > 0 ? escapeHtml(trimmed) : null;
 }
 
 export function formatNearestAddress(

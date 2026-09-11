@@ -23,6 +23,20 @@ describe("formatNearestAddress", () => {
 		});
 	});
 
+	it("escapes markup in generated list information", () => {
+		expect(
+			formatNearestAddress({
+				name: "<b>Burgplatz</b>",
+				nummer: "2",
+				plz: "38100",
+				ort: "<img src=x onerror=alert(1)>",
+			}),
+		).toEqual({
+			name: "&lt;b&gt;Burgplatz&lt;/b&gt; 2",
+			listInformation: "38100 &lt;img src=x onerror=alert(1)&gt;",
+		});
+	});
+
 	it("returns null without a street name", () => {
 		expect(formatNearestAddress({nummer: "1"})).toBeNull();
 		expect(formatNearestAddress(null)).toBeNull();

@@ -6,7 +6,7 @@ export type PlaceActionTooltipProps = TooltipProps;
 
 /** Place-action hover/focus tooltip. Accessible name stays on the control. */
 export default function PlaceActionTooltip({
-	className = "ms3-place-actions__tooltip",
+	className = "ms3-control-tooltip",
 	...props
 }: TooltipProps): ReactElement {
 	return <Tooltip className={className} {...props} />;

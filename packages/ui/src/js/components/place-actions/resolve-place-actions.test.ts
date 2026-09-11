@@ -334,6 +334,29 @@ describe("resolvePlaceActions", () => {
 		});
 	});
 
+	it("shares a custom-id marked point with the #lm hash", () => {
+		const marker = feature({
+			id: "host-marker",
+			properties: {
+				id: "host-marker",
+				name: "Pin",
+				mapsightMarkedPoint: true,
+			},
+		});
+
+		expect(
+			resolvePlaceActions(marker, {
+				location,
+				showOnMap: false,
+				navigation: {fromGeometry: false},
+			}).find((action) => action.kind === "share"),
+		).toEqual({
+			kind: "share",
+			href: "https://example.de/plan?module=home#lm=52.26/10.52",
+			title: "Pin",
+		});
+	});
+
 	it("shares the link-marker with the #lm hash instead of ?feature=", () => {
 		const marker = feature({
 			id: "link-marker",
@@ -348,7 +371,7 @@ describe("resolvePlaceActions", () => {
 			}).find((action) => action.kind === "share"),
 		).toEqual({
 			kind: "share",
-			href: "https://example.de/plan?module=home#lm=52.2600/10.5200",
+			href: "https://example.de/plan?module=home#lm=52.26/10.52",
 			title: "Burgplatz 2",
 		});
 	});

@@ -20,6 +20,18 @@ import type {MapsightUiFeature, MapsightUiFeatureId} from "../../types";
 
 export const DEFAULT_MARKED_POINT_PLUGIN = "sharePositionLink";
 export const DEFAULT_MARKED_POINT_FEATURE_ID = "link-marker";
+export const MARKED_POINT_PROPERTY = "mapsightMarkedPoint";
+
+export function isMarkedPointFeature(feature: {
+	id?: unknown;
+	properties?: {id?: unknown; mapsightMarkedPoint?: unknown} | null;
+}): boolean {
+	if (feature.properties?.mapsightMarkedPoint === true) {
+		return true;
+	}
+	const id = feature.id ?? feature.properties?.id;
+	return id === DEFAULT_MARKED_POINT_FEATURE_ID;
+}
 export const CONTEXT_MENU_DRAG_THRESHOLD_PX = 5;
 
 export function markedPointSourceId(pluginName: string): string {
@@ -238,10 +250,11 @@ export function createMarkedPointFeature(
 			id,
 			name: label,
 			mapsightIconId: iconId,
+			mapsightMarkedPoint: true,
 			...(place ? {listInformation: place} : {}),
 			description: description ?? markedPointCoordsHtml(lat, lon),
 		},
-	} as MapsightUiFeature;
+	} as unknown as MapsightUiFeature;
 }
 
 export type EnsureMarkedPointLayerOptions = {
@@ -279,18 +292,24 @@ export function ensureMarkedPointLayerAction(
 			featureSelectionsControllerName,
 		},
 	);
+	const layerOptions = {
+		...(layer.options ?? {}),
+	} as Record<string, unknown>;
+	if (options.markerStyle === undefined) {
+		delete layerOptions.style;
+	} else {
+		layerOptions.style = options.markerStyle;
+	}
+	if (options.zIndex !== undefined) {
+		layerOptions.zIndex = options.zIndex;
+	}
 
 	return mergeAll({
 		[mapControllerName]: {
 			layers: {
 				[layerId]: {
 					...layer,
-					options: {
-						...layer.options,
-						...(options.zIndex !== undefined
-							? {zIndex: options.zIndex}
-							: {}),
-					},
+					options: layerOptions,
 				},
 			},
 		},

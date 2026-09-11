@@ -17,6 +17,7 @@ import type {EnhancedStore} from "@mapsight/core/types";
 
 import {MAP} from "../../config/constants/controllers";
 import {announceStatus} from "../../helpers/announce-status";
+import {makeReplaceableComponent} from "../../helpers/components";
 import {translate} from "../../helpers/i18n";
 import {
 	DEFAULT_MARKED_POINT_PLUGIN,
@@ -105,8 +106,8 @@ function navTargetsForPoint(
 		showOnMap: false,
 		copyCoords: false,
 		navigation: {
-			fromGeometry: true,
 			...navigation,
+			fromGeometry: true,
 		},
 	});
 	const navigate = actions.find((action) => action.kind === "navigate");
@@ -154,7 +155,7 @@ async function copyCoordinates(lat: number, lon: number): Promise<void> {
 	}
 }
 
-export default function MapPointContextMenu({
+function MapPointContextMenu({
 	pluginName = DEFAULT_MARKED_POINT_PLUGIN,
 	mapControllerName = MAP,
 	featureSourcesControllerName,
@@ -593,3 +594,14 @@ export default function MapPointContextMenu({
 		</OverlayProvider>
 	);
 }
+
+declare module "../../helpers/components" {
+	interface ComponentProps {
+		MapPointContextMenu: MapPointContextMenuProps;
+	}
+}
+
+export default makeReplaceableComponent(
+	"MapPointContextMenu",
+	MapPointContextMenu,
+);

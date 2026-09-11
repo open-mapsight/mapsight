@@ -16,6 +16,7 @@ import {
 	formatCoordinateSpellings,
 	formatLonLat,
 	isMapContextMenuKeyboardEvent,
+	isMarkedPointFeature,
 	markedPointCollection,
 	markedPointCoordsHtml,
 	markedPointSourceId,
@@ -52,6 +53,23 @@ describe("markedPointCoordsHtml", () => {
 		expect(html).toContain("52.26000, 10.52000");
 		expect(html).toContain("52.26000° N, 10.52000° E");
 		expect(html).not.toContain("38100");
+	});
+});
+
+describe("isMarkedPointFeature", () => {
+	it("recognizes the default id and an explicit marked-point flag", () => {
+		expect(isMarkedPointFeature({id: "link-marker", properties: {}})).toBe(
+			true,
+		);
+		expect(
+			isMarkedPointFeature({
+				id: "host-marker",
+				properties: {mapsightMarkedPoint: true},
+			}),
+		).toBe(true);
+		expect(isMarkedPointFeature({id: "schlosspark", properties: {}})).toBe(
+			false,
+		);
 	});
 });
 
@@ -223,6 +241,13 @@ describe("eventTargetIsInteractiveOverlay", () => {
 });
 
 describe("ensureMarkedPointLayerAction", () => {
+	it("omits style when the caller did not pass markerStyle", () => {
+		const action = ensureMarkedPointLayerAction({
+			pluginName: "sharePositionLink",
+		});
+		expect(JSON.stringify(action)).not.toContain('"style"');
+	});
+
 	it("points the layer source at the configured controllers", () => {
 		const action = ensureMarkedPointLayerAction({
 			pluginName: "sharePositionLink",

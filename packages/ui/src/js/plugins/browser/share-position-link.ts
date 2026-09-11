@@ -64,7 +64,13 @@ export function parseLinkMarkerHash(
 }
 
 function applyCoordinatePrecision(value: number): string {
-	return Number.parseFloat(String(value)).toPrecision(6);
+	if (!Number.isFinite(value)) {
+		return "0";
+	}
+	return value
+		.toFixed(6)
+		.replace(/(\.\d*?)0+$/, "$1")
+		.replace(/\.$/, "");
 }
 
 export function formatLinkMarkerHash(
@@ -196,6 +202,7 @@ function defaultCreateMarkerFeature(
 			id: id,
 			name: name,
 			mapsightIconId: iconId,
+			mapsightMarkedPoint: true,
 		},
 	};
 }

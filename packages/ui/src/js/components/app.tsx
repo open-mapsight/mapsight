@@ -46,6 +46,7 @@ import InfoOverlayRight from "./map-overlay/info-overlay-right";
 import LayerSwitcherOverlay from "./map-overlay/layer-switcher-overlay";
 import Legend from "./map-overlay/legend";
 import Logo from "./map-overlay/logo";
+import MapPointContextMenu from "./map-overlay/map-point-context-menu";
 import RegionSelector from "./map-overlay/region-selector";
 import SearchOverlay from "./map-overlay/search-overlay";
 import UserGeoLocationButton from "./map-overlay/user-geo-location-button";
@@ -121,6 +122,7 @@ function App() {
 							<Map />
 							<MapSyncedInterlay />
 							<MapOverlay>
+								<MapPointContextMenu />
 								<ErrorBoundary variant="overlay">
 									{mapOverlayStart()}
 								</ErrorBoundary>
