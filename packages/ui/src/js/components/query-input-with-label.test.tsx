@@ -101,6 +101,11 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		).toBe(LABEL);
 		expect(screen.queryByRole("searchbox")).toBeNull();
 		expect(
+			document
+				.querySelector(".ms3-query-input-with-label__input")
+				?.hasAttribute("hidden"),
+		).toBe(true);
+		expect(
 			document.querySelector(
 				".ms3-query-input-with-label__input-container",
 			),

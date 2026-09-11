@@ -82,6 +82,10 @@
 		display: block;
 		outline-offset: -2px;
 
+		&[hidden] {
+			display: none;
+		}
+
 		@if variables.$ms3-option-queryInputWithLabelSearchIcon {
 			min-height: 34px;
 			padding-left: 33px;
