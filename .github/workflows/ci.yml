@@ -27,6 +27,7 @@ jobs:
     outputs:
       starters_e2e: ${{ steps.paths.outputs.starters_e2e }}
       starters_copy_out: ${{ steps.paths.outputs.starters_copy_out }}
+      ssr_sidecar: ${{ steps.paths.outputs.ssr_sidecar }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,11 +45,13 @@ jobs:
           if [[ "$EVENT_NAME" != "pull_request" ]]; then
             echo "starters_e2e=true" >> "$GITHUB_OUTPUT"
             echo "starters_copy_out=true" >> "$GITHUB_OUTPUT"
+            echo "ssr_sidecar=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           starters_e2e=false
           starters_copy_out=false
+          ssr_sidecar=false
           while IFS= read -r file; do
             case "$file" in
               .github/workflows/ci.yml|.github/actions/*|.nvmrc|package.json|pnpm-workspace.yaml|turbo.json)
@@ -89,8 +92,13 @@ jobs:
             fi
           done < <(git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA")
 
+          if git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA" | grep -qE '^(packages/ssr-sidecar/|\.github/workflows/ci\.yml$)'; then
+            ssr_sidecar=true
+          fi
+
           echo "starters_e2e=$starters_e2e" >> "$GITHUB_OUTPUT"
           echo "starters_copy_out=$starters_copy_out" >> "$GITHUB_OUTPUT"
+          echo "ssr_sidecar=$ssr_sidecar" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -399,6 +407,71 @@ jobs:
         run: pnpm run test:starters:copy-out
         shell: bash
 
+  ssr-sidecar-image:
+    name: SSR sidecar image
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: [classify-ci]
+    if: needs.classify-ci.outputs.ssr_sidecar == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: false
+
+      - uses: $/.github/actions/setup/
+        with:
+          sync-main-ref: false
+
+      - name: Build sidecar package
+        run: pnpm --filter @mapsight/ssr-sidecar build
+        shell: bash
+
+      - name: Build sidecar image
+        run: docker build --tag ssr-sidecar:test packages/ssr-sidecar
+        shell: bash
+
+      - name: Smoke image HTTP contract
+        run: |
+          cid="$(docker run -d --rm -p 127.0.0.1:4123:4123 ssr-sidecar:test)"
+          cleanup() { docker rm -f "$cid" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          ok=0
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:4123/health | grep -qx ok; then
+              ok=1
+              break
+            fi
+            sleep 1
+          done
+          if [[ "$ok" != "1" ]]; then
+            echo "sidecar did not become healthy"
+            docker logs "$cid" || true
+            exit 1
+          fi
+
+          render="$(curl -sf -X POST http://127.0.0.1:4123/v1/render \
+            -H 'content-type: application/json' \
+            -d '{"preset":"test","options":{"containerId":"mapsight-embed-1"}}')"
+          echo "$render" | grep -q '"v":1'
+          echo "$render" | grep -q 'mapsight-embed-1'
+
+          purge="$(curl -sf -X POST http://127.0.0.1:4123/purge \
+            -H 'content-type: application/json' \
+            -d '{}')"
+          test "$purge" = "[]"
+
+          render_code="$(curl -s -o /dev/null -w '%{http_code}' \
+            -X POST http://127.0.0.1:4123/render)"
+          test "$render_code" = "404"
+
+          unknown_code="$(curl -s -o /dev/null -w '%{http_code}' \
+            http://127.0.0.1:4123/foo)"
+          test "$unknown_code" = "404"
+        shell: bash
+
   lint-dependencies:
     name: Lint deps/pkg
     timeout-minutes: 5
@@ -476,6 +549,7 @@ jobs:
         test,
         starters-e2e,
         starters-copy-out,
+        ssr-sidecar-image,
         lint-dependencies,
         no-private-leak,
         zizmor,
@@ -504,6 +578,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      packages: write # GHCR push for @mapsight/ssr-sidecar:beta
       id-token: write # Required for OIDC
     steps:
       - name: Checkout
@@ -567,4 +642,33 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.published-packages }}
+
+      - name: Publish ssr-sidecar image
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          node <<'NODE' > "$RUNNER_TEMP/ssr-sidecar-version"
+          const packages = JSON.parse(process.env.PUBLISHED_PACKAGES || "[]");
+          const sidecar = packages.find((pkg) => pkg.name === "@mapsight/ssr-sidecar");
+          if (sidecar) {
+            console.log(sidecar.version);
+          }
+          NODE
+          version="$(cat "$RUNNER_TEMP/ssr-sidecar-version")"
+          if [[ -z "$version" ]]; then
+            echo "ssr-sidecar was not in this release"
+            exit 0
+          fi
+
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          image="ghcr.io/open-mapsight/ssr-sidecar"
+          docker build \
+            --tag "$image:beta" \
+            --tag "$image:$version" \
+            packages/ssr-sidecar
+          docker push "$image:beta"
+          docker push "$image:$version"
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.published-packages }}

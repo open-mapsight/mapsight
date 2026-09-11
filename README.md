@@ -63,6 +63,10 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 <td><nobr>📈 <strong><code>count-aggregator-ui</code></strong></nobr><br><nobr><a href="https://www.npmjs.com/package/@mapsight/count-aggregator-ui"><img alt="NPM Version" src="https://img.shields.io/npm/v/%40mapsight%2Fcount-aggregator-ui?style=flat"></a> | <a href="packages/count-aggregator-ui/README.md">README</a></nobr></td>
 <td><strong>Count aggregator UI (React)</strong><br>Embeddable wizard, time-series charts, and export links. CMS app-shell embed via <a href="packages/vite-count-aggregator-embed/README.md"><code>vite-count-aggregator-embed</code></a>.</td>
 </tr>
+<tr>
+<td><nobr>🛰️ <strong><code>ssr-sidecar</code></strong></nobr><br><nobr><a href="https://www.npmjs.com/package/@mapsight/ssr-sidecar"><img alt="NPM Version" src="https://img.shields.io/npm/v/%40mapsight%2Fssr-sidecar?style=flat"></a> | <a href="packages/ssr-sidecar/README.md">README</a></nobr></td>
+<td><strong>HTML embed SSR sidecar (Node 24)</strong><br>Generic <code>GET /health</code>, <code>POST /v1/render</code>, and <code>POST /purge</code> process. Hosts pull <code>ghcr.io/open-mapsight/ssr-sidecar</code> and bind-mount their <code>render.js</code>. npm <code>beta</code> is for image builds and tests.</td>
+</tr>
 </tbody>
 </table>
 

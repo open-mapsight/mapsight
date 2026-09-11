@@ -69,6 +69,12 @@ Monorepo entry points today:
 **Maintainer CMS path for this phase:** PHP → **Node LTS** sidecar (Decision 006 still
 lists Bun/framework alternatives as open for other hosts).
 
+Published process: [`@mapsight/ssr-sidecar`](../../packages/ssr-sidecar/README.md)
+and `ghcr.io/open-mapsight/ssr-sidecar`. Public HTTP surface is `GET /health`,
+`POST /v1/render` (JSON `{ v: 1, html, state, pageMeta, meta }`), and
+`POST /purge`. There is no `POST /render`. Hosts pull the image and bind-mount
+their `render.js`; the image does not bake a host bundle.
+
 ---
 
 ## Sidecar integration recipe (PHP CMS)
@@ -78,7 +84,7 @@ When using a **PHP → Node/Bun sidecar** (see [CMS_PHP](CMS_PHP.md)), treat SSR
 
 ### Request (CMS → sidecar)
 
-POST JSON to an internal render endpoint (localhost or private network):
+POST JSON to the sidecar `POST /v1/render` endpoint (localhost or private network):
 
 ```json
 {
