@@ -69,3 +69,49 @@ it("exposes geometry collection child indexes to style env and cache keys", () =
 
 	expect(pointLabels).toEqual(["1:0", "2:1"]);
 });
+
+it("exposes compiled allowedProps on the style function", () => {
+	const styleFunction = createCachedStyleFunction({
+		constructorsMap: {
+			fill: Fill,
+			style: Style,
+			text: Text,
+		},
+		allowedProps: ["myHostKey", "occupancyTrendString"],
+		declarationHashFunction: (env, _props, envHash, geometryType) =>
+			[envHash, geometryType].join("|"),
+		declarationFunction: () => ({
+			default: {
+				fill: {
+					color: {value: "#000"},
+				},
+			},
+		}),
+	});
+
+	expect(styleFunction.allowedProps).toEqual([
+		"myHostKey",
+		"occupancyTrendString",
+	]);
+});
+
+it("exposes allowedProps: false when the style hashes every prop", () => {
+	const styleFunction = createCachedStyleFunction({
+		constructorsMap: {
+			fill: Fill,
+			style: Style,
+			text: Text,
+		},
+		declarationHashFunction: (env, _props, envHash, geometryType) =>
+			[envHash, geometryType].join("|"),
+		declarationFunction: () => ({
+			default: {
+				fill: {
+					color: {value: "#000"},
+				},
+			},
+		}),
+	});
+
+	expect(styleFunction.allowedProps).toBe(false);
+});

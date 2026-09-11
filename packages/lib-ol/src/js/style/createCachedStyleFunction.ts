@@ -401,5 +401,6 @@ export default function createCachedStyleFunction({
 		return styles;
 	};
 
+	cachedStyleFunction.allowedProps = allowedProps;
 	return cachedStyleFunction;
 }

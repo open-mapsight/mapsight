@@ -107,6 +107,24 @@ describe("updateFeaturesInSource", () => {
 		expect(sourceChanged).toHaveBeenCalled();
 	});
 
+	it("applies a host key when it is in the allowlist", () => {
+		const feature = createPlaceFeature();
+		feature.set("myHostKey", "before", true);
+		const {source, sourceChanged, changeFeature} =
+			sourceWithFeature(feature);
+
+		const next = rereadFeature(feature);
+		next.set("myHostKey", "after", true);
+
+		const coreKeys = new Set(["myHostKey"]);
+		const result = updateFeaturesInSource(source, [next], coreKeys);
+
+		expect(result.changed).toBe(true);
+		expect(feature.get("myHostKey")).toBe("after");
+		expect(changeFeature).toHaveBeenCalled();
+		expect(sourceChanged).toHaveBeenCalled();
+	});
+
 	it("leaves tagGroups on the existing feature when only that object is new", () => {
 		const feature = createPlaceFeature();
 		const tagGroups = feature.get("tagGroups") as PlaceTagGroups;

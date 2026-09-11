@@ -7,6 +7,7 @@ import VectorSource from "ol/source/Vector";
 
 import type {Unsubscribe} from "@reduxjs/toolkit";
 
+import {DEFAULT_CORE_PROPERTY_KEYS} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
 import {getAndObserveState} from "@mapsight/lib-redux/observe-state";
 
 import {featureCollectionFeaturesKey} from "@/lib/feature-sources/features-key";
@@ -41,6 +42,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _listeners: Array<FeatureSourceListener>;
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
 	private _format: GeoJSONFormat;
+	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
 	private _lastFeaturesKey: string | undefined;
 	private _lastData: FeatureSourceState["data"] | undefined;
 
@@ -52,6 +54,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		format: GeoJSONFormat,
 		internalProjection?: ProjectionLike,
 		externalProjection?: ProjectionLike,
+		corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 	) {
 		super({format});
 
@@ -63,6 +66,11 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		this._format = format;
 		this._internalProjection = internalProjection;
 		this._externalProjection = externalProjection;
+		this._corePropertyKeys = corePropertyKeys;
+	}
+
+	setCorePropertyKeys(corePropertyKeys: ReadonlySet<string>) {
+		this._corePropertyKeys = corePropertyKeys;
 	}
 
 	static subscribe(
@@ -74,6 +82,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		internalProjection: ProjectionLike | undefined,
 		externalProjection: ProjectionLike | undefined,
 		listener: FeatureSourceListener,
+		corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 	) {
 		let map;
 		if (listenerStoreMaps.has(store)) {
@@ -102,11 +111,13 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 				format,
 				internalProjection,
 				externalProjection,
+				corePropertyKeys,
 			);
 			instance.__hash = hash;
 			map.set(hash, instance);
 		} else {
 			instance = map.get(hash);
+			instance.setCorePropertyKeys(corePropertyKeys);
 		}
 
 		return {instance: instance, unsubscribe: instance.subscribe(listener)};
@@ -188,7 +199,11 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 						featureProjection: this._internalProjection,
 					}) as Array<OlFeature>;
 
-					updateFeaturesInSource(this, newFeatures);
+					updateFeaturesInSource(
+						this,
+						newFeatures,
+						this._corePropertyKeys,
+					);
 					this._lastFeaturesKey = featuresKey;
 					this._lastData = sourceState.data;
 

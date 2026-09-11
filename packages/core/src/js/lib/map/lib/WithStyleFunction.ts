@@ -1,5 +1,9 @@
 import type {StyleFunction} from "ol/style/Style";
 
+import {
+	DEFAULT_CORE_PROPERTY_KEYS,
+	corePropertyKeysFromAllowedProps,
+} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
 import type {
 	MapsightStyleFunction,
 	MapsightStyleFunctionEnv,
@@ -10,9 +14,17 @@ import WithMap from "./WithMap";
 export default class WithStyleFunction extends WithMap {
 	private _styleFunctionRef: MapsightStyleFunction | undefined;
 	private _defaultStyleEnv: MapsightStyleFunctionEnv = {};
+	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
 
 	setStyleFunction(styleFunction: MapsightStyleFunction) {
 		this._styleFunctionRef = styleFunction;
+		this._corePropertyKeys = corePropertyKeysFromAllowedProps(
+			styleFunction.allowedProps,
+		);
+	}
+
+	getCorePropertyKeys(): ReadonlySet<string> {
+		return this._corePropertyKeys;
 	}
 
 	/**

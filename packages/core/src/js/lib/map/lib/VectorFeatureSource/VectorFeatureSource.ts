@@ -8,6 +8,7 @@ import * as loadingStrategy from "ol/loadingstrategy";
 import type {Projection, ProjectionLike} from "ol/proj";
 import VectorSource from "ol/source/Vector";
 
+import {DEFAULT_CORE_PROPERTY_KEYS} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
 import type {ExtendedFitOptions} from "@mapsight/lib-ol/map/fitToExtent";
 
 import {getOlFeatureId} from "@/lib/helpers/ol";
@@ -166,7 +167,12 @@ export default class VectorFeatureSource extends VectorSource {
 		features = this._cluster(features);
 
 		// update source (array of features -> internal ol collection)
-		updateFeaturesInSource(this, features);
+		updateFeaturesInSource(
+			this,
+			features,
+			this._mapController?.getCorePropertyKeys() ??
+				DEFAULT_CORE_PROPERTY_KEYS,
+		);
 
 		// apply selection state
 		const hasSelectionStateChanged = this._applySelectionStateToFeatures();
@@ -452,6 +458,9 @@ export default class VectorFeatureSource extends VectorSource {
 		}
 
 		this._mapController = mapController;
+		this._featureSourceConnector.setCorePropertyKeys(
+			mapController.getCorePropertyKeys(),
+		);
 		this._featureSourceConnector.setStore(store);
 		this._featureSelectionStates.bindToStore(store);
 		this._featureSourceConnector.setTargetControllerName(

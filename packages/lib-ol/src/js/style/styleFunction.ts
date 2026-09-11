@@ -20,10 +20,13 @@ export type MapsightStyleFunctionProps = {
 	[k: string]: StateValue;
 };
 
-export type MapsightStyleFunction = (
+export type MapsightStyleFunction = ((
 	env: MapsightStyleFunctionEnv,
 	feature: FeatureLike,
-) => Array<Style> | Style | undefined;
+) => Array<Style> | Style | undefined) & {
+	/** Compiled selector / `attr()` keys. `false` = hash every prop (do not copy all on modify). */
+	allowedProps?: Array<string> | false;
+};
 
 export const createPropsFilter = (
 	allowedProps: StyleFunctionOptions["allowedProps"] = [],
