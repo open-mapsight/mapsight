@@ -233,6 +233,8 @@ export type FullUiState = {
 	listSorting: string;
 	listDefaultSortingByFeatureSource?: ListDefaultSortingConfigByFeatureSource;
 	listQuery: string;
+	/** Bumps on every list-query write so empty resets still reach the field. */
+	listQueryEpoch?: number;
 	listPage: number;
 	lastListScrollPosition: number;
 

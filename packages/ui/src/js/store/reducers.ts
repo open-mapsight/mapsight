@@ -350,6 +350,7 @@ function mapsightUiAppReducer(
 			return {
 				...state,
 				listQuery: action.query,
+				listQueryEpoch: (state.listQueryEpoch ?? 0) + 1,
 			};
 		case SET_TIME_FILTER_VISIBLE:
 			return {

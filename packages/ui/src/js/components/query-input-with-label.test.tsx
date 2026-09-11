@@ -191,13 +191,22 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 	});
 
 	it("collapses an empty input on Escape", () => {
-		render(<Harness future={{v8_listSearchButton: true}} />);
+		const onKeyDown = vi.fn();
+		document.addEventListener("keydown", onKeyDown);
+		try {
+			render(<Harness future={{v8_listSearchButton: true}} />);
 
-		fireEvent.click(screen.getByRole("button", {name: LABEL}));
-		fireEvent.keyDown(screen.getByRole("searchbox"), {key: "Escape"});
+			fireEvent.click(screen.getByRole("button", {name: LABEL}));
+			fireEvent.keyDown(screen.getByRole("searchbox"), {key: "Escape"});
 
-		expect(screen.getByRole("button", {name: LABEL})).toBeTruthy();
-		expect(screen.queryByRole("searchbox")).toBeNull();
+			const openButton = screen.getByRole("button", {name: LABEL});
+			expect(openButton).toBeTruthy();
+			expect(screen.queryByRole("searchbox")).toBeNull();
+			expect(document.activeElement).toBe(openButton);
+			expect(onKeyDown).not.toHaveBeenCalled();
+		} finally {
+			document.removeEventListener("keydown", onKeyDown);
+		}
 	});
 
 	it("does not collapse on Escape when the query is non-empty", () => {

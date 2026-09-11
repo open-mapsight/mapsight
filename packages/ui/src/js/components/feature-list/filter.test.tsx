@@ -9,21 +9,27 @@ import {FILTER_LIST_QUERY, filterListQuery} from "../../store/actions";
 import FeatureFilter from "./filter";
 
 type TestState = {
-	app: {listQuery: string};
+	app: {listQuery: string; listQueryEpoch?: number};
 };
 
 function makeStore(listQuery = "") {
 	return configureStore({
 		reducer: {
 			app: (
-				current = {listQuery},
+				current = {listQuery, listQueryEpoch: 0},
 				action: {type: string; query?: string},
 			) =>
 				action.type === FILTER_LIST_QUERY
-					? {...current, listQuery: action.query ?? ""}
+					? {
+							...current,
+							listQuery: action.query ?? "",
+							listQueryEpoch: (current.listQueryEpoch ?? 0) + 1,
+						}
 					: current,
 		},
-		preloadedState: {app: {listQuery}} satisfies TestState,
+		preloadedState: {
+			app: {listQuery, listQueryEpoch: 0},
+		} satisfies TestState,
 	});
 }
 
@@ -58,6 +64,25 @@ describe("FeatureFilter", () => {
 		fireEvent.change(input, {target: {value: "ab"}});
 		expect(input).toHaveProperty("value", "ab");
 		expect(store.getState().app.listQuery).toBe("a");
+	});
+
+	it("discards pending keystrokes when an external reset writes the same empty query", () => {
+		const store = makeStore();
+		renderFilter(store);
+
+		const input = screen.getByRole("searchbox");
+		fireEvent.change(input, {target: {value: "cafe"}});
+		expect(input).toHaveProperty("value", "cafe");
+
+		act(() => {
+			store.dispatch(filterListQuery("") as never);
+		});
+
+		expect(input).toHaveProperty("value", "");
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		expect(store.getState().app.listQuery).toBe("");
 	});
 
 	it("applies an external store query that this field did not dispatch", () => {

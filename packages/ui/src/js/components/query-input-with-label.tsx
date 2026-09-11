@@ -90,7 +90,9 @@ function VisibleLabelInput({label, placeholder, query, onChange}: Props) {
 
 function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
+	const openButtonRef = useRef<HTMLButtonElement>(null);
 	const pendingFocusRef = useRef(false);
+	const pendingTriggerFocusRef = useRef(false);
 	const [open, setOpen] = useState(() => query !== "");
 	const expanded = open || query !== "";
 
@@ -121,6 +123,9 @@ function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === "Escape" && query === "") {
+				e.preventDefault();
+				e.stopPropagation();
+				pendingTriggerFocusRef.current = true;
 				setOpen(false);
 			}
 		},
@@ -131,8 +136,13 @@ function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 		if (pendingFocusRef.current && inputRef.current) {
 			pendingFocusRef.current = false;
 			inputRef.current.focus();
+			return;
 		}
-	}, [open]);
+		if (pendingTriggerFocusRef.current && openButtonRef.current) {
+			pendingTriggerFocusRef.current = false;
+			openButtonRef.current.focus();
+		}
+	}, [open, expanded]);
 
 	const inputId = useId();
 
@@ -179,6 +189,7 @@ function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 					</>
 				) : (
 					<button
+						ref={openButtonRef}
 						className="ms3-query-input-with-label__open"
 						type="button"
 						onClick={handleOpen}

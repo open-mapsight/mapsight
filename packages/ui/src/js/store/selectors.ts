@@ -142,6 +142,8 @@ export const listDefaultSortingByFeatureSourceSelector = (
 	(state.app.listDefaultSortingByFeatureSource ??
 		{}) as ListDefaultSortingConfigByFeatureSource;
 export const listQuerySelector = (state: RootStateSlice) => state.app.listQuery;
+export const listQueryEpochSelector = (state: RootStateSlice) =>
+	state.app.listQueryEpoch ?? 0;
 export const listPageSelector = (state: RootStateSlice) =>
 	state.app.listPage || 0;
 
