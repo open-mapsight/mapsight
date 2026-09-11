@@ -102,6 +102,10 @@
 			"types": "./dist/components/place-actions/index.d.ts",
 			"default": "./dist/components/place-actions/index.js"
 		},
+		"./components/place-actions/place-og-card": {
+			"types": "./dist/components/place-actions/place-og-card.d.ts",
+			"default": "./dist/components/place-actions/place-og-card.js"
+		},
 		"./components/outbound-link": {
 			"types": "./dist/components/outbound-link/index.d.ts",
 			"default": "./dist/components/outbound-link/index.js"
