@@ -1,6 +1,6 @@
 import isEqual from "lodash/isEqual";
 
-import {mergeAll} from "@mapsight/core/lib/base/actions";
+import {set} from "@mapsight/core/lib/base/actions";
 import type {EnhancedStore, State} from "@mapsight/core/types";
 
 import {observeState} from "@mapsight/lib-redux/observe-state";
@@ -55,14 +55,17 @@ export default function createCombinedVisibleLayersPlugin(
 					mapControllerName,
 				);
 
+				// Replace the array. mergeAll index-patches arrays and
+				// leaves hidden members in the combined list.
 				store.dispatch(
-					mergeAll({
-						[featureSourcesControllerName]: {
-							[combinedFeatureSourceId]: {
-								featureSourceNames: visibleFeatureSourceNames,
-							},
-						},
-					}),
+					set(
+						[
+							featureSourcesControllerName,
+							combinedFeatureSourceId,
+							"featureSourceNames",
+						],
+						visibleFeatureSourceNames,
+					),
 				);
 			}
 
