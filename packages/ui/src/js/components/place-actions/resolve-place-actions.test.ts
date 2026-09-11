@@ -326,11 +326,7 @@ describe("resolvePlaceActions", () => {
 			}).find((action) => action.kind === "copyCoords"),
 		).toEqual({
 			kind: "copyCoords",
-			text: [
-				"52.26000, 10.52000",
-				"52.26000° N, 10.52000° E",
-				"52° 15′ 36.0″ N, 10° 31′ 12.0″ E",
-			].join("\n"),
+			text: "52.260000, 10.520000",
 		});
 	});
 

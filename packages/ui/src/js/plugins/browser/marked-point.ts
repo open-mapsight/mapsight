@@ -42,8 +42,9 @@ export function markedPointLayerId(pluginName: string): string {
 	return `${pluginName}_drawLayer`;
 }
 
+/** Google Maps “Copy coordinates”: lat, lon, six decimals, comma-space. */
 export function formatLonLat(lat: number, lon: number): string {
-	return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+	return `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 }
 
 function dmsPart(value: number): {deg: number; min: number; sec: number} {
@@ -76,7 +77,7 @@ export type CoordinateSpellings = {
 	text: string;
 };
 
-/** Decimal, hemisphere degrees, and DMS — the usual copy/paste spellings. */
+/** Display spellings plus `text` for the clipboard (Google Maps decimal). */
 export function formatCoordinateSpellings(
 	lat: number,
 	lon: number,
@@ -90,7 +91,7 @@ export function formatCoordinateSpellings(
 		decimal,
 		decimalDegrees,
 		dms,
-		text: `${decimal}\n${decimalDegrees}\n${dms}`,
+		text: decimal,
 	};
 }
 

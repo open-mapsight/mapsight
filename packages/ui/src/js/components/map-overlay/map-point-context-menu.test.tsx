@@ -223,6 +223,47 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
+	it("copies Google Maps decimal coordinates", async () => {
+		const mapTarget = document.createElement("div");
+		mapTarget.className = "ms3-map-target";
+		document.body.append(mapTarget);
+
+		const store = createStore(mapTarget);
+		(
+			store as typeof store & {getController: (name: string) => unknown}
+		).getController = () => ({
+			getMap: () => ({
+				getTargetElement: () => mapTarget,
+				getEventCoordinate: () => [10.5236, 52.2647],
+				getPixelFromCoordinate: () => [40, 50],
+				getView: () => ({getCenter: () => [10.5236, 52.2647]}),
+			}),
+		});
+
+		const writeText = vi.fn().mockResolvedValue(undefined);
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			clipboard: {writeText},
+		});
+
+		render(
+			<Provider store={store}>
+				<MapPointContextMenu />
+			</Provider>,
+		);
+
+		fireEvent.contextMenu(mapTarget, {clientX: 40, clientY: 50});
+		fireEvent.click(
+			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
+		);
+
+		await vi.waitFor(() => {
+			expect(writeText).toHaveBeenCalledWith("52.264700, 10.523600");
+		});
+
+		mapTarget.remove();
+	});
+
 	it("builds origin URLs for from-here", () => {
 		expect(originNavHref("google", 10.52, 52.26)).toBe(
 			"https://www.google.com/maps/dir/?api=1&origin=52.26,10.52",

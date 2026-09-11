@@ -25,22 +25,18 @@ import {
 } from "./marked-point";
 
 describe("formatLonLat", () => {
-	it("formats lat before lon with five decimals", () => {
-		expect(formatLonLat(52.2647, 10.5236)).toBe("52.26470, 10.52360");
+	it("formats lat before lon with six decimals", () => {
+		expect(formatLonLat(52.2647, 10.5236)).toBe("52.264700, 10.523600");
 	});
 });
 
 describe("formatCoordinateSpellings", () => {
 	it("lists decimal, hemisphere degrees, and DMS", () => {
 		expect(formatCoordinateSpellings(52.2647, 10.5236)).toEqual({
-			decimal: "52.26470, 10.52360",
+			decimal: "52.264700, 10.523600",
 			decimalDegrees: "52.26470° N, 10.52360° E",
 			dms: "52° 15′ 52.9″ N, 10° 31′ 25.0″ E",
-			text: [
-				"52.26470, 10.52360",
-				"52.26470° N, 10.52360° E",
-				"52° 15′ 52.9″ N, 10° 31′ 25.0″ E",
-			].join("\n"),
+			text: "52.264700, 10.523600",
 		});
 	});
 });
@@ -50,7 +46,7 @@ describe("markedPointCoordsHtml", () => {
 		const html = markedPointCoordsHtml(52.26, 10.52);
 		expect(html).toContain('class="ms3-marked-point-coords"');
 		expect(html.match(/ms3-marked-point-coords__line/g)).toHaveLength(3);
-		expect(html).toContain("52.26000, 10.52000");
+		expect(html).toContain("52.260000, 10.520000");
 		expect(html).toContain("52.26000° N, 10.52000° E");
 		expect(html).not.toContain("38100");
 	});
@@ -82,7 +78,7 @@ describe("createMarkedPointFeature", () => {
 			type: "Point",
 			coordinates: [10.52, 52.26],
 		});
-		expect(feature.properties?.name).toBe("52.26000, 10.52000");
+		expect(feature.properties?.name).toBe("52.260000, 10.520000");
 		expect(feature.properties?.listInformation).toBeUndefined();
 		expect(feature.properties?.description).toContain(
 			"ms3-marked-point-coords__line",
@@ -96,7 +92,9 @@ describe("createMarkedPointFeature", () => {
 		});
 
 		expect(feature.properties?.listInformation).toBe("38100 Braunschweig");
-		expect(feature.properties?.description).toContain("52.26000, 10.52000");
+		expect(feature.properties?.description).toContain(
+			"52.260000, 10.520000",
+		);
 		expect(feature.properties?.description).not.toContain("38100");
 	});
 });
