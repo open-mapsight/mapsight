@@ -1,6 +1,5 @@
 import type {
 	FullUiState,
-	MapsightUiFeature,
 	MapsightUiFeatureId,
 	SelectFeatureActionOptions,
 } from "../../types";
@@ -12,9 +11,7 @@ export type SelectFeatureHandler = (
 
 export type ListSelectOnClick = FullUiState["list"]["selectOnClick"];
 
-export type FeatureListItemDistanceLabelProps = {
-	feature: MapsightUiFeature;
-};
+export type {DistanceLabelProps as FeatureListItemDistanceLabelProps} from "../distance-label/types";
 
 export type FeatureListItemInteractionProps = {
 	selectFeature?: SelectFeatureHandler;

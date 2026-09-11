@@ -1,42 +1,40 @@
+import {
+	resolveFeaturePermalink,
+	resolveFeatureSchema,
+} from "../../feature-permalink";
+import {formatCoordinateSpellings} from "../../helpers/coordinates";
+import {lonLatFromGeometry} from "../../helpers/geo";
+import {supportsGeoProtocol} from "../../helpers/geo-protocol";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
-import {
-	formatCoordinateSpellings,
-	isMarkedPointFeature,
-} from "../../plugins/browser/marked-point";
-import {buildLinkMarkerShareHref} from "../../plugins/browser/share-position-link";
-import {
-	FEATURE_SOURCE_SEARCH_PARAM,
-	PERMALINK_SKIP_FEATURE_SOURCE_IDS,
-	permalinkSourceId,
-	sanitizeFeatureSourceId,
-} from "../../plugins/common/reveal-feature-source";
+import {isMarkedPointFeature} from "../../plugins/browser/marked-point";
 import type {MapsightUiFeature} from "../../types";
-import {supportsGeoProtocol} from "./supports-geo-protocol";
 import type {
 	BuiltInNavTargetId,
 	CallPlaceAction,
 	CopyCoordsPlaceAction,
 	CustomNavHref,
 	CustomNavTarget,
-	FeatureSchema,
 	NavigatePlaceAction,
 	PlaceAction,
 	PlaceActionsConfig,
-	PlaceActionsLocation,
-	PlaceActionsResolveContext,
 	ResolvedNavTarget,
 	SharePlaceAction,
 	ShowOnMapPlaceAction,
 	WebsitePlaceAction,
 } from "./types";
 
+export {
+	resolveFeaturePermalink,
+	resolveFeatureSchema,
+} from "../../feature-permalink";
+export {lonLatBbox, lonLatFromGeometry} from "../../helpers/geo";
+
 const DEFAULT_NAV_TARGETS = ["geo", "google", "apple"] as const;
 
 function isBuiltInNavTargetId(target: unknown): target is BuiltInNavTargetId {
 	return target === "geo" || target === "google" || target === "apple";
 }
-const DEFAULT_SCHEMA_TYPE = "Place";
 
 function asNonEmptyString(value: unknown): string | null {
 	if (typeof value !== "string") {
@@ -62,210 +60,6 @@ function asHttpOrHttpsUrl(value: unknown): string | null {
 	return null;
 }
 
-function readRawSchema(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig | undefined,
-): FeatureSchema | null {
-	if (config?.schema) {
-		return config.schema(feature) ?? null;
-	}
-	const schema = feature.properties?.schema;
-	if (schema == null || typeof schema !== "object" || Array.isArray(schema)) {
-		return null;
-	}
-	return schema;
-}
-
-function pickKnownSchemaFields(
-	raw: FeatureSchema | null,
-): Pick<FeatureSchema, "url" | "telephone" | "sameAs" | "@type"> {
-	if (!raw) {
-		return {};
-	}
-	return {
-		...(raw["@type"] != null ? {"@type": raw["@type"]} : {}),
-		...(raw.url != null ? {url: raw.url} : {}),
-		...(raw.telephone != null ? {telephone: raw.telephone} : {}),
-		...(raw.sameAs != null ? {sameAs: raw.sameAs} : {}),
-	};
-}
-
-/**
- * Known schema fields only (`@type`, `url`, `telephone`, host-marked `sameAs`).
- * Extra schema.org keys are ignored. `@type` defaults to Place without writing
- * back onto the feature.
- */
-export function resolveFeatureSchema(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig = {},
-): FeatureSchema {
-	const raw = pickKnownSchemaFields(readRawSchema(feature, config));
-	const fromDefault = pickKnownSchemaFields(config.schemaDefault ?? null);
-	const merged: FeatureSchema = {
-		...fromDefault,
-		...raw,
-	};
-	const schemaType =
-		asNonEmptyString(merged["@type"]) ??
-		asNonEmptyString(fromDefault["@type"]) ??
-		DEFAULT_SCHEMA_TYPE;
-	return {
-		...merged,
-		"@type": schemaType,
-	};
-}
-
-function currentLocation(
-	config: PlaceActionsConfig | undefined,
-): PlaceActionsLocation | null {
-	if (config && "location" in config) {
-		return config.location ?? null;
-	}
-	if (typeof window === "undefined") {
-		return null;
-	}
-	return {
-		origin: window.location.origin,
-		pathname: window.location.pathname,
-		search: window.location.search,
-	};
-}
-
-function featureId(feature: MapsightUiFeature): string | null {
-	const id = feature.id ?? feature.properties?.id;
-	if (id == null || id === "") {
-		return null;
-	}
-	return String(id);
-}
-
-function resolveConfiguredSourceId(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig | undefined,
-	ctx: PlaceActionsResolveContext,
-): string | null {
-	const configured = config?.featureSourceId;
-	if (typeof configured === "function") {
-		return sanitizeFeatureSourceId(configured(feature, ctx) ?? null);
-	}
-	return sanitizeFeatureSourceId(configured);
-}
-
-function resolveImpliedSourceIds(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig | undefined,
-	ctx: PlaceActionsResolveContext,
-): readonly string[] | null {
-	const configured = config?.impliedFeatureSourceIds;
-	if (configured == null) {
-		return null;
-	}
-	return typeof configured === "function"
-		? configured(feature, ctx)
-		: configured;
-}
-
-function resolvePermalinkSourceId(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig | undefined,
-	ctx: PlaceActionsResolveContext,
-): string | null {
-	const sourceId = resolveConfiguredSourceId(feature, config, ctx);
-	if (
-		sourceId &&
-		(PERMALINK_SKIP_FEATURE_SOURCE_IDS as readonly string[]).includes(
-			sourceId,
-		)
-	) {
-		return null;
-	}
-	const hasSourceConfig =
-		config?.featureSourceId !== undefined ||
-		config?.impliedFeatureSourceIds !== undefined;
-	const computed = permalinkSourceId(
-		sourceId,
-		resolveImpliedSourceIds(feature, config, ctx),
-	);
-	if (computed || hasSourceConfig) {
-		return computed;
-	}
-	return sanitizeFeatureSourceId(
-		new URLSearchParams(
-			ctx.location?.search?.startsWith("?")
-				? ctx.location.search.slice(1)
-				: (ctx.location?.search ?? ""),
-		).get(FEATURE_SOURCE_SEARCH_PARAM),
-	);
-}
-
-function buildPermalinkFromLocation(
-	feature: MapsightUiFeature,
-	location: PlaceActionsLocation | null,
-	sourceId: string | null = null,
-	replaceSourceParam = false,
-): string | null {
-	const id = featureId(feature);
-	if (!id || !location?.origin || !location.pathname) {
-		return null;
-	}
-	const params = new URLSearchParams(
-		location.search?.startsWith("?")
-			? location.search.slice(1)
-			: (location.search ?? ""),
-	);
-	params.set("feature", id);
-	const existingSource = params.get(FEATURE_SOURCE_SEARCH_PARAM);
-	if (existingSource && !sanitizeFeatureSourceId(existingSource)) {
-		params.delete(FEATURE_SOURCE_SEARCH_PARAM);
-	}
-	if (sourceId) {
-		params.set(FEATURE_SOURCE_SEARCH_PARAM, sourceId);
-	} else if (replaceSourceParam) {
-		params.delete(FEATURE_SOURCE_SEARCH_PARAM);
-	}
-	const query = params.toString();
-	return `${location.origin}${location.pathname}${query ? `?${query}` : ""}`;
-}
-
-function resolvePermalink(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig | undefined,
-	ctx: PlaceActionsResolveContext,
-): string | null {
-	if (typeof config?.permalink === "string") {
-		return asNonEmptyString(config.permalink);
-	}
-	if (typeof config?.permalink === "function") {
-		return asNonEmptyString(config.permalink(feature, ctx) ?? null);
-	}
-	const permanentLink = asNonEmptyString(
-		getFeatureProperty(feature, "permanentLink"),
-	);
-	if (permanentLink) {
-		return permanentLink;
-	}
-	if (isMarkedPointFeature(feature)) {
-		const coords = lonLatFromGeometry(feature);
-		if (coords && ctx.location?.origin && ctx.location.pathname) {
-			return buildLinkMarkerShareHref(
-				coords.lat,
-				coords.lon,
-				ctx.location,
-			);
-		}
-		return null;
-	}
-	const hasSourceConfig =
-		config?.featureSourceId !== undefined ||
-		config?.impliedFeatureSourceIds !== undefined;
-	return buildPermalinkFromLocation(
-		feature,
-		ctx.location,
-		resolvePermalinkSourceId(feature, config, ctx),
-		hasSourceConfig,
-	);
-}
-
 function featureTitle(feature: MapsightUiFeature): string {
 	return (
 		asNonEmptyString(getFeatureProperty(feature, "name")) ??
@@ -287,56 +81,6 @@ function resolveShareTitle(
 		return title;
 	}
 	return featureTitle(feature);
-}
-
-/** `[west, south, east, north]` from a GeoJSON 2D (4) or 3D (6) bbox. */
-export function lonLatBbox(
-	bbox: number[] | undefined,
-): [number, number, number, number] | null {
-	if (!bbox) {
-		return null;
-	}
-	const west = bbox[0];
-	const south = bbox[1];
-	if (typeof west !== "number" || typeof south !== "number") {
-		return null;
-	}
-	if (bbox.length === 4) {
-		const east = bbox[2];
-		const north = bbox[3];
-		if (typeof east !== "number" || typeof north !== "number") {
-			return null;
-		}
-		return [west, south, east, north];
-	}
-	if (bbox.length === 6) {
-		const east = bbox[3];
-		const north = bbox[4];
-		if (typeof east !== "number" || typeof north !== "number") {
-			return null;
-		}
-		return [west, south, east, north];
-	}
-	return null;
-}
-
-export function lonLatFromGeometry(
-	feature: MapsightUiFeature,
-): {lon: number; lat: number} | null {
-	const geometry = feature.geometry as
-		{type?: string; coordinates?: unknown} | undefined;
-	if (geometry?.type === "Point" && Array.isArray(geometry.coordinates)) {
-		const lon = geometry.coordinates[0];
-		const lat = geometry.coordinates[1];
-		if (typeof lon === "number" && typeof lat === "number") {
-			return {lon, lat};
-		}
-	}
-	const bbox = lonLatBbox(feature.bbox);
-	if (bbox) {
-		return {lon: (bbox[0] + bbox[2]) / 2, lat: (bbox[1] + bbox[3]) / 2};
-	}
-	return null;
 }
 
 function geoProtocolSupported(config: PlaceActionsConfig | undefined): boolean {
@@ -481,9 +225,8 @@ function telHref(telephone: string): string {
 function resolveShare(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig | undefined,
-	ctx: PlaceActionsResolveContext,
 ): SharePlaceAction | null {
-	const href = resolvePermalink(feature, config, ctx);
+	const href = resolveFeaturePermalink(feature, config);
 	if (!href) {
 		return null;
 	}
@@ -567,24 +310,12 @@ function resolveCall(
 	};
 }
 
-export function resolveFeaturePermalink(
-	feature: MapsightUiFeature,
-	config: PlaceActionsConfig = {},
-): string | null {
-	return resolvePermalink(feature, config, {
-		location: currentLocation(config),
-	});
-}
-
 export function resolvePlaceActions(
 	feature: MapsightUiFeature,
 	config: PlaceActionsConfig = {},
 ): PlaceAction[] {
-	const ctx: PlaceActionsResolveContext = {
-		location: currentLocation(config),
-	};
 	const actions: PlaceAction[] = [];
-	const share = resolveShare(feature, config, ctx);
+	const share = resolveShare(feature, config);
 	if (share) {
 		actions.push(share);
 	}

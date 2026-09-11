@@ -14,6 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {animate} from "@mapsight/core/lib/map/actions";
 
 import {MAP} from "../../config/constants/controllers";
+import {mapExtentFromFeature} from "../../helpers/geo";
 import {translate} from "../../helpers/i18n";
 import {isMapOutOfViewportSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
@@ -24,7 +25,6 @@ import {
 import NativeDialog from "../native-dialog";
 import OutboundLink from "../outbound-link";
 import PopoverDialog from "../popover-dialog";
-import {mapExtentFromFeature} from "./map-extent-from-feature";
 import PlaceActionTooltip from "./place-action-tooltip";
 import {resolvePlaceActions} from "./resolve-place-actions";
 import type {PlaceAction, PlaceActionsConfig} from "./types";
