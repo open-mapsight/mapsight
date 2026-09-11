@@ -4,8 +4,8 @@ import {
 	lonLatFromGeometry,
 	resolveFeaturePermalink,
 	resolveFeatureSchema,
-} from "./resolve-place-actions";
-import type {FeatureSchema, PlaceActionsConfig} from "./types";
+} from "../place-actions/resolve-place-actions";
+import type {FeatureSchema, PlaceActionsConfig} from "../place-actions/types";
 
 export type PlacePageMetaOg = {
 	title: string;
