@@ -50,3 +50,21 @@ export function corePropertyKeysFromAllowedProps(
 	}
 	return keys;
 }
+
+export function corePropertyKeysEqual(
+	left: ReadonlySet<string>,
+	right: ReadonlySet<string>,
+): boolean {
+	if (left === right) {
+		return true;
+	}
+	if (left.size !== right.size) {
+		return false;
+	}
+	for (const key of left) {
+		if (!right.has(key)) {
+			return false;
+		}
+	}
+	return true;
+}

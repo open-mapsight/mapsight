@@ -2,6 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {
 	DEFAULT_CORE_PROPERTY_KEYS,
+	corePropertyKeysEqual,
 	corePropertyKeysFromAllowedProps,
 } from "./defaultCorePropertyKeys.ts";
 
@@ -33,5 +34,25 @@ describe("corePropertyKeysFromAllowedProps", () => {
 		expect(keys.has("id")).toBe(true);
 		expect(keys.has("tagGroups")).toBe(false);
 		expect(keys).not.toBe(DEFAULT_CORE_PROPERTY_KEYS);
+	});
+});
+
+describe("corePropertyKeysEqual", () => {
+	it("treats identical contents as equal even when the set is new", () => {
+		expect(
+			corePropertyKeysEqual(
+				DEFAULT_CORE_PROPERTY_KEYS,
+				new Set(DEFAULT_CORE_PROPERTY_KEYS),
+			),
+		).toBe(true);
+		expect(
+			corePropertyKeysEqual(
+				new Set(["id", "name"]),
+				new Set(["name", "id"]),
+			),
+		).toBe(true);
+		expect(
+			corePropertyKeysEqual(new Set(["id"]), new Set(["id", "name"])),
+		).toBe(false);
 	});
 });

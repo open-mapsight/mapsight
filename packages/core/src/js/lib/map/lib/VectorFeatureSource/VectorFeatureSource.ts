@@ -40,6 +40,7 @@ export default class VectorFeatureSource extends VectorSource {
 	private readonly _featureClusterManager: FeatureClusterManager | undefined =
 		undefined;
 	private _mapController: MapController | null = null;
+	private _unsubscribeCorePropertyKeys: (() => void) | null = null;
 	private _featureSelections: Array<string> = [];
 	private _layer: VectorFeatureSourceLayer | null = null;
 	private _active = false;
@@ -457,10 +458,16 @@ export default class VectorFeatureSource extends VectorSource {
 			return;
 		}
 
+		this._unsubscribeCorePropertyKeys?.();
 		this._mapController = mapController;
 		this._featureSourceConnector.setCorePropertyKeys(
 			mapController.getCorePropertyKeys(),
 		);
+		this._unsubscribeCorePropertyKeys =
+			mapController.onCorePropertyKeysChange((keys) => {
+				this._featureSourceConnector.setCorePropertyKeys(keys);
+				this.refresh();
+			});
 		this._featureSourceConnector.setStore(store);
 		this._featureSelectionStates.bindToStore(store);
 		this._featureSourceConnector.setTargetControllerName(

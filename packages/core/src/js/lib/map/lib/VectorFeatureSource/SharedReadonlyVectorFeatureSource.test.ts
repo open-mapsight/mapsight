@@ -2,6 +2,8 @@ import GeoJSON from "ol/format/GeoJSON";
 
 import {describe, expect, it, vi} from "vitest";
 
+import {DEFAULT_CORE_PROPERTY_KEYS} from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
+
 import type {EnhancedStore, State} from "@/types";
 
 import SharedReadonlyVectorFeatureSource from "./SharedReadonlyVectorFeatureSource";
@@ -10,7 +12,10 @@ const placeFeature = {
 	id: "place-1",
 	type: "Feature",
 	geometry: {type: "Point", coordinates: [10.5, 52.2]},
-	properties: {name: "Parkhaus Eiermarkt", markerCaption: "207"},
+	properties: {
+		name: "Parkhaus Eiermarkt",
+		markerCaption: "207",
+	} as {name: string; markerCaption: string; myHostKey?: string},
 };
 
 function createStore(initial: State) {
@@ -237,5 +242,51 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 
 		expect(readFeatures).toHaveBeenCalledTimes(2);
 		expect(onUpdate).toHaveBeenCalledTimes(2);
+	});
+
+	it("reconciles a newly allowlisted host key from the last collection", () => {
+		const hosted = {
+			...placeFeature,
+			properties: {
+				...placeFeature.properties,
+				myHostKey: "before",
+			},
+		};
+		const format = new GeoJSON();
+		const store = createStore(sourceState([hosted]));
+		const onUpdate = vi.fn();
+
+		const {instance} = SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			format,
+			undefined,
+			undefined,
+			onUpdate,
+		);
+
+		store.setState(
+			sourceState([
+				{
+					...hosted,
+					properties: {
+						...hosted.properties,
+						myHostKey: "after",
+					},
+				},
+			]),
+		);
+
+		const feature = instance.getFeatureById("place-1");
+		expect(feature?.get("myHostKey")).toBe("before");
+
+		instance.setCorePropertyKeys(
+			new Set([...DEFAULT_CORE_PROPERTY_KEYS, "myHostKey"]),
+		);
+
+		expect(feature?.get("myHostKey")).toBe("after");
+		expect(onUpdate).toHaveBeenCalledTimes(3);
 	});
 });

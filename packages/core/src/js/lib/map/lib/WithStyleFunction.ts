@@ -2,6 +2,7 @@ import type {StyleFunction} from "ol/style/Style";
 
 import {
 	DEFAULT_CORE_PROPERTY_KEYS,
+	corePropertyKeysEqual,
 	corePropertyKeysFromAllowedProps,
 } from "@mapsight/lib-ol/feature/defaultCorePropertyKeys";
 import type {
@@ -14,17 +15,36 @@ import WithMap from "./WithMap";
 export default class WithStyleFunction extends WithMap {
 	private _styleFunctionRef: MapsightStyleFunction | undefined;
 	private _defaultStyleEnv: MapsightStyleFunctionEnv = {};
-	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
+	private _corePropertyKeys: ReadonlySet<string> | undefined;
+	private _corePropertyKeysListeners:
+		Set<(keys: ReadonlySet<string>) => void> | undefined;
 
 	setStyleFunction(styleFunction: MapsightStyleFunction) {
 		this._styleFunctionRef = styleFunction;
-		this._corePropertyKeys = corePropertyKeysFromAllowedProps(
+		const nextKeys = corePropertyKeysFromAllowedProps(
 			styleFunction.allowedProps,
 		);
+		if (corePropertyKeysEqual(this.getCorePropertyKeys(), nextKeys)) {
+			return;
+		}
+		this._corePropertyKeys = nextKeys;
+		for (const listener of this._corePropertyKeysListeners ?? []) {
+			listener(nextKeys);
+		}
 	}
 
 	getCorePropertyKeys(): ReadonlySet<string> {
-		return this._corePropertyKeys;
+		return this._corePropertyKeys ?? DEFAULT_CORE_PROPERTY_KEYS;
+	}
+
+	onCorePropertyKeysChange(
+		listener: (keys: ReadonlySet<string>) => void,
+	): () => void {
+		const listeners = (this._corePropertyKeysListeners ??= new Set());
+		listeners.add(listener);
+		return () => {
+			listeners.delete(listener);
+		};
 	}
 
 	/**
