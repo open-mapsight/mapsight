@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ssr-sidecar",
 	"description": "Node 24 HTTP sidecar for Mapsight HTML embed SSR",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"type": "module",
 	"bin": {
 		"mapsight-ssr-sidecar": "./dist/server.js"
