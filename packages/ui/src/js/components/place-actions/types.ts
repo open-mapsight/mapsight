@@ -27,17 +27,22 @@ export type PlaceActionsResolveContext = {
 
 export type BuiltInNavTargetId = "geo" | "google" | "apple";
 
+export type CustomNavHrefContext = {
+	feature: MapsightUiFeature;
+	lon: number | null;
+	lat: number | null;
+	address: string | null;
+};
+
+export type CustomNavHref =
+	string | ((ctx: CustomNavHrefContext) => string | null | undefined);
+
 export type CustomNavTarget = {
 	id: string;
 	label: string;
-	href:
-		| string
-		| ((ctx: {
-				feature: MapsightUiFeature;
-				lon: number | null;
-				lat: number | null;
-				address: string | null;
-		  }) => string | null | undefined);
+	href: CustomNavHref;
+	/** Used by the map-point “from here” menu when the point is the origin. */
+	originHref?: CustomNavHref;
 };
 
 export type NavigationTarget = BuiltInNavTargetId | CustomNavTarget;
@@ -82,6 +87,7 @@ export type ResolvedNavTarget = {
 	id: string;
 	label: string;
 	href: string;
+	originHref?: string;
 };
 
 export type SharePlaceAction = {

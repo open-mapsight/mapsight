@@ -409,6 +409,42 @@ describe("resolvePlaceActions", () => {
 		).toBeUndefined();
 	});
 
+	it("resolves custom target originHref for from-here", () => {
+		const actions = resolvePlaceActions(feature(), {
+			permalink: () => null,
+			showOnMap: false,
+			copyCoords: false,
+			navigation: {
+				supportsGeo: false,
+				targets: [
+					{
+						id: "bsvg",
+						label: "BSVG",
+						href: ({lon, lat}) =>
+							lon == null || lat == null
+								? null
+								: `https://example.de/to/${lat},${lon}`,
+						originHref: ({lon, lat}) =>
+							lon == null || lat == null
+								? null
+								: `https://example.de/from/${lat},${lon}`,
+					},
+				],
+			},
+		});
+
+		expect(
+			actions.find((action) => action.kind === "navigate")?.targets,
+		).toEqual([
+			{
+				id: "bsvg",
+				label: "BSVG",
+				href: "https://example.de/to/52.26,10.52",
+				originHref: "https://example.de/from/52.26,10.52",
+			},
+		]);
+	});
+
 	it("lets the host remap the schema group", () => {
 		const actions = resolvePlaceActions(
 			feature({
