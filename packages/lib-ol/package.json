@@ -34,6 +34,8 @@
 		"directory": "packages/lib-ol"
 	},
 	"scripts": {
+		"bench:properties": "node --expose-gc __tests__/feature-properties.bench.ts",
+		"bench:refresh": "node __tests__/feature-refresh.bench.ts",
 		"build": "tsc && tsc-alias",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
