@@ -148,57 +148,59 @@ function ListSearchButtonInput({label, placeholder, query, onChange}: Props) {
 
 	return (
 		<fieldset className="ms3-query-input-with-label ms3-query-input-with-label--list-search-button">
-			{expanded ? (
-				<label
-					className="ms3-query-input-with-label__label ms3-visuallyhidden"
-					htmlFor={inputId}
-				>
-					{label}
-				</label>
-			) : null}
+			<label
+				className="ms3-query-input-with-label__label ms3-visuallyhidden"
+				htmlFor={inputId}
+			>
+				{label}
+			</label>
 
 			<div className="ms3-query-input-with-label__input-container">
-				{expanded ? (
-					<>
-						<input
-							id={inputId}
-							ref={inputRef}
-							className="ms3-query-input-with-label__input"
-							placeholder={placeholder}
-							type="search"
-							value={query}
-							onChange={handleInput}
-							onFocus={handleFocus}
-							onBlur={handleBlur}
-							onKeyDown={handleKeyDown}
-							autoComplete="off"
-						/>
+				<button
+					ref={openButtonRef}
+					className={
+						expanded
+							? "ms3-visuallyhidden"
+							: "ms3-query-input-with-label__open"
+					}
+					type="button"
+					aria-expanded={expanded}
+					aria-controls={inputId}
+					tabIndex={expanded ? -1 : undefined}
+					onClick={handleOpen}
+				>
+					<span className="ms3-query-input-with-label__open-label">
+						{label}
+					</span>
+				</button>
 
-						{query !== "" && (
-							<button
-								className="ms3-query-input-with-label__reset-button"
-								type="button"
-								onMouseDown={(e) => e.preventDefault()}
-								onClick={handleReset}
-							>
-								<span className="ms3-visuallyhidden">
-									{translate("ui.query-input.reset")}
-								</span>
-							</button>
-						)}
-					</>
-				) : (
+				<input
+					id={inputId}
+					ref={inputRef}
+					className="ms3-query-input-with-label__input"
+					placeholder={placeholder}
+					type="search"
+					value={query}
+					hidden={!expanded}
+					onChange={handleInput}
+					onFocus={handleFocus}
+					onBlur={handleBlur}
+					onKeyDown={handleKeyDown}
+					autoComplete="off"
+				/>
+
+				{expanded && query !== "" ? (
 					<button
-						ref={openButtonRef}
-						className="ms3-query-input-with-label__open"
+						className="ms3-query-input-with-label__reset-button"
 						type="button"
-						onClick={handleOpen}
+						onMouseDown={(e) => e.preventDefault()}
+						onClick={handleReset}
 					>
-						<span className="ms3-query-input-with-label__open-label">
-							{label}
+						<span className="ms3-visuallyhidden">
+							{translate("ui.query-input.reset")}
 						</span>
 					</button>
-				)}
+				) : null}
 			</div>
 		</fieldset>
 	);

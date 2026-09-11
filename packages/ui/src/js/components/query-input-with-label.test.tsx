@@ -93,6 +93,8 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		expect(openButton.className).toContain(
 			"ms3-query-input-with-label__open",
 		);
+		expect(openButton.getAttribute("aria-expanded")).toBe("false");
+		expect(openButton.getAttribute("aria-controls")).toBeTruthy();
 		expect(
 			openButton.querySelector(".ms3-query-input-with-label__open-label")
 				?.textContent,
@@ -119,7 +121,11 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		);
 
 		expect(screen.getByRole("searchbox")).toBeTruthy();
-		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(
+			screen
+				.getByRole("button", {name: LABEL})
+				.getAttribute("aria-expanded"),
+		).toBe("true");
 		expect(document.activeElement).not.toBe(screen.getByRole("searchbox"));
 	});
 
@@ -134,8 +140,10 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		fireEvent.click(screen.getByRole("button", {name: LABEL}));
 
 		const input = screen.getByRole("searchbox");
+		const trigger = screen.getByRole("button", {name: LABEL});
 		expect(input).toBeTruthy();
-		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(trigger.getAttribute("aria-expanded")).toBe("true");
+		expect(trigger.getAttribute("aria-controls")).toBe(input.id);
 		expect(iconHost?.contains(input)).toBe(true);
 		expect(document.activeElement).toBe(input);
 	});
@@ -163,7 +171,11 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		});
 
 		expect(screen.getByRole("searchbox")).toBeTruthy();
-		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(
+			screen
+				.getByRole("button", {name: LABEL})
+				.getAttribute("aria-expanded"),
+		).toBe("true");
 	});
 
 	it("collapses on blur when the query is empty", () => {
@@ -187,7 +199,11 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		fireEvent.blur(screen.getByRole("searchbox"));
 
 		expect(screen.getByRole("searchbox")).toBeTruthy();
-		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(
+			screen
+				.getByRole("button", {name: LABEL})
+				.getAttribute("aria-expanded"),
+		).toBe("true");
 	});
 
 	it("collapses an empty input on Escape", () => {
@@ -200,7 +216,7 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 			fireEvent.keyDown(screen.getByRole("searchbox"), {key: "Escape"});
 
 			const openButton = screen.getByRole("button", {name: LABEL});
-			expect(openButton).toBeTruthy();
+			expect(openButton.getAttribute("aria-expanded")).toBe("false");
 			expect(screen.queryByRole("searchbox")).toBeNull();
 			expect(document.activeElement).toBe(openButton);
 			expect(onKeyDown).not.toHaveBeenCalled();
@@ -240,7 +256,11 @@ describe("QueryInputWithLabel with v8_listSearchButton", () => {
 		expect(screen.getByRole("searchbox")).toBeTruthy();
 		expect(screen.getByRole("searchbox").value).toBe("");
 		expect(document.activeElement).toBe(screen.getByRole("searchbox"));
-		expect(screen.queryByRole("button", {name: LABEL})).toBeNull();
+		expect(
+			screen
+				.getByRole("button", {name: LABEL})
+				.getAttribute("aria-expanded"),
+		).toBe("true");
 	});
 
 	it("forwards typed text through onChange", () => {

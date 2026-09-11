@@ -50,7 +50,7 @@ describe("FeatureFilter", () => {
 		vi.useRealTimers();
 	});
 
-	it("does not revert keystrokes when a earlier debounce commits to the store", () => {
+	it("does not revert keystrokes when an earlier debounce commits to the store", () => {
 		const store = makeStore();
 		renderFilter(store);
 
