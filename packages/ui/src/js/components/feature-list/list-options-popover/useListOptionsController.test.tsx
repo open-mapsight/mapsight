@@ -11,11 +11,13 @@ import {
 	TAG_FILTER,
 	USER_GEOLOCATION,
 } from "../../../config/constants/controllers";
+import {FutureFlagsContext} from "../../../future/context";
 import {
 	FILTER_LIST_QUERY,
 	HIDE_TAG_AND_TAG_GROUP,
 	SORT_LIST,
 } from "../../../store/actions";
+import type {FutureFlags} from "../../../types";
 import {
 	FeatureListContextProvider,
 	type FeatureListContextValue,
@@ -116,16 +118,22 @@ function baseState(
 function renderController(
 	state: TestState,
 	contextOverrides?: Partial<FeatureListContextValue["state"]>,
+	future?: FutureFlags,
 ) {
 	const store = makeStore(state);
 	const wrapper = ({children}: {children: ReactNode}) => (
 		<Provider store={store}>
-			<FeatureListContextProvider value={listContext(contextOverrides)}>
-				{children}
-			</FeatureListContextProvider>
+			<FutureFlagsContext.Provider value={future ?? {}}>
+				<FeatureListContextProvider
+					value={listContext(contextOverrides)}
+				>
+					{children}
+				</FeatureListContextProvider>
+			</FutureFlagsContext.Provider>
 		</Provider>
 	);
-	return renderHook(() => useListOptionsController(), {wrapper});
+	const hook = renderHook(() => useListOptionsController(), {wrapper});
+	return {...hook, store};
 }
 
 describe("useListOptionsController", () => {
@@ -179,7 +187,7 @@ describe("useListOptionsController", () => {
 	});
 
 	it("reset clears query, tags, and custom sorting", () => {
-		const {result} = renderController(
+		const {result, store} = renderController(
 			baseState({
 				app: {
 					listQuery: "cafe",
@@ -203,5 +211,58 @@ describe("useListOptionsController", () => {
 		expect(result.current.hasCustomSorting).toBe(false);
 		expect(result.current.canResetOptions).toBe(false);
 		expect(result.current.sorting).toBe("");
+		expect(store.getState().app.listQuery).toBe("");
+	});
+});
+
+describe("useListOptionsController with v8_listSearchButton", () => {
+	const future = {v8_listSearchButton: true};
+
+	it("does not count a list query as an active popover filter", () => {
+		const {result, store} = renderController(
+			baseState({app: {listQuery: "cafe"}}),
+			undefined,
+			future,
+		);
+
+		expect(result.current.activeFilterCount).toBe(0);
+		expect(result.current.canResetOptions).toBe(false);
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(store.getState().app.listQuery).toBe("cafe");
+	});
+
+	it("reset clears tags and custom sorting but leaves the list query", () => {
+		const {result, store} = renderController(
+			baseState({
+				app: {
+					listQuery: "cafe",
+					listSorting: "center",
+					tagSwitcher: {featureSourceId: "pois"},
+				},
+				tagFilter: {
+					visibleTags: {pois: {group: {open: true}}},
+				},
+			}),
+			undefined,
+			future,
+		);
+
+		expect(result.current.activeFilterCount).toBe(1);
+		expect(result.current.canResetOptions).toBe(true);
+		expect(store.getState().app.listQuery).toBe("cafe");
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.activeFilterCount).toBe(0);
+		expect(result.current.hasCustomSorting).toBe(false);
+		expect(result.current.canResetOptions).toBe(false);
+		expect(result.current.sorting).toBe("");
+		expect(store.getState().app.listQuery).toBe("cafe");
 	});
 });

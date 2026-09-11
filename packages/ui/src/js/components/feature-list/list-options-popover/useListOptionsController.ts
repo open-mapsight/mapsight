@@ -18,6 +18,7 @@ import {
 	TAG_FILTER,
 	USER_GEOLOCATION,
 } from "../../../config/constants/controllers";
+import {useFutureFlag} from "../../../future/context";
 import {
 	filterListQuery,
 	hideTagAndTagGroup,
@@ -112,9 +113,11 @@ export default function useListOptionsController() {
 	const geolocationStatus = useSelector((state: ListOptionsState) =>
 		geolocationStatusSelector(state[USER_GEOLOCATION]),
 	);
+	const listSearchButton = useFutureFlag("v8_listSearchButton");
 
 	const activeFilterCount =
-		(query?.trim() ? 1 : 0) + (tagFilterActive ? 1 : 0);
+		(!listSearchButton && query?.trim() ? 1 : 0) +
+		(tagFilterActive ? 1 : 0);
 	const canResetOptions =
 		activeFilterCount > 0 ||
 		(customSorting !== undefined && customSorting !== "");
@@ -133,8 +136,10 @@ export default function useListOptionsController() {
 	const reset = useCallback(() => {
 		dispatch(sortList("") as never);
 		dispatch(hideTagAndTagGroup() as never);
-		dispatch(filterListQuery(null) as never);
-	}, [dispatch]);
+		if (!listSearchButton) {
+			dispatch(filterListQuery(null) as never);
+		}
+	}, [dispatch, listSearchButton]);
 
 	return {
 		featureCount,

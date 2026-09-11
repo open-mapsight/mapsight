@@ -1,6 +1,8 @@
 @use "../variables";
 
 .ms3-query-input-with-label {
+	$b: &;
+
 	&__label {
 		margin-right: 8px;
 	}
@@ -30,6 +32,43 @@
 		}
 	}
 
+	&--list-search-button {
+		display: block;
+		width: 100%;
+		min-width: 0;
+		border: 0;
+
+		#{$b}__input-container {
+			display: block;
+			width: 100%;
+		}
+	}
+
+	&__open {
+		box-sizing: border-box;
+		display: block;
+		width: 100%;
+		min-height: 34px;
+		margin: 0;
+		padding: 6px 8px;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		font-size: 1.23077rem;
+		line-height: 1.25;
+		text-align: left;
+		cursor: pointer;
+
+		@if variables.$ms3-option-queryInputWithLabelSearchIcon {
+			padding-left: 33px;
+		}
+	}
+
+	&__open-label {
+		color: color-mix(in srgb, currentColor 65%, transparent);
+	}
+
 	&__input {
 		box-sizing: border-box;
 		vertical-align: top;
@@ -42,6 +81,10 @@
 		font-size: 1.23077rem;
 		display: block;
 		outline-offset: -2px;
+
+		&[hidden] {
+			display: none;
+		}
 
 		@if variables.$ms3-option-queryInputWithLabelSearchIcon {
 			min-height: 34px;
