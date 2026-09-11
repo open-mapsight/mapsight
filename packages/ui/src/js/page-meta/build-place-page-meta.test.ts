@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import type {MapsightUiFeature} from "../../types";
+import type {MapsightUiFeature} from "../types";
 import {buildPlacePageMeta} from "./build-place-page-meta";
 
 function feature(

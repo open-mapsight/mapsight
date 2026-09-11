@@ -102,9 +102,13 @@
 			"types": "./dist/components/place-actions/index.d.ts",
 			"default": "./dist/components/place-actions/index.js"
 		},
-		"./components/place-page-meta": {
-			"types": "./dist/components/place-page-meta/index.d.ts",
-			"default": "./dist/components/place-page-meta/index.js"
+		"./page-meta": {
+			"types": "./dist/page-meta/index.d.ts",
+			"default": "./dist/page-meta/index.js"
+		},
+		"./page-meta/place": {
+			"types": "./dist/page-meta/place.d.ts",
+			"default": "./dist/page-meta/place.js"
 		},
 		"./components/place-og-card": {
 			"types": "./dist/components/place-og-card/index.d.ts",

@@ -1,27 +1,15 @@
-import getFeatureProperty from "../../helpers/get-feature-property";
-import type {MapsightUiFeature} from "../../types";
 import {
 	lonLatFromGeometry,
 	resolveFeaturePermalink,
 	resolveFeatureSchema,
-} from "../place-actions/resolve-place-actions";
-import type {FeatureSchema, PlaceActionsConfig} from "../place-actions/types";
-
-export type PlacePageMetaOg = {
-	title: string;
-	description: string;
-	url: string;
-	type: "place" | "website";
-	image: string;
-};
-
-export type PlacePageMeta = {
-	title: string;
-	description: string;
-	canonicalUrl: string;
-	og: PlacePageMetaOg;
-	jsonLd: Record<string, unknown>;
-};
+} from "../components/place-actions/resolve-place-actions";
+import type {
+	FeatureSchema,
+	PlaceActionsConfig,
+} from "../components/place-actions/types";
+import getFeatureProperty from "../helpers/get-feature-property";
+import type {MapsightUiFeature} from "../types";
+import type {PageMeta} from "./types";
 
 export type BuildPlacePageMetaConfig = PlaceActionsConfig & {
 	/** Absolute or root-absolute URL for the static default card. */
@@ -84,7 +72,7 @@ function sameAsList(schema: FeatureSchema): string[] {
 export function buildPlacePageMeta(
 	feature: MapsightUiFeature,
 	config: BuildPlacePageMetaConfig,
-): PlacePageMeta | null {
+): PageMeta | null {
 	const title = placeFeatureTitle(feature);
 	const canonicalUrl = resolveFeaturePermalink(feature, config);
 	const ogImage = asNonEmptyString(config.ogImage);
