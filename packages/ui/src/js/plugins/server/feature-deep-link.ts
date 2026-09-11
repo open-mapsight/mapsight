@@ -11,6 +11,10 @@ import type {
 	ExternalMapsightUiRendererProps,
 	PluginInstance,
 } from "../../types";
+import {
+	applyFeatureSourceReveal,
+	parseFeatureSourceSearchParam,
+} from "../common/reveal-feature-source";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
@@ -27,7 +31,7 @@ const defaultRendererPropName = "requestUrlSearch";
  * @param {string} [options.featureSelection="select"] name of the feature selection to track
  * @param {boolean} [options.setMapOnlyViewInMobile=true] match the browser plugin: mapOnly on mobile deep links
  * @param {string[] | boolean} [options.autoRemoveParameters] list of get parameters to remove once the feature
- *                                            has been selected, defaults to ["feature", "cHash"]. Pass false to disable.
+ *                                            has been selected, defaults to ["feature", "src", "cHash"]. Pass false to disable.
  * @returns {import('../../types').PluginInstance} plugin instance
  */
 export default function createPlugin(
@@ -60,6 +64,12 @@ export default function createPlugin(
 				getParameter,
 			);
 			if (featureId != null) {
+				applyFeatureSourceReveal(store, {
+					featureId,
+					sourceId: parseFeatureSourceSearchParam(
+						rendererProps[rendererPropName],
+					),
+				});
 				store.dispatch(
 					selectExclusively(
 						featureSelectionsController,

@@ -75,11 +75,42 @@ export const getFeatureSourceStatus = (featureSource: FeatureSourceState) => {
 	return null;
 };
 
+export const findFeatureSourceIdForFeatureId = (
+	sources: FeatureSourcesState,
+	featureId: FeatureId,
+	options?: {skipIds?: Iterable<string>},
+): string | null => {
+	if (!featureId) {
+		return null;
+	}
+
+	const skip = options?.skipIds ? new Set(options.skipIds) : null;
+	let combinedId: string | null = null;
+
+	for (const [id, source] of Object.entries(sources)) {
+		if (skip?.has(id)) {
+			continue;
+		}
+		if (!source.ids?.includes(featureId)) {
+			continue;
+		}
+		if (source.type === "combined") {
+			combinedId ??= id;
+			continue;
+		}
+		return id;
+	}
+
+	return combinedId;
+};
+
 export const findFeatureSourceForFeatureId = (
 	sources: FeatureSourcesState,
 	featureId: FeatureId,
-): undefined | FeatureSourceState =>
-	Object.values(sources).find((source) => source.ids?.includes(featureId));
+): undefined | FeatureSourceState => {
+	const sourceId = findFeatureSourceIdForFeatureId(sources, featureId);
+	return sourceId ? sources[sourceId] : undefined;
+};
 
 export const findFeatureInFeatureSourcesById = (
 	sources: FeatureSourcesState,

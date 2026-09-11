@@ -18,11 +18,15 @@ import {setView} from "../../store/actions";
 import type {RootStateSlice} from "../../store/selectors";
 import {isViewMobile, viewSelector} from "../../store/selectors";
 import type {PluginInstance} from "../../types";
+import {
+	applyFeatureSourceReveal,
+	parseFeatureSourceSearchParam,
+} from "../common/reveal-feature-source";
 
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
 const defaultGetParameter = "feature";
-const defaultAutoRemoveParameters = [defaultGetParameter, "cHash"];
+const defaultAutoRemoveParameters = [defaultGetParameter, "src", "cHash"];
 
 function selectFeature(
 	store: Store,
@@ -78,7 +82,7 @@ function patchWindowHistoryFunction(
  * @param [options.getParameter="feature"] name get parameter identifying the feature
  * @param [options.setMapOnlyViewInMobile=true] will set MapOnly view on mobile if a feature has been linked
  * @param [options.autoRemoveParameters] list of get parameters to remove once the feature
- *                                            has been selected, defaults to ["feature", "cHash"]. Pass false to disable.
+ *                                            has been selected, defaults to ["feature", "src", "cHash"]. Pass false to disable.
  * @param [options.clearMissingParameters] if set to true or an array clear if getParameter and the mentioned
  *                                            parameters are missing. don't clear if getParameter is missing, but one of the
  *                                            mentioned parameters is there. we keep this to be safe in race condition
@@ -131,6 +135,12 @@ export default function createPlugin(
 				getParameter,
 			);
 			if (featureId) {
+				applyFeatureSourceReveal(store, {
+					featureId,
+					sourceId: parseFeatureSourceSearchParam(
+						window.location.search,
+					),
+				});
 				selectFeature(
 					store,
 					featureSelectionsController,
