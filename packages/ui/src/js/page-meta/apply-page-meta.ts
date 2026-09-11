@@ -1,17 +1,6 @@
-import type {PlacePageMeta} from "./build-place-page-meta";
+import type {DocumentHeadDefaults, PageMeta} from "./types";
 
-export const PLACE_JSON_LD_SCRIPT_ID = "mapsight-place-jsonld";
-
-export type DocumentHeadDefaults = {
-	/** Full `<title>` to restore when there is no feature/module meta. */
-	title: string;
-	/** Site name (`og:site_name`), appended as ` | {siteName}`. */
-	siteName?: string;
-	canonicalUrl?: string;
-	ogImage?: string;
-	/** Article `og:description` to restore when place meta is cleared. */
-	description?: string;
-};
+export const PAGE_JSON_LD_SCRIPT_ID = "mapsight-page-jsonld";
 
 export function documentTitleForMeta(
 	metaTitle: string | null,
@@ -28,11 +17,11 @@ export function documentTitleForMeta(
 }
 
 /**
- * Keep the live document head in sync with Place / module pageMeta after
- * client route changes. Crawlers still read the SSR snapshot.
+ * Keep the live document head in sync with route pageMeta after client
+ * route changes. Crawlers still read the SSR snapshot.
  */
-export function applyPlacePageMetaToDocument(
-	meta: PlacePageMeta | null,
+export function applyPageMetaToDocument(
+	meta: PageMeta | null,
 	defaults: DocumentHeadDefaults,
 ): void {
 	if (typeof document === "undefined") {
@@ -118,10 +107,10 @@ function removeMetaProperty(property: string): void {
 }
 
 function setJsonLd(jsonLd: Record<string, unknown>): void {
-	let script = document.getElementById(PLACE_JSON_LD_SCRIPT_ID);
+	let script = document.getElementById(PAGE_JSON_LD_SCRIPT_ID);
 	if (!(script instanceof HTMLScriptElement)) {
 		const created = document.createElement("script");
-		created.id = PLACE_JSON_LD_SCRIPT_ID;
+		created.id = PAGE_JSON_LD_SCRIPT_ID;
 		created.type = "application/ld+json";
 		document.head.appendChild(created);
 		script = created;
@@ -130,5 +119,5 @@ function setJsonLd(jsonLd: Record<string, unknown>): void {
 }
 
 function removeJsonLd(): void {
-	document.getElementById(PLACE_JSON_LD_SCRIPT_ID)?.remove();
+	document.getElementById(PAGE_JSON_LD_SCRIPT_ID)?.remove();
 }
