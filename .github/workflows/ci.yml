@@ -420,7 +420,7 @@ jobs:
           persist-credentials: false
           submodules: false
 
-      - uses: ./.github/actions/setup/
+      - uses: $/.github/actions/setup/
         with:
           sync-main-ref: false
 
@@ -580,7 +580,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      packages: write
+      packages: write # GHCR push for @mapsight/ssr-sidecar:beta
       id-token: write # Required for OIDC
     steps:
       - name: Checkout
