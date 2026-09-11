@@ -4,6 +4,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import {DEFAULT_MARKED_POINT_FEATURE_ID} from "../../plugins/browser/marked-point";
 import MapPointContextMenu, {originNavHref} from "./map-point-context-menu";
@@ -180,6 +181,48 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
+	it("does not announce copy success when the clipboard rejects", async () => {
+		const mapTarget = document.createElement("div");
+		mapTarget.className = "ms3-map-target";
+		document.body.append(mapTarget);
+
+		const store = createStore(mapTarget);
+		(
+			store as typeof store & {getController: (name: string) => unknown}
+		).getController = () => ({
+			getMap: () => ({
+				getTargetElement: () => mapTarget,
+				getEventCoordinate: () => [10.52, 52.26],
+				getPixelFromCoordinate: () => [40, 50],
+				getView: () => ({getCenter: () => [10.52, 52.26]}),
+			}),
+		});
+
+		const writeText = vi.fn().mockRejectedValue(new Error("denied"));
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			clipboard: {writeText},
+		});
+
+		render(
+			<Provider store={store}>
+				<MapPointContextMenu />
+			</Provider>,
+		);
+
+		fireEvent.contextMenu(mapTarget, {clientX: 40, clientY: 50});
+		fireEvent.click(
+			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
+		);
+
+		await vi.waitFor(() => {
+			expect(writeText).toHaveBeenCalled();
+		});
+		expect(announceStatus).not.toHaveBeenCalledWith("Koordinaten kopiert");
+
+		mapTarget.remove();
+	});
+
 	it("builds origin URLs for from-here", () => {
 		expect(originNavHref("google", 10.52, 52.26)).toBe(
 			"https://www.google.com/maps/dir/?api=1&origin=52.26,10.52",
@@ -240,6 +283,52 @@ describe("MapPointContextMenu", () => {
 		).toHaveProperty("style.left", "196px");
 
 		overlay.remove();
+		mapTarget.remove();
+	});
+
+	it("does not open when right-clicking an overlay control over the map", () => {
+		const mapTarget = document.createElement("div");
+		mapTarget.className = "ms3-map-target";
+		mapTarget.getBoundingClientRect = () => ({
+			left: 0,
+			top: 0,
+			right: 400,
+			bottom: 400,
+			width: 400,
+			height: 400,
+			x: 0,
+			y: 0,
+			toJSON() {
+				return {};
+			},
+		});
+		document.body.append(mapTarget);
+
+		const store = createStore(mapTarget);
+		(
+			store as typeof store & {getController: (name: string) => unknown}
+		).getController = () => ({
+			getMap: () => ({
+				getTargetElement: () => mapTarget,
+				getEventCoordinate: () => [10.52, 52.26],
+				getPixelFromCoordinate: () => [40, 50],
+				getView: () => ({getCenter: () => [10.52, 52.26]}),
+			}),
+		});
+
+		render(
+			<Provider store={store}>
+				<MapPointContextMenu />
+			</Provider>,
+		);
+
+		const zoom = document.createElement("button");
+		zoom.className = "ms3-map-overlay__button";
+		document.body.append(zoom);
+		fireEvent.contextMenu(zoom, {clientX: 40, clientY: 50, button: 2});
+
+		expect(screen.queryByRole("menu")).toBeNull();
+		zoom.remove();
 		mapTarget.remove();
 	});
 

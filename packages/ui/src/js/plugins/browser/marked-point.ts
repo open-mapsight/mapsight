@@ -131,6 +131,33 @@ export function eventTargetIsInMapMenu(
 	);
 }
 
+const INTERACTIVE_OVERLAY_SELECTOR = [
+	"a",
+	"button",
+	"input",
+	"select",
+	"textarea",
+	"summary",
+	"[role='button']",
+	"[role='link']",
+	"[role='menuitem']",
+	"[role='tab']",
+	"[role='switch']",
+].join(", ");
+
+/** Overlay chrome over the map (zoom, search, layers) is not a map click. */
+export function eventTargetIsInteractiveOverlay(
+	eventTarget: EventTarget | null,
+): boolean {
+	if (
+		!(eventTarget instanceof Element) ||
+		eventTargetIsInMapMenu(eventTarget)
+	) {
+		return false;
+	}
+	return eventTarget.closest(INTERACTIVE_OVERLAY_SELECTOR) != null;
+}
+
 export function lonLatFromMapCoordinate(
 	coordinate: Coordinate,
 ): {lon: number; lat: number} | null {
@@ -221,6 +248,7 @@ export type EnsureMarkedPointLayerOptions = {
 	pluginName?: string;
 	mapControllerName?: string;
 	featureSourcesControllerName?: string;
+	featureSelectionsControllerName?: string;
 	markerName?: string;
 	markerStyle?: string;
 	markerLayerGroup?: string | null;
@@ -234,6 +262,8 @@ export function ensureMarkedPointLayerAction(
 	const mapControllerName = options.mapControllerName ?? MAP;
 	const featureSourcesControllerName =
 		options.featureSourcesControllerName ?? FEATURE_SOURCES;
+	const featureSelectionsControllerName =
+		options.featureSelectionsControllerName ?? FEATURE_SELECTIONS;
 	const sourceId = markedPointSourceId(pluginName);
 	const layerId = markedPointLayerId(pluginName);
 	const title = options.markerName ?? "Marker";
@@ -244,6 +274,10 @@ export function ensureMarkedPointLayerAction(
 		true,
 		metaData(title, null, false, false, false, options.markerLayerGroup),
 		options.markerStyle ?? "features",
+		{
+			featureSourcesControllerName,
+			featureSelectionsControllerName,
+		},
 	);
 
 	return mergeAll({

@@ -19,6 +19,19 @@ describe("parseLinkMarkerHash", () => {
 		expect(parseLinkMarkerHash("")).toBeNull();
 		expect(parseLinkMarkerHash("#other=1")).toBeNull();
 	});
+
+	it("reads negative southern and western coordinates", () => {
+		expect(parseLinkMarkerHash("#lm=-33.8688/-70.6693")).toEqual({
+			lat: -33.8688,
+			lon: -70.6693,
+		});
+		expect(
+			parseLinkMarkerHash(formatLinkMarkerHash(-33.8688, -70.6693)),
+		).toEqual({
+			lat: -33.8688,
+			lon: -70.6693,
+		});
+	});
 });
 
 describe("buildLinkMarkerShareHref", () => {

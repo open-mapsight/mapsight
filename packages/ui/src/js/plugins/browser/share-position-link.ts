@@ -49,7 +49,7 @@ export function parseLinkMarkerHash(
 	const regex = new RegExp(
 		`[#&]${encodeURIComponent(
 			linkParameter,
-		)}=(\\d+(?:\\.\\d+)?)\\/(\\d+(?:\\.\\d+)?)(?:&|$)`,
+		)}=(-?\\d+(?:\\.\\d+)?)\\/(-?\\d+(?:\\.\\d+)?)(?:&|$)`,
 	);
 	const match = hash.match(regex);
 	if (!match) {
@@ -222,6 +222,7 @@ function setupMarker(options) {
 		linkParameter,
 		mapControllerName,
 		featureSourcesControllerName,
+		featureSelectionsControllerName,
 		centerOnMarker,
 		markerZoom,
 		markerFeatureId,
@@ -259,6 +260,7 @@ function setupMarker(options) {
 			pluginName: name,
 			mapControllerName,
 			featureSourcesControllerName,
+			featureSelectionsControllerName,
 			markerName,
 			markerStyle,
 			markerLayerGroup,
@@ -325,9 +327,9 @@ export type Options = {
 	enableDrawing?: boolean;
 
 	/**
-	 * style for finished draw
+	 * style for the shared marked-point layer when `markerStyle` is omitted
 	 *
-	 * @default"features"
+	 * @default "features"
 	 */
 	displayStyle?: string;
 
@@ -423,13 +425,13 @@ export default function createShareLinkPlugin(
 		mapControllerName = MAP,
 		featureSourcesControllerName = FEATURE_SOURCES,
 		featureSelectionsControllerName = FEATURE_SELECTIONS,
-		displayStyle: _displayStyle = DEFAULT_DISPLAY_STYLE,
+		displayStyle = DEFAULT_DISPLAY_STYLE,
 		drawStyle = DEFAULT_DRAW_STYLE,
 		drawInteraction = DrawInteraction,
 		linkParameter = "lm",
 		showMarker = true,
 		centerOnMarker = true,
-		markerStyle = DEFAULT_DISPLAY_STYLE,
+		markerStyle = displayStyle,
 		markerZoom = 16,
 		markerFeatureId = "link-marker",
 		markerName = translate("marker"),
@@ -448,6 +450,7 @@ export default function createShareLinkPlugin(
 					pluginName: name,
 					mapControllerName,
 					featureSourcesControllerName,
+					featureSelectionsControllerName,
 					markerName,
 					markerStyle,
 					markerLayerGroup,
@@ -476,7 +479,7 @@ export default function createShareLinkPlugin(
 					store,
 					mapControllerName,
 					featureSourcesControllerName,
-
+					featureSelectionsControllerName,
 					linkParameter,
 					centerOnMarker,
 					markerStyle,

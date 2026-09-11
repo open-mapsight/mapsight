@@ -24,6 +24,7 @@ import {
 	eventPointIsOverMap,
 	eventTargetIsInMap,
 	eventTargetIsInMapMenu,
+	eventTargetIsInteractiveOverlay,
 	formatCoordinateSpellings,
 	isMapContextMenuKeyboardEvent,
 	lonLatFromMapCoordinate,
@@ -52,6 +53,8 @@ type MapPoint = {
 export type MapPointContextMenuProps = {
 	pluginName?: string;
 	mapControllerName?: string;
+	featureSourcesControllerName?: string;
+	featureSelectionsControllerName?: string;
 	navigation?: PlaceActionsConfig["navigation"];
 	/** Same-origin geo-search `nearest.php`. When set, the pin drops first, then the label updates. */
 	nearestUrl?: string;
@@ -141,15 +144,21 @@ function fromHereTargets(
 }
 
 async function copyCoordinates(lat: number, lon: number): Promise<void> {
-	await window.navigator.clipboard.writeText(
-		formatCoordinateSpellings(lat, lon).text,
-	);
-	announceStatus(translate("ui.map-point.copied"));
+	try {
+		await window.navigator.clipboard.writeText(
+			formatCoordinateSpellings(lat, lon).text,
+		);
+		announceStatus(translate("ui.map-point.copied"));
+	} catch {
+		// HTTP, missing clipboard, or permission denial — keep the pin.
+	}
 }
 
 export default function MapPointContextMenu({
 	pluginName = DEFAULT_MARKED_POINT_PLUGIN,
 	mapControllerName = MAP,
+	featureSourcesControllerName,
+	featureSelectionsControllerName,
 	navigation,
 	nearestUrl,
 }: MapPointContextMenuProps) {
@@ -160,6 +169,7 @@ export default function MapPointContextMenu({
 	const [menuKey, setMenuKey] = useState(0);
 	const pointerDownRef = useRef<{x: number; y: number} | null>(null);
 	const lastPointerButtonRef = useRef(0);
+	const lastPointerClientRef = useRef<{x: number; y: number} | null>(null);
 	const relocatingRef = useRef(false);
 	const lastPointerRef = useRef<MapPoint | null>(null);
 	const longPressTimerRef = useRef<number | null>(null);
@@ -176,6 +186,9 @@ export default function MapPointContextMenu({
 			dispatch(
 				setMarkedPoint({
 					pluginName,
+					mapControllerName,
+					featureSourcesControllerName,
+					featureSelectionsControllerName,
 					lon: next.lon,
 					lat: next.lat,
 				}) as never,
@@ -202,6 +215,9 @@ export default function MapPointContextMenu({
 					dispatch(
 						setMarkedPoint({
 							pluginName,
+							mapControllerName,
+							featureSourcesControllerName,
+							featureSelectionsControllerName,
 							lon: next.lon,
 							lat: next.lat,
 							featureName: address.name,
@@ -219,7 +235,14 @@ export default function MapPointContextMenu({
 					// Keep the immediate pin; nearest is optional.
 				});
 		},
-		[dispatch, nearestUrl, pluginName],
+		[
+			dispatch,
+			featureSelectionsControllerName,
+			featureSourcesControllerName,
+			mapControllerName,
+			nearestUrl,
+			pluginName,
+		],
 	);
 
 	const openAt = useCallback(
@@ -265,6 +288,10 @@ export default function MapPointContextMenu({
 
 		const onPointerDown = (event: PointerEvent) => {
 			lastPointerButtonRef.current = event.button;
+			lastPointerClientRef.current = {
+				x: event.clientX,
+				y: event.clientY,
+			};
 			const map = getOlMap(store, mapControllerName);
 			if (
 				!map ||
@@ -319,10 +346,11 @@ export default function MapPointContextMenu({
 			}
 			const overMap =
 				eventTargetIsInMap(event.target, mapTarget) ||
-				eventPointIsOverMap(
+				(eventPointIsOverMap(
 					{x: event.clientX, y: event.clientY},
 					mapTarget,
-				);
+				) &&
+					!eventTargetIsInteractiveOverlay(event.target));
 			if (!overMap) {
 				return;
 			}
@@ -445,7 +473,7 @@ export default function MapPointContextMenu({
 
 	return (
 		<OverlayProvider>
-			<OverlayContainer>
+			<OverlayContainer data-ms3-portal="">
 				{point.showCrosshair ? (
 					<div
 						className="ms3-map-point-menu__crosshair"
@@ -470,9 +498,20 @@ export default function MapPointContextMenu({
 						placement="bottom start"
 						offset={12}
 						className="ms3-map-point-menu__popover"
-						shouldCloseOnInteractOutside={() =>
-							lastPointerButtonRef.current !== 2
-						}
+						shouldCloseOnInteractOutside={() => {
+							if (lastPointerButtonRef.current !== 2) {
+								return true;
+							}
+							const map = getOlMap(store, mapControllerName);
+							const point = lastPointerClientRef.current;
+							return (
+								!point ||
+								!eventPointIsOverMap(
+									point,
+									map?.getTargetElement() ?? null,
+								)
+							);
+						}}
 					>
 						<Menu
 							aria-label={translate("ui.map-point.menu")}

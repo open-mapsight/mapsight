@@ -174,6 +174,45 @@ describe("PlaceActions", () => {
 		expect(link.textContent).not.toContain("531");
 	});
 
+	it("keeps a custom call label as the accessible name", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature({
+					properties: {
+						id: "schlosspark",
+						schema: {telephone: "+49 531 470 1"},
+					},
+				})}
+				config={isolated}
+			>
+				<PlaceActions.Call label="Anrufen" />
+			</PlaceActions.Root>,
+		);
+
+		expect(screen.getByRole("link", {name: "Anrufen"})).toBeTruthy();
+	});
+
+	it("renders the default copy-coords icon wrapper", () => {
+		render(
+			<PlaceActions.Root
+				feature={feature()}
+				config={{
+					permalink: () => null,
+					showOnMap: false,
+					copyCoords: true,
+					navigation: {fromGeometry: false},
+				}}
+			>
+				<PlaceActions.CopyCoords />
+			</PlaceActions.Root>,
+		);
+
+		const button = screen.getByRole("button", {
+			name: "Diese Koordinaten kopieren",
+		});
+		expect(button.querySelector(".ms3-place-actions__icon")).not.toBeNull();
+	});
+
 	it("opens a copy-only share dialog when Web Share is unavailable", async () => {
 		const writeText = vi.fn().mockResolvedValue(undefined);
 		vi.stubGlobal("navigator", {
@@ -368,6 +407,7 @@ describe("PlaceActions", () => {
 		const share = screen.getByRole("button", {name: "Diesen Ort teilen"});
 		expect(share.getAttribute("title")).toBeNull();
 		expect(share.textContent).toBe("");
+		expect(share.querySelector(".ms3-place-actions__icon")).not.toBeNull();
 		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
 		fireEvent.pointerEnter(share, {pointerType: "mouse"});
 		expect(

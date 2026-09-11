@@ -58,6 +58,10 @@ function classNames(
 	return parts.filter(Boolean).join(" ");
 }
 
+function ActionIcon({icon}: {icon?: ReactNode}): ReactElement {
+	return <span className="ms3-place-actions__icon">{icon}</span>;
+}
+
 type ActionChrome = {
 	title: string;
 	ariaLabel: string;
@@ -209,9 +213,7 @@ function Share({
 					aria-label={chrome.ariaLabel}
 					onClick={onShare}
 				>
-					{icon ? (
-						<span className="ms3-place-actions__icon">{icon}</span>
-					) : null}
+					<ActionIcon icon={icon} />
 					{chrome.visible}
 				</T>
 			</PlaceActionTooltip>
@@ -293,9 +295,7 @@ function ShowOnMapButton({
 				aria-label={chrome.ariaLabel}
 				onClick={onShowOnMap}
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
+				<ActionIcon icon={icon} />
 				{chrome.visible}
 			</T>
 		</PlaceActionTooltip>
@@ -348,9 +348,7 @@ function CopyCoords({
 					void onCopy();
 				}}
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
+				<ActionIcon icon={icon} />
 				{chrome.visible}
 			</T>
 		</PlaceActionTooltip>
@@ -404,9 +402,7 @@ function Navigate({
 					aria-controls={open ? menuId : undefined}
 					onClick={() => setOpen((current) => !current)}
 				>
-					{icon ? (
-						<span className="ms3-place-actions__icon">{icon}</span>
-					) : null}
+					<ActionIcon icon={icon} />
 					{chrome.visible}
 				</T>
 			</PlaceActionTooltip>
@@ -468,9 +464,7 @@ function Website({
 				rel="external noreferrer noopener"
 				target="_blank"
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
+				<ActionIcon icon={icon} />
 				{chrome.visible}
 			</T>
 		</PlaceActionTooltip>
@@ -503,11 +497,9 @@ function Call({
 					chrome.iconOnly && "ms3-place-actions__item--icon-only",
 					className,
 				)}
-				aria-label={tooltip}
+				aria-label={chrome.ariaLabel}
 			>
-				{icon ? (
-					<span className="ms3-place-actions__icon">{icon}</span>
-				) : null}
+				<ActionIcon icon={icon} />
 				{chrome.visible}
 			</T>
 		</PlaceActionTooltip>

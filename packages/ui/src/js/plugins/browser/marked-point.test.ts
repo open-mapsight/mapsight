@@ -8,9 +8,11 @@ import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import {
 	DEFAULT_MARKED_POINT_FEATURE_ID,
 	createMarkedPointFeature,
+	ensureMarkedPointLayerAction,
 	eventPointIsOverMap,
 	eventTargetIsInMap,
 	eventTargetIsInMapMenu,
+	eventTargetIsInteractiveOverlay,
 	formatCoordinateSpellings,
 	formatLonLat,
 	isMapContextMenuKeyboardEvent,
@@ -198,6 +200,38 @@ describe("eventPointIsOverMap", () => {
 		expect(eventPointIsOverMap({x: 40, y: 50}, mapTarget)).toBe(true);
 		expect(eventPointIsOverMap({x: 400, y: 50}, mapTarget)).toBe(false);
 		expect(eventPointIsOverMap({x: 40, y: 50}, null)).toBe(false);
+	});
+});
+
+describe("eventTargetIsInteractiveOverlay", () => {
+	it("treats overlay buttons as chrome, not the map", () => {
+		const button = document.createElement("button");
+		button.className = "ms3-map-overlay__button";
+		expect(eventTargetIsInteractiveOverlay(button)).toBe(true);
+		expect(
+			eventTargetIsInteractiveOverlay(document.createElement("div")),
+		).toBe(false);
+	});
+
+	it("does not treat the context menu itself as overlay chrome", () => {
+		const popover = document.createElement("div");
+		popover.className = "ms3-map-point-menu__popover";
+		const item = document.createElement("button");
+		popover.append(item);
+		expect(eventTargetIsInteractiveOverlay(item)).toBe(false);
+	});
+});
+
+describe("ensureMarkedPointLayerAction", () => {
+	it("points the layer source at the configured controllers", () => {
+		const action = ensureMarkedPointLayerAction({
+			pluginName: "sharePositionLink",
+			featureSourcesControllerName: "customSources",
+			featureSelectionsControllerName: "customSelections",
+		});
+		const json = JSON.stringify(action);
+		expect(json).toContain("customSources");
+		expect(json).toContain("customSelections");
 	});
 });
 
