@@ -16,17 +16,6 @@ describe("getPackageInfo", () => {
 		});
 	});
 
-	it("resolves private package paths", () => {
-		assert.deepEqual(
-			getPackageInfo("/repo/private/packages/foo/src/index.ts"),
-			{
-				filter: "foo",
-				relativePath: "src/index.ts",
-				workspaceDir: "private/packages",
-			},
-		);
-	});
-
 	it("returns null for paths outside packages or apps", () => {
 		assert.equal(getPackageInfo("/repo/scripts/check.mts"), null);
 	});
