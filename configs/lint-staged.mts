@@ -6,22 +6,13 @@ import type {Configuration} from "lint-staged";
 type PackageInfo = {
 	filter: string;
 	relativePath: string;
-	workspaceDir: "packages" | "apps" | "private/packages" | "private/apps";
+	workspaceDir: "packages" | "apps";
 };
 
 export const PRETTIER_WRITE = "pnpx prettier --write";
 
 const toRepoRelativePath = (filePath: string): string => {
 	const parts = path.normalize(filePath).split(path.sep).filter(Boolean);
-
-	const privateIdx = parts.indexOf("private");
-	if (
-		privateIdx !== -1 &&
-		(parts[privateIdx + 1] === "apps" ||
-			parts[privateIdx + 1] === "packages")
-	) {
-		return parts.slice(privateIdx).join(path.sep);
-	}
 
 	const packagesIdx = parts.indexOf("packages");
 	if (packagesIdx !== -1) {
@@ -38,24 +29,6 @@ const toRepoRelativePath = (filePath: string): string => {
 
 export const getPackageInfo = (filePath: string): PackageInfo | null => {
 	const parts = toRepoRelativePath(filePath).split(path.sep);
-
-	if (
-		parts[0] === "private" &&
-		(parts[1] === "apps" || parts[1] === "packages") &&
-		parts[2]
-	) {
-		const relativePath = parts.slice(3).join(path.sep);
-		if (!relativePath) {
-			return null;
-		}
-
-		return {
-			filter: parts[2],
-			relativePath,
-			workspaceDir: `${parts[0]}/${parts[1]}` as
-				"private/packages" | "private/apps",
-		};
-	}
 
 	if ((parts[0] === "packages" || parts[0] === "apps") && parts[1]) {
 		const relativePath = parts.slice(2).join(path.sep);

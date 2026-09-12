@@ -6,8 +6,8 @@ pre-OSS migration / parity work.
 
 ## Prefer a stable checkout
 
-Point `link:../mapsight/packages/...` at a **stable** tree (`main` or
-`private/develop`), not an ephemeral PR worktree under `mapsight-worktrees/`.
+Point `link:../mapsight/packages/...` at a **stable** tree (`main`), not an
+ephemeral PR worktree under `mapsight-worktrees/`.
 Worktrees disappear after merge and leave broken Vite/Sass absolute paths
 (e.g. missing `ol/ol.css` still resolving into a deleted directory).
 
@@ -56,17 +56,3 @@ pnpm worktrees:stale
 ```
 
 Does not delete anything. Skips `private/*` and `wip/*` branches.
-
-## Private sync
-
-When this checkout includes `private/`, integrate public `main` **into**
-private branches only — see [`private/README.md`](../../private/README.md)
-(if present):
-
-```bash
-git fetch origin
-git switch private/develop
-git merge origin/main
-pnpm install
-git push private private/develop
-```

@@ -285,23 +285,6 @@ jobs:
         env:
           GITHUB_STEP_SUMMARY: /dev/null
 
-  no-private-leak:
-    name: No private leak
-    timeout-minutes: 2
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          submodules: false
-          fetch-depth: 0 # setup action needs PR base SHA for turbo affected comparisons
-
-      - uses: $/.github/actions/setup/
-
-      - name: Check for private content on public branch
-        run: pnpm run check:no-private-leak -- --mode workspace --visibility auto
-
   check:
     name: Repository checks
     timeout-minutes: 2
@@ -551,7 +534,6 @@ jobs:
         starters-copy-out,
         ssr-sidecar-image,
         lint-dependencies,
-        no-private-leak,
         zizmor,
         check-changeset,
       ]
