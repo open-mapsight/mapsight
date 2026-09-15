@@ -1,5 +1,15 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.2
+
+### Patch Changes
+
+- 708841e: Align wizard datepickers with their inputs when the calendar is portaled into the count-aggregator root
+- e3dcf93: Keep wizard datepickers aligned after window resize via Flatpickr's position hook
+- ef16006: Show metric-widget chart hover times in the same local clock as the axis
+- Updated dependencies [`4ebee20`]:
+    - `@mapsight/ui@7.6.0 → 7.6.1` (patch)
+
 ## 3.1.1
 
 ### Patch Changes
