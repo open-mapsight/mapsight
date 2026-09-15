@@ -4,12 +4,16 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {
+	faBaby,
+	faBabyCarriage,
 	faBicycle,
 	faBiking,
 	faBolt,
 	faBoxesPacking,
+	faBridgeWater,
 	faBuilding,
 	faBus,
+	faCampground,
 	faCar,
 	faChair,
 	faChargingStation,
@@ -17,24 +21,32 @@ import {
 	faCloudShowersWater,
 	faCloudSun,
 	faCloudSunRain,
+	faDog,
 	faDroplet,
 	faDumpster,
 	faFaucetDrip,
+	faFlagCheckered,
 	faGasPump,
 	faGlassWaterDroplet,
 	faHandHoldingDroplet,
+	faHeartCircleBolt,
+	faHippo,
 	faHospital,
 	faInfo,
+	faKey,
 	faLeaf,
 	faLocationDot,
 	faMugHot,
 	faPersonBiking,
 	faPersonShelter,
 	faPersonWalking,
+	faPlugCircleBolt,
 	faRecycle,
+	faRestroom,
 	faRoute,
 	faSchool,
 	faSeedling,
+	faShoePrints,
 	faSkullCrossbones,
 	faSnowflake,
 	faTemperatureHigh,
@@ -51,21 +63,9 @@ import {
 	faWarehouse,
 	faWater,
 	faWaterLadder,
-	faWifi,
-	faBabyCarriage,
-	faBaby,
-	faBridgeWater,
-	faCampground,
-	faDog,
-	faFlagCheckered,
-	faHeartCircleBolt,
-	faHippo,
-	faKey,
-	faPlugCircleBolt,
-	faRestroom,
-	faShoePrints,
 	faWheelchair,
-	faWrench
+	faWifi,
+	faWrench,
 } from "@fortawesome/free-solid-svg-icons";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
@@ -83,7 +83,6 @@ type FaIconEntry = {
 };
 
 const icons: FaIconEntry[] = [
-
 	{
 		exportName: "faSchool",
 		id: "fa-school",
@@ -383,85 +382,85 @@ const icons: FaIconEntry[] = [
 		exportName: "faBabyCarriage",
 		id: "fa-baby-carriage",
 		label: {de: "Kinderwagen", en: "Baby carriage"},
-		icon: faBabyCarriage
+		icon: faBabyCarriage,
 	},
 	{
 		exportName: "faBaby",
 		id: "fa-baby",
 		label: {de: "Baby", en: "Baby"},
-		icon: faBaby
+		icon: faBaby,
 	},
 	{
 		exportName: "faBridgeWater",
 		id: "fa-bridge-water",
 		label: {de: "Brücke", en: "Bridge"},
-		icon: faBridgeWater
+		icon: faBridgeWater,
 	},
 	{
 		exportName: "faCampground",
 		id: "fa-campground",
 		label: {de: "Campingplatz", en: "Campground"},
-		icon: faCampground
+		icon: faCampground,
 	},
 	{
 		exportName: "faDog",
 		id: "fa-dog",
 		label: {de: "Hund", en: "Dog"},
-		icon: faDog
+		icon: faDog,
 	},
 	{
 		exportName: "faFlagCheckered",
 		id: "fa-flag-checkered",
 		label: {de: "Karierte Flagge", en: "Flag checkered"},
-		icon: faFlagCheckered
+		icon: faFlagCheckered,
 	},
 	{
 		exportName: "faHeartCircleBolt",
 		id: "fa-heart-circle-bolt",
 		label: {de: "Herz mit Blitz", en: "Heart with bolt"},
-		icon: faHeartCircleBolt
+		icon: faHeartCircleBolt,
 	},
 	{
 		exportName: "faHippo",
 		id: "fa-hippo",
 		label: {de: "Flusspferd", en: "Hippo"},
-		icon: faHippo
+		icon: faHippo,
 	},
 	{
 		exportName: "faKey",
 		id: "fa-key",
 		label: {de: "Schlüssel", en: "Key"},
-		icon: faKey
+		icon: faKey,
 	},
 	{
 		exportName: "faPlugCircleBolt",
 		id: "fa-plug-circle-bolt",
 		label: {de: "Stecker", en: "Plug"},
-		icon: faPlugCircleBolt
+		icon: faPlugCircleBolt,
 	},
 	{
 		exportName: "faRestroom",
 		id: "fa-restroom",
-		label: {de: "Toilette", en: "restroom"},
-		icon: faRestroom
+		label: {de: "Toilette", en: "Restroom"},
+		icon: faRestroom,
 	},
 	{
 		exportName: "faShoePrints",
 		id: "fa-shoe-prints",
 		label: {de: "Schuhabdrücke", en: "Shoe prints"},
-		icon: faShoePrints
+		icon: faShoePrints,
 	},
 	{
 		exportName: "faWheelchair",
 		id: "fa-wheelchair",
 		label: {de: "Rollstuhl", en: "Wheelchair"},
-		icon: faWheelchair
+		icon: faWheelchair,
 	},
 	{
 		exportName: "faWrench",
 		id: "fa-wrench",
 		label: {de: "Schraubenschlüssel", en: "Wrench"},
-		icon: faWrench
+		icon: faWrench,
 	},
 ];
 

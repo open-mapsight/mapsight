@@ -395,6 +395,24 @@
 			"groups": ["default", "letters"],
 			"render": "composable"
 		},
+		"fa-baby": {
+			"label": {
+				"de": "Baby",
+				"en": "Baby"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-baby-carriage": {
+			"label": {
+				"de": "Kinderwagen",
+				"en": "Baby carriage"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-bicycle": {
 			"label": {
 				"de": "Fahrrad",
@@ -431,6 +449,15 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-bridge-water": {
+			"label": {
+				"de": "Brücke",
+				"en": "Bridge"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
+			"render": "composable"
+		},
 		"fa-building": {
 			"label": {
 				"de": "Gebäude",
@@ -453,6 +480,15 @@
 			"label": {
 				"de": "Café",
 				"en": "Cafe"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-campground": {
+			"label": {
+				"de": "Campingplatz",
+				"en": "Campground"
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-leisure"],
@@ -521,6 +557,15 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-dog": {
+			"label": {
+				"de": "Hund",
+				"en": "Dog"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
 		"fa-dumpster": {
 			"label": {
 				"de": "Container",
@@ -537,6 +582,15 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-flag-checkered": {
+			"label": {
+				"de": "Karierte Flagge",
+				"en": "Flag checkered"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
 			"render": "composable"
 		},
 		"fa-gas-pump": {
@@ -566,6 +620,24 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-heart-circle-bolt": {
+			"label": {
+				"de": "Herz mit Blitz",
+				"en": "Heart with bolt"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-hippo": {
+			"label": {
+				"de": "Flusspferd",
+				"en": "Hippo"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
 		"fa-hospital": {
 			"label": {
 				"de": "Krankenhaus",
@@ -582,6 +654,15 @@
 			},
 			"aliases": ["carCount"],
 			"groups": ["smart-city"],
+			"render": "composable"
+		},
+		"fa-key": {
+			"label": {
+				"de": "Schlüssel",
+				"en": "Key"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
 		"fa-leaf-heart": {
@@ -642,10 +723,28 @@
 			"groups": ["poi", "poi-transport"],
 			"render": "composable"
 		},
+		"fa-plug-circle-bolt": {
+			"label": {
+				"de": "Stecker",
+				"en": "Plug"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-recycle": {
 			"label": {
 				"de": "Recycling",
 				"en": "Recycling"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-restroom": {
+			"label": {
+				"de": "Toilette",
+				"en": "Restroom"
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
@@ -676,6 +775,15 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
+		"fa-shoe-prints": {
+			"label": {
+				"de": "Schuhabdrücke",
+				"en": "Shoe prints"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
 			"render": "composable"
 		},
 		"fa-skull-crossbones": {
@@ -858,10 +966,28 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-wheelchair": {
+			"label": {
+				"de": "Rollstuhl",
+				"en": "Wheelchair"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-wifi": {
 			"label": {
 				"de": "WLAN",
 				"en": "Wi-Fi"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-wrench": {
+			"label": {
+				"de": "Schraubenschlüssel",
+				"en": "Wrench"
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
