@@ -166,8 +166,9 @@ export function formatMetricTooltipTime(
 		resolution === "15min" ||
 		resolution === "hourly"
 	) {
+		// Clock tooltips follow the axis (browser local). Calendar labels stay
+		// on UTC so naive API datetimes do not slip a day.
 		return new Intl.DateTimeFormat(locale, {
-			timeZone: "UTC",
 			day: "2-digit",
 			month: "2-digit",
 			hour: "2-digit",

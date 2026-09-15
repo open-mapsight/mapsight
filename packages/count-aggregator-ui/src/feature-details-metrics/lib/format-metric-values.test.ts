@@ -101,10 +101,7 @@ describe("formatMetricTooltipTime", () => {
 		document.documentElement.lang = "de";
 
 		expect(
-			formatMetricTooltipTime(
-				parseLocalDateTime("2026-08-27 14:15:00"),
-				"15min",
-			),
+			formatMetricTooltipTime(new Date(2026, 7, 27, 14, 15), "15min"),
 		).toBe("27.08., 14:15");
 	});
 
@@ -112,11 +109,20 @@ describe("formatMetricTooltipTime", () => {
 		document.documentElement.lang = "de";
 
 		expect(
-			formatMetricTooltipTime(
-				parseLocalDateTime("2026-08-27 14:15:00"),
-				"hourly",
-			),
+			formatMetricTooltipTime(new Date(2026, 7, 27, 14, 15), "hourly"),
 		).toBe("27.08., 14:15");
+	});
+
+	it("uses the same local clock as the axis for API timestamps", () => {
+		document.documentElement.lang = "de";
+		const date = parseLocalDateTime("2026-08-27 14:15:00");
+
+		expect(formatMetricTooltipTime(date, "15min")).toContain(
+			formatMetricAxisTime(date, "15min"),
+		);
+		expect(formatMetricTooltipTime(date, "hourly")).toContain(
+			formatMetricAxisTime(date, "hourly"),
+		);
 	});
 
 	it("uses a date-only label for daily series", () => {
