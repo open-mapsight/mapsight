@@ -1,8 +1,18 @@
-import ReactPaginate from "react-paginate";
+import paginateExport from "react-paginate";
 import {useDispatch} from "react-redux";
 
 import {translate} from "../../helpers/i18n";
 import {setListPage} from "../../store/actions";
+
+function unwrapCjsDefault<T>(mod: T | {default: T}): T {
+	if (typeof mod === "function") {
+		return mod;
+	}
+	const nested = (mod as {default?: T}).default;
+	return typeof nested === "function" ? nested : (mod as T);
+}
+
+const ReactPaginate = unwrapCjsDefault(paginateExport);
 
 function ariaLabelBuilder(page: number, selected: number) {
 	const label =
@@ -15,8 +25,6 @@ function ariaLabelBuilder(page: number, selected: number) {
 
 function Pagination({page, count}: {page: number; count: number}) {
 	const dispatch = useDispatch();
-
-	return null;
 
 	return (
 		<ReactPaginate
