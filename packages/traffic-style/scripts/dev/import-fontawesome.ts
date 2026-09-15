@@ -52,6 +52,20 @@ import {
 	faWater,
 	faWaterLadder,
 	faWifi,
+	faBabyCarriage,
+	faBaby,
+	faBridgeWater,
+	faCampground,
+	faDog,
+	faFlagCheckered,
+	faHeartCircleBolt,
+	faHippo,
+	faKey,
+	faPlugCircleBolt,
+	faRestroom,
+	faShoePrints,
+	faWheelchair,
+	faWrench
 } from "@fortawesome/free-solid-svg-icons";
 import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
 
@@ -69,6 +83,7 @@ type FaIconEntry = {
 };
 
 const icons: FaIconEntry[] = [
+
 	{
 		exportName: "faSchool",
 		id: "fa-school",
@@ -363,6 +378,90 @@ const icons: FaIconEntry[] = [
 		id: "fa-chair",
 		label: {de: "Sitzplatz", en: "Chair"},
 		icon: faChair,
+	},
+	{
+		exportName: "faBabyCarriage",
+		id: "fa-baby-carriage",
+		label: {de: "Kinderwagen", en: "Baby carriage"},
+		icon: faBabyCarriage
+	},
+	{
+		exportName: "faBaby",
+		id: "fa-baby",
+		label: {de: "Baby", en: "Baby"},
+		icon: faBaby
+	},
+	{
+		exportName: "faBridgeWater",
+		id: "fa-bridge-water",
+		label: {de: "Brücke", en: "Bridge"},
+		icon: faBridgeWater
+	},
+	{
+		exportName: "faCampground",
+		id: "fa-campground",
+		label: {de: "Campingplatz", en: "Campground"},
+		icon: faCampground
+	},
+	{
+		exportName: "faDog",
+		id: "fa-dog",
+		label: {de: "Hund", en: "Dog"},
+		icon: faDog
+	},
+	{
+		exportName: "faFlagCheckered",
+		id: "fa-flag-checkered",
+		label: {de: "Karierte Flagge", en: "Flag checkered"},
+		icon: faFlagCheckered
+	},
+	{
+		exportName: "faHeartCircleBolt",
+		id: "fa-heart-circle-bolt",
+		label: {de: "Herz mit Blitz", en: "Heart with bolt"},
+		icon: faHeartCircleBolt
+	},
+	{
+		exportName: "faHippo",
+		id: "fa-hippo",
+		label: {de: "Flusspferd", en: "Hippo"},
+		icon: faHippo
+	},
+	{
+		exportName: "faKey",
+		id: "fa-key",
+		label: {de: "Schlüssel", en: "Key"},
+		icon: faKey
+	},
+	{
+		exportName: "faPlugCircleBolt",
+		id: "fa-plug-circle-bolt",
+		label: {de: "Stecker", en: "Plug"},
+		icon: faPlugCircleBolt
+	},
+	{
+		exportName: "faRestroom",
+		id: "fa-restroom",
+		label: {de: "Toilette", en: "restroom"},
+		icon: faRestroom
+	},
+	{
+		exportName: "faShoePrints",
+		id: "fa-shoe-prints",
+		label: {de: "Schuhabdrücke", en: "Shoe prints"},
+		icon: faShoePrints
+	},
+	{
+		exportName: "faWheelchair",
+		id: "fa-wheelchair",
+		label: {de: "Rollstuhl", en: "Wheelchair"},
+		icon: faWheelchair
+	},
+	{
+		exportName: "faWrench",
+		id: "fa-wrench",
+		label: {de: "Schraubenschlüssel", en: "Wrench"},
+		icon: faWrench
 	},
 ];
 
