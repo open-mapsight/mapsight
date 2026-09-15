@@ -1,5 +1,11 @@
 # @mapsight/ui
 
+## 7.6.1
+
+### Patch Changes
+
+- 4ebee20: Show the feature-list pagination control again when `paginationControl` is on, including under Vite's CJS interop for `react-paginate`
+
 ## 7.6.0
 
 ### Minor Changes
