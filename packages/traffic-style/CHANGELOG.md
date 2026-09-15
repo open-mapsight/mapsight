@@ -1,5 +1,11 @@
 # @mapsight/traffic-style
 
+## 5.5.2
+
+### Patch Changes
+
+- f21fcae: Add Font Awesome pictograms for family, accessibility, camping, and service POIs
+
 ## 5.5.1
 
 ### Patch Changes
