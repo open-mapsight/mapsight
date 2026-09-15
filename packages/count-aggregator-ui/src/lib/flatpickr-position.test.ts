@@ -3,7 +3,6 @@ import {afterEach, describe, expect, it} from "vitest";
 import {
 	alignFlatpickrCalendar,
 	alignFlatpickrInstance,
-	bindFlatpickrViewportAlignment,
 } from "./flatpickr-position.js";
 
 function mockRect(
@@ -152,22 +151,25 @@ describe("alignFlatpickrCalendar", () => {
 
 		expect(calendar.style.left).toBe("676px");
 	});
-});
 
-describe("bindFlatpickrViewportAlignment", () => {
-	afterEach(() => {
-		document.body.replaceChildren();
-	});
-
-	it("re-applies viewport alignment after Flatpickr writes document coordinates", () => {
-		const input = document.createElement("input");
+	it("prefers Flatpickr's custom position element when used as the position hook", () => {
+		const hidden = document.createElement("input");
+		const custom = document.createElement("input");
 		const calendar = document.createElement("div");
-		document.body.append(input, calendar);
+		document.body.append(hidden, custom, calendar);
 		Object.defineProperty(window, "innerWidth", {
 			configurable: true,
 			value: 1440,
 		});
-		mockRect(input, {
+		mockRect(hidden, {
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0,
+			width: 0,
+			height: 0,
+		});
+		mockRect(custom, {
 			left: 676,
 			top: 200,
 			right: 788,
@@ -177,24 +179,13 @@ describe("bindFlatpickrViewportAlignment", () => {
 		});
 		mockBox(calendar, 308, 80);
 
-		const instance: {
-			calendarContainer: HTMLDivElement;
-			altInput: HTMLInputElement;
-			_input: HTMLInputElement;
-			_positionCalendar: (customPositionElement?: HTMLElement) => void;
-		} = {
-			calendarContainer: calendar,
-			altInput: input,
-			_input: input,
-			_positionCalendar() {
-				calendar.style.position = "absolute";
-				calendar.style.left = "1032px";
-				calendar.style.top = "330px";
+		alignFlatpickrInstance(
+			{
+				calendarContainer: calendar,
+				_input: hidden,
 			},
-		};
-
-		bindFlatpickrViewportAlignment(instance);
-		instance._positionCalendar();
+			custom,
+		);
 
 		expect(calendar.style.position).toBe("fixed");
 		expect(calendar.style.left).toBe("676px");

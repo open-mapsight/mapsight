@@ -24,10 +24,7 @@ import {
 	getLastDayOfYear,
 	getToday,
 } from "../../lib/dates.js";
-import {
-	alignFlatpickrInstance,
-	bindFlatpickrViewportAlignment,
-} from "../../lib/flatpickr-position.js";
+import {alignFlatpickrInstance} from "../../lib/flatpickr-position.js";
 import {WizardButton} from "./wizard-button.js";
 
 const dateInputClassName =
@@ -74,13 +71,14 @@ function DateInput({
 				altInput: true,
 				altInputClass: dateInputClassName,
 				altFormat: locale === "de" ? "d.m.Y" : "Y-m-d",
+				// Runs inside Flatpickr's closed-over positionCalendar, including resize.
+				position: alignFlatpickrInstance,
 				onReady: (
 					_dates: Date[],
 					_dateStr: string,
 					instance: FlatpickrInstance,
 				) => {
 					instanceRef.current = instance;
-					bindFlatpickrViewportAlignment(instance);
 				},
 				onOpen: (
 					_dates: Date[],
