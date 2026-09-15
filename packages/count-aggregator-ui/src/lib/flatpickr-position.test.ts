@@ -3,6 +3,7 @@ import {afterEach, describe, expect, it} from "vitest";
 import {
 	alignFlatpickrCalendar,
 	alignFlatpickrInstance,
+	bindFlatpickrViewportAlignment,
 } from "./flatpickr-position.js";
 
 function mockRect(
@@ -150,5 +151,53 @@ describe("alignFlatpickrCalendar", () => {
 		});
 
 		expect(calendar.style.left).toBe("676px");
+	});
+});
+
+describe("bindFlatpickrViewportAlignment", () => {
+	afterEach(() => {
+		document.body.replaceChildren();
+	});
+
+	it("re-applies viewport alignment after Flatpickr writes document coordinates", () => {
+		const input = document.createElement("input");
+		const calendar = document.createElement("div");
+		document.body.append(input, calendar);
+		Object.defineProperty(window, "innerWidth", {
+			configurable: true,
+			value: 1440,
+		});
+		mockRect(input, {
+			left: 676,
+			top: 200,
+			right: 788,
+			bottom: 228,
+			width: 112,
+			height: 28,
+		});
+		mockBox(calendar, 308, 80);
+
+		const instance: {
+			calendarContainer: HTMLDivElement;
+			altInput: HTMLInputElement;
+			_input: HTMLInputElement;
+			_positionCalendar: (customPositionElement?: HTMLElement) => void;
+		} = {
+			calendarContainer: calendar,
+			altInput: input,
+			_input: input,
+			_positionCalendar() {
+				calendar.style.position = "absolute";
+				calendar.style.left = "1032px";
+				calendar.style.top = "330px";
+			},
+		};
+
+		bindFlatpickrViewportAlignment(instance);
+		instance._positionCalendar();
+
+		expect(calendar.style.position).toBe("fixed");
+		expect(calendar.style.left).toBe("676px");
+		expect(calendar.style.top).toBe("230px");
 	});
 });

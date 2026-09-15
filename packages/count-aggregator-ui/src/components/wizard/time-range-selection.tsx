@@ -24,7 +24,10 @@ import {
 	getLastDayOfYear,
 	getToday,
 } from "../../lib/dates.js";
-import {alignFlatpickrInstance} from "../../lib/flatpickr-position.js";
+import {
+	alignFlatpickrInstance,
+	bindFlatpickrViewportAlignment,
+} from "../../lib/flatpickr-position.js";
 import {WizardButton} from "./wizard-button.js";
 
 const dateInputClassName =
@@ -53,7 +56,6 @@ function DateInput({
 
 	const stopAligning = useCallback(() => {
 		window.removeEventListener("scroll", alignCalendar, true);
-		window.removeEventListener("resize", alignCalendar);
 	}, [alignCalendar]);
 
 	useEffect(() => stopAligning, [stopAligning]);
@@ -78,6 +80,7 @@ function DateInput({
 					instance: FlatpickrInstance,
 				) => {
 					instanceRef.current = instance;
+					bindFlatpickrViewportAlignment(instance);
 				},
 				onOpen: (
 					_dates: Date[],
@@ -87,7 +90,6 @@ function DateInput({
 					instanceRef.current = instance;
 					alignFlatpickrInstance(instance);
 					window.addEventListener("scroll", alignCalendar, true);
-					window.addEventListener("resize", alignCalendar);
 				},
 				onClose: stopAligning,
 				onMonthChange: (
