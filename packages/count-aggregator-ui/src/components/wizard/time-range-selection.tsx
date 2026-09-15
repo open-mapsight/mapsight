@@ -1,7 +1,15 @@
-import {type ReactElement, memo, useMemo} from "react";
+import {
+	type ReactElement,
+	memo,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+} from "react";
 import Flatpickr from "react-flatpickr";
 
 import {German as flatpickrGermanLocale} from "flatpickr/dist/l10n/de";
+import type {Instance as FlatpickrInstance} from "flatpickr/dist/types/instance";
 
 import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
@@ -16,7 +24,11 @@ import {
 	getLastDayOfYear,
 	getToday,
 } from "../../lib/dates.js";
+import {alignFlatpickrInstance} from "../../lib/flatpickr-position.js";
 import {WizardButton} from "./wizard-button.js";
+
+const dateInputClassName =
+	"msca:border msca:border-(--msca-color-border) msca:rounded msca:p-1 msca:w-28 msca:text-left msca:bg-(--msca-color-surface)";
 
 function DateInput({
 	value,
@@ -31,13 +43,26 @@ function DateInput({
 }): ReactElement {
 	const portalTarget = useCountAggregatorPortal();
 	const {locale} = useCountAggregatorI18n();
+	const instanceRef = useRef<FlatpickrInstance | null>(null);
+
+	const alignCalendar = useCallback(() => {
+		if (instanceRef.current !== null) {
+			alignFlatpickrInstance(instanceRef.current);
+		}
+	}, []);
+
+	const stopAligning = useCallback(() => {
+		window.removeEventListener("scroll", alignCalendar, true);
+		window.removeEventListener("resize", alignCalendar);
+	}, [alignCalendar]);
+
+	useEffect(() => stopAligning, [stopAligning]);
 
 	const flatpickrProps = useMemo(
 		() => ({
 			value,
 			name: "date",
-			className:
-				"msca:border msca:border-(--msca-color-border) msca:rounded msca:p-1 msca:w-28 msca:text-left msca:bg-(--msca-color-surface)",
+			className: dateInputClassName,
 			options: {
 				appendTo: portalTarget,
 				minDate,
@@ -45,7 +70,40 @@ function DateInput({
 				...(locale === "de" ? {locale: flatpickrGermanLocale} : {}),
 				dateFormat: "Y-m-d",
 				altInput: true,
+				altInputClass: dateInputClassName,
 				altFormat: locale === "de" ? "d.m.Y" : "Y-m-d",
+				onReady: (
+					_dates: Date[],
+					_dateStr: string,
+					instance: FlatpickrInstance,
+				) => {
+					instanceRef.current = instance;
+				},
+				onOpen: (
+					_dates: Date[],
+					_dateStr: string,
+					instance: FlatpickrInstance,
+				) => {
+					instanceRef.current = instance;
+					alignFlatpickrInstance(instance);
+					window.addEventListener("scroll", alignCalendar, true);
+					window.addEventListener("resize", alignCalendar);
+				},
+				onClose: stopAligning,
+				onMonthChange: (
+					_dates: Date[],
+					_dateStr: string,
+					instance: FlatpickrInstance,
+				) => {
+					alignFlatpickrInstance(instance);
+				},
+				onYearChange: (
+					_dates: Date[],
+					_dateStr: string,
+					instance: FlatpickrInstance,
+				) => {
+					alignFlatpickrInstance(instance);
+				},
 			},
 			onChange: (dates: Date[]) => {
 				const nextDate = dates[0];
@@ -54,7 +112,16 @@ function DateInput({
 				}
 			},
 		}),
-		[value, onChange, minDate, maxDate, portalTarget, locale],
+		[
+			value,
+			onChange,
+			minDate,
+			maxDate,
+			portalTarget,
+			locale,
+			alignCalendar,
+			stopAligning,
+		],
 	);
 
 	return <Flatpickr {...flatpickrProps} />;
