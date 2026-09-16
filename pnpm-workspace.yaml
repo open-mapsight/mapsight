@@ -35,7 +35,7 @@ catalog:
   "reselect": "^5.3.0"
   "tailwindcss": "^4.3.3"
   "typescript": "^6.0.3"
-  "vitest": "^4.1.11"
+  "vitest": "^5.0.0"
   "zod": "^4.5.4"
 minimumReleaseAgeExclude:
   - postcss@8.5.10
