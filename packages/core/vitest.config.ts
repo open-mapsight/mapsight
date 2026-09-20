@@ -17,5 +17,7 @@ export default defineConfig({
 			"src/js/test/setup-dom.ts",
 			"src/js/test/inject-default-ol-proxy.ts",
 		],
+		isolate: false,
+		fsModuleCache: true,
 	},
 });
