@@ -1,5 +1,18 @@
 # @mapsight/core
 
+## 14.6.2
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `tsc-alias` `^1.9.3` → `^1.9.4` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+    - `@mapsight/lib-ol@4.2.4 → 4.2.5` (patch)
+    - `@mapsight/lib-redux@2.2.2 → 2.2.3` (patch)
+
 ## 14.6.1
 
 ### Patch Changes
