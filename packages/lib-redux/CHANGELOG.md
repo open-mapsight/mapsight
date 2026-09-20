@@ -1,5 +1,16 @@
 # @mapsight/lib-redux
 
+## 2.2.3
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `cpx2` `^9.0.0` → `^9.0.3` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+
 ## 2.2.2
 
 ### Patch Changes

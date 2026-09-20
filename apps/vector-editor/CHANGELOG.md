@@ -1,5 +1,19 @@
 # @mapsight/vector-editor
 
+## 1.2.6
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `autoprefixer` `^10.5.4` → `^10.5.5` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/core@14.6.1 → 14.6.2` (patch)
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+    - `@mapsight/lib-ol@4.2.4 → 4.2.5` (patch)
+    - `@mapsight/lib-redux@2.2.2 → 2.2.3` (patch)
+
 ## 1.2.5
 
 ### Patch Changes

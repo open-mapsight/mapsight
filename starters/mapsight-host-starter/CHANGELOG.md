@@ -1,5 +1,24 @@
 # mapsight-host-starter
 
+## 0.1.5
+
+### Patch Changes
+
+- 093b3f0: Bump production dependencies from Dependabot ([#304](https://github.com/open-mapsight/mapsight/pull/304)):
+
+    - `react-aria` `^3.52.0` → `^3.52.1` (patch)
+    - `react-aria-components` `^1.21.0` → `^1.21.1` (patch)
+    - `postcss` `^8.5.26` → `^8.5.28` (patch)
+    - `sass` `^1.103.1` → `^1.104.0` (minor)
+    - `@types/react-dom` `^19.2.5` → `~19.2.7` (patch)
+    - `@playwright/test` `^1.62.1` → `^1.63.0` (minor)
+    - `playwright` `^1.62.1` → `^1.63.0` (minor)
+
+- Updated dependencies [`65e2528`, `093b3f0`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+    - `@mapsight/lib-ol@4.2.4 → 4.2.5` (patch)
+    - `@mapsight/ui@7.6.1 → 7.6.2` (patch)
+
 ## 0.1.4
 
 ### Patch Changes
