@@ -10,7 +10,7 @@
 		"lodash": "catalog:"
 	},
 	"devDependencies": {
-		"cpx2": "^9.0.0"
+		"cpx2": "^9.0.3"
 	},
 	"exports": {
 		".": {
