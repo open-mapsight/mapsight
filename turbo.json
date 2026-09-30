@@ -111,6 +111,9 @@
 		"//#typecheck:scripts": {
 			"outputs": []
 		},
+		"//#test:configs": {
+			"outputs": []
+		},
 		"//#lint:starters": {
 			"outputs": []
 		}
