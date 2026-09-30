@@ -15,6 +15,10 @@ const config: CountAggregatorConfig = {
 			defaultResolution: "daily",
 		},
 	},
+	links: {
+		calendarUrl: (dateYmd) => `/calendar/${dateYmd}`,
+		eventUrl: (dateYmd, eventId) => `/calendar/${dateYmd}/${eventId}`,
+	},
 	locale: "en",
 };
 

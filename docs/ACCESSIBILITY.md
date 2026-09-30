@@ -13,7 +13,7 @@ tree has **not** completed a formal WCAG audit.
 | Keyboard use in map/list UI          | Partial — varies by component                                                                                                                                                               |
 | Screen reader support for map canvas | **Limited** — OpenLayers canvas model                                                                                                                                                       |
 | Focus management in modals/overlays  | Partial — `focus-trap` / custom today; migrating toward **React Aria** ([Decision 007](architecture/decisions/007-ui-styling-strategy.md#primitive-preference-for-new--migrated-ui-chrome)) |
-| Colour contrast                      | Partial — host themes via CSS can help or harm; hard-coded package UI (e.g. count-aggregator-ui) must meet AA itself                                                                         |
+| Colour contrast                      | Partial — host themes via CSS can help or harm; hard-coded package UI (e.g. count-aggregator-ui) must meet AA itself                                                                        |
 | Focus indicators                     | Partial — keyboard-reachable controls in `@mapsight/ui` base SCSS use `:focus-visible` rings; count-aggregator-ui controls should too                                                       |
 | Automated a11y tests in CI           | Planned (Playwright a11y checks)                                                                                                                                                            |
 
