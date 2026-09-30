@@ -142,7 +142,6 @@ Copy-out templates: [
 | [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                            | —                         | Standalone React apps                                 |
 | [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                                 | —                         | Next.js host notes                                    |
 | [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)                   | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
-| [Feature list sorter — deferred UX ideas](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/FEATURE_LIST_SORTER_UX.md) | `@mapsight/ui`            | Low-priority UX notes (not on the roadmap)            |
 
 ## Related packages
 

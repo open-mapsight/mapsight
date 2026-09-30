@@ -4,7 +4,7 @@ Runtime icons are **client-composed map icons**: pictograms (or short text label
 assembled into SVG, rasterized to PNG data URLs, cached, and wired into OpenLayers
 style functions. Pre-baked sprite icons are a separate path — see
 [ICON_CATALOG.md](ICON_CATALOG.md). For `@mapsight/ui` usage see the
-[README](../README.md#icons-with-mapsightui); for standalone wiring see
+[README](../README.md#quick-start-with-mapsightui); for standalone wiring see
 [ICON_INTEGRATION.md](ICON_INTEGRATION.md).
 
 This document explains:
