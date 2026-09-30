@@ -37,17 +37,21 @@ function PresetSelectItem({
 			<button
 				type="button"
 				onClick={handleDeleteClick}
-				className="msca:rounded-full msca:border msca:border-gray-100 msca:bg-(--msca-color-surface) msca:px-2 msca:text-gray-300 msca:hover:border-gray-400 msca:hover:text-gray-700"
+				className="msca:inline-flex msca:size-6 msca:shrink-0 msca:items-center msca:justify-center msca:rounded-full msca:border msca:border-gray-100 msca:bg-(--msca-color-surface) msca:leading-none msca:text-gray-600 msca:hover:border-gray-400 msca:hover:text-gray-700 msca:focus-visible:outline-2 msca:focus-visible:outline-offset-2 msca:focus-visible:outline-gray-600"
 				style={{
 					visibility: showDeleteButton ? "visible" : "hidden",
 				}}
+				aria-label={`${t("presets.delete")} ${preset.name}`}
 				title={t("presets.delete")}
 			>
-				X
+				<span aria-hidden="true">X</span>
 			</button>
 		</div>
 	);
 }
+
+/** Exported for unit tests. */
+export {PresetSelectItem};
 
 export const PresetSelect = memo(function PresetSelect({
 	appId,
