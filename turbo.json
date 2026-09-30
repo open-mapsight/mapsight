@@ -111,6 +111,10 @@
 		"//#typecheck:scripts": {
 			"outputs": []
 		},
+		"//#test:configs": {
+			"inputs": ["configs/lint-staged.*"],
+			"outputs": []
+		},
 		"//#lint:starters": {
 			"outputs": []
 		}

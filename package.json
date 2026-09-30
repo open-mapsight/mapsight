@@ -66,7 +66,7 @@
 		"syncpack:format:check": "syncpack format --check --config configs/syncpack.config.ts",
 		"syncpack:format:write": "syncpack format --config configs/syncpack.config.ts",
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
-		"test": "turbo test",
+		"test": "turbo run test //#test:configs",
 		"test:configs": "node --test configs/lint-staged.test.mts",
 		"test:php-ssr-smoke": "node e2e/php-ssr-smoke/run.mts",
 		"test:starters:copy-out": "node scripts/smoke-starter-copy-out.mts",
