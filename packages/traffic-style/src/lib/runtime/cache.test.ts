@@ -1,10 +1,13 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 
-import {renderIconBitmap} from "../icon/render.ts";
 import {IconCache} from "./cache.ts";
 
+const {renderIconBitmapMock} = vi.hoisted(() => ({
+	renderIconBitmapMock: vi.fn(),
+}));
+
 vi.mock("../icon/render.ts", () => ({
-	renderIconBitmap: vi.fn(),
+	renderIconBitmap: renderIconBitmapMock,
 }));
 
 const renderedIcon = {
@@ -15,8 +18,6 @@ const renderedIcon = {
 	logicalHeight: 32,
 	pixelRatio: 2,
 };
-
-const renderIconBitmapMock = vi.mocked(renderIconBitmap);
 
 function deferred<T>() {
 	let resolve!: (value: T) => void;
