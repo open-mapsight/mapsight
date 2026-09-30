@@ -403,37 +403,41 @@ export function fetchText(key: string, url: string): ThunkAction {
 		// TODO: Fix this magic!
 		const requestUrl = ensureFullUrl(url);
 
-		// Do not use catch, because that will also catch
+		// Do not dispatch from a catch, because that will also catch
 		// any errors in the dispatch and resulting render,
 		// causing a loop of 'Unexpected batch number' errors.
 		// https://github.com/facebook/react/issues/6895
 		fetch(requestUrl)
+			.then(readOkResponseText)
 			.then(
-				(response) => response.text(),
-				(error) => {
+				(data) => {
 					// discard response if url changed
 					if (selectState().url !== url) {
-						return Promise.reject();
+						return;
+					}
+
+					dispatch(fetchTextSuccess(key, data));
+				},
+				(error: unknown) => {
+					// discard response if url changed
+					if (selectState().url !== url) {
+						return;
 					}
 
 					dispatch(fetchTextFailure(key, error));
-
-					return Promise.reject();
 				},
 			)
-			.then((data) => {
-				// discard response if url changed
-				if (selectState().url !== url) {
-					return;
-				}
-
-				dispatch(fetchTextSuccess(key, data));
-			})
-			.catch((error) => {
+			.catch((error: unknown) => {
 				console.error(error);
-				dispatch(fetchTextFailure(key, error));
 			});
 	};
+}
+
+function readOkResponseText(response: Response): Promise<string> {
+	if (!response.ok) {
+		return Promise.reject(new Error(`HTTP ${response.status}`));
+	}
+	return response.text();
 }
 
 export function fetchTextReset(key: string) {
@@ -505,42 +509,38 @@ export function fetchJson(key: string, url: string = key): ThunkAction {
 
 		const requestUrl = ensureFullUrl(url);
 
-		// Do not use catch, because that will also catch
+		const isStale = () => {
+			const state = (getState().app as UiState)[key];
+			return !!state && state.url !== url;
+		};
+
+		// Do not dispatch from a catch, because that will also catch
 		// any errors in the dispatch and resulting render,
 		// causing a loop of 'Unexpected batch number' errors.
 		// https://github.com/facebook/react/issues/6895
 		fetch(requestUrl)
+			.then(readOkResponseText)
+			.then((data): unknown => JSON.parse(data))
 			.then(
-				(response) => response.text(),
-				(error) => {
+				(json) => {
 					// discard response if url changed
-					const state = (getState().app as UiState)[key];
-					if (state && state.url !== url) {
-						return Promise.reject();
+					if (isStale()) {
+						return;
+					}
+
+					dispatch(fetchJsonSuccess(key, json));
+				},
+				(error: unknown) => {
+					// discard response if url changed
+					if (isStale()) {
+						return;
 					}
 
 					dispatch(fetchJsonFailure(key, error));
-
-					return Promise.reject();
 				},
 			)
-			.then((data) => {
-				// discard response if url changed
-				const state = (getState().app as UiState)[key];
-				if (state && state.url !== url) {
-					return;
-				}
-
-				try {
-					const json = JSON.parse(data);
-					dispatch(fetchJsonSuccess(key, json));
-				} catch (error) {
-					dispatch(fetchJsonFailure(key, error));
-				}
-			})
-			.catch((error) => {
+			.catch((error: unknown) => {
 				console.error(error);
-				dispatch(fetchJsonFailure(key, error));
 			});
 	};
 }
