@@ -24,9 +24,12 @@
 		"dist",
 		"openapi"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/count-aggregator-api#readme",
 	"license": "MIT",
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/count-aggregator-api"
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",

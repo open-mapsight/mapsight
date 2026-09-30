@@ -43,6 +43,7 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/count-aggregator-ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"@mapsight/ui": "workspace:^",
@@ -52,7 +53,9 @@
 		"react-select": "^5.10.2"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/count-aggregator-ui"
 	},
 	"scripts": {
 		"build": "run-s build:css build:modules",

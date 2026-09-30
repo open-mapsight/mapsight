@@ -33,10 +33,13 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/lib-redux#readme",
 	"license": "MIT",
 	"main": "index.js",
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/lib-redux"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules build:copy",
