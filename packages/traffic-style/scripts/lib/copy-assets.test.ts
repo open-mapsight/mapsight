@@ -1,4 +1,4 @@
-import {mkdir, readFile, rm, writeFile} from "node:fs/promises";
+import {mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -13,10 +13,7 @@ describe("copyTrafficStyleAssets", () => {
 	let metaPath: string;
 
 	beforeEach(async () => {
-		tmpDir = path.join(
-			os.tmpdir(),
-			`traffic-copy-assets-${Math.random().toString(36).slice(2)}`,
-		);
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), "traffic-copy-assets-"));
 		srcDir = path.join(tmpDir, "src");
 		destDir = path.join(tmpDir, "dest");
 		metaPath = path.join(tmpDir, "meta.json");
