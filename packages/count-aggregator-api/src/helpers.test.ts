@@ -146,6 +146,24 @@ describe("typed endpoint helpers", () => {
 		expect(result.data[0]?.id).toBe(150);
 	});
 
+	it("forwards request option signals to fetch", async () => {
+		const fetchFn = createMockFetch(() => stationListFixture);
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		const controller = new AbortController();
+
+		await listStations(client, "bicycleSensorTotal", {
+			signal: controller.signal,
+		});
+		await getStationSums(client, "bicycleSensorTotal", 150, {
+			signal: controller.signal,
+		}).catch(() => undefined);
+
+		expect(fetchFn).toHaveBeenCalledTimes(2);
+		for (const [, init] of vi.mocked(fetchFn).mock.calls) {
+			expect(init?.signal).toBe(controller.signal);
+		}
+	});
+
 	it("gets aggregated values with metrics", async () => {
 		const fetchFn = createMockFetch((url) => {
 			expect(url).toBe(

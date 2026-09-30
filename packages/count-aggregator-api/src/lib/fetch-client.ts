@@ -64,6 +64,7 @@ function buildRequestUrl(
 type EndpointCallArgs = {
 	params?: Readonly<Record<string, UrlParamValue>>;
 	queries?: Readonly<Record<string, UrlParamValue | undefined>>;
+	signal?: AbortSignal;
 };
 
 export type FetchClient<E extends readonly EndpointDefinition[]> = {
@@ -102,6 +103,7 @@ export function createFetchClient<E extends readonly EndpointDefinition[]>(
 					Accept: "application/json",
 					...defaultHeaders,
 				},
+				...(args.signal ? {signal: args.signal} : {}),
 			});
 
 			if (!response.ok) {
