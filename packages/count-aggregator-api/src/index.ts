@@ -20,6 +20,7 @@ export {
 	type LastValuesRequest,
 	type ListStationsOptions,
 	type RawValuesRequest,
+	type RequestOptions,
 	type StationLastValuesRequest,
 	type ValuesQueryRequest,
 	type ValuesRequest,

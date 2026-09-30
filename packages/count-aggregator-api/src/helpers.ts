@@ -11,7 +11,11 @@ import type {
 	TimeSeriesResponse,
 } from "./types.js";
 
-export interface ListStationsOptions {
+export interface RequestOptions {
+	signal?: AbortSignal;
+}
+
+export interface ListStationsOptions extends RequestOptions {
 	includeEmpty?: boolean;
 }
 
@@ -76,8 +80,11 @@ function joinMetrics(
 
 export function listStationTypes(
 	client: CountAggregatorClient,
+	options: RequestOptions = {},
 ): Promise<StationTypeListResponse> {
-	return client["count-aggregator.public.station-types"]();
+	return client["count-aggregator.public.station-types"]({
+		signal: options.signal,
+	});
 }
 
 export function listStations(
@@ -90,12 +97,14 @@ export function listStations(
 		queries: {
 			includeEmpty: options.includeEmpty,
 		},
+		signal: options.signal,
 	});
 }
 
 export function getValues(
 	client: CountAggregatorClient,
 	request: ValuesRequest,
+	options: RequestOptions = {},
 ): Promise<TimeSeriesMapResponse> {
 	return client["count-aggregator.public.type.values"]({
 		params: {
@@ -108,12 +117,14 @@ export function getValues(
 			stationIds: joinStationIds(request.stationIds),
 			metrics: joinMetrics(request.metrics),
 		},
+		signal: options.signal,
 	});
 }
 
 export function getValuesQuery(
 	client: CountAggregatorClient,
 	request: ValuesQueryRequest,
+	options: RequestOptions = {},
 ): Promise<TimeSeriesMapResponse> {
 	return client["count-aggregator.public.type.values.query"]({
 		params: {
@@ -126,12 +137,14 @@ export function getValuesQuery(
 			resolution: request.resolution,
 			metrics: joinMetrics(request.metrics),
 		},
+		signal: options.signal,
 	});
 }
 
 export function getRawValues(
 	client: CountAggregatorClient,
 	request: RawValuesRequest,
+	options: RequestOptions = {},
 ): Promise<RawValuesMapResponse> {
 	return client["count-aggregator.public.type.raw-values"]({
 		params: {
@@ -144,12 +157,14 @@ export function getRawValues(
 			limit: request.limit,
 			order: request.order,
 		},
+		signal: options.signal,
 	});
 }
 
 export function getLastValues(
 	client: CountAggregatorClient,
 	request: LastValuesRequest,
+	options: RequestOptions = {},
 ): Promise<TimeSeriesMapResponse> {
 	return client["count-aggregator.public.type.last-values"]({
 		params: {
@@ -163,12 +178,14 @@ export function getLastValues(
 			anchor: request.anchor,
 			metrics: joinMetrics(request.metrics),
 		},
+		signal: options.signal,
 	});
 }
 
 export function getStationLastValues(
 	client: CountAggregatorClient,
 	request: StationLastValuesRequest,
+	options: RequestOptions = {},
 ): Promise<TimeSeriesResponse> {
 	return client["count-aggregator.public.type.station.last-values"]({
 		params: {
@@ -182,6 +199,7 @@ export function getStationLastValues(
 			anchor: request.anchor,
 			metrics: joinMetrics(request.metrics),
 		},
+		signal: options.signal,
 	});
 }
 
@@ -189,8 +207,10 @@ export function getStationSums(
 	client: CountAggregatorClient,
 	type: StationType,
 	stationId: string | number,
+	options: RequestOptions = {},
 ): Promise<StationOverviewResponse> {
 	return client["count-aggregator.public.type.sums"]({
 		params: {type, stationId},
+		signal: options.signal,
 	});
 }
