@@ -134,7 +134,11 @@ describe("ssr sidecar HTTP contract", () => {
 
 	it("echoes a valid body requestId", async () => {
 		const response = await postRender(
-			JSON.stringify({preset: "test", requestId: "body-req"}),
+			JSON.stringify({
+				preset: "test",
+				requestId: "body-req",
+				options: {containerId: "mapsight-embed-1"},
+			}),
 			{"X-Request-Id": "header-req"},
 		);
 		expect(response.status).toBe(200);
