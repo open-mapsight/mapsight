@@ -9,7 +9,7 @@
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"typescript": "catalog:",
-		"vite": "^8.2.2",
+		"vite": "^8.3.0",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -24,7 +24,7 @@
 	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/vite-count-aggregator-embed#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"vite": "^8.2.2"
+		"vite": "^8.3.0"
 	},
 	"repository": {
 		"type": "git",
