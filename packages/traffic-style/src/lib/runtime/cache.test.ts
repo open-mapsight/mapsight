@@ -2,22 +2,24 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 import {IconCache} from "./cache.ts";
 
-const {rasterizeSvgMock} = vi.hoisted(() => ({
-	rasterizeSvgMock: vi.fn(),
+const {renderIconBitmapMock} = vi.hoisted(() => ({
+	renderIconBitmapMock: vi.fn(),
 }));
 
-vi.mock("../icon/rasterize.ts", () => ({
-	rasterizeSvg: rasterizeSvgMock,
+// Mock the direct dependency of IconCache. Leaf mocks of rasterize/compose are
+// unreliable here: vitest runs with isolate:false + fsModuleCache, so other
+// icon tests may already have loaded the real render module.
+vi.mock("../icon/render.ts", () => ({
+	renderIconBitmap: renderIconBitmapMock,
 }));
 
-vi.mock("../icon/compose.ts", () => ({
-	composeSvg: vi.fn(() => "<svg xmlns='http://www.w3.org/2000/svg'/>"),
-}));
-
-const renderedRaster = {
+const renderedBitmap = {
 	dataUrl: "data:image/png;base64,icon",
 	width: 48,
 	height: 64,
+	logicalWidth: 24,
+	logicalHeight: 32,
+	pixelRatio: 2,
 };
 
 function deferred<T>() {
@@ -32,8 +34,8 @@ function deferred<T>() {
 
 describe("IconCache", () => {
 	beforeEach(() => {
-		rasterizeSvgMock.mockReset();
-		rasterizeSvgMock.mockResolvedValue(renderedRaster);
+		renderIconBitmapMock.mockReset();
+		renderIconBitmapMock.mockResolvedValue(renderedBitmap);
 	});
 
 	it("returns cached bitmaps and records hits and misses", async () => {
@@ -43,7 +45,7 @@ describe("IconCache", () => {
 		const second = await cache.get("museum");
 
 		expect(second).toBe(first);
-		expect(rasterizeSvgMock).toHaveBeenCalledOnce();
+		expect(renderIconBitmapMock).toHaveBeenCalledOnce();
 		expect(cache.has("museum")).toBe(true);
 		expect(cache.getCached("museum")).toBe(first);
 		expect(cache.getStats()).toEqual({
@@ -55,14 +57,14 @@ describe("IconCache", () => {
 	});
 
 	it("deduplicates concurrent requests for the same icon", async () => {
-		const pendingRender = deferred<typeof renderedRaster>();
-		rasterizeSvgMock.mockReturnValueOnce(pendingRender.promise);
+		const pendingRender = deferred<typeof renderedBitmap>();
+		renderIconBitmapMock.mockReturnValueOnce(pendingRender.promise);
 		const cache = new IconCache();
 
 		const first = cache.get("museum");
 		const second = cache.get("museum");
 
-		expect(rasterizeSvgMock).toHaveBeenCalledOnce();
+		expect(renderIconBitmapMock).toHaveBeenCalledOnce();
 		expect(cache.getStats()).toEqual({
 			size: 0,
 			hits: 0,
@@ -70,18 +72,18 @@ describe("IconCache", () => {
 			inFlight: 1,
 		});
 
-		pendingRender.resolve(renderedRaster);
+		pendingRender.resolve(renderedBitmap);
 
 		await expect(Promise.all([first, second])).resolves.toEqual([
 			expect.objectContaining({
-				dataUrl: renderedRaster.dataUrl,
-				width: renderedRaster.width,
-				height: renderedRaster.height,
+				dataUrl: renderedBitmap.dataUrl,
+				width: renderedBitmap.width,
+				height: renderedBitmap.height,
 			}),
 			expect.objectContaining({
-				dataUrl: renderedRaster.dataUrl,
-				width: renderedRaster.width,
-				height: renderedRaster.height,
+				dataUrl: renderedBitmap.dataUrl,
+				width: renderedBitmap.width,
+				height: renderedBitmap.height,
 			}),
 		]);
 		expect(cache.getStats()).toEqual({
@@ -98,7 +100,7 @@ describe("IconCache", () => {
 		await cache.get("museum", "default");
 		await cache.get("museum", "small");
 
-		expect(rasterizeSvgMock).toHaveBeenCalledTimes(2);
+		expect(renderIconBitmapMock).toHaveBeenCalledTimes(2);
 		expect(cache.has("museum", "default")).toBe(true);
 		expect(cache.has("museum", "small")).toBe(true);
 		expect(cache.getStats()).toMatchObject({size: 2, misses: 2});
@@ -109,7 +111,7 @@ describe("IconCache", () => {
 
 		await expect(cache.get("   ")).resolves.toBeNull();
 
-		expect(rasterizeSvgMock).not.toHaveBeenCalled();
+		expect(renderIconBitmapMock).not.toHaveBeenCalled();
 		expect(cache.getStats()).toEqual({
 			size: 0,
 			hits: 0,
@@ -119,9 +121,9 @@ describe("IconCache", () => {
 	});
 
 	it("clears rejected requests so they can be retried", async () => {
-		rasterizeSvgMock
+		renderIconBitmapMock
 			.mockRejectedValueOnce(new Error("render failed"))
-			.mockResolvedValueOnce(renderedRaster);
+			.mockResolvedValueOnce(renderedBitmap);
 		const cache = new IconCache();
 
 		await expect(cache.get("museum")).rejects.toThrow("render failed");
@@ -132,9 +134,9 @@ describe("IconCache", () => {
 		});
 
 		await expect(cache.get("museum")).resolves.toEqual(
-			expect.objectContaining({dataUrl: renderedRaster.dataUrl}),
+			expect.objectContaining({dataUrl: renderedBitmap.dataUrl}),
 		);
-		expect(rasterizeSvgMock).toHaveBeenCalledTimes(2);
+		expect(renderIconBitmapMock).toHaveBeenCalledTimes(2);
 		expect(cache.getStats()).toMatchObject({
 			size: 1,
 			misses: 2,
