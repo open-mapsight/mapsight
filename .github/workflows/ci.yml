@@ -155,7 +155,7 @@ jobs:
 
   lint:
     name: Lint code
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -227,7 +227,7 @@ jobs:
 
   typecheck:
     name: Typecheck
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -478,6 +478,7 @@ jobs:
         run: pnpm run syncpack:lint
 
   zizmor:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -551,6 +552,7 @@ jobs:
 
   release:
     name: Release
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: [ci-pass]
 
