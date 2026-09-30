@@ -1,5 +1,17 @@
 # @mapsight/lib-ol
 
+## 4.2.6
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `tsc-alias` `^1.9.4` → `^1.9.5` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
 ## 4.2.5
 
 ### Patch Changes

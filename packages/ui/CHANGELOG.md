@@ -1,5 +1,33 @@
 # @mapsight/ui
 
+## 7.6.3
+
+### Patch Changes
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@tanstack/react-query` `^5.102.4` → `^5.103.2` (minor)
+
+- 5dba09f: Tolerate malformed query parameters and throwing plugins. `getQueryStringParameter` now decodes with `decodeURIComponent` and returns the raw value when it is not valid percent-encoding instead of throwing `URIError`. Encoded reserved characters such as `%2F`, `%26`, and `%3D` are now decoded too (previously returned verbatim). A plugin phase that throws synchronously no longer skips later plugins or escapes `render()`; the error is logged with the plugin name and `renderAsync()` still rejects with it.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- fe64ff0: Give layer switcher and filter toggle controls meaningful accessible names: split-mode switcher checkboxes now include the layer title with their state, the status icon is exposed as a labelled image, and filter toggle buttons are named after their purpose instead of a generic open/close.
+- 03c85eb: Announce async loading, refreshing and empty states reliably: `AsyncStatusRegion` now keeps a persistent `role="status"` live region mounted across phases, errors are consistently exposed as assertive alerts, and `aria-busy` no longer wraps the live region. The share-link URL field also gets an accessible label.
+- 72fce5c: Correct swapped English zoom button labels and German next/previous entry labels, and fix the "chosen" typo in the English share-link text.
+- d45d9eb: Add keyboard and ARIA support to the measure-distance and share-position tool overlays: the overlay is a region labelled by its heading and closes on Escape, and the toggle buttons expose `aria-expanded` / `aria-controls` and get focus back when the overlay closes.
+- af0c6ca: Cache layer-switcher selector factories so connect ownProps stay referentially stable
+- fbbba81: Treat HTTP error responses as failures in `fetchText` / `fetchJson`, so 404 or 502 error pages no longer render as feature details. Network errors now dispatch a single failure carrying the original error.
+- 8b718fc: Restore visible `:focus-visible` rings on list toggle, filter, and layer-switcher controls
+- e178744: Keep the layer switcher within the modal width and wrap long layer titles
+- 758699b: Memoize feature-list selectors so list UI does not re-render on unrelated store updates
+- 1f37dea: Only resolve feature permalinks to `http:`, `https:`, or relative URLs. Unsafe `permanentLink` properties fall back to the location-based permalink, and unsafe `permalink` config results resolve to no permalink.
+- bd95839: Respect prefers-reduced-motion for UI animations and transitions
+- Updated dependencies [`45aaead`, `e74d2c8`, `86feccf`, `5980a66`, `5dba09f`, `c46c174`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
 ## 7.6.2
 
 ### Patch Changes

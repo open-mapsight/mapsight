@@ -1,5 +1,22 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.3
+
+### Patch Changes
+
+- a65a96e: Fix preset delete button contrast, accessible name, focus ring, and target size
+- 43ce343: Support request cancellation. Client endpoint calls accept an optional `signal`, and the typed helpers accept `{signal}` request options. The count-aggregator UI hooks pass React Query's abort signal so superseded or unmounted queries cancel their requests.
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@tanstack/react-query` `^5.102.4` → `^5.103.2` (minor)
+    - `tailwind-merge` `^3.3.1` → `^3.7.0` (minor)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`43ce343`, `5980a66`, `5dba09f`, `c46c174`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/count-aggregator-api@1.4.0 → 1.5.0` (minor)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+
 ## 3.1.2
 
 ### Patch Changes

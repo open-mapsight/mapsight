@@ -1,14 +1,14 @@
 {
 	"name": "mapsight-vite-spa-starter",
 	"description": "Minimal Vite + React Router SPA host template — copy into your app repo",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"private": true,
 	"type": "module",
 	"dependencies": {
-		"@mapsight/lib-js": "^3.0.9",
-		"@mapsight/lib-ol": "^4.2.5",
-		"@mapsight/traffic-style": "^5.5.2",
-		"@mapsight/ui": "^7.6.2",
+		"@mapsight/lib-js": "^3.0.10",
+		"@mapsight/lib-ol": "^4.2.6",
+		"@mapsight/traffic-style": "^5.5.3",
+		"@mapsight/ui": "^7.6.3",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
 		"ol": "^10.10.0",
@@ -19,7 +19,7 @@
 		"zod": "^4.6.5"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^13.0.4",
+		"@mapsight/vector-style-compiler": "^13.0.5",
 		"@types/node": "^24.13.6",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "~19.3.0",

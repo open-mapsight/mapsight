@@ -1,5 +1,18 @@
 # @mapsight/traffic-style
 
+## 5.5.3
+
+### Patch Changes
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `fs-extra` `^11.4.0` → `^11.4.1` (patch)
+    - `lru-cache` `^11.5.2` → `^11.5.3` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `c46c174`]:
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+
 ## 5.5.2
 
 ### Patch Changes
