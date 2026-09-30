@@ -73,6 +73,11 @@ From the embed/SPA perspective, pulp output is ordinary **static GeoJSON over HT
 
 Pulp does **not** run inside the browser or the Node monorepo build.
 
+For polling clients that use Mapsight’s opt-in feature-source document cache, prefer a
+**features-stable weak ETag** plus `Cache-Control: no-cache` so unchanged feature
+collections can 304 without depending on file `Last-Modified`. See
+[FEATURE_SOURCES.md](FEATURE_SOURCES.md).
+
 ---
 
 ## Operations
@@ -107,6 +112,7 @@ Monorepo packages do not wrap pulp — integration is **HTTP to static GeoJSON**
 
 ## Related
 
+- [FEATURE_SOURCES.md](FEATURE_SOURCES.md) — xhr-json cache, ETag / If-None-Match contract
 - [TILE_PROXY.md](TILE_PROXY.md) — basemap tiles (companion PHP service)
 - [DATA_BACKEND.md](DATA_BACKEND.md) — when CMS + pulp are not enough
 - [Integration overview](OVERVIEW.md)
