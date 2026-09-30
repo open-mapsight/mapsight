@@ -1,6 +1,7 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../mixins/visually-hidden";
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-map-overlay {
 	position: absolute;
@@ -75,6 +76,7 @@
 		pointer-events: auto;
 
 		transition: margin 300ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 
 		@if (variables.$ms3-option-mapOverlayButtonsShowLabel == false) {
 			&__label {

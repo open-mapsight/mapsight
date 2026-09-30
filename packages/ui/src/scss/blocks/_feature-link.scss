@@ -1,4 +1,5 @@
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-feature-link {
 	display: block;
@@ -11,6 +12,7 @@
 	float: left;
 	background: transparent no-repeat center center;
 	transition: background 300ms ease-in-out;
+	@include reduced-motion.respect-reduced-motion;
 
 	&:hover,
 	&:focus {
