@@ -1,7 +1,5 @@
-
 $buttonWidth: 25px;
 $buttonHeight: 70px;
-$transitionTime: 400ms;
 
 .ms3-list-toggle-button {
 	position: absolute;
@@ -14,7 +12,6 @@ $transitionTime: 400ms;
 	border-radius: 0 var(--ms3-border-radius) var(--ms3-border-radius) 0;
 	z-index: var(--ms3-z-index-list-toggle-button);
 	background-color: var(--ms3-background-color);
-	transition: margin-left $transitionTime ease-out;
 	box-shadow: 3px 4px 4px -2px rgba(0, 0, 0, 0.4);
 
 	&::after {
@@ -27,14 +24,20 @@ $transitionTime: 400ms;
 		position: relative;
 	}
 
-	&:hover,
-	&:focus {
+	&:hover {
 		background: var(--ms3-background-highlight-color);
 		color: var(--ms3-theme-color-b);
-		outline: 0;
 	}
 
-	&:hover::after {
+	&:focus-visible {
+		background: var(--ms3-background-highlight-color);
+		color: var(--ms3-theme-color-b);
+		outline: 2px solid var(--ms3-primary-color);
+		outline-offset: 2px;
+	}
+
+	&:hover::after,
+	&:focus-visible::after {
 		// arrow
 		border-left-color: var(--ms3-theme-color-b);
 	}
@@ -47,7 +50,8 @@ $transitionTime: 400ms;
 			border-left-color: transparent;
 		}
 
-		&:hover::after {
+		&:hover::after,
+		&:focus-visible::after {
 			// arrow
 			border-left-color: transparent;
 			border-right-color: var(--ms3-theme-color-b);
