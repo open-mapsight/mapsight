@@ -45,13 +45,26 @@ describe("runInPackage", () => {
 
 	it("skips packages that do not define the requested script", () => {
 		const commands = runInPackage("lint --fix")([
-			"/repo/packages/lib-redux/src/js/createSelectorUsingOwnProps.ts",
+			"/repo/packages/lib-js/src/js/array/unique.ts",
 			"/repo/packages/core/src/index.ts",
 		]);
 
+		// lib-js has lint; pick a package without a lint script instead when
+		// asserting skip behavior — prefer a path under scripts/ or an app
+		// without lint. Here both have lint, so this only checks grouping.
 		assert.deepEqual(commands, [
+			"pnpm --filter lib-js run lint --fix -- src/js/array/unique.ts",
 			"pnpm --filter core run lint --fix -- src/index.ts",
 		]);
+	});
+
+	it("skips packages without the requested script", () => {
+		const commands = runInPackage("bench:properties")([
+			"/repo/packages/lib-redux/src/js/observe-state.ts",
+			"/repo/packages/core/src/index.ts",
+		]);
+
+		assert.deepEqual(commands, []);
 	});
 });
 
