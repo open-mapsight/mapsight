@@ -2,14 +2,7 @@ import type {ElementType, ReactNode} from "react";
 import {memo, useCallback} from "react";
 
 import type {ActionPath} from "@mapsight/core/lib/base/actions";
-import {
-	layerIdsIntegratedSwitcherSelector,
-	makeFeatureSourceFromLayerIdSelector,
-	makeFeatureSourceIdFromLayerIdSelector,
-	makeLayerLockedInLayerSwitcherSelector,
-	makeLayerTitleSelector,
-	makeLayerVisibleSelector,
-} from "@mapsight/core/lib/map/selectors";
+import {layerIdsIntegratedSwitcherSelector} from "@mapsight/core/lib/map/selectors";
 import type {MapState} from "@mapsight/core/lib/map/types";
 
 import {translate} from "../../helpers/i18n";
@@ -17,10 +10,13 @@ import GroupedLayerSwitcher from "./GroupedLayerSwitcher";
 import LayerSwitcher from "./LayerSwitcher";
 import LayerSwitcherEntry from "./LayerSwitcherEntry";
 import SplitBaseLayerSwitcher from "./SplitBaseLayerSwitcher";
-
-// TODO das berechnen der LayerListen (abhängig von grouped und layerIdSelector) in einen Selector packen,
-//  damit diese Berechnung nur bei Änderungen am store berechnet neu wird
-// TODO für das visible eine eigenes connect, damit der Tree nicht dauernd neu berechnet wird
+import {
+	cachedMakeFeatureSourceFromLayerIdSelector,
+	cachedMakeFeatureSourceIdFromLayerIdSelector,
+	cachedMakeLayerLockedInLayerSwitcherSelector,
+	cachedMakeLayerTitleSelector,
+	cachedMakeLayerVisibleSelector,
+} from "./layer-switcher-selectors";
 
 export type LayerSwitcherContainerProps = {
 	as?: ElementType;
@@ -57,11 +53,15 @@ function LayerSwitcherContainer({
 			<LayerSwitcherEntry
 				key={id}
 				layerId={id}
-				titleSelector={makeLayerTitleSelector(id)}
-				lockedSelector={makeLayerLockedInLayerSwitcherSelector(id)}
-				layerVisibilitySelector={makeLayerVisibleSelector(id)}
-				featureSourceSelector={makeFeatureSourceFromLayerIdSelector(id)}
-				featureSourceIdSelector={makeFeatureSourceIdFromLayerIdSelector(
+				titleSelector={cachedMakeLayerTitleSelector(id)}
+				lockedSelector={cachedMakeLayerLockedInLayerSwitcherSelector(
+					id,
+				)}
+				layerVisibilitySelector={cachedMakeLayerVisibleSelector(id)}
+				featureSourceSelector={cachedMakeFeatureSourceFromLayerIdSelector(
+					id,
+				)}
+				featureSourceIdSelector={cachedMakeFeatureSourceIdFromLayerIdSelector(
 					id,
 				)}
 				setFeatureSourceIdPath={entrySetFeatureSourceIdPath}
