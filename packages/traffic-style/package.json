@@ -25,7 +25,6 @@
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@types/fs-extra": "^11.0.4",
-		"@types/markdown-table": "^3.0.0",
 		"@types/node": "catalog:",
 		"markdown-table": "^3.0.4",
 		"vitest": "catalog:"
