@@ -47,7 +47,7 @@ export function collectHeadingAnchors(markdown: string): Set<string> {
 		const text = match[2]
 			.replace(/\[([^\]]*)]\([^)]*\)/g, "$1")
 			.replace(/`([^`]*)`/g, "$1")
-			.replace(/<[^>]+>/g, "");
+			.replace(/[<>]/g, "");
 		const base = githubHeadingSlug(text);
 		if (!base) {
 			continue;
