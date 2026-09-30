@@ -24,8 +24,8 @@ const de: Record<string, string> = {
 	reset: "zurücksetzen",
 	show: "anzeigen",
 	from: "von",
-	nextEntry: "Vorheriger Eintrag",
-	prevEntry: "Nächster Eintrag",
+	nextEntry: "Nächster Eintrag",
+	prevEntry: "Vorheriger Eintrag",
 
 	"ui.query-input.reset": "Suche zurücksetzen",
 
