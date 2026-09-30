@@ -16,26 +16,9 @@ import {
 	listStationTypes,
 	listStations,
 } from "./helpers.js";
+import {createMockFetch} from "./test-helpers.js";
 
 const baseUrl = "https://example.test/msp/public/count-aggregator";
-
-function createMockFetch(handler: (url: string) => unknown): typeof fetch {
-	return vi.fn((input: string | URL | Request) => {
-		const url =
-			typeof input === "string"
-				? input
-				: input instanceof URL
-					? input.toString()
-					: input.url;
-
-		return Promise.resolve({
-			ok: true,
-			status: 200,
-			headers: new Headers({"content-type": "application/json"}),
-			json: () => handler(url),
-		} as Response);
-	});
-}
 
 describe("typed endpoint helpers", () => {
 	afterEach(() => {
