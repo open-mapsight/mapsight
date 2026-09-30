@@ -11,6 +11,7 @@ import {
 	useAsyncStatusDisplay,
 } from "../../lib/async-status";
 import AsyncStatusRegion from "../async-status/AsyncStatusRegion";
+import {combinedMemberSourcesSelector} from "./combined-member-sources-selector";
 import FeatureListContent from "./content";
 import {useFeatureListContext} from "./context";
 import FeatureListEmptyMessage from "./empty-message";
@@ -57,19 +58,9 @@ function FeatureListGroupedContent(
 		featureSourceId !== undefined &&
 		featureSourceId !== "";
 
-	const memberSources = useSelector((state) => {
-		if (featureSource?.type !== "combined") {
-			return undefined;
-		}
-
-		const names = featureSource.featureSourceNames ?? [];
-		if (!names.length) {
-			return [];
-		}
-
-		const sources = state[FEATURE_SOURCES];
-		return names.map((name) => sources?.[name]);
-	});
+	const memberSources = useSelector((state) =>
+		combinedMemberSourcesSelector(state, featureSource),
+	);
 
 	const view = useMemo(
 		() =>
