@@ -351,7 +351,17 @@ function callPlugins(
 	phase: PluginPhase,
 ): Array<Promise<unknown>> {
 	return flattenPlugins(context.createOptions?.plugins ?? [])
-		.map(([_name, plugin]) => plugin?.[phase]?.(context) ?? undefined)
+		.map(([name, plugin]) => {
+			try {
+				return plugin?.[phase]?.(context) ?? undefined;
+			} catch (error) {
+				console.error(
+					`Mapsight plugin "${name}" threw in ${phase}:`,
+					error,
+				);
+				return Promise.reject(error);
+			}
+		})
 		.filter(nonNull.is);
 }
 

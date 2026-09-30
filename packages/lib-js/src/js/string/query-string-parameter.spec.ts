@@ -25,6 +25,20 @@ it("getQueryStringParameter", () => {
 		getQueryStringParameter("/foo?pre=a&key-asd=42&post=b", "key.asd"),
 		null,
 	);
+
+	strictEqual(
+		getQueryStringParameter("/foo?key=a%2Fb%26c%3Dd", "key"),
+		"a/b&c=d",
+	);
+	strictEqual(
+		getQueryStringParameter("/foo?key=Stra%C3%9Fe%20B", "key"),
+		"Straße B",
+	);
+	strictEqual(
+		getQueryStringParameter("/foo?key=%E0%A4%A", "key"),
+		"%E0%A4%A",
+	);
+	strictEqual(getQueryStringParameter("/foo?key=100%&b=1", "key"), "100%");
 });
 
 it("removeQueryStringParameter", () => {
