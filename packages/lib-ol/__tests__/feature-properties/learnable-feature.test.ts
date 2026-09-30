@@ -29,7 +29,7 @@ describe("LearnableFeature", () => {
 		expect(feature.getBacking()).not.toHaveProperty("geometry");
 	});
 
-	it("serves backing keys from get() and warns once per key", () => {
+	it("serves backing keys from get() and calls onMiss per access", () => {
 		resetLearnableFeatureMissWarningsForTests();
 		const onMiss = vi.fn();
 		const feature = new LearnableFeature(new Point([1, 2]), {
@@ -45,6 +45,25 @@ describe("LearnableFeature", () => {
 		expect(onMiss).toHaveBeenCalledTimes(2);
 		expect(onMiss.mock.calls[0]?.[0]).toBe("description");
 		expect(feature.getProperties()).not.toHaveProperty("description");
+	});
+
+	it("warns once per key with the default miss handler", () => {
+		resetLearnableFeatureMissWarningsForTests();
+		const warn = vi
+			.spyOn(console, "warn")
+			.mockImplementation(() => undefined);
+		try {
+			const feature = new LearnableFeature(new Point([1, 2]), {
+				backing: {description: "html"},
+				coreKeys: ["name"],
+			});
+
+			expect(feature.get("description")).toBe("html");
+			expect(feature.get("description")).toBe("html");
+			expect(warn).toHaveBeenCalledTimes(1);
+		} finally {
+			warn.mockRestore();
+		}
 	});
 
 	it("keeps the GeoJSON properties object as the backing reference", () => {
@@ -79,12 +98,29 @@ describe("LearnableFeature", () => {
 			{geometry: new Point([3, 4]), ...backing},
 			{backing, coreKeys: ["name"], onMiss: () => undefined},
 		);
+		feature.setId("stop-1");
 		const clone = feature.clone();
 
 		expect(clone).toBeInstanceOf(LearnableFeature);
+		expect(clone.getId()).toBe("stop-1");
 		expect(clone.get("name")).toBe("A");
-		expect(clone.getBacking()).toEqual(backing);
+		expect(clone.getBacking()).toBe(feature.getBacking());
 		expect(clone.getGeometry()).not.toBe(feature.getGeometry());
 		expect(clone.get("description")).toBe("html");
+	});
+
+	it("drops stale local keys when the backing changes", () => {
+		const feature = new LearnableFeature(new Point([0, 0]), {
+			backing: {name: "A", markerCaption: "1"},
+			coreKeys: ["name", "markerCaption"],
+			onMiss: () => undefined,
+		});
+		expect(feature.get("markerCaption")).toBe("1");
+
+		feature.setBacking({name: "B"});
+
+		expect(feature.get("name")).toBe("B");
+		expect(feature.get("markerCaption")).toBeUndefined();
+		expect(feature.getProperties()).not.toHaveProperty("markerCaption");
 	});
 });
