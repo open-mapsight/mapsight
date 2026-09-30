@@ -6,7 +6,7 @@ function strictEqualCompare<T>(a: T, b: T): boolean {
 
 //const jsonCompare = (a, b)  => JSON.stringify(a) !== JSON.stringify(b);
 
-export const AbortObserving = Symbol(); // TODO: Use Symbol()
+export const AbortObserving = Symbol();
 
 function internalObserveState<State = unknown, Value = unknown>(
 	store: Store<State>,

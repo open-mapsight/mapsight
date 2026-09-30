@@ -2,9 +2,8 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../configs/tsconfig-base.json",
 	"include": ["src/js/**/*"],
-	"exclude": ["**/__tests__/**", "**/*.test.ts"],
 	"compilerOptions": {
-		"outDir": "dist",
+		"noEmit": true,
 		"rootDir": "src/js"
 	}
 }

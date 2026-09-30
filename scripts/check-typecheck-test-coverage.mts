@@ -11,7 +11,6 @@ const TEST_FILE_PATTERN = /\.(test|spec)\.(ts|tsx)$/;
 const ALLOWLIST = new Set([
 	"@mapsight/count-aggregator-api",
 	"@mapsight/lib-ol",
-	"@mapsight/lib-redux",
 	"@mapsight/traffic-style",
 	"@mapsight/ui",
 ]);

@@ -1,9 +1,12 @@
 import {defineConfig} from "eslint/config";
 
-import baseConfig from "../../configs/eslint-config-base.mts";
+import baseConfig, {
+	testFilesEslintConfig,
+} from "../../configs/eslint-config-base.mts";
 
 export default defineConfig([
 	baseConfig,
+	testFilesEslintConfig,
 	{
 		name: "todos",
 		rules: {
