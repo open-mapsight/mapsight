@@ -38,11 +38,13 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         # Unique primary key (job+sha) so each job can save; caches are immutable.
-        # Prefer restoring build's .turbo so sparse jobs don't poison consecutive runs.
+        # Restore this job's previous cache first. actions/cache stops at the
+        # first prefix match, so a leading build- key would hide lint/typecheck/test
+        # caches. build- is the fallback until a job has saved its own.
         key: ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-${{ github.job }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-build-
           ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-${{ github.job }}-
+          ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-build-
           ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/pnpm-lock.yaml') }}-
           ${{ runner.os }}-turbo-
         path: .turbo
