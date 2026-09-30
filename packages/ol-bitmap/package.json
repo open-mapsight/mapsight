@@ -1,0 +1,55 @@
+{
+	"name": "@mapsight/ol-bitmap",
+	"description": "Render OpenLayers Canvas-2D maps to PNG on Node without a browser",
+	"version": "0.0.0",
+	"type": "module",
+	"dependencies": {
+		"@napi-rs/canvas": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"ol": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"engines": {
+		"node": "^24.15.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./install-ol-node-env": {
+			"types": "./dist/install-ol-node-env.d.ts",
+			"import": "./dist/install-ol-node-env.js",
+			"default": "./dist/install-ol-node-env.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"license": "MIT",
+	"main": "./dist/index.js",
+	"peerDependencies": {
+		"ol": "catalog:"
+	},
+	"repository": {
+		"url": "https://github.com/open-mapsight/mapsight"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"clean": "rimraf dist",
+		"clean-build": "run-s clean build",
+		"lint": "eslint",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"watch": "tsc --project tsconfig.build.json --watch --preserveWatchOutput"
+	},
+	"sideEffects": [
+		"./dist/index.js",
+		"./dist/install-ol-node-env.js"
+	],
+	"types": "./dist/index.d.ts"
+}
