@@ -16,8 +16,9 @@ Pass a `FeatureSourceCache` implementation through UI `createOptions` (forwarded
 into the Redux store extra argument):
 
 ```ts
-import {createMemoryFeatureSourceCache} from "@mapsight/core/lib/feature-sources/cache";
 import {create} from "@mapsight/ui";
+
+import {createMemoryFeatureSourceCache} from "@mapsight/core/lib/feature-sources/cache";
 
 const featureSourceCache = createMemoryFeatureSourceCache();
 
@@ -34,12 +35,12 @@ create(container, styleFunction, config, {
 });
 ```
 
-| Option | Role |
-| ------ | ---- |
-| `featureSourceCache` | Adapter (`get` / `put` / `delete` / byte estimate / LRU). Memory today; IndexedDB later in the browser. |
-| `featureSourceRevision` | Shared revision (`appVersion` / publish id) folded into document keys so a deploy invalidates old bodies. |
-| `featureSourceCacheTtl` | Clamp: skip persist when origin lifetime is shorter than `minMs`; default freshness when `max-age` / `Expires` are absent; never treat stored docs as fresh longer than `maxMs`. Defaults: 10s / 5min / 1h. |
-| `sharedCache` (store extra) | Shared-cache freshness (`s-maxage`, `proxy-revalidate`). Defaults to `true` when `window` is undefined (SSR sidecar). |
+| Option                      | Role                                                                                                                                                                                                        |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `featureSourceCache`        | Adapter (`get` / `put` / `delete` / byte estimate / LRU). Memory today; IndexedDB later in the browser.                                                                                                     |
+| `featureSourceRevision`     | Shared revision (`appVersion` / publish id) folded into document keys so a deploy invalidates old bodies.                                                                                                   |
+| `featureSourceCacheTtl`     | Clamp: skip persist when origin lifetime is shorter than `minMs`; default freshness when `max-age` / `Expires` are absent; never treat stored docs as fresh longer than `maxMs`. Defaults: 10s / 5min / 1h. |
+| `sharedCache` (store extra) | Shared-cache freshness (`s-maxage`, `proxy-revalidate`). Defaults to `true` when `window` is undefined (SSR sidecar).                                                                                       |
 
 Helpers live under `@mapsight/core/lib/feature-sources/cache`:
 
