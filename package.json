@@ -42,7 +42,8 @@
 	},
 	"scripts": {
 		"build": "turbo build",
-		"check": "pnpm run check:starter-pins",
+		"check": "run-p check:starter-pins check:markdown-links",
+		"check:markdown-links": "node scripts/check-markdown-links.mts",
 		"check:starter-pins": "node scripts/check-starter-package-pins.mts",
 		"check:typecheck-test-coverage": "node scripts/check-typecheck-test-coverage.mts",
 		"clean": "turbo clean",
@@ -67,7 +68,7 @@
 		"syncpack:format:write": "syncpack format --config configs/syncpack.config.ts",
 		"syncpack:lint": "syncpack lint --config configs/syncpack.config.ts",
 		"test": "turbo run test //#test:configs",
-		"test:configs": "node --test configs/lint-staged.test.mts",
+		"test:configs": "node --test configs/lint-staged.test.mts scripts/check-markdown-links.test.mts",
 		"test:php-ssr-smoke": "node e2e/php-ssr-smoke/run.mts",
 		"test:starters:copy-out": "node scripts/smoke-starter-copy-out.mts",
 		"test:starters:e2e": "playwright test -c e2e/starters/playwright.config.ts",
