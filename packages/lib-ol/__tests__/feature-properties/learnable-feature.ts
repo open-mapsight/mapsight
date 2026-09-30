@@ -2,34 +2,11 @@ import Feature from "ol/Feature.js";
 import type {ObjectWithGeometry} from "ol/Feature.js";
 import type Geometry from "ol/geom/Geometry.js";
 
-/**
- * Style / identity keys that belong on the OpenLayers feature bag.
- * Taken from simplestyle, traffic-style `attr()` / selectors, and live
- * Braunschweig GeoJSON (mapsightIconId, markerCaption*, occupancyTrendString).
- */
-export const DEFAULT_CORE_PROPERTY_KEYS = [
-	"id",
-	"name",
-	"title",
-	"type",
-	"state",
-	"cluster",
-	"clusterSize",
-	"mapsightIconId",
-	"markerCaption",
-	"markerCaptionColor",
-	"markerCaptionHalo",
-	"marker-size",
-	"marker-color",
-	"marker-symbol",
-	"stroke",
-	"stroke-width",
-	"stroke-opacity",
-	"fill",
-	"fill-opacity",
-	"chargingPower",
-	"occupancyTrendString",
-] as const;
+import {DEFAULT_CORE_PROPERTY_KEYS} from "../../src/js/feature/defaultCorePropertyKeys.ts";
+
+// Re-exported so the benches and tests share the canonical production set
+// instead of maintaining a second literal.
+export {DEFAULT_CORE_PROPERTY_KEYS};
 
 export type LearnableFeatureMissHandler = (
 	key: string,
@@ -62,8 +39,8 @@ function defaultOnMiss(key: string): void {
 
 function isGeometry(value: unknown): value is Geometry {
 	return (
-		typeof value === "object" &&
 		value !== null &&
+		typeof value === "object" &&
 		typeof (value as Geometry).getSimplifiedGeometry === "function"
 	);
 }
@@ -109,6 +86,15 @@ export default class LearnableFeature extends Feature {
 	}
 
 	setBacking(backing: Record<string, unknown> | null): void {
+		// Drop the local core/promoted entries of the previous backing first,
+		// otherwise keys missing from the new backing stay visible via get().
+		const geometryName = this.getGeometryName();
+		for (const key of this.coreKeys) {
+			if (key !== geometryName) {
+				super.unset(key, true);
+			}
+		}
+
 		this.backing = backing;
 		this.applyCoreFromBacking(true);
 	}
@@ -167,6 +153,7 @@ export default class LearnableFeature extends Feature {
 			promoteOnMiss: this.promoteOnMiss,
 		});
 		clone.setGeometryName(this.getGeometryName());
+		clone.setId(this.getId());
 
 		const local = this.getPropertiesInternal();
 		if (local) {

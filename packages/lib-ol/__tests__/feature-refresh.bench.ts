@@ -7,18 +7,18 @@
  * `modifyFeature` (core depends on lib-ol, so it cannot be imported here).
  * Strategies:
  *
- * - baseline          core behavior today; geometry is diffed by reference,
- *                     and readFeatures always creates new Geometry objects
+ * - baseline          historical behavior before the refresh-churn fixes:
+ *                     applies every key and diffs geometry by reference, so
+ *                     readFeatures' new Geometry objects always re-set
  * - geometry-aware    skip the geometry set when flat coordinates are equal
  * - core-keys         geometry-aware + diff only core/style keys
  * - text-skip         compare the raw response text and skip everything
  */
 import type Feature from "ol/Feature.js";
 import GeoJSON from "ol/format/GeoJSON.js";
-import GeometryCollection from "ol/geom/GeometryCollection.js";
-import SimpleGeometry from "ol/geom/SimpleGeometry.js";
 import VectorSource from "ol/source/Vector.js";
 
+import geometriesEqual from "../src/js/geometry/geometriesEqual.ts";
 import {CACHE_DIR, loadUnionCollection} from "./feature-properties/datasets.ts";
 import {DEFAULT_CORE_PROPERTY_KEYS} from "./feature-properties/learnable-feature.ts";
 
@@ -41,56 +41,6 @@ const REFRESH = process.env.BENCH_PROPERTIES_REFRESH === "1";
 const CORE_KEYS = new Set<string>(DEFAULT_CORE_PROPERTY_KEYS);
 const geoJsonFormat = new GeoJSON();
 
-function geometriesEqual(left: unknown, right: unknown): boolean {
-	if (left === right) {
-		return true;
-	}
-
-	if (
-		left instanceof GeometryCollection &&
-		right instanceof GeometryCollection
-	) {
-		const leftParts = left.getGeometriesArray();
-		const rightParts = right.getGeometriesArray();
-		return (
-			leftParts.length === rightParts.length &&
-			leftParts.every((part, index) =>
-				geometriesEqual(part, rightParts[index]),
-			)
-		);
-	}
-
-	if (
-		!(left instanceof SimpleGeometry) ||
-		!(right instanceof SimpleGeometry)
-	) {
-		return false;
-	}
-
-	if (
-		left.getType() !== right.getType() ||
-		left.getLayout() !== right.getLayout()
-	) {
-		return false;
-	}
-
-	// Coordinates + type + layout is a sufficient equality proxy for polling
-	// payloads (ring/part splits do not change while coordinates stay equal).
-	const leftCoordinates = left.getFlatCoordinates();
-	const rightCoordinates = right.getFlatCoordinates();
-	if (leftCoordinates.length !== rightCoordinates.length) {
-		return false;
-	}
-
-	for (let i = 0; i < leftCoordinates.length; i += 1) {
-		if (leftCoordinates[i] !== rightCoordinates[i]) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
 /** Mirrors core's modifyFeature with optional geometry/key-subset awareness. */
 function modifyFeature(
 	baseFeature: Feature,
@@ -101,6 +51,7 @@ function modifyFeature(
 	const oldProps = baseFeature.getProperties();
 
 	let featureChanged = false;
+	let geometryChanged = false;
 	for (const key of Object.keys(newProps)) {
 		if (
 			strategy === "core-keys" &&
@@ -123,6 +74,7 @@ function modifyFeature(
 				continue;
 			}
 			counters.geometryReplacements += 1;
+			geometryChanged = true;
 		}
 
 		featureChanged = true;
@@ -131,7 +83,11 @@ function modifyFeature(
 
 	if (featureChanged) {
 		counters.changedFeatures += 1;
-		baseFeature.changed();
+		// The non-silent geometry set already dispatched the change event, so
+		// only silent key updates need the extra changed() — mirroring core.
+		if (!geometryChanged) {
+			baseFeature.changed();
+		}
 	}
 	return featureChanged;
 }
@@ -211,11 +167,6 @@ function createPopulatedSource(text: string): {
 	return {counters, source};
 }
 
-/** Force a distinct string object so === measures a real O(n) compare. */
-function detachString(text: string): string {
-	return (" " + text).slice(1);
-}
-
 function runUpdateStrategy(
 	label: string,
 	text: string,
@@ -227,7 +178,7 @@ function runUpdateStrategy(
 
 	for (let round = 0; round < ROUNDS; round += 1) {
 		const parseStart = performance.now();
-		const parsed = JSON.parse(detachString(text)) as object;
+		const parsed = JSON.parse(text) as object;
 		const readStart = performance.now();
 		const nextFeatures = geoJsonFormat.readFeatures(parsed);
 		const updateStart = performance.now();
@@ -246,12 +197,18 @@ function runUpdateStrategy(
 }
 
 function runTextSkip(text: string): void {
-	const detached = detachString(text);
-	let skipped = 0;
+	// Each poll response arrives as a fresh string object. Pre-create
+	// independent flat copies so the timed loop measures only the equality
+	// compare, not the per-round allocation of a fresh string.
+	const responses: string[] = [];
+	for (let round = 0; round <= ROUNDS; round += 1) {
+		responses.push(Buffer.from(text, "utf8").toString("utf8"));
+	}
 
+	let skipped = 0;
 	const start = performance.now();
-	for (let round = 0; round < ROUNDS; round += 1) {
-		if (detachString(text) === detached) {
+	for (let round = 1; round <= ROUNDS; round += 1) {
+		if (responses[round] === responses[round - 1]) {
 			skipped += 1;
 		}
 	}
