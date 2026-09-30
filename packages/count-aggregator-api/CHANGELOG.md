@@ -1,5 +1,15 @@
 # @mapsight/count-aggregator-api
 
+## 1.5.0
+
+### Minor Changes
+
+- 43ce343: Support request cancellation. Client endpoint calls accept an optional `signal`, and the typed helpers accept `{signal}` request options. The count-aggregator UI hooks pass React Query's abort signal so superseded or unmounted queries cancel their requests.
+
+### Patch Changes
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+
 ## 1.4.0
 
 ### Minor Changes

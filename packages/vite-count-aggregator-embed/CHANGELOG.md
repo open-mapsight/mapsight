@@ -1,5 +1,17 @@
 # @mapsight/vite-count-aggregator-embed
 
+## 0.2.4
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `c46c174`]:
+    - `@mapsight/vite-host-embed@1.1.5 → 1.1.6` (patch)
+
 ## 0.2.3
 
 ### Patch Changes

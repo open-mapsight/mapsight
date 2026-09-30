@@ -1,5 +1,13 @@
 # @mapsight/lib-redux
 
+## 2.2.4
+
+### Patch Changes
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
 ## 2.2.3
 
 ### Patch Changes
