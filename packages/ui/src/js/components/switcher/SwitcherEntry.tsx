@@ -174,7 +174,10 @@ function SwitcherEntry({
 							active={active}
 							disabled={cannotDeselect}
 							role={exclusive ? "radio" : "checkbox"}
-							aria-label={exclusiveLabel}
+							aria-label={
+								exclusiveLabel ??
+								`${title}, ${checkboxStatusLabel}`
+							}
 						>
 							{preview}
 							{checkbox}

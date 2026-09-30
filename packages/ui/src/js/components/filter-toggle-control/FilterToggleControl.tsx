@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {memo, useCallback, useRef, useState} from "react";
+import {memo, useCallback, useMemo, useRef, useState} from "react";
 import {mergeProps, usePress} from "react-aria";
 
 import {FocusTrap} from "focus-trap-react";
@@ -15,11 +15,6 @@ export type FilterToggleControlProps = {
 	children: ReactNode;
 };
 
-const focusTrapOptions = {
-	clickOutsideDeactivates: false,
-	escapeDeactivates: false,
-} as const;
-
 function FilterToggleControl({
 	className,
 	buttonClassName,
@@ -30,6 +25,17 @@ function FilterToggleControl({
 	const [isOpen, setIsOpen] = useState(false);
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
+
+	const focusTrapOptions = useMemo(
+		() => ({
+			clickOutsideDeactivates: false,
+			escapeDeactivates: false,
+			// jsdom (and briefly empty panels) can report no tabbables; keep the
+			// trap activatable by falling back to the panel container.
+			fallbackFocus: () => panelRef.current ?? document.body,
+		}),
+		[],
+	);
 
 	const handleClose = useCallback(() => setIsOpen(false), []);
 	const handleToggle = useCallback(() => {

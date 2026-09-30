@@ -13,7 +13,7 @@ describe("FilterToggleControl", () => {
 				buttonActiveClassName="open"
 				title="Filter by tags …"
 			>
-				<span>panel content</span>
+				<button type="button">panel content</button>
 			</FilterToggleControl>,
 		);
 
@@ -27,6 +27,8 @@ describe("FilterToggleControl", () => {
 				.getByRole("button", {name: "Filter by tags …"})
 				.getAttribute("aria-expanded"),
 		).toBe("true");
-		expect(screen.getByText("panel content")).toBeTruthy();
+		expect(
+			screen.getByRole("button", {name: "panel content"}),
+		).toBeTruthy();
 	});
 });

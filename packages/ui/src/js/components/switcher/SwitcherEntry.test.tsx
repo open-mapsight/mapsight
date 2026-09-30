@@ -147,7 +147,7 @@ describe("SwitcherEntry accessible names", () => {
 
 		expect(screen.getByRole("img", {name: "active"})).toBeTruthy();
 		expect(
-			screen.getByRole("checkbox", {name: "active Parking"}),
+			screen.getByRole("checkbox", {name: "Parking, active"}),
 		).toBeTruthy();
 	});
 });
