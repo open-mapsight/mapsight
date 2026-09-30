@@ -30,7 +30,7 @@ const en: Record<string, string> = {
 	"ui.query-input.reset": "reset search",
 
 	"ui.feature-details.share-link.head": "share link ...",
-	"ui.feature-details.share-link.place": "link to choosen location:",
+	"ui.feature-details.share-link.place": "link to chosen location:",
 	"ui.feature-details.share-link.close": "close dialog to share a link",
 
 	"ui.place-actions.nav": "Place actions",
@@ -171,11 +171,11 @@ const en: Record<string, string> = {
 	[`ui.view-toggle-button.label${VIEW_DESKTOP}`]: "full screen",
 	[`ui.view-toggle-button.label${VIEW_MOBILE}`]: "list",
 
-	[`ui.zoom-button.ariaLabel${ZOOM_OUT}`]: "zoom in",
-	[`ui.zoom-button.ariaLabel${ZOOM_IN}`]: "zoom out",
+	[`ui.zoom-button.ariaLabel${ZOOM_OUT}`]: "zoom out",
+	[`ui.zoom-button.ariaLabel${ZOOM_IN}`]: "zoom in",
 
-	[`ui.zoom-button.label${ZOOM_OUT}`]: "zoom in",
-	[`ui.zoom-button.label${ZOOM_IN}`]: "zoom out",
+	[`ui.zoom-button.label${ZOOM_OUT}`]: "zoom out",
+	[`ui.zoom-button.label${ZOOM_IN}`]: "zoom in",
 
 	[`ui.switcher.entry.label${STATUS_ERROR}`]: "error at loading",
 	[`ui.switcher.entry.label${STATUS_LOADING}`]: "loading",
