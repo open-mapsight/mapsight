@@ -41,7 +41,7 @@ export function collectHeadingAnchors(markdown: string): Set<string> {
 
 	for (const line of markdown.split("\n")) {
 		const match = /^(#{1,6})\s+(.+?)\s*$/.exec(line);
-		if (!match) {
+		if (!match?.[2]) {
 			continue;
 		}
 		const text = match[2]
