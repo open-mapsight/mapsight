@@ -39,6 +39,24 @@ export class XhrJsonHttpError extends Error {
 	}
 }
 
+export class XhrJsonPayloadError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "XhrJsonPayloadError";
+	}
+}
+
+function assertFeatureSourceData(
+	body: unknown,
+): asserts body is FeatureSourceData {
+	if (typeof body !== "object" || body === null || Array.isArray(body)) {
+		throw new XhrJsonPayloadError("Expected a JSON object");
+	}
+	if ("features" in body && !Array.isArray(body.features)) {
+		throw new XhrJsonPayloadError("Expected features to be an array");
+	}
+}
+
 /** RFC 5861 stale-if-error: 5xx or a failure that is not an HTTP status. */
 export function allowsStaleIfErrorForFailure(error: unknown): boolean {
 	if (error instanceof XhrJsonHttpError) {
@@ -143,10 +161,13 @@ export async function fetchXhrJson(
 		throw new XhrJsonHttpError(response.status, response.statusText);
 	}
 
+	const data: unknown = await response.json();
+	assertFeatureSourceData(data);
+
 	return {
 		...meta,
 		notModified: false,
-		data: (await response.json()) as FeatureSourceData | undefined,
+		data,
 	};
 }
 

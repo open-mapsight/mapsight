@@ -105,14 +105,25 @@ type FeatureSourcesControllerAction =
 			featureIds: FeatureId[];
 	  });
 
+function isFeatureEntry(feature: unknown): feature is Feature {
+	return typeof feature === "object" && feature !== null;
+}
+
 function getIdsFromData(data: FeatureSourceState["data"]) {
-	return data?.features?.map((feature) => feature.id);
+	const features: unknown = data?.features;
+	if (!Array.isArray(features)) {
+		return undefined;
+	}
+	return features.filter(isFeatureEntry).map((feature) => feature.id);
 }
 
 function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
+	const features: unknown = data?.features;
 	const featuresById: Record<FeatureId, Feature> = {};
-	for (const feature of data?.features ?? []) {
-		featuresById[feature.id] ??= feature;
+	for (const feature of Array.isArray(features) ? features : []) {
+		if (isFeatureEntry(feature)) {
+			featuresById[feature.id] ??= feature;
+		}
 	}
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
