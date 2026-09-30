@@ -388,7 +388,12 @@ export const load = (
 				asFeatureSourceCacheExtra(extraArgument),
 			).then(
 				function handleLoadResolved(data) {
-					dispatch(loadSuccess(controllerName, id, data));
+					try {
+						dispatch(loadSuccess(controllerName, id, data));
+					} catch (err) {
+						dispatch(loadFailure(controllerName, id, err));
+						throw err;
+					}
 				},
 				function handleLoadRejected(err) {
 					dispatch(loadFailure(controllerName, id, err));

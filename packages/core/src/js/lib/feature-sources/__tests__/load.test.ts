@@ -16,6 +16,7 @@ import {createMemoryFeatureSourceCache} from "@/lib/feature-sources/cache/memory
 import {purgeDocumentCacheEntries} from "@/lib/feature-sources/cache/purge";
 import {warmFeatureSourceUrl} from "@/lib/feature-sources/cache/warm";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
+import {XhrJsonPayloadError} from "@/lib/feature-sources/loaders/xhr-json-loader";
 import {ERROR_COLD_CACHE} from "@/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 
@@ -95,6 +96,94 @@ describe("load", () => {
 				id: "hotels",
 			}),
 		);
+	});
+});
+
+describe("load with malformed payloads", () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.restoreAllMocks();
+	});
+
+	function stubJsonResponse(body: unknown) {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				headers: emptyHeaders(),
+				json: () => Promise.resolve(body),
+			})),
+		);
+	}
+
+	function createStore() {
+		return createMapsightStore(
+			{featureSources: new FeatureSourcesController("featureSources")},
+			{},
+			xhrJsonState(),
+		);
+	}
+
+	function getSchools(store: ReturnType<typeof createStore>) {
+		return (store.getState() as {featureSources: FeatureSourcesState})
+			.featureSources.schools;
+	}
+
+	it("dispatches loadFailure when the success dispatch throws", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => undefined);
+		stubJsonResponse(schoolsCollection);
+		const reducerError = new Error("reducer failed");
+		const dispatch = vi.fn((action: {type?: string}) => {
+			if (action.type === LOAD_FEATURE_SOURCE_SUCCESS) {
+				throw reducerError;
+			}
+		});
+
+		await load(controllerName, "schools")(
+			dispatch as never,
+			() => xhrJsonState(),
+			undefined,
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: LOAD_FEATURE_SOURCE_ERROR,
+				id: "schools",
+				error: reducerError,
+			}),
+		);
+	});
+
+	it("stops loading when features is not an array", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => undefined);
+		stubJsonResponse({type: "FeatureCollection", features: {}});
+		const store = createStore();
+
+		store.dispatch(load(controllerName, "schools"));
+
+		await vi.waitFor(() => {
+			expect(getSchools(store)?.error).toBeInstanceOf(
+				XhrJsonPayloadError,
+			);
+		});
+		expect(getSchools(store)?.isLoading).toBe(false);
+	});
+
+	it("loads the valid features next to null entries", async () => {
+		stubJsonResponse({
+			type: "FeatureCollection",
+			features: [null, ...schoolsCollection.features],
+		});
+		const store = createStore();
+
+		store.dispatch(load(controllerName, "schools"));
+
+		await vi.waitFor(() => {
+			expect(getSchools(store)?.ids).toEqual(["school-1"]);
+		});
+		expect(getSchools(store)?.isLoading).toBe(false);
+		expect(getSchools(store)?.error).toBeUndefined();
 	});
 });
 

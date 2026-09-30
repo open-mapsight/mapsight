@@ -4,6 +4,7 @@ import {ACTION_MERGE} from "@/lib/base/reducer";
 import {
 	FEATURE_SOURCE_DATA_ADD_FEATURE,
 	FEATURE_SOURCE_DATA_UNDO,
+	LOAD_FEATURE_SOURCE_SUCCESS,
 } from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
@@ -112,6 +113,34 @@ describe("FeatureSourcesController", () => {
 		expect(state.smartCity?.featuresById).toEqual({
 			"sensor-1": sensorFeature,
 		});
+	});
+
+	it("skips non-object feature entries when indexing loaded data", () => {
+		const state = controller.reduce(loadedState, {
+			type: LOAD_FEATURE_SOURCE_SUCCESS,
+			id: "smartCity",
+			data: {
+				type: "FeatureCollection",
+				features: [null, "sensor", sensorFeature],
+			},
+		});
+
+		expect(state.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(state.smartCity?.featuresById).toEqual({
+			"sensor-1": sensorFeature,
+		});
+		expect(state.smartCity?.isLoading).toBe(false);
+	});
+
+	it("does not throw on loaded data whose features is not an array", () => {
+		const state = controller.reduce(loadedState, {
+			type: LOAD_FEATURE_SOURCE_SUCCESS,
+			id: "smartCity",
+			data: {features: {}},
+		});
+
+		expect(state.smartCity?.ids).toBeUndefined();
+		expect(state.smartCity?.featuresById).toBeUndefined();
 	});
 
 	it("recomputes the fingerprint when an uncontrolled merge changes crs", () => {
