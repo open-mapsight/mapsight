@@ -132,16 +132,16 @@ Copy-out templates: [
 
 ## Documentation
 
-| Guide                                                                                                                                     | Package                   | Description                                           |
-| ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------- |
-| [Documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)                                                   | —                         | Architecture, ecosystem, integration overview         |
-| [Mapsight Redux Architecture](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/REDUX_ARCHITECTURE.md)               | `@mapsight/core`          | GIS state layer — store, controllers, OpenLayers sync |
-| [Mapsight Action API — Decision Guide](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/ACTION_GUIDE.md)            | `@mapsight/core`          | Which action API to dispatch for a given task         |
-| [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md)                                | —                         | CMS embed + `data-dehydrated-state` contract          |
-| [CMS PHP integration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/CMS_PHP.md)                                    | —                         | Classic PHP host pattern                              |
-| [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                            | —                         | Standalone React apps                                 |
-| [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                                 | —                         | Next.js host notes                                    |
-| [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)                   | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
+| Guide                                                                                                                          | Package                   | Description                                           |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------- | ----------------------------------------------------- |
+| [Documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)                                        | —                         | Architecture, ecosystem, integration overview         |
+| [Mapsight Redux Architecture](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/REDUX_ARCHITECTURE.md)    | `@mapsight/core`          | GIS state layer — store, controllers, OpenLayers sync |
+| [Mapsight Action API — Decision Guide](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/ACTION_GUIDE.md) | `@mapsight/core`          | Which action API to dispatch for a given task         |
+| [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md)                     | —                         | CMS embed + `data-dehydrated-state` contract          |
+| [CMS PHP integration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/CMS_PHP.md)                         | —                         | Classic PHP host pattern                              |
+| [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                 | —                         | Standalone React apps                                 |
+| [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                      | —                         | Next.js host notes                                    |
+| [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)        | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
 
 ## Related packages
 
