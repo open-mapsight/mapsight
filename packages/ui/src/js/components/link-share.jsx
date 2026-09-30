@@ -9,6 +9,7 @@ const selectInputContent = (e) =>
 function LinkShare({
 	buttonLabel = translate("shareLink"),
 	title = translate("shareLink"),
+	inputLabel = translate("ui.link-share.input"),
 	url,
 	onFinished,
 	onError,
@@ -67,6 +68,7 @@ function LinkShare({
 			) : null}
 			<input
 				className="ms3-link-share__input"
+				aria-label={inputLabel}
 				value={url}
 				onClick={selectInputContent}
 				readOnly={true}

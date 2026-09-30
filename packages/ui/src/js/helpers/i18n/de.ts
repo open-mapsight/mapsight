@@ -213,6 +213,8 @@ const de: Record<string, string> = {
 		"Klicken Sie auf die Karte um einen Ort zu teilen.",
 	"ui.share-position-link.shareTitle": "Markierten Ort teilen",
 	"ui.share-position-link.shareButtonLabel": "Markierten Ort teilen",
+
+	"ui.link-share.input": "Link zum Teilen",
 };
 
 export default de;

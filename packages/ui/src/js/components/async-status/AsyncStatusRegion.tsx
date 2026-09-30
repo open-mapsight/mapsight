@@ -81,25 +81,49 @@ function AsyncStatusRegion<T = unknown>({
 		.filter(Boolean)
 		.join(" ");
 
-	if (display.phase === "hidden") {
-		return null;
-	}
+	const hasContent =
+		display.phase === "content" || display.phase === "refreshing";
 
-	if (display.phase === "loading") {
-		return (
-			<div aria-busy={true} className={regionClassName}>
-				<AsyncStatusIndicator
-					message={loadingMessage}
-					phase="loading"
-					variant={variant}
-				/>
+	const showErrorBanner =
+		display.showError &&
+		display.phase === "refreshing" &&
+		errorWithStaleData !== "replace";
+
+	// The status element must stay mounted across phases: screen readers only
+	// announce text inserted into an existing live region. Keep `aria-busy`
+	// off its ancestors, AT may hold back updates inside busy subtrees.
+	return (
+		<div className={regionClassName}>
+			<div className="ms3-async-status-region__status" role="status">
+				{display.phase === "loading" ? (
+					<AsyncStatusIndicator
+						aria-live="off"
+						message={loadingMessage}
+						phase="loading"
+						variant={variant}
+					/>
+				) : null}
+
+				{display.phase === "empty" ? emptyMessage : null}
+
+				{hasContent && display.isPaused && pausedMessage ? (
+					<div className="ms3-async-status-region__paused">
+						{pausedMessage}
+					</div>
+				) : null}
+
+				{hasContent && display.showRefreshing ? (
+					<AsyncStatusIndicator
+						aria-live="off"
+						className="ms3-async-status-region__refresh-indicator"
+						message={refreshingMessage}
+						phase="refreshing"
+						variant="inline"
+					/>
+				) : null}
 			</div>
-		);
-	}
 
-	if (display.phase === "error") {
-		return (
-			<div aria-busy={false} className={regionClassName}>
+			{display.phase === "error" ? (
 				<AsyncStatusIndicator
 					error={
 						<>
@@ -117,32 +141,6 @@ function AsyncStatusRegion<T = unknown>({
 					phase="error"
 					variant={variant}
 				/>
-			</div>
-		);
-	}
-
-	if (display.phase === "empty") {
-		return (
-			<div aria-busy={false} className={regionClassName}>
-				{emptyMessage}
-			</div>
-		);
-	}
-
-	const showErrorBanner =
-		display.showError &&
-		display.phase === "refreshing" &&
-		errorWithStaleData !== "replace";
-
-	return (
-		<div
-			aria-busy={display.phase === "refreshing" && display.showRefreshing}
-			className={regionClassName}
-		>
-			{display.isPaused && pausedMessage ? (
-				<div className="ms3-async-status-region__paused">
-					{pausedMessage}
-				</div>
 			) : null}
 
 			{showErrorBanner ? (
@@ -157,15 +155,15 @@ function AsyncStatusRegion<T = unknown>({
 				</div>
 			) : null}
 
-			<div className={contentClassName || undefined}>{children}</div>
-
-			{display.showRefreshing ? (
-				<AsyncStatusIndicator
-					className="ms3-async-status-region__refresh-indicator"
-					message={refreshingMessage}
-					phase="refreshing"
-					variant="inline"
-				/>
+			{hasContent ? (
+				<div
+					aria-busy={
+						display.phase === "refreshing" && display.showRefreshing
+					}
+					className={contentClassName || undefined}
+				>
+					{children}
+				</div>
 			) : null}
 		</div>
 	);
