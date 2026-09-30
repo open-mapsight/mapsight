@@ -48,6 +48,7 @@
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
+		"lint": "eslint",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:setup build:modules watch:build",
 		"watch:build": "tsc --watch"
