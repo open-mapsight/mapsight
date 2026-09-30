@@ -62,6 +62,7 @@ function FilterToggleControl({
 						isOpen ? buttonActiveClassName : buttonClassName
 					}`,
 					title,
+					"aria-label": title,
 					"aria-expanded": isOpen,
 				})}
 				ref={triggerRef}

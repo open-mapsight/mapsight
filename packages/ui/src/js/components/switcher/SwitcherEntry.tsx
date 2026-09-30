@@ -110,11 +110,14 @@ function SwitcherEntry({
 	const checkbox = (
 		<SwitcherStatusIcon
 			status={checkboxStatusClass}
-			onClick={!toggleActive && toggleActiveCheckbox}
+			label={
+				toggleActiveCheckbox
+					? `${title}, ${checkboxStatusLabel}`
+					: checkboxStatusLabel
+			}
+			onClick={toggleActiveCheckbox}
 			active={activeCheckbox}
-		>
-			{checkboxStatusLabel}
-		</SwitcherStatusIcon>
+		/>
 	);
 
 	const preview = previewUrl ? (
@@ -196,7 +199,7 @@ function SwitcherEntry({
 								onClick={toggleActiveText}
 								className={`${baseClassName}__text-button ${baseClassName}__text-button--${textStatusClass}`}
 								aria-checked={activeText ? "true" : "false"}
-								aria-label={textStatusLabel}
+								aria-label={`${title}, ${textStatusLabel}`}
 							>
 								{text}
 							</button>
