@@ -251,5 +251,3 @@ project keeps the long-term i18n library decision open.
 ## Related packages
 
 - [`@mapsight/count-aggregator-api`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/README.md) — HTTP client and OpenAPI types
-- [API improvement plan](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/PLAN.md) — master roadmap
-- [UI execution checklist](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/PLAN.md) — UI-focused task list

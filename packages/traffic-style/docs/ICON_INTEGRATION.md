@@ -4,7 +4,7 @@ How to use traffic-style icons when you are **not** on the Mapsight UI stack (cu
 or minimal bundle).
 
 With `@mapsight/ui`, runtime icons and feature-list rendering are wired automatically — see
-the [README](../README.md#icons-with-mapsightui).
+the [README](../README.md#quick-start-with-mapsightui).
 
 For catalog concepts (sprite vs composable, `meta.json`, pictogram packs), see
 [ICON_CATALOG.md](ICON_CATALOG.md). For architecture and caching, see

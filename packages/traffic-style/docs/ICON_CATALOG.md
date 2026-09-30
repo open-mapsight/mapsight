@@ -3,7 +3,7 @@
 How icons are classified in `@mapsight/traffic-style`, how they are referenced on
 features, and how pictogram packs affect the runtime bundle.
 
-For map integration with `@mapsight/ui`, see the [README](../README.md#icons-with-mapsightui).
+For map integration with `@mapsight/ui`, see the [README](../README.md#quick-start-with-mapsightui).
 For standalone integration, see [ICON_INTEGRATION.md](ICON_INTEGRATION.md).
 For caching internals, see [RUNTIME_ICONS.md](RUNTIME_ICONS.md).
 For subsetting assets at build time, see [CUSTOM_ICON_BUILDS.md](CUSTOM_ICON_BUILDS.md).
