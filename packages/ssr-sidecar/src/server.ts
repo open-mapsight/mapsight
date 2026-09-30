@@ -143,21 +143,44 @@ export async function startSsrSidecar(
 		res: ServerResponse,
 	): Promise<void> {
 		const started = performance.now();
-		const requestId = headerValue(req, "x-request-id");
-		const assetVersion = headerValue(req, "x-mapsight-asset-version");
+		let requestId: string | undefined;
 		try {
+			requestId = readRequestToken(
+				headerValue(req, "x-request-id"),
+				"X-Request-Id",
+			);
+			const assetVersion = readRequestToken(
+				headerValue(req, "x-mapsight-asset-version"),
+				"X-Mapsight-Asset-Version",
+			);
 			const raw = await readBody(req, maxBodyBytes);
-			let body: SsrRequestBody;
+			let parsed: unknown;
 			try {
-				body = JSON.parse(raw) as SsrRequestBody;
+				parsed = JSON.parse(raw);
 			} catch {
 				writeV1Error(res, 400, "VALIDATION", "invalid JSON", requestId);
 				return;
 			}
-			if (requestId && body.requestId == null) {
+			if (!isJsonObject(parsed)) {
+				writeV1Error(
+					res,
+					400,
+					"VALIDATION",
+					"render request must be a JSON object",
+					requestId,
+				);
+				return;
+			}
+			const body = parsed as SsrRequestBody;
+			const bodyRequestId = readRequestToken(body.requestId, "requestId");
+			const bodyAssetVersion = readRequestToken(
+				body.assetVersion,
+				"assetVersion",
+			);
+			if (requestId && bodyRequestId === undefined) {
 				body.requestId = requestId;
 			}
-			if (assetVersion && body.assetVersion == null) {
+			if (assetVersion && bodyAssetVersion === undefined) {
 				body.assetVersion = assetVersion;
 			}
 			const envelope = await loadEnvelope(body);
@@ -246,8 +269,28 @@ function writeV1Error(
 	res.writeHead(status, {
 		"Content-Type": "application/json; charset=utf-8",
 		...(requestId ? {"X-Request-Id": requestId} : {}),
+		...(status === 413 ? {Connection: "close"} : {}),
 	});
 	res.end(JSON.stringify(payload));
+}
+
+const requestTokenPattern = /^[\x21-\x7e]{1,128}$/;
+
+function readRequestToken(value: unknown, name: string): string | undefined {
+	if (value == null) {
+		return undefined;
+	}
+	if (typeof value === "string" && requestTokenPattern.test(value)) {
+		return value;
+	}
+	throw Object.assign(
+		new Error(`${name} must be 1-128 printable ASCII characters`),
+		{statusCode: 400, ssrCode: "VALIDATION"},
+	);
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function classifyError(error: unknown): {
@@ -299,13 +342,13 @@ function readBody(req: IncomingMessage, limit: number): Promise<string> {
 		req.on("data", (chunk: Buffer) => {
 			size += chunk.length;
 			if (size > limit) {
+				chunks.length = 0;
 				reject(
 					Object.assign(new Error("body too large"), {
 						statusCode: 413,
 						ssrCode: "BODY_TOO_LARGE",
 					}),
 				);
-				req.destroy();
 				return;
 			}
 			chunks.push(chunk);
