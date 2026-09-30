@@ -42,8 +42,9 @@
 	},
 	"scripts": {
 		"build": "turbo build",
-		"check": "run-p check:starter-pins check:markdown-links",
+		"check": "run-p check:starter-pins check:markdown-links check:node-ts-runtime check:typecheck-test-coverage",
 		"check:markdown-links": "node scripts/check-markdown-links.mts",
+		"check:node-ts-runtime": "node scripts/check-node-ts-runtime.mts",
 		"check:starter-pins": "node scripts/check-starter-package-pins.mts",
 		"check:typecheck-test-coverage": "node scripts/check-typecheck-test-coverage.mts",
 		"clean": "turbo clean",

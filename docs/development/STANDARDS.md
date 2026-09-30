@@ -29,7 +29,11 @@ Packages that **emit** from `tsc` split configs:
 **Do not** exclude tests from `tsconfig.json` and typecheck them elsewhere — JetBrains IDEs only auto-associate default
 config names.
 
-Reference: `packages/core`, `packages/ui`, `packages/count-aggregator-api`.
+Reference: `packages/core`, `packages/count-aggregator-ui`.
+
+Packages not yet migrated are listed in the `ALLOWLIST` of
+[`scripts/check-typecheck-test-coverage.mts`](../../scripts/check-typecheck-test-coverage.mts). Remove a package from
+that list when migrating it — the check fails on stale entries.
 
 ---
 
@@ -97,8 +101,8 @@ Aligned with [Decision 005](../architecture/decisions/005-fetch-and-tanstack-que
 - **HTTP:** native `fetch`; TanStack Query for React async state — not axios
 - **Supply-chain minimalism:** prefer platform APIs and workspace packages over new deps
 - **syncpack:** keep catalog versions consistent across packages
-- Evaluate security and license before adding dependencies — especially while root license is
-  undecided ([LICENSING.md](../LICENSING.md))
+- Evaluate security and license before adding dependencies — they must be compatible with the MIT-licensed public
+  tree ([LICENSING.md](../LICENSING.md))
 
 ---
 
