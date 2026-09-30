@@ -1,5 +1,6 @@
 import Collection from "ol/Collection";
 import type OlFeature from "ol/Feature";
+import type BaseEvent from "ol/events/Event";
 import type {Options} from "ol/interaction/Translate";
 import Translate from "ol/interaction/Translate";
 import type {VectorSourceEvent} from "ol/source/Vector";
@@ -10,6 +11,11 @@ import type {VectorFeatureSource} from "@/lib/map/lib/VectorFeatureSource";
 export default class TranslateInteraction extends Translate {
 	private _source: VectorFeatureSource | null = null;
 	private _featureCollection: Collection<OlFeature>;
+	private _boundSourceAdd = (event: Event | BaseEvent) =>
+		this.handleSourceAdd(event as VectorSourceEvent);
+	private _boundSourceRemove = (event: Event | BaseEvent) =>
+		this.handleSourceRemove(event as VectorSourceEvent);
+	private _boundSourceClear = () => this.removeAllFeatures();
 
 	constructor(options: Options) {
 		const featureCollection = new Collection<OlFeature>();
@@ -37,15 +43,17 @@ export default class TranslateInteraction extends Translate {
 
 		if (source !== oldSource) {
 			if (oldSource) {
-				oldSource.removeEventListener(VectorEventType.ADDFEATURE, (e) =>
-					this.handleSourceAdd(e as VectorSourceEvent),
+				oldSource.removeEventListener(
+					VectorEventType.ADDFEATURE,
+					this._boundSourceAdd,
 				);
-				oldSource.removeEventListener(VectorEventType.CLEAR, () =>
-					this.removeAllFeatures(),
+				oldSource.removeEventListener(
+					VectorEventType.CLEAR,
+					this._boundSourceClear,
 				);
 				oldSource.removeEventListener(
 					VectorEventType.REMOVEFEATURE,
-					(e) => this.handleSourceRemove(e as VectorSourceEvent),
+					this._boundSourceRemove,
 				);
 			}
 			this.removeAllFeatures();
@@ -55,14 +63,17 @@ export default class TranslateInteraction extends Translate {
 					.getFeatures()
 					.forEach((feature) => this.addFeature(feature));
 
-				source.addEventListener(VectorEventType.ADDFEATURE, (e) =>
-					this.handleSourceAdd(e as VectorSourceEvent),
+				source.addEventListener(
+					VectorEventType.ADDFEATURE,
+					this._boundSourceAdd,
 				);
-				source.addEventListener(VectorEventType.CLEAR, () =>
-					this.removeAllFeatures(),
+				source.addEventListener(
+					VectorEventType.CLEAR,
+					this._boundSourceClear,
 				);
-				source.addEventListener(VectorEventType.REMOVEFEATURE, (e) =>
-					this.handleSourceRemove(e as VectorSourceEvent),
+				source.addEventListener(
+					VectorEventType.REMOVEFEATURE,
+					this._boundSourceRemove,
 				);
 			}
 		}
