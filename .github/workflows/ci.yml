@@ -175,11 +175,13 @@ jobs:
           path: .
 
       - name: Lint
+        # Type-aware ESLint runs out of runner memory at turbo's default
+        # concurrency when every package misses the cache (e.g. lockfile PRs).
         run: |
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            pnpm turbo run lint --only --affected
+            pnpm turbo run lint --only --affected --concurrency=4
           else
-            pnpm turbo run lint --only
+            pnpm turbo run lint --only --concurrency=4
           fi
         shell: bash
 
