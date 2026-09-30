@@ -1,5 +1,6 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-map-overlay-combined-buttons {
 	width: 40px;
@@ -8,6 +9,7 @@
 	border: 0;
 	border-radius: var(--ms3-border-radius);
 	transition: margin 300ms ease-in-out;
+	@include reduced-motion.respect-reduced-motion;
 
 	// Prefer `__button` wrappers (CombinedButtons). Also support flat children
 	// if a host renders buttons without wrappers.

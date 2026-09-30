@@ -1,4 +1,5 @@
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 @keyframes ms3AsyncStatusSpin {
 	100% {
@@ -34,6 +35,7 @@
 			background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
 				no-repeat center center;
 			animation: ms3AsyncStatusSpin 4s linear infinite;
+			@include reduced-motion.respect-reduced-motion;
 		}
 
 		&.ms3-async-status--placeholder::before {
@@ -67,6 +69,7 @@
 			background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
 				no-repeat center center;
 			animation: ms3AsyncStatusSpin 4s linear infinite;
+			@include reduced-motion.respect-reduced-motion;
 		}
 	}
 

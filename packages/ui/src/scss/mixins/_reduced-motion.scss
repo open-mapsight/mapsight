@@ -1,0 +1,10 @@
+/// Disable animation and transition timing when the user prefers reduced motion.
+/// Uses near-zero durations so `transitionend` / `animationend` still fire.
+@mixin respect-reduced-motion {
+	@media (prefers-reduced-motion: reduce) {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}

@@ -1,3 +1,4 @@
+@use "../mixins/reduced-motion";
 
 .ms3-tooltip {
 	position: absolute;
@@ -7,6 +8,7 @@
 	transition:
 		opacity 200ms ease-out,
 		translate 20ms ease-out;
+	@include reduced-motion.respect-reduced-motion;
 	z-index: 3;
 	cursor: default;
 	user-select: none;

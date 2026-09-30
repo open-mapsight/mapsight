@@ -1,4 +1,5 @@
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-dialog-close-button {
 	position: absolute;
@@ -16,6 +17,7 @@
 	transition:
 		background 200ms ease-in-out,
 		border 200ms ease-in-out;
+	@include reduced-motion.respect-reduced-motion;
 
 	&:hover,
 	&:focus {

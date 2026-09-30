@@ -2,6 +2,7 @@
 
 @use "../variables";
 @use "async-status";
+@use "../mixins/reduced-motion";
 
 .ms3-layer-switcher {
 	position: relative;
@@ -114,6 +115,7 @@
 				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
 					no-repeat 0 0;
 				animation: ms3AsyncStatusSpin 4s linear infinite;
+				@include reduced-motion.respect-reduced-motion;
 			}
 		}
 	}
@@ -135,6 +137,7 @@
 		transition:
 			color 200ms ease-in-out,
 			background 200ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 
 		&--active {
 			background: var(--ms3-background-highlight-color);
@@ -205,6 +208,7 @@
 	border-bottom: 2px solid currentcolor;
 	transform: rotate(45deg);
 	transition: transform 160ms ease;
+	@include reduced-motion.respect-reduced-motion;
 }
 
 .ms3-grouped-switcher__group:not(.ms3-grouped-switcher__group--collapsed)

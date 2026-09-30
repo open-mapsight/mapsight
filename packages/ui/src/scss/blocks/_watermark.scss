@@ -1,3 +1,4 @@
+@use "../mixins/reduced-motion";
 .ms3-watermark {
 	position: absolute;
 	left: 0;
@@ -7,6 +8,7 @@
 	opacity: 0.8;
 	z-index: 2000;
 	transition: opacity 400ms ease-in-out;
+	@include reduced-motion.respect-reduced-motion;
 
 	&,
 	img {
