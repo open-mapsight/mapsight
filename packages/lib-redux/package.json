@@ -6,11 +6,12 @@
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
 		"@reduxjs/toolkit": "catalog:",
-		"@types/lodash": "catalog:",
 		"lodash": "catalog:"
 	},
 	"devDependencies": {
-		"cpx2": "^9.0.3"
+		"@types/lodash": "catalog:",
+		"cpx2": "^9.0.3",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		".": {
@@ -44,13 +45,14 @@
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules build:copy",
 		"build:copy": "cpx '{package.json,README.md}' dist/",
-		"build:modules": "tsc",
+		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
+		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:setup build:modules watch:build",
-		"watch:build": "tsc --watch"
+		"watch:build": "tsc -p tsconfig.build.json --watch"
 	}
 }
