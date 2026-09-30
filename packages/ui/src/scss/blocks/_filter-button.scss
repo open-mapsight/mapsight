@@ -21,10 +21,16 @@
 		background-color: var(--ms3-tertiary-color);
 	}
 
-	&:hover,
-	&:focus {
+	&:hover {
 		background-color: var(--ms3-primary-color);
 		color: var(--ms3-inverted-primary-color);
+	}
+
+	&:focus-visible {
+		background-color: var(--ms3-primary-color);
+		color: var(--ms3-inverted-primary-color);
+		outline: 2px solid var(--ms3-primary-color);
+		outline-offset: 2px;
 	}
 
 	&--full-width {
@@ -49,7 +55,7 @@
 		}
 
 		&:hover,
-		&:focus {
+		&:focus-visible {
 			background: transparent
 				url(variables.$ms3-uiIconPath + "sort-active.svg") no-repeat
 				center;
@@ -72,7 +78,7 @@
 		}
 
 		&:hover,
-		&:focus {
+		&:focus-visible {
 			background: transparent
 				url(variables.$ms3-uiIconPath + "sort-filter-active.svg")
 				no-repeat center;
@@ -97,7 +103,7 @@
 		}
 
 		&:hover,
-		&:focus {
+		&:focus-visible {
 			background: transparent
 				url(variables.$ms3-uiIconPath + "layers.svg") no-repeat center;
 			filter: brightness(0.85);
@@ -123,7 +129,7 @@
 		}
 
 		&:hover,
-		&:focus {
+		&:focus-visible {
 			background: transparent
 				url(variables.$ms3-uiIconPath + "reset-active.svg") no-repeat
 				center;

@@ -140,11 +140,16 @@
 			background: var(--ms3-background-highlight-color);
 		}
 
-		&:hover:not(:disabled),
-		&:focus:not(:disabled) {
+		&:hover:not(:disabled) {
 			background: var(--ms3-background-color-offset-2);
 			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
-			outline: 0;
+		}
+
+		&:focus-visible:not(:disabled) {
+			background: var(--ms3-background-color-offset-2);
+			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
+			outline: 2px solid var(--ms3-primary-color);
+			outline-offset: -2px;
 		}
 
 		&:disabled {
@@ -173,6 +178,16 @@
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
+
+	&:hover {
+		background: var(--ms3-background-highlight-color);
+	}
+
+	&:focus-visible {
+		background: var(--ms3-background-highlight-color);
+		outline: 2px solid var(--ms3-primary-color);
+		outline-offset: -2px;
+	}
 }
 
 .ms3-grouped-switcher__meta {
