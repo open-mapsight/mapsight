@@ -1,4 +1,4 @@
-import {Fragment, useCallback, useEffect, useMemo} from "react";
+import {Fragment, useCallback, useEffect, useId, useMemo, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
@@ -17,9 +17,6 @@ import {
 import LinkShare from "../link-share";
 import ToolOverlay from "./tool-overlay";
 
-/*
- TODO: aria? abort on escape key press?
- */
 type SharePositionLinkButtonProps = {
 	pluginName?: string;
 	opened?: boolean;
@@ -94,10 +91,14 @@ const SharePositionLinkButton = ({
 		dispatch(isOpened ? activate : deactivate);
 	}, [dispatch, deactivate, isOpened, activate]);
 
+	const overlayId = useId();
+	const triggerRef = useRef<HTMLButtonElement>(null);
+
 	const closeAndReset = useCallback(
 		function () {
 			dispatch(resetAction);
 			close();
+			triggerRef.current?.focus();
 		},
 		[close, dispatch, resetAction],
 	);
@@ -105,9 +106,12 @@ const SharePositionLinkButton = ({
 	return (
 		<Fragment>
 			<button
+				ref={triggerRef}
 				className="ms3-map-overlay__button ms3-map-overlay__button--with-icon ms3-map-overlay__button--share-link"
 				type="button"
 				onClick={toggle}
+				aria-expanded={isOpened}
+				aria-controls={isOpened ? overlayId : undefined}
 			>
 				<span className="ms3-map-overlay__button__label">
 					{translate("ui.share-position-link.title")}
@@ -116,6 +120,7 @@ const SharePositionLinkButton = ({
 
 			{isOpened && (
 				<ToolOverlay
+					id={overlayId}
 					label={translate("ui.share-position-link.title")}
 					onClose={closeAndReset}
 					text={translate("ui.share-position-link.instructions")}
