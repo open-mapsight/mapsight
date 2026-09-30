@@ -19,8 +19,9 @@ function AsyncStatusIndicator({
 	message,
 	error,
 	className = "",
-	"aria-live": ariaLive = "polite",
+	"aria-live": ariaLive,
 }: AsyncStatusIndicatorProps) {
+	const isLive = ariaLive !== "off";
 	const resolvedMessage =
 		message === null
 			? null
@@ -33,9 +34,9 @@ function AsyncStatusIndicator({
 
 	return (
 		<div
-			aria-live={ariaLive}
+			aria-live={isLive ? ariaLive : undefined}
 			className={`ms3-async-status ms3-async-status--${phase} ms3-async-status--${variant} ${className}`.trim()}
-			role={phase === "error" ? "alert" : "status"}
+			role={isLive ? (phase === "error" ? "alert" : "status") : undefined}
 		>
 			{phase === "error" && error ? (
 				error

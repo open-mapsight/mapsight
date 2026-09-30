@@ -207,6 +207,8 @@ const en: Record<string, string> = {
 		"Click on the map to share a position.",
 	"ui.share-position-link.shareTitle": "Share marked position",
 	"ui.share-position-link.shareButtonLabel": "Share marked position",
+
+	"ui.link-share.input": "Link to share",
 };
 
 export default en;
