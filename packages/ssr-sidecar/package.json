@@ -23,13 +23,16 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/ssr-sidecar#readme",
 	"license": "MIT",
 	"publishConfig": {
 		"access": "public",
 		"tag": "beta"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/ssr-sidecar"
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",

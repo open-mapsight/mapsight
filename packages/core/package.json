@@ -97,6 +97,7 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/core#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"@redux-devtools/extension": "^4.0.0",
@@ -123,7 +124,9 @@
 		}
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/core"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules",

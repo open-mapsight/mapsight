@@ -60,6 +60,7 @@
 			"default": "./lib/runtime/icon-style.js"
 		}
 	},
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/traffic-style#readme",
 	"imports": {
 		"#icon/*": "./dist/lib/icon/*"
 	},
@@ -82,7 +83,9 @@
 		"linkDirectory": true
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/traffic-style"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",

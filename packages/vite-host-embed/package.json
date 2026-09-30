@@ -19,12 +19,15 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/vite-host-embed#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"vite": "^8.2.2"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/vite-host-embed"
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",

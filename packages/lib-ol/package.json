@@ -22,13 +22,16 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/lib-ol#readme",
 	"license": "MIT",
 	"main": "index.js",
 	"peerDependencies": {
 		"ol": "catalog:"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/lib-ol"
 	},
 	"scripts": {
 		"build": "tsc && tsc-alias",
