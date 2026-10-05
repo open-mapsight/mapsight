@@ -36,6 +36,10 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 <td><strong>CSS → OL StyleFunction compiler</strong><br>The vector style compiler is a tool that converts a subset of CSS styles into a multi-layer cached efficient OpenLayers style function, letting you style based on zoom, feature properties, environment, and more. It also allows you to freely add more geometries based on the base features to build complex vector objects.</td>
 </tr>
 <tr>
+<td><nobr>🖼️ <strong><code>ol-bitmap</code></strong></nobr><br><nobr><a href="https://www.npmjs.com/package/@mapsight/ol-bitmap"><img alt="NPM Version" src="https://img.shields.io/npm/v/%40mapsight%2Fol-bitmap?style=flat"></a> | <a href="packages/ol-bitmap/README.md">README</a></nobr></td>
+<td><strong>OpenLayers → PNG (Node)</strong><br>Render a Canvas-2D OpenLayers map to a PNG on Node without a browser. Reuse one renderer and queue vector features. Not the HTML embed sidecar.</td>
+</tr>
+<tr>
 <td><nobr>📦 <strong><code>vite-host-embed</code></strong></nobr><br><nobr><a href="https://www.npmjs.com/package/@mapsight/vite-host-embed"><img alt="NPM Version" src="https://img.shields.io/npm/v/%40mapsight%2Fvite-host-embed?style=flat"></a> | <a href="packages/vite-host-embed/README.md">README</a></nobr></td>
 <td><strong>Host embed Vite plugin</strong><br>Lib-mode post-build finalize, HTML snippet markers (<code>snippetSources</code>), dev deploy-path aliases, snippet preview.</td>
 </tr>

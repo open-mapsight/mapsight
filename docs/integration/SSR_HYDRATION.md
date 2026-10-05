@@ -66,6 +66,11 @@ Monorepo entry points today:
   POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
   `text/html` fragment
 
+PNG bitmaps are a separate path. [`@mapsight/ol-bitmap`](../../packages/ol-bitmap/README.md)
+renders an OpenLayers Canvas-2D map to a PNG in Node (static images, Open Graph
+cards, print). It does not emit the HTML shell or `data-dehydrated-state` used
+by `browserEmbed`.
+
 **Maintainer CMS path for this phase:** PHP → **Node LTS** sidecar (Decision 006 still
 lists Bun/framework alternatives as open for other hosts).
 
