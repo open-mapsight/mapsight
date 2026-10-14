@@ -12,14 +12,14 @@
 		"@mapsight/vite-host-embed": "^1.1.5",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
-		"ol": "^10.10.0",
+		"ol": "^10.11.0",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
 		"zod": "^4.6.5"
 	},
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "^13.0.4",
-		"@types/node": "^24.13.6",
+		"@types/node": "^24.19.1",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "~19.3.0",
 		"mkdirp": "^3.0.1",
