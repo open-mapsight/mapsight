@@ -4,4 +4,4 @@
 
 Bump dependencies from Dependabot ([#357](https://github.com/open-mapsight/mapsight/pull/357)):
 
-- `next` `^16.3.6` → `^16.3.7` (patch)
+- `next` `^16.3.6` → `^16.3.8` (patch), including security fixes.
