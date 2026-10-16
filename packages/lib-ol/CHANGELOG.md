@@ -1,5 +1,19 @@
 # @mapsight/lib-ol
 
+## 4.2.6
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `tsc-alias` `^1.9.4` → `^1.9.5` (patch)
+
+- 6e1146e: Document the `keepZoom` and `skipIfInView` fit options and export the named constants `DEFAULT_FIT_DURATION`, `DEFAULT_FIT_PADDING`, `DEFAULT_FIT_MAX_ZOOM` (map/fitToExtent) and `DEFAULT_CENTER_DURATION` (view/centerOnFeature) in place of inline magic numbers. No behavior change.
+- d35cc9f: Support nullable map targets in OpenLayers 10.11 transition helpers.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
 ## 4.2.5
 
 ### Patch Changes

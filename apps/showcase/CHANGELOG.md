@@ -1,5 +1,39 @@
 # @mapsight/showcase
 
+## 0.1.6
+
+### Patch Changes
+
+- 8c0076f: Bump dependencies from Dependabot ([#311](https://github.com/open-mapsight/mapsight/pull/311)):
+
+    - `react-router-dom` `^7.18.3` → `^7.18.4` (patch)
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@tanstack/react-query` `^5.102.4` → `^5.103.2` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `@tanstack/react-query` `^5.103.2` → `^5.104.1` (minor)
+
+- Updated dependencies [`45aaead`, `e74d2c8`, `d35cc9f`, `a65a96e`, `43ce343`, `86feccf`, `5980a66`, `63cf309`, `5dba09f`, `6e1146e`, `7dd3752`, `c46c174`, `58a9796`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+    - `@mapsight/count-aggregator-ui@3.1.2 → 3.1.3` (patch)
+    - `@mapsight/count-aggregator-api@1.4.0 → 1.5.0` (minor)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
 ## 0.1.5
 
 ### Patch Changes
