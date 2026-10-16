@@ -1,5 +1,32 @@
 # @mapsight/vector-style-compiler
 
+## 13.0.5
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `fs-extra` `^11.4.0` → `^11.4.1` (patch)
+    - `sass` `^1.104.0` → `^1.105.0` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `postcss` `^8.5.28` → `^8.5.29` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`45aaead`, `e74d2c8`, `d35cc9f`, `86feccf`, `63cf309`, `5dba09f`, `6e1146e`, `c46c174`, `58a9796`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+
 ## 13.0.4
 
 ### Patch Changes

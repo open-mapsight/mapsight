@@ -1,5 +1,29 @@
 # @mapsight/core
 
+## 14.6.3
+
+### Patch Changes
+
+- 45aaead: Recover feature sources from malformed payloads. The xhr-json loader now rejects non-object bodies and non-array `features` with `XhrJsonPayloadError`, feature indexing skips non-object entries, and a throwing success dispatch now records a load error instead of leaving the source loading forever.
+- e74d2c8: Stop `DrawInteraction` from stacking measurement listeners on every map attach and drop its debug logging, and let `TranslateInteraction` actually remove its source listeners when the source changes
+- d35cc9f: Handle unavailable map targets and viewports in cursor updates and map context menus with OpenLayers 10.11.
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `ol-mapbox-style` `^13.4.3` → `^13.5.1` (minor)
+    - `tsc-alias` `^1.9.4` → `^1.9.5` (patch)
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- 58a9796: Update the shared Redux Toolkit dependency range from ^2.11.2 to ^2.13.0.
+- Updated dependencies [`86feccf`, `5dba09f`, `6e1146e`, `d35cc9f`, `7dd3752`, `c46c174`, `58a9796`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
 ## 14.6.2
 
 ### Patch Changes

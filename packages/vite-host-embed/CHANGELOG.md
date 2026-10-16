@@ -1,5 +1,19 @@
 # @mapsight/vite-host-embed
 
+## 1.1.6
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+
 ## 1.1.5
 
 ### Patch Changes
