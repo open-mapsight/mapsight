@@ -88,10 +88,13 @@ overrides:
   brace-expansion@>=2.0.0 <2.1.7: ^2.1.7
   brace-expansion@>=5.0.0 <5.0.12: ^5.0.12
   fast-uri@>=3.0.0 <3.1.8: ^3.1.8
+  handlebars@<4.7.10: ^4.7.10
   js-yaml@>=4.0.0 <4.3.2: ^4.3.2
   postcss@<8.5.10: ^8.5.10
+  postcss-selector-parser@<7.1.6: ^7.1.6
   read-yaml-file@<2.1.0: ^2.1.0
-  shell-quote@<1.9.0: ^1.9.0
+  shell-quote@<1.11.0: ^1.11.0
+  source-map-js@<1.2.2: ^1.2.2
   undici@<7.29.0: ^7.29.0
   undici@>=8.0.0 <8.10.2: ^8.10.2
   '@mapsight/core': workspace:*
@@ -3570,8 +3573,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  handlebars@4.7.9:
-    resolution: {integrity: sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==}
+  handlebars@4.7.10:
+    resolution: {integrity: sha512-P5VJMVM7qgBn6vjXMw8WG9uVI+ncf2pi72j4de4yz5ZULLj2RGqLYaKOYGsgyrViQ0tePOVlN1tDCCXXtFqXKg==}
     engines: {node: '>=0.4.7'}
     hasBin: true
 
@@ -4483,8 +4486,8 @@ packages:
     peerDependencies:
       postcss: ^8.5.10
 
-  postcss-selector-parser@7.1.5:
-    resolution: {integrity: sha512-KvvtD7SrlBP7dlgkBghEE3r84CABm5SmV2aNcG4oCA+qDnJ/tvKonFVvwWAyyWUEwxuNawdfEAZKP9zM3oZ2Uw==}
+  postcss-selector-parser@7.1.6:
+    resolution: {integrity: sha512-7qASPzhKF2l2KLboRZux8CCTRMdGiV08vWmyKzPz22qZ7ZjQBOeY7rNzNoCLSUiftJ7HUq0GERHmxw/t0dCdMw==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -4892,8 +4895,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shell-quote@1.10.0:
-    resolution: {integrity: sha512-w1aiOKwKuRgtwAReIIj89puqg+I7GvX4IbLrvmhXbzQsj1+Zwi4VO3+fa6ZF91TWSjIxoEkKnMeHcLEODK5ZXA==}
+  shell-quote@1.12.0:
+    resolution: {integrity: sha512-PcByqNyT/38F2kDNi006HAMRJaULuBzq/FOsw3qdZvX/GA9W/jamDaRskgHjubHiftXK5sIFxLNkvrXUwcof6Q==}
     engines: {node: '>= 0.4'}
 
   side-channel-list@1.0.1:
@@ -4924,10 +4927,6 @@ packages:
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
-
-  source-map-js@1.2.1:
-    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
-    engines: {node: '>=0.10.0'}
 
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
@@ -6451,7 +6450,7 @@ snapshots:
       jiti: 2.7.0
       lightningcss: 1.32.0
       magic-string: 0.30.21
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
       tailwindcss: 4.3.3
 
   '@tailwindcss/oxide-android-arm64@4.3.3':
@@ -7236,7 +7235,7 @@ snapshots:
       ignore: 7.0.9
       minimatch: 10.2.6
       p-map: 7.0.7
-      shell-quote: 1.10.0
+      shell-quote: 1.12.0
       subarg: 1.0.0
 
   cross-spawn@6.0.6:
@@ -7988,7 +7987,7 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  handlebars@4.7.9:
+  handlebars@4.7.10:
     dependencies:
       minimist: 1.2.8
       neo-async: 2.6.2
@@ -8315,7 +8314,7 @@ snapshots:
   launch-editor@2.14.1:
     dependencies:
       picocolors: 1.1.1
-      shell-quote: 1.10.0
+      shell-quote: 1.12.0
 
   lerc@3.0.0: {}
 
@@ -8605,7 +8604,7 @@ snapshots:
       minimatch: 3.1.5
       pidtree: 0.3.1
       read-pkg: 3.0.0
-      shell-quote: 1.10.0
+      shell-quote: 1.12.0
       string.prototype.padend: 3.1.6
 
   nth-check@2.1.1:
@@ -8682,7 +8681,7 @@ snapshots:
       '@zodios/core': 10.9.6(axios@1.20.0)(zod@3.25.76)
       axios: 1.20.0
       cac: 6.7.14
-      handlebars: 4.7.9
+      handlebars: 4.7.10
       openapi-types: 12.1.3
       openapi3-ts: 3.1.0
       pastable: 2.2.1(react@19.3.0)
@@ -8833,9 +8832,9 @@ snapshots:
   postcss-nested@8.0.1(postcss@8.5.29):
     dependencies:
       postcss: 8.5.29
-      postcss-selector-parser: 7.1.5
+      postcss-selector-parser: 7.1.6
 
-  postcss-selector-parser@7.1.5:
+  postcss-selector-parser@7.1.6:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
@@ -8852,7 +8851,7 @@ snapshots:
     dependencies:
       nanoid: 3.3.18
       picocolors: 1.1.1
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   postcss@8.5.29:
     dependencies:
@@ -9342,7 +9341,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shell-quote@1.10.0: {}
+  shell-quote@1.12.0: {}
 
   side-channel-list@1.0.1:
     dependencies:
@@ -9383,8 +9382,6 @@ snapshots:
   sisteransi@1.0.5: {}
 
   slash@3.0.0: {}
-
-  source-map-js@1.2.1: {}
 
   source-map-js@1.2.2: {}
 
