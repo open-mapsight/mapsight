@@ -2,13 +2,14 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 
 import {IconCache} from "./cache.ts";
 
-const {renderIconBitmapMock} = vi.hoisted(() => ({
-	renderIconBitmapMock: vi.fn(),
-}));
+const {renderIconBitmapMock} = vi.hoisted(() => {
+	vi.resetModules();
+	return {renderIconBitmapMock: vi.fn()};
+});
 
 // Mock the direct dependency of IconCache. Leaf mocks of rasterize/compose are
-// unreliable here: vitest runs with isolate:false + fsModuleCache, so other
-// icon tests may already have loaded the real render module.
+// unreliable here: vitest runs with isolate:false + fsModuleCache. Clear any
+// real render module loaded by another icon test before installing this mock.
 vi.mock("../icon/render.ts", () => ({
 	renderIconBitmap: renderIconBitmapMock,
 }));
