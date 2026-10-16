@@ -1,7 +1,7 @@
 import type OlMap from "ol/Map";
 
 export default function updateSizeOnTransitionEnd(map: OlMap) {
-	let previousTargetElement: undefined | HTMLElement;
+	let previousTargetElement: undefined | null | HTMLElement;
 
 	function updateSize() {
 		map.updateSize();

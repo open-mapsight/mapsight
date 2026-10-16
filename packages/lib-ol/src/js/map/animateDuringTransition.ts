@@ -43,13 +43,13 @@ export default function animateDuringTransition(
 	}
 
 	let isTransitionRunning = true;
-	const maxTimeTimeout = setTimeout(endAnimation, maxTime);
 
-	function endAnimation() {
+	const endAnimation = () => {
 		isTransitionRunning = false;
 		clearTimeout(maxTimeTimeout);
 		targetElement.removeEventListener("transitionend", endAnimation);
-	}
+	};
+	const maxTimeTimeout = setTimeout(endAnimation, maxTime);
 
 	animationLoop((deltaT) => render(deltaT) !== false && isTransitionRunning);
 	targetElement.addEventListener("transitionend", endAnimation);
