@@ -1,5 +1,43 @@
 # mapsight-next-starter
 
+## 0.1.6
+
+### Patch Changes
+
+- b167bd5: Bump dependencies from Dependabot ([#310](https://github.com/open-mapsight/mapsight/pull/310)):
+
+    - `next` `^16.3.4` → `^16.3.5` (patch)
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@types/node` `^24.13.3` → `^24.13.6` (patch)
+    - `@types/react` `^19.2.18` → `^19.3.0` (minor)
+    - `@types/react-dom` `~19.2.7` → `~19.3.0` (minor)
+    - `react` `^19.2.8` → `^19.3.0` (minor)
+    - `react-dom` `^19.2.8` → `^19.3.0` (minor)
+    - `sass` `^1.104.0` → `^1.105.0` (minor)
+    - `zod` `^4.5.4` → `^4.6.5` (minor)
+
+- 1864c03: Bump dependencies from Dependabot ([#317](https://github.com/open-mapsight/mapsight/pull/317)):
+
+    - `next` `^16.3.5` → `^16.3.6` (patch)
+
+- c1de22a: Bump dependencies from Dependabot ([#357](https://github.com/open-mapsight/mapsight/pull/357)):
+
+    - `next` `^16.3.6` → `^16.4.1` (minor)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `@types/node` `^24.13.6` → `^24.19.1` (minor)
+    - `ol` `^10.10.0` → `^10.11.0` (minor)
+    - `postcss` `^8.5.28` → `^8.5.29` (patch)
+
+- Updated dependencies [`d35cc9f`, `86feccf`, `5980a66`, `5dba09f`, `6e1146e`, `c46c174`, `58a9796`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+
 ## 0.1.5
 
 ### Patch Changes

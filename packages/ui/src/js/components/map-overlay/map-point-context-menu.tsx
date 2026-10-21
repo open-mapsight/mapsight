@@ -270,7 +270,10 @@ function MapPointContextMenu({
 			const map = getOlMap(store, mapControllerName);
 			if (
 				!map ||
-				!eventTargetIsInMap(event.target, map.getTargetElement())
+				!eventTargetIsInMap(
+					event.target,
+					map.getTargetElement() ?? null,
+				)
 			) {
 				return;
 			}
@@ -296,7 +299,10 @@ function MapPointContextMenu({
 			const map = getOlMap(store, mapControllerName);
 			if (
 				!map ||
-				!eventTargetIsInMap(event.target, map.getTargetElement())
+				!eventTargetIsInMap(
+					event.target,
+					map.getTargetElement() ?? null,
+				)
 			) {
 				pointerDownRef.current = null;
 				return;

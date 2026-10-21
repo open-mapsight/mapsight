@@ -1,5 +1,15 @@
 # @mapsight/lib-redux
 
+## 2.2.4
+
+### Patch Changes
+
+- 7dd3752: Move Lodash type declarations out of runtime dependencies.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- 58a9796: Update the shared Redux Toolkit dependency range from ^2.11.2 to ^2.13.0.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
 ## 2.2.3
 
 ### Patch Changes

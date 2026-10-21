@@ -1,5 +1,26 @@
 # @mapsight/vector-editor
 
+## 1.2.7
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `autoprefixer` `^10.5.5` → `^10.6.1` (minor)
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- 58a9796: Update the shared Redux Toolkit dependency range from ^2.11.2 to ^2.13.0.
+- Updated dependencies [`45aaead`, `e74d2c8`, `d35cc9f`, `86feccf`, `5980a66`, `63cf309`, `5dba09f`, `6e1146e`, `7dd3752`, `c46c174`, `58a9796`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
 ## 1.2.6
 
 ### Patch Changes

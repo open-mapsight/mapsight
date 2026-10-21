@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/vector-style-compiler",
 	"description": "Mapsight Vector Style Compiler",
-	"version": "13.0.4",
+	"version": "13.0.5",
 	"type": "module",
 	"bin": {
 		"vector-style-compiler": "./bin/vector-style-compiler.js"
@@ -12,7 +12,7 @@
 		"@types/node": "catalog:",
 		"chokidar": "^5.0.0",
 		"lodash": "catalog:",
-		"postcss": "^8.5.28",
+		"postcss": "^8.5.29",
 		"sass": "^1.105.0"
 	},
 	"devDependencies": {
@@ -26,7 +26,7 @@
 		"pidusage": "catalog:",
 		"playwright": "catalog:",
 		"replace-in-file": "^9.0.0",
-		"vite": "^8.3.0",
+		"vite": "^8.3.3",
 		"vitest": "catalog:"
 	},
 	"exports": {
