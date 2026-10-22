@@ -328,6 +328,41 @@ describe("PlaceActions", () => {
 		expect(onScrollToMap).toHaveBeenCalledTimes(1);
 	});
 
+	it("fits the feature up to the configured zoom limit", () => {
+		const store = configureStore({
+			reducer: {
+				app: (state = {mapIsOutOfViewport: false}) => state,
+			},
+		});
+		const dispatch = vi.spyOn(store, "dispatch");
+
+		render(
+			<Provider store={store}>
+				<FeaturePlaceActions
+					feature={feature()}
+					config={{
+						permalink: () => null,
+						navigation: {fromGeometry: false},
+						showOnMap: {maxZoom: 20},
+					}}
+				/>
+			</Provider>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Diesen Ort auf der Karte zeigen",
+			}),
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: ANIMATE,
+				options: expect.objectContaining({maxZoom: 20}),
+			}),
+		);
+	});
+
 	it("centers the feature without scrolling when the map is on-screen", () => {
 		const store = configureStore({
 			reducer: {
