@@ -251,11 +251,15 @@ function Share({
 
 function ShowOnMapButton({
 	feature,
+	maxZoom,
 	as: T = "button",
 	className,
 	label,
 	icon,
-}: PlaceActionPartProps & {feature: MapsightUiFeature}): ReactElement {
+}: PlaceActionPartProps & {
+	feature: MapsightUiFeature;
+	maxZoom: number;
+}): ReactElement {
 	const dispatch = useDispatch();
 	const isMapOutOfViewport = useSelector(isMapOutOfViewportSelector);
 	const dispatchAppChannelEvent = useAppChannelDispatchEvent();
@@ -267,7 +271,7 @@ function ShowOnMapButton({
 				animate(MAP, {
 					bounds,
 					duration: 500,
-					maxZoom: 17,
+					maxZoom,
 					padding: [60, 60, 60, 60],
 				}),
 			);
@@ -275,7 +279,13 @@ function ShowOnMapButton({
 		if (isMapOutOfViewport) {
 			dispatchAppChannelEvent(new Event(APP_EVENT_SCROLL_TO_MAP));
 		}
-	}, [dispatch, dispatchAppChannelEvent, feature, isMapOutOfViewport]);
+	}, [
+		dispatch,
+		dispatchAppChannelEvent,
+		feature,
+		isMapOutOfViewport,
+		maxZoom,
+	]);
 
 	const chrome = actionChrome(
 		translate("ui.place-actions.show-on-map.tooltip"),
@@ -361,7 +371,13 @@ function ShowOnMap(props: PlaceActionPartProps): ReactElement | null {
 	if (!showOnMap || !ctx) {
 		return null;
 	}
-	return <ShowOnMapButton {...props} feature={ctx.feature} />;
+	return (
+		<ShowOnMapButton
+			{...props}
+			feature={ctx.feature}
+			maxZoom={showOnMap.maxZoom}
+		/>
+	);
 }
 
 function Navigate({

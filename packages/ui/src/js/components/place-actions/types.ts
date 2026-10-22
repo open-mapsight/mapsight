@@ -34,6 +34,15 @@ export type CustomNavTarget = {
 
 export type NavigationTarget = BuiltInNavTargetId | CustomNavTarget;
 
+export type ShowOnMapConfig = {
+	/**
+	 * Closest zoom the map fits the feature to, within the view's own limit.
+	 * Default: 17. A function can tell points from areas, e.g. zoom further
+	 * into a small area than to a point.
+	 */
+	maxZoom?: number | ((feature: MapsightUiFeature) => number);
+};
+
 export type PlaceActionsConfig = FeaturePermalinkConfig & {
 	navigation?: {
 		fromGeometry?: boolean;
@@ -46,8 +55,11 @@ export type PlaceActionsConfig = FeaturePermalinkConfig & {
 		supportsGeo?: boolean | (() => boolean);
 	};
 	share?: {title?: string | ((feature: MapsightUiFeature) => string)};
-	/** Default: show when the feature has a point or bbox. */
-	showOnMap?: boolean;
+	/**
+	 * Default: show when the feature has a point or bbox. An object shows it
+	 * with these options.
+	 */
+	showOnMap?: boolean | ShowOnMapConfig;
 	/**
 	 * Default: only the shared `link-marker`. Set `true` to show for any
 	 * point, or `false` to hide it even on the marker.
@@ -70,6 +82,7 @@ export type SharePlaceAction = {
 
 export type ShowOnMapPlaceAction = {
 	kind: "showOnMap";
+	maxZoom: number;
 };
 
 export type CopyCoordsPlaceAction = {

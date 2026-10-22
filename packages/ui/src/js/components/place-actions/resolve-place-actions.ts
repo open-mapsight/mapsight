@@ -31,6 +31,7 @@ export {
 export {lonLatBbox, lonLatFromGeometry} from "../../helpers/geo";
 
 const DEFAULT_NAV_TARGETS = ["geo", "google", "apple"] as const;
+const DEFAULT_SHOW_ON_MAP_MAX_ZOOM = 17;
 
 function isBuiltInNavTargetId(target: unknown): target is BuiltInNavTargetId {
 	return target === "geo" || target === "google" || target === "apple";
@@ -268,7 +269,16 @@ function resolveShowOnMap(
 	if (!lonLatFromGeometry(feature)) {
 		return null;
 	}
-	return {kind: "showOnMap"};
+	const maxZoom =
+		typeof config?.showOnMap === "object"
+			? config.showOnMap.maxZoom
+			: undefined;
+	return {
+		kind: "showOnMap",
+		maxZoom:
+			(typeof maxZoom === "function" ? maxZoom(feature) : maxZoom) ??
+			DEFAULT_SHOW_ON_MAP_MAX_ZOOM,
+	};
 }
 
 function resolveNavigate(
