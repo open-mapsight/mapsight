@@ -36,6 +36,8 @@ export type RootStyleDeclaration = {
 	display?: {value: "none"};
 	image?: {type: {value: "icon" | "circle"}};
 	geometry?: {value: GeometryType | Derivation};
+	/** `extrusion-height` for the `extrusion*` geometry derivations, in map units. */
+	extrusion?: {height?: {value: number | string}};
 	zIndex?: {value: number};
 } & Partial<Record<StyleType, StyleDeclaration>>;
 

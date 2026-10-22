@@ -1,5 +1,6 @@
 import Feature from "ol/Feature";
 import GeometryCollection from "ol/geom/GeometryCollection";
+import type MultiPolygon from "ol/geom/MultiPolygon";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import Fill from "ol/style/Fill";
@@ -68,6 +69,52 @@ it("exposes geometry collection child indexes to style env and cache keys", () =
 		.filter((text): text is string => typeof text === "string");
 
 	expect(pointLabels).toEqual(["1:0", "2:1"]);
+});
+
+it("draws extrusion groups on the roof and walls of the feature's polygon", () => {
+	const styleFunction = createCachedStyleFunction({
+		constructorsMap: {
+			fill: Fill,
+			style: Style,
+			text: Text,
+		},
+		declarationHashFunction: (env, _props, envHash, geometryType) =>
+			[envHash, geometryType].join("|"),
+		// As compiled from `geometry: extrusion…; extrusion-height: 2;`.
+		declarationFunction: () => ({
+			default: {
+				geometry: {value: "extrusionRoof"},
+				extrusion: {height: {value: 2}},
+				fill: {color: {value: "#c00"}},
+			},
+			walls: {
+				geometry: {value: "extrusionShadedWalls"},
+				extrusion: {height: {value: "2"}},
+				fill: {color: {value: "#600"}},
+			},
+		}),
+	});
+
+	const feature = new Feature(
+		new Polygon([
+			[
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0],
+			],
+		]),
+	);
+
+	const [roof, walls] = styleFunction({}, feature) as Style[];
+
+	expect((roof!.getGeometry() as Polygon).getCoordinates()[0]![0]).toEqual([
+		0, 2,
+	]);
+	expect((walls!.getGeometry() as MultiPolygon).getPolygons()).toHaveLength(
+		2,
+	);
 });
 
 it("exposes compiled allowedProps on the style function", () => {

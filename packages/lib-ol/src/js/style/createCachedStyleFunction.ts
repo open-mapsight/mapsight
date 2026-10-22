@@ -9,7 +9,9 @@ import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 import type {Derivation} from "../geometry/deriveGeometriesFromBase.ts";
 import deriveGeometriesFromBase from "../geometry/deriveGeometriesFromBase.ts";
 import type {GroupedRootStyleDeclaration} from "../index.ts";
-import declarationToGeometry from "./declarationToGeometry.ts";
+import declarationToGeometry, {
+	declarationToExtrusionHeight,
+} from "./declarationToGeometry.ts";
 import declarationToStyle from "./declarationToStyle.ts";
 import {enterStyleFeatureScope} from "./styleFeatureScope.ts";
 import type {
@@ -32,6 +34,7 @@ const DEFAULT_CACHE_LEVEL_3_SIZE = 100;
 type CachedValue = {
 	style: Style | null;
 	geometryTypeOrDerivation: GeometryType | Derivation | null;
+	extrusionHeight: number | undefined;
 };
 type CachedValues = Array<CachedValue>;
 
@@ -242,6 +245,7 @@ export default function createCachedStyleFunction({
 			geometryTypeOrDerivation: declarationToGeometry(
 				declarations[group],
 			),
+			extrusionHeight: declarationToExtrusionHeight(declarations[group]),
 		}));
 		if (metrics) {
 			metrics.styleMaterializationMs +=
@@ -316,6 +320,7 @@ export default function createCachedStyleFunction({
 			.flatMap(function bindStyleToBaseGeometry({
 				style: baseStyle,
 				geometryTypeOrDerivation: geometryDerivation,
+				extrusionHeight,
 			}: CachedValue) {
 				if (baseStyle === null) {
 					return [];
@@ -324,6 +329,7 @@ export default function createCachedStyleFunction({
 				const derivedGeometries = deriveGeometriesFromBase(
 					geometryOrGeometryCollection,
 					geometryDerivation,
+					{extrusionHeight},
 				);
 
 				return derivedGeometries.map(
