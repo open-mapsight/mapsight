@@ -1,5 +1,19 @@
 # mapsight-next-starter
 
+## 0.1.7
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@types/node` `^24.19.1` → `^24.19.2` (patch)
+    - `postcss` `^8.5.29` → `^8.5.30` (patch)
+    - `zod` `^4.6.5` → `^4.6.7` (patch)
+
+- Updated dependencies [`dd49f24`, `79652e1`, `96cb6b4`, `37259f5`]:
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
 ## 0.1.6
 
 ### Patch Changes

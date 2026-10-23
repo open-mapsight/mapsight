@@ -1,5 +1,16 @@
 # @mapsight/count-aggregator-ui
 
+## 3.1.4
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@tanstack/react-query` `^5.104.1` → `^5.104.2` (patch)
+
+- Updated dependencies [`dd49f24`, `37259f5`]:
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+
 ## 3.1.3
 
 ### Patch Changes

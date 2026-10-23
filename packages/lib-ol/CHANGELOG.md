@@ -1,5 +1,17 @@
 # @mapsight/lib-ol
 
+## 4.3.0
+
+### Minor Changes
+
+- 96cb6b4: Add `extrusionRoof`, `extrusionLitWalls` and `extrusionShadedWalls` geometry derivations that draw polygons, including courtyard walls, as pseudo-3D blocks. Heights come from the style group's `extrusion-height`; invalid or non-positive values keep a flat footprint. Derived geometry caching is bounded and supports GeometryCollection children.
+
+### Patch Changes
+
+- 79652e1: Bump dependencies from Dependabot ([#368](https://github.com/open-mapsight/mapsight/pull/368)):
+
+    - `tsc-alias` `^1.9.5` → `^1.9.7` (patch)
+
 ## 4.2.6
 
 ### Patch Changes
