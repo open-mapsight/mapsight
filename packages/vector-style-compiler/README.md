@@ -242,14 +242,44 @@ as pseudo-3D blocks seen slightly from the south: the roof is the footprint
 moved north by `extrusion-height` map units, and the south-, east- and
 west-facing walls connect it to the footprint. With light from the north-west,
 west-facing walls are lit and the others shaded. Points and lines keep their
-own geometry as roof and get no walls, and so does `extrusion-height: 0`.
+own geometry as roof and get no walls. Missing, non-numeric, non-finite or
+non-positive heights draw a flat footprint without walls. Inner rings retain
+their roof openings and get visible courtyard walls.
 
+These derivations require **`@mapsight/lib-ol` 4.3.0 or later**. The compiler
+already passes both properties through; version 13.1.0 adds their documentation
+and IDE metadata.
+
+This is a fixed pseudo-3D convention intended for **north-up maps**: displacement
+and binary lighting stay anchored to map coordinates, so rotating the view
+rotates the extrusion direction on screen. Height is measured in projection
+units, not ground metres. In EPSG:3857, a ground metre spans approximately
+`1 / cos(latitude)` map units (with latitude expressed in radians).
+
+Give roofs a higher `zIndex` than both wall passes, and the shaded tint a higher
+`zIndex` than the wall base colour. OpenLayers batches these indexes across
+features, so this also keeps rear walls below foreground roofs for blocks of
+equal height. The recipe does not depth-sort intersecting wall faces, blocks
+with different heights or transparent roofs. Raise the vector layer's `renderBuffer`
+(pixels) when `extrusion-height / resolution` can exceed it: OpenLayers culls
+features by their original footprint, and a tall block can extend into the
+viewport even when its footprint is outside it.
+
+<!-- prettier-ignore -->
 ```scss
 /* @formatter:off */
 [kind="stall"] {
 	geometry: extrusionRoof;
 	extrusion-height: 1.2;
 	fill-color: attr(fill);
+	zIndex: 2;
+
+	.wall-lit {
+		geometry: extrusionLitWalls;
+		extrusion-height: 1.2;
+		fill-color: attr(fill);
+		zIndex: 0;
+	}
 
 	/* Each wall: the stall's colour, darkened by a translucent layer */
 	.wall-shaded,
@@ -257,10 +287,12 @@ own geometry as roof and get no walls, and so does `extrusion-height: 0`.
 		geometry: extrusionShadedWalls;
 		extrusion-height: 1.2;
 		fill-color: attr(fill);
+		zIndex: 0;
 	}
 
 	.wall-shaded-tint {
 		fill-color: rgba(0, 0, 0, 0.4);
+		zIndex: 1;
 	}
 }
 /* @formatter:on */

@@ -179,7 +179,7 @@
 			"status": "nonstandard",
 			"references": [
 				{
-					"name": "OpenLayers style docs",
+					"name": "Mapsight geometry docs",
 					"url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
 				},
 				{
@@ -194,7 +194,7 @@
 			"status": "nonstandard",
 			"references": [
 				{
-					"name": "OpenLayers style docs",
+					"name": "Mapsight geometry docs",
 					"url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
 				},
 				{
@@ -209,7 +209,7 @@
 			"status": "nonstandard",
 			"references": [
 				{
-					"name": "OpenLayers style docs",
+					"name": "Mapsight geometry docs",
 					"url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
 				},
 				{
@@ -239,7 +239,7 @@
 			"status": "nonstandard",
 			"references": [
 				{
-					"name": "OpenLayers style docs",
+					"name": "Mapsight geometry docs",
 					"url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
 				},
 				{
