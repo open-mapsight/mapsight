@@ -34,7 +34,7 @@
 		"directory": "packages/lib-ol"
 	},
 	"scripts": {
-		"build": "tsc && tsc-alias",
+		"build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
@@ -42,7 +42,7 @@
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",
-		"watch:build:modules": "tsc --watch",
-		"watch:build:paths": "tsc-alias --watch"
+		"watch:build:modules": "tsc -p tsconfig.build.json --watch",
+		"watch:build:paths": "tsc-alias -p tsconfig.build.json --watch"
 	}
 }

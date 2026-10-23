@@ -829,6 +829,9 @@ importers:
       '@types/pidusage':
         specifier: ^2.0.5
         version: 2.0.5
+      canvas:
+        specifier: 'catalog:'
+        version: 3.2.3
       fs-extra:
         specifier: ^11.4.1
         version: 11.4.1

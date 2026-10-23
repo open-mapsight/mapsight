@@ -229,6 +229,75 @@ Volatile helpers must stay synchronous from the style function's perspective
 (they may schedule async work internally, but must return a string immediately).
 Pair them with a map re-render callback when the async result is ready.
 
+### Derived geometries
+
+A style group can draw on a geometry derived from the feature's own with
+`geometry`. Point derivations place icons or labels along lines and polygon
+rings: `vertices`, `firstVertex`, `lastVertex`, `segmentStarts`,
+`segmentEnds`, `intermediateSegmentStarts` and `intermediateSegmentEnds`
+(rotated along the segment).
+
+`extrusionRoof`, `extrusionLitWalls` and `extrusionShadedWalls` draw polygons
+as pseudo-3D blocks seen slightly from the south: the roof is the footprint
+moved north by `extrusion-height` map units, and the south-, east- and
+west-facing walls connect it to the footprint. With light from the north-west,
+west-facing walls are lit and the others shaded. Points and lines keep their
+own geometry as roof and get no walls. Missing, non-numeric, non-finite or
+non-positive heights draw a flat footprint without walls. Inner rings retain
+their roof openings and get visible courtyard walls.
+
+These derivations require **`@mapsight/lib-ol` 4.3.0 or later**. The compiler
+already passes both properties through; version 13.1.0 adds their documentation
+and IDE metadata.
+
+This is a fixed pseudo-3D convention intended for **north-up maps**: displacement
+and binary lighting stay anchored to map coordinates, so rotating the view
+rotates the extrusion direction on screen. Height is measured in projection
+units, not ground metres. In EPSG:3857, a ground metre spans approximately
+`1 / cos(latitude)` map units (with latitude expressed in radians).
+
+Give roofs a higher `zIndex` than both wall passes, and the shaded tint a higher
+`zIndex` than the wall base colour. OpenLayers batches these indexes across
+features, so this also keeps rear walls below foreground roofs for blocks of
+equal height. The recipe does not depth-sort intersecting wall faces, blocks
+with different heights or transparent roofs. Raise the vector layer's `renderBuffer`
+(pixels) when `extrusion-height / resolution` can exceed it: OpenLayers culls
+features by their original footprint, and a tall block can extend into the
+viewport even when its footprint is outside it.
+
+<!-- prettier-ignore -->
+```scss
+/* @formatter:off */
+[kind="stall"] {
+	geometry: extrusionRoof;
+	extrusion-height: 1.2;
+	fill-color: attr(fill);
+	zIndex: 2;
+
+	.wall-lit {
+		geometry: extrusionLitWalls;
+		extrusion-height: 1.2;
+		fill-color: attr(fill);
+		zIndex: 0;
+	}
+
+	/* Each wall: the stall's colour, darkened by a translucent layer */
+	.wall-shaded,
+	.wall-shaded-tint {
+		geometry: extrusionShadedWalls;
+		extrusion-height: 1.2;
+		fill-color: attr(fill);
+		zIndex: 0;
+	}
+
+	.wall-shaded-tint {
+		fill-color: rgba(0, 0, 0, 0.4);
+		zIndex: 1;
+	}
+}
+/* @formatter:on */
+```
+
 ## Caching
 
 High-level 3-level LRU caching strategy:
@@ -288,7 +357,7 @@ property`, and add the following string under `Options -> Custom CSS Properties`
 
 <!-- CUSTOM_CSS_PROPERTIES_LIST: -->
 
-circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-color,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
+circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
 </code>
 
 ## Benchmarking
@@ -310,199 +379,211 @@ circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-col
 
 #### circle-fill-color
 
-Description:
+Description: Fill color for circle point symbols. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.
 
 Since version: v0.0.0
 
 #### circle-radius
 
-Description:
+Description: Radius in pixels for circle point symbols. OpenLayers requires a radius to render a Circle image style.
 
 Since version: v0.0.0
 
 #### circle-stroke-color
 
-Description:
+Description: Stroke color for the outline of circle point symbols. Accepts OpenLayers stroke color values.
 
 Since version: v0.0.0
 
 #### circle-stroke-width
 
-Description:
+Description: Stroke width in pixels for the outline of circle point symbols.
 
 Since version: v0.0.0
 
+#### extrusion-height
+
+Description: Height in map units for the extrusion geometry derivations (extrusionRoof, extrusionLitWalls, extrusionShadedWalls): the roof is drawn this far north of the footprint. 0 draws the footprint flat without walls.
+
+Since version: v13.1.0
+
 #### fill-color
 
-Description:
+Description: Fill color for polygon interiors. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.
+
+Since version: v0.0.0
+
+#### geometry
+
+Description: Draws this style group on a geometry derived from the feature's: vertices, firstVertex, lastVertex, segmentStarts, segmentEnds (and their intermediate variants) as points, or extrusionRoof, extrusionLitWalls and extrusionShadedWalls for pseudo-3D blocks of polygons (see extrusion-height).
 
 Since version: v0.0.0
 
 #### icon-anchorx
 
-Description:
+Description: Horizontal icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.
 
 Since version: v0.0.0
 
 #### icon-anchory
 
-Description:
+Description: Vertical icon anchor. The anchor defaults to the icon center; numeric Mapsight values are passed to OpenLayers icon anchor handling.
 
 Since version: v0.0.0
 
 #### icon-offsetx
 
-Description:
+Description: Horizontal sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.
 
 Since version: v0.0.0
 
 #### icon-offsety
 
-Description:
+Description: Vertical sprite offset in pixels. Used with icon size to select a sub-rectangle from the source image.
 
 Since version: v0.0.0
 
 #### icon-opacity
 
-Description:
+Description: Icon opacity from 0 to 1.
 
 Since version: v0.0.0
 
 #### icon-scale
 
-Description:
+Description: Icon scale factor. OpenLayers accepts a single number or a two-dimensional scale; do not combine absolute icon width/height with scale.
 
 Since version: v0.0.0
 
 #### icon-sizex
 
-Description:
+Description: Width in pixels of the icon image or sprite sub-rectangle selected from the source image.
 
 Since version: v0.0.0
 
 #### icon-sizey
 
-Description:
+Description: Height in pixels of the icon image or sprite sub-rectangle selected from the source image.
 
 Since version: v0.0.0
 
 #### icon-snaptopixel
 
-Description:
+Description: Whether icon rendering should align to device pixels where supported by the OpenLayers image style renderer.
 
 Since version: v0.0.0
 
 #### icon-src
 
-Description:
+Description: Image URL used for icon point symbols. OpenLayers requires a source image or loaded image to render an Icon style.
 
 Since version: v0.0.0
 
 #### image-circle-fill-color
 
-Description:
+Description: Fill color for a circle image symbol nested under the style image property.
 
 Since version: v0.0.0
 
 #### image-circle-radius
 
-Description:
+Description: Radius in pixels for a circle image symbol nested under the style image property.
 
 Since version: v0.0.0
 
 #### image-type
 
-Description:
+Description: Mapsight image symbolizer selector. Use it to choose the OpenLayers image style kind, such as a circle or icon, for point rendering.
 
 Since version: v0.0.0
 
 #### stroke-color
 
-Description:
+Description: Stroke color for line strings and polygon boundaries. Accepts OpenLayers color, gradient, or pattern values.
 
 Since version: v0.0.0
 
 #### stroke-linedash
 
-Description:
+Description: Line dash pattern for strokes: an array of numbers specifying alternating drawn segment and gap lengths.
 
 Since version: v0.0.0
 
 #### text-alignment
 
-Description:
+Description: Mapsight text alignment helper for label placement. Prefer text-textAlign when mapping directly to OpenLayers Text textAlign.
 
 Since version: v0.0.0
 
 #### text-fill-color
 
-Description:
+Description: Fill color for label text. OpenLayers uses a dark default fill (#333) when no text fill is provided; use null for no fill.
 
 Since version: v0.0.0
 
 #### text-font
 
-Description:
+Description: CSS font string for labels, as accepted by CanvasRenderingContext2D.font. OpenLayers defaults to '10px sans-serif'.
 
 Since version: v0.0.0
 
 #### text-offsetx
 
-Description:
+Description: Horizontal label offset in pixels. OpenLayers defaults to 0.
 
 Since version: v0.0.0
 
 #### text-offsety
 
-Description:
+Description: Vertical label offset in pixels. OpenLayers defaults to 0.
 
 Since version: v0.0.0
 
 #### text-placement
 
-Description:
+Description: Label placement mode. Use 'point' for point placement or 'line' to render text along line geometry.
 
 Since version: v0.0.0
 
 #### text-stroke-color
 
-Description:
+Description: Stroke color for label outlines. Useful for improving text contrast over map content.
 
 Since version: v0.0.0
 
 #### text-stroke-width
 
-Description:
+Description: Stroke width in pixels for label outlines.
 
 Since version: v0.0.0
 
 #### text-testalign
 
-Description:
+Description: Legacy or misspelled Mapsight text alignment property. Prefer text-textAlign.
 
 Since version: v0.0.0
 
 #### text-text
 
-Description:
+Description: Label text content. OpenLayers accepts plain strings with line breaks or rich text arrays; Mapsight values can also be dynamic via attr(...).
 
 Since version: v0.0.0
 
 #### text-textalign
 
-Description:
+Description: Horizontal label alignment. OpenLayers supports 'left', 'right', 'center', 'end', and 'start'.
 
 Since version: v0.0.0
 
 #### text-textbaseline
 
-Description:
+Description: Vertical label baseline. OpenLayers supports 'bottom', 'top', 'middle', 'alphabetic', 'hanging', and 'ideographic'.
 
 Since version: v0.0.0
 
 #### zindex
 
-Description:
+Description: Z index for this style. OpenLayers uses it to order style rendering; higher values draw above lower values.
 
 Since version: v0.0.0
 
@@ -517,7 +598,7 @@ Go to `Settings -> Editor -> Inspections` and search for `Unknown CSS property`.
 
 <!-- CUSTOM_CSS_PROPERTIES_LIST: -->
 
-circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,fill-color,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
+circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
 </code>
 
 ## Benchmarking

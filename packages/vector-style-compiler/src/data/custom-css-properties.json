@@ -28,9 +28,23 @@
 		"sinceVersion": "v0.0.0"
 	},
 	{
+		"name": "extrusion-height",
+		"description": "Height in map units for the extrusion geometry derivations (extrusionRoof, extrusionLitWalls, extrusionShadedWalls): the roof is drawn this far north of the footprint. 0 draws the footprint flat without walls.",
+		"docUrl": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries",
+		"deprecated": false,
+		"sinceVersion": "v13.1.0"
+	},
+	{
 		"name": "fill-color",
 		"description": "Fill color for polygon interiors. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.",
 		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html",
+		"deprecated": false,
+		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "geometry",
+		"description": "Draws this style group on a geometry derived from the feature's: vertices, firstVertex, lastVertex, segmentStarts, segmentEnds (and their intermediate variants) as points, or extrusionRoof, extrusionLitWalls and extrusionShadedWalls for pseudo-3D blocks of polygons (see extrusion-height).",
+		"docUrl": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries",
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
 	},
