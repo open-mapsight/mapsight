@@ -10,7 +10,6 @@ const TEST_FILE_PATTERN = /\.(test|spec)\.(ts|tsx)$/;
 /** Packages not yet on the unified tsconfig pattern (see docs/development/STANDARDS.md). */
 const ALLOWLIST = new Set([
 	"@mapsight/count-aggregator-api",
-	"@mapsight/lib-ol",
 	"@mapsight/traffic-style",
 	"@mapsight/ui",
 ]);

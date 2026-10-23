@@ -448,6 +448,33 @@ describe("resolvePlaceActions", () => {
 
 		expect(actions.find((action) => action.kind === "showOnMap")).toEqual({
 			kind: "showOnMap",
+			maxZoom: 17,
+		});
+	});
+
+	it("takes the show on map zoom limit from the config", () => {
+		const showOnMap = (config: PlaceActionsConfig) =>
+			resolvePlaceActions(feature(), {
+				permalink: () => null,
+				navigation: {fromGeometry: false},
+				...config,
+			}).find((action) => action.kind === "showOnMap");
+
+		expect(showOnMap({showOnMap: {maxZoom: 20}})).toEqual({
+			kind: "showOnMap",
+			maxZoom: 20,
+		});
+		expect(
+			showOnMap({
+				showOnMap: {
+					maxZoom: (candidate) =>
+						candidate.geometry?.type === "Point" ? 16 : 20,
+				},
+			}),
+		).toEqual({kind: "showOnMap", maxZoom: 16});
+		expect(showOnMap({showOnMap: {}})).toEqual({
+			kind: "showOnMap",
+			maxZoom: 17,
 		});
 	});
 

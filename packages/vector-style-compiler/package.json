@@ -19,6 +19,7 @@
 		"@mapsight/core": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
 		"@types/pidusage": "^2.0.5",
+		"canvas": "catalog:",
 		"fs-extra": "^11.4.1",
 		"json": "^11.0.0",
 		"mkdirp": "^3.0.1",

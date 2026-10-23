@@ -33,6 +33,7 @@ export type {
 	PlaceActionsResolveContext,
 	ResolvedNavTarget,
 	SharePlaceAction,
+	ShowOnMapConfig,
 	ShowOnMapPlaceAction,
 	WebsitePlaceAction,
 } from "./types";
