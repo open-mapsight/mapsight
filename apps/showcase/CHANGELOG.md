@@ -1,5 +1,19 @@
 # @mapsight/showcase
 
+## 0.1.7
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@tanstack/react-query` `^5.104.1` → `^5.104.2` (patch)
+
+- Updated dependencies [`dd49f24`, `79652e1`, `96cb6b4`, `37259f5`]:
+    - `@mapsight/count-aggregator-ui@3.1.3 → 3.1.4` (patch)
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+    - `@mapsight/core@14.6.3 → 14.6.4` (patch)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
 ## 0.1.6
 
 ### Patch Changes

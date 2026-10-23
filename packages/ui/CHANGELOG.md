@@ -1,5 +1,23 @@
 # @mapsight/ui
 
+## 7.7.0
+
+### Minor Changes
+
+- 37259f5: Make the show-on-map zoom limit configurable: `showOnMap: {maxZoom}` in the place actions config takes a zoom or a function of the feature (default 17), so hosts can fit small areas closer than points
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@tanstack/react-query` `^5.104.1` → `^5.104.2` (patch)
+    - `react-aria` `^3.52.1` → `^3.53.1` (minor)
+    - `react-aria-components` `^1.21.1` → `^1.22.1` (minor)
+
+- Updated dependencies [`79652e1`, `96cb6b4`]:
+    - `@mapsight/core@14.6.3 → 14.6.4` (patch)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
 ## 7.6.3
 
 ### Patch Changes

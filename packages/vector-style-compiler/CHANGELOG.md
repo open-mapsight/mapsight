@@ -1,5 +1,21 @@
 # @mapsight/vector-style-compiler
 
+## 13.1.0
+
+### Minor Changes
+
+- 96cb6b4: Document derived geometries (`geometry`) including pseudo-3D extrusion with `extrusion-height`, and list both properties in the IDE metadata
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `postcss` `^8.5.29` → `^8.5.30` (patch)
+
+- Updated dependencies [`79652e1`, `96cb6b4`]:
+    - `@mapsight/core@14.6.3 → 14.6.4` (patch)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
 ## 13.0.5
 
 ### Patch Changes
