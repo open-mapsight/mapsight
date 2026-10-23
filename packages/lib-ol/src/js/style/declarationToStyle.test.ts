@@ -50,16 +50,19 @@ it("still constructs an Icon when src is a non-empty URL", () => {
 });
 
 it("skips Icon construction when icon is none even if a merged src remains", () => {
+	const icon = Object.assign(
+		{value: "none" as const},
+		{
+			src: {
+				value: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII=",
+			},
+		},
+	);
 	const style = declarationToStyle(
 		constructorsMap,
 		{
 			image: {type: {value: "icon"}},
-			icon: {
-				value: "none",
-				src: {
-					value: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII=",
-				},
-			},
+			icon,
 			fill: {color: {value: "rgba(0,127,0,0.3)"}},
 		},
 		"style",

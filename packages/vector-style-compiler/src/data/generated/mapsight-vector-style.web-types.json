@@ -85,10 +85,34 @@
 					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
 				},
 				{
+					"name": "extrusion-height",
+					"description": "Height in map units for the extrusion geometry derivations (extrusionRoof, extrusionLitWalls, extrusionShadedWalls): the roof is drawn this far north of the footprint. 0 draws the footprint flat without walls.",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
+				},
+				{
+					"name": "extrusion",
+					"description": "Sass nested namespace for Mapsight vector style properties matching extrusion-*.",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
+				},
+				{
+					"name": "height",
+					"description": "Nested form of Mapsight vector style property extrusion-height.",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
+				},
+				{
 					"name": "fill",
 					"description": "Sass nested namespace for Mapsight vector style properties matching fill-*.",
 					"deprecated": false,
 					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html"
+				},
+				{
+					"name": "geometry",
+					"description": "Draws this style group on a geometry derived from the feature's: vertices, firstVertex, lastVertex, segmentStarts, segmentEnds (and their intermediate variants) as points, or extrusionRoof, extrusionLitWalls and extrusionShadedWalls for pseudo-3D blocks of polygons (see extrusion-height).",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries"
 				},
 				{
 					"name": "icon-anchorx",
