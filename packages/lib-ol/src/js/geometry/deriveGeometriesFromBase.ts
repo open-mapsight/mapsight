@@ -77,6 +77,7 @@ export default function deriveGeometriesFromBase(
 		// Points, lines and flat blocks have no walls; their roof is the base.
 		if (
 			!(base instanceof Polygon || base instanceof MultiPolygon) ||
+			!Number.isFinite(extrusionHeight) ||
 			extrusionHeight <= 0
 		) {
 			return extrusionPart === "roof" ? [[base, {}]] : [];

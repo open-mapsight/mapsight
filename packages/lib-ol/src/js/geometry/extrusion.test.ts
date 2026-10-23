@@ -8,7 +8,7 @@ import {describe, expect, it} from "vitest";
 import deriveGeometriesFromBase from "./deriveGeometriesFromBase.ts";
 import extrudeGeometry, {extrudeRings} from "./extrusion.ts";
 
-// Counter-clockwise unit square: south, east, north and west edge.
+// Counter-clockwise unit square: only the south wall has visible area.
 const square: Array<Coordinate> = [
 	[0, 0],
 	[1, 0],
@@ -18,7 +18,7 @@ const square: Array<Coordinate> = [
 ];
 
 describe("extrudeRings", () => {
-	it("moves the roof north and draws the south, east and west walls", () => {
+	it("moves the roof north and skips hidden and zero-area walls", () => {
 		const {roof, litWalls, shadedWalls} = extrudeRings([square], 2);
 
 		expect(roof).toEqual([
@@ -30,19 +30,7 @@ describe("extrudeRings", () => {
 				[0, 2],
 			],
 		]);
-		// Light from the north-west: the west wall is lit.
-		expect(litWalls).toEqual([
-			[
-				[
-					[0, 1],
-					[0, 0],
-					[0, 2],
-					[0, 3],
-					[0, 1],
-				],
-			],
-		]);
-		// South and east walls are shaded; the north wall hides under the roof.
+		expect(litWalls).toEqual([]);
 		expect(shadedWalls).toEqual([
 			[
 				[
@@ -53,24 +41,98 @@ describe("extrudeRings", () => {
 					[0, 0],
 				],
 			],
-			[
-				[
-					[1, 0],
-					[1, 1],
-					[1, 3],
-					[1, 2],
-					[1, 0],
-				],
-			],
 		]);
 	});
 
-	it("finds the same walls on clockwise rings", () => {
-		const clockwise = extrudeRings([[...square].reverse()], 2);
+	it("lights the west-facing wall of a rotated rectangle for either winding", () => {
+		const rectangle = new Polygon([
+			[
+				[0, 0],
+				[4, 0],
+				[4, 2],
+				[0, 2],
+				[0, 0],
+			],
+		]);
+		rectangle.rotate(Math.PI / 6, [0, 0]);
+		const ring = rectangle.getCoordinates()[0]!;
+		const counterClockwise = extrudeRings([ring], 2);
+		const clockwise = extrudeRings([[...ring].reverse()], 2);
+		const normalize = (walls: typeof clockwise.litWalls) =>
+			walls
+				.map(([wall]) =>
+					wall!
+						.slice(0, -1)
+						.map((point) => point.join(","))
+						.sort()
+						.join(";"),
+				)
+				.sort();
 
-		expect(clockwise.litWalls).toHaveLength(1);
-		expect(clockwise.shadedWalls).toHaveLength(2);
+		expect(counterClockwise.litWalls).toHaveLength(1);
+		expect(counterClockwise.shadedWalls).toHaveLength(1);
+		expect(counterClockwise.litWalls[0]![0]!.slice(0, 2)).toEqual([
+			ring[3],
+			ring[4],
+		]);
+		expect(counterClockwise.shadedWalls[0]![0]!.slice(0, 2)).toEqual([
+			ring[0],
+			ring[1],
+		]);
+		for (const walls of [
+			counterClockwise.litWalls,
+			counterClockwise.shadedWalls,
+		]) {
+			expect(new MultiPolygon(walls).getArea()).toBeGreaterThan(0);
+		}
+		expect(normalize(clockwise.litWalls)).toEqual(
+			normalize(counterClockwise.litWalls),
+		);
+		expect(normalize(clockwise.shadedWalls)).toEqual(
+			normalize(counterClockwise.shadedWalls),
+		);
 	});
+
+	it.each([
+		[false, false],
+		[false, true],
+		[true, false],
+		[true, true],
+	])(
+		"draws courtyard walls with reversed outer=%s and inner=%s rings",
+		(reverseOuter, reverseInner) => {
+			const outer: Array<Coordinate> = [
+				[0, 0],
+				[10, 0],
+				[10, 10],
+				[0, 10],
+				[0, 0],
+			];
+			const inner: Array<Coordinate> = [
+				[3, 3],
+				[3, 7],
+				[7, 7],
+				[7, 3],
+				[3, 3],
+			];
+			const rings = [
+				reverseOuter ? outer.reverse() : outer,
+				reverseInner ? inner.reverse() : inner,
+			];
+			const {roof, litWalls, shadedWalls} = extrudeRings(rings, 1);
+			expect(new Polygon(roof).intersectsCoordinate([5, 7.5])).toBe(
+				false,
+			);
+			expect(
+				new MultiPolygon(shadedWalls).intersectsCoordinate([5, 7.5]),
+			).toBe(true);
+			expect(
+				new MultiPolygon(shadedWalls).intersectsCoordinate([5, 3.5]),
+			).toBe(false);
+			expect(litWalls).toEqual([]);
+			expect(new Polygon(rings).getArea()).toBe(84);
+		},
+	);
 
 	it("lifts holes with the roof", () => {
 		const hole: Array<Coordinate> = [
@@ -107,10 +169,22 @@ describe("extrudeGeometry", () => {
 				.map((wall) => wall.getCoordinates()[0]![0]),
 		).toEqual([
 			[0, 0],
-			[1, 0],
 			[2, 0],
-			[3, 0],
 		]);
+	});
+
+	it("evicts old heights while sharing recently used parts between groups", () => {
+		const polygon = new Polygon([square]);
+		const firstRoof = extrudeGeometry(polygon, 1, "roof");
+		const recentWalls = extrudeGeometry(polygon, 2, "shadedWalls");
+		for (let height = 3; height <= 1000; height++) {
+			extrudeGeometry(polygon, height, "roof");
+			expect(extrudeGeometry(polygon, 2, "shadedWalls")).toBe(
+				recentWalls,
+			);
+		}
+		expect(extrudeGeometry(polygon, 1, "roof")).not.toBe(firstRoof);
+		expect(polygon.getCoordinates()).toEqual([square]);
 	});
 
 	it("reuses derived geometries until the source changes", () => {
@@ -128,6 +202,28 @@ describe("extrudeGeometry", () => {
 			).getCoordinates()[0]![0],
 		).toEqual([1, 1]);
 	});
+
+	it.each([NaN, Infinity, -Infinity, -1, 0])(
+		"uses a flat footprint for height %s",
+		(height) => {
+			const polygon = new Polygon([square]);
+			expect(
+				deriveGeometriesFromBase(polygon, "extrusionRoof", {
+					extrusionHeight: height,
+				}),
+			).toEqual([[polygon, {}]]);
+			for (const derivation of [
+				"extrusionLitWalls",
+				"extrusionShadedWalls",
+			] as const) {
+				expect(
+					deriveGeometriesFromBase(polygon, derivation, {
+						extrusionHeight: height,
+					}),
+				).toEqual([]);
+			}
+		},
+	);
 });
 
 describe("extrusion derivations", () => {

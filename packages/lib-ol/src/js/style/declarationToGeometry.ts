@@ -11,5 +11,6 @@ export function declarationToExtrusionHeight(
 	declaration?: RootStyleDeclaration,
 ): number | undefined {
 	const value = declaration?.extrusion?.height?.value;
-	return value == null ? undefined : Number(value);
+	const height = Number(value);
+	return Number.isFinite(height) ? height : undefined;
 }

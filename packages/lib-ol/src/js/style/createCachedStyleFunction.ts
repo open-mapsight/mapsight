@@ -282,7 +282,7 @@ export default function createCachedStyleFunction({
 			const typeIndexes = new Map<GeometryType, number>();
 
 			return collection
-				.getGeometries()
+				.getGeometriesArray()
 				.flatMap((geometry: Geometry, geometryCollectionIndex) => {
 					const childGeometryType = geometry.getType();
 					const geometryCollectionTypeIndex =

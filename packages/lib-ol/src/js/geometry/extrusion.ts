@@ -25,43 +25,48 @@ function signedArea(ring: Ring): number {
 /**
  * Pseudo-3D block of one polygon (outer ring plus holes), seen slightly from
  * the south: the roof is the footprint moved north by `height` (map units).
- * The south-, east- and west-facing walls of the outer ring connect footprint
- * and roof; north-facing walls would be hidden by the roof. With light from
- * the north-west, west-facing walls are lit and the others shaded.
+ * South-facing walls of outer and inner rings connect footprint and roof;
+ * north-facing walls are hidden and north-south edges have no visible area.
+ * With light from the north-west, walls are split into lit and shaded faces.
  */
 export function extrudeRings(
 	rings: Array<Ring>,
 	height: number,
 ): ExtrudedRings {
 	const lift = ([x, y]: Coordinate): Coordinate => [x!, y! + height];
-	const outer = rings[0] ?? [];
-	const clockwise = signedArea(outer) < 0;
 	const litWalls: Array<Array<Ring>> = [];
 	const shadedWalls: Array<Array<Ring>> = [];
-	for (let i = 0; i < outer.length - 1; i++) {
-		const a = outer[i]!;
-		const b = outer[i + 1]!;
-		const dx = b[0]! - a[0]!;
-		const dy = b[1]! - a[1]!;
-		const length = Math.hypot(dx, dy);
-		if (!length) {
-			continue;
+	for (const [ringIndex, ring] of rings.entries()) {
+		// Normals point away from the filled area, into holes for inner rings.
+		const clockwise = signedArea(ring) < 0;
+		const flip = clockwise !== ringIndex > 0;
+		for (let i = 0; i < ring.length - 1; i++) {
+			const a = ring[i]!;
+			const b = ring[i + 1]!;
+			const dx = b[0]! - a[0]!;
+			const dy = b[1]! - a[1]!;
+			const length = Math.hypot(dx, dy);
+			if (!length) {
+				continue;
+			}
+			const nx = (flip ? -dy : dy) / length;
+			const ny = (flip ? dx : -dx) / length;
+			if (ny >= 0) {
+				continue;
+			}
+			const wall = [[a, b, lift(b), lift(a), a]];
+			(ny - nx > 0 ? litWalls : shadedWalls).push(wall);
 		}
-		// Outward normal: right of the edge for counter-clockwise rings.
-		const nx = (clockwise ? -dy : dy) / length;
-		const ny = (clockwise ? dx : -dx) / length;
-		if (ny > 0) {
-			continue;
-		}
-		const wall = [[a, b, lift(b), lift(a), a]];
-		(ny - nx > 0 ? litWalls : shadedWalls).push(wall);
 	}
 	return {roof: rings.map((ring) => ring.map(lift)), litWalls, shadedWalls};
 }
 
 type ExtrudedGeometry = Record<ExtrusionPart, Polygon | MultiPolygon>;
 
-// Derived geometries per source geometry, its revision and the height.
+// Keep a few style-group heights without retaining every animated/zoom height.
+const MAX_CACHED_HEIGHTS = 8;
+
+// Derived geometries per source geometry, its revision and recent heights.
 const cache = new WeakMap<
 	Polygon | MultiPolygon,
 	{revision: number; byHeight: Map<number, ExtrudedGeometry>}
@@ -102,7 +107,12 @@ export default function extrudeGeometry(
 				blocks.flatMap((block) => block.shadedWalls),
 			),
 		};
-		entry.byHeight.set(height, parts);
+	}
+	// Refresh insertion order so eviction removes the least recently used height.
+	entry.byHeight.delete(height);
+	entry.byHeight.set(height, parts);
+	if (entry.byHeight.size > MAX_CACHED_HEIGHTS) {
+		entry.byHeight.delete(entry.byHeight.keys().next().value!);
 	}
 	return parts[part];
 }

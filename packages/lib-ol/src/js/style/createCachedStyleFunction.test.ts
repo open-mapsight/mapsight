@@ -113,8 +113,43 @@ it("draws extrusion groups on the roof and walls of the feature's polygon", () =
 		0, 2,
 	]);
 	expect((walls!.getGeometry() as MultiPolygon).getPolygons()).toHaveLength(
-		2,
+		1,
 	);
+});
+
+it("reuses collection child extrusions and invalidates them after editing", () => {
+	const styleFunction = createCachedStyleFunction({
+		constructorsMap: {fill: Fill, style: Style},
+		declarationHashFunction: (_env, _props, envHash, geometryType) =>
+			[envHash, geometryType].join("|"),
+		declarationFunction: () => ({
+			default: {
+				geometry: {value: "extrusionRoof"},
+				extrusion: {height: {value: 1}},
+				fill: {color: {value: "red"}},
+			},
+		}),
+	});
+	const child = new Polygon([
+		[
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+		],
+	]);
+	const feature = new Feature(
+		new GeometryCollection([new GeometryCollection([child])]),
+	);
+	const roof = () =>
+		(styleFunction({}, feature) as Style[])[0]!.getGeometry() as Polygon;
+	const first = roof();
+	expect(roof()).toBe(first);
+	expect(child.getCoordinates()[0]![0]).toEqual([0, 0]);
+	child.translate(2, 0);
+	expect(roof()).not.toBe(first);
+	expect(roof().getCoordinates()[0]![0]).toEqual([2, 1]);
 });
 
 it("exposes compiled allowedProps on the style function", () => {
