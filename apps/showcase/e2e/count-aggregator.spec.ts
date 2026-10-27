@@ -35,6 +35,20 @@ test.describe("count-aggregator showcase demo", () => {
 			"href",
 			/\/mock\/msp\/public\/count-aggregator\/bicycleSensorTotal\/values\/.+format=csv/,
 		);
+
+		// This must work against a plain static server, including native CSV links.
+		const csvUrl = await page
+			.getByRole("link", {name: /csv/i})
+			.getAttribute("href");
+		const csv = await page.evaluate(async (url) => {
+			const response = await fetch(url!);
+			return {
+				type: response.headers.get("Content-Type"),
+				body: await response.text(),
+			};
+		}, csvUrl);
+		expect(csv.type).toContain("text/csv");
+		expect(csv.body).toContain("Zeitpunkt;Station;Wert");
 	});
 
 	test("headless demo loads values with host-owned UI", async ({page}) => {
