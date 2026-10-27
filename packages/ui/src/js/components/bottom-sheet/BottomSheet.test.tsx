@@ -9,6 +9,7 @@ import {
 } from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {Heading, HeadingsProvider} from "../../headings";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import BottomSheet from "./BottomSheet";
 
@@ -23,6 +24,32 @@ vi.mock("../close-overlay-button", () => ({
 }));
 
 describe("BottomSheet", () => {
+	it("keeps the non-modal sheet in the page outline and scopes its body only with a title", () => {
+		const {rerender} = render(
+			<HeadingsProvider enabled options={{baseLevel: 3}}>
+				<BottomSheet label="Details" title="Place" snaps={[100, 200]}>
+					<Heading>Information</Heading>
+				</BottomSheet>
+			</HeadingsProvider>,
+		);
+		expect(
+			screen.getByRole("heading", {name: "Place", level: 3}),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("heading", {name: "Information", level: 4}),
+		).toBeTruthy();
+		expect(screen.getByRole("region", {name: "Place"})).toBeTruthy();
+		rerender(
+			<HeadingsProvider enabled options={{baseLevel: 3}}>
+				<BottomSheet label="Details" snaps={[100, 200]}>
+					<Heading>Information</Heading>
+				</BottomSheet>
+			</HeadingsProvider>,
+		);
+		expect(
+			screen.getByRole("heading", {name: "Information", level: 3}),
+		).toBeTruthy();
+	});
 	afterEach(() => {
 		cleanup();
 		document.body.replaceChildren();

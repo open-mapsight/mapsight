@@ -55,6 +55,11 @@ README.
 
 ---
 
+## Heading hierarchy
+
+For host-owned heading sections, enable `future.v8_automaticHeadings` on the instance and use `HeadingLevel` inside
+it to establish the first rank beneath each host heading. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md#composed-react-hosts).
+
 ## Count Aggregator demo
 
 Showcase includes a count-aggregator page wired to a **local mock API** (`vite.count-aggregator-mock.ts`) so

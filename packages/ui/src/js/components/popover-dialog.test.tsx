@@ -3,6 +3,7 @@ import {type ReactNode, createRef} from "react";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {Heading, HeadingsProvider} from "../headings";
 import PopoverDialog from "./popover-dialog";
 
 vi.mock("./close-overlay-button", () => ({
@@ -89,6 +90,27 @@ describe("PopoverDialog", () => {
 		expect(screen.getByRole("dialog")).toBeTruthy();
 		expect(screen.getByRole("heading", {name: "Options"})).toBeTruthy();
 		expect(screen.getByText("body-content")).toBeTruthy();
+	});
+
+	it("inherits the page rank for a non-modal popover and scopes its body", () => {
+		render(
+			<HeadingsProvider enabled options={{baseLevel: 4}}>
+				<PopoverDialog
+					isOpen
+					title="Options"
+					triggerRef={createRef<HTMLButtonElement>()}
+					onClose={vi.fn()}
+				>
+					<Heading>Filters</Heading>
+				</PopoverDialog>
+			</HeadingsProvider>,
+		);
+		expect(
+			screen.getByRole("heading", {name: "Options", level: 4}),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("heading", {name: "Filters", level: 5}),
+		).toBeTruthy();
 	});
 
 	it("names the dialog with aria-label when title is omitted", () => {

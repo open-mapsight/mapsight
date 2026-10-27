@@ -24,6 +24,7 @@ import type {MapsightUiPlacesData} from "./components/feature-list-sorting/featu
 import type {View} from "./config/constants/app";
 import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers";
 import type {MapsightConfig} from "./config/schema";
+import type {HeadingOptions} from "./headings";
 import type {MapsightUiComponents} from "./helpers/components";
 import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions";
 import type {RootStateSlice} from "./store/selectors";
@@ -121,6 +122,7 @@ export type InternalMapsightUiRendererProps = {
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
 	future?: FutureFlags;
+	headings?: HeadingOptions;
 };
 
 export type ExternalMapsightUiRendererProps = {
@@ -281,6 +283,7 @@ export type FullUiState = {
 		detailsInList: boolean;
 		integratedList: boolean;
 		renderAs: string;
+		/** Falsy disables grouping; "auto" uses contextual headings (h3 without the flag). */
 		renderGroupAs: string;
 	};
 	viewToggle: {
@@ -370,6 +373,8 @@ export type FutureFlags = {
 	 * visible label + input (7.x host CSS). This will be the only behavior in v8.
 	 */
 	v8_listSearchButton?: boolean;
+	/** Derive native heading ranks from headings.baseLevel (default 2). Default false in 7.x. */
+	v8_automaticHeadings?: boolean;
 };
 
 export type CreateOptions = {
@@ -380,6 +385,8 @@ export type CreateOptions = {
 	 * Opt into next-major behavior. See Decision 012.
 	 */
 	future?: FutureFlags;
+	/** Page-outline placement and exceptions. Read when future.v8_automaticHeadings is true. */
+	headings?: HeadingOptions;
 
 	// store
 	storeEnhancer?: StoreEnhancer;

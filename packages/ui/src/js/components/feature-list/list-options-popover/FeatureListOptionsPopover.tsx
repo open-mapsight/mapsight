@@ -2,6 +2,7 @@ import {
 	type CSSProperties,
 	type ChangeEvent,
 	Children,
+	type ElementType,
 	type ReactNode,
 	useCallback,
 	useId,
@@ -18,6 +19,7 @@ import {
 
 import {hasGeolocationSupport} from "@mapsight/core/lib/helpers";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../../headings";
 import {translate} from "../../../helpers/i18n";
 import usePopoverDialog from "../../../hooks/usePopoverDialog";
 import CloseOverlayButton from "../../close-overlay-button";
@@ -29,6 +31,8 @@ export type FeatureListOptionsPopoverProps = {
 	children?: ReactNode;
 	/** Extra class on the root (`display: contents` wrapper). */
 	className?: string;
+	headlineAs?: ElementType;
+	groupHeadlineAs?: ElementType;
 };
 
 /**
@@ -41,7 +45,16 @@ export type FeatureListOptionsPopoverProps = {
 export default function FeatureListOptionsPopover({
 	children,
 	className,
+	headlineAs,
+	groupHeadlineAs,
 }: FeatureListOptionsPopoverProps) {
+	const Headline = useHeadingElement("listOptionsTitle", "h3", headlineAs);
+	const SectionHeadline = useHeadingElement(
+		"listOptionsSection",
+		"h4",
+		groupHeadlineAs,
+		{parentAs: Headline},
+	);
 	const [isOpen, setIsOpen] = useState(false);
 	const [maxHeight, setMaxHeight] = useState<number | null>(null);
 	const popoverId = useId();
@@ -208,13 +221,14 @@ export default function FeatureListOptionsPopover({
 						>
 							<DismissButton onDismiss={close} />
 							<div className="ms3-list-options__header">
-								<h3
+								<Heading
+									as={Headline}
 									{...titleProps}
 									id={titleId}
 									className="ms3-list-options__title"
 								>
 									{translate("ui.feature-list.options.title")}
-								</h3>
+								</Heading>
 								<CloseOverlayButton
 									label={translate(
 										"ui.feature-list.options.close",
@@ -225,11 +239,14 @@ export default function FeatureListOptionsPopover({
 
 							<div className="ms3-list-options__body">
 								<section className="ms3-list-options__section">
-									<h4 className="ms3-list-options__section-title">
+									<Heading
+										as={SectionHeadline}
+										className="ms3-list-options__section-title"
+									>
 										{translate(
 											"ui.feature-list.options.sorting",
 										)}
-									</h4>
+									</Heading>
 									<label className="ms3-list-options__field">
 										<span className="ms3-list-options__label">
 											{translate(
@@ -268,12 +285,19 @@ export default function FeatureListOptionsPopover({
 
 								{hasTagControls ? (
 									<section className="ms3-list-options__section">
-										<h4 className="ms3-list-options__section-title">
+										<Heading
+											as={SectionHeadline}
+											className="ms3-list-options__section-title"
+										>
 											{translate(
 												"ui.feature-list.options.filter",
 											)}
-										</h4>
-										{children}
+										</Heading>
+										<HeadingContent
+											headingAs={SectionHeadline}
+										>
+											{children}
+										</HeadingContent>
 									</section>
 								) : null}
 							</div>

@@ -1,5 +1,6 @@
 import {
 	type CSSProperties,
+	type ElementType,
 	type ReactElement,
 	type KeyboardEvent as ReactKeyboardEvent,
 	type ReactNode,
@@ -13,6 +14,7 @@ import {
 } from "react";
 import {FocusScope, useFocusManager} from "react-aria";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {translate} from "../../helpers/i18n";
 import useFocusScopeTarget from "../../hooks/useFocusScopeTarget";
 import useOverlayDismiss, {
@@ -70,6 +72,8 @@ export type BottomSheetProps = {
 	hideCloseButton?: boolean;
 	closeLabel?: string;
 	title?: ReactNode;
+	/** Explicit title element; the non-modal sheet otherwise inherits the page heading scope. */
+	headlineAs?: ElementType;
 	children?: ReactNode;
 	className?: string;
 	style?: CSSProperties;
@@ -122,12 +126,14 @@ export default function BottomSheet({
 	hideCloseButton = false,
 	closeLabel,
 	title,
+	headlineAs,
 	children,
 	className,
 	style,
 	onTallChange,
 	tallRatio = 0.6,
 }: BottomSheetProps): ReactElement | null {
+	const Headline = useHeadingElement("sheetTitle", "h2", headlineAs);
 	const bodyId = useId();
 	const titleId = useId();
 	const rootRef = useRef<HTMLDivElement>(null);
@@ -409,14 +415,15 @@ export default function BottomSheet({
 					</div>
 					{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
 					{title != null ? (
-						<h2
+						<Heading
+							as={Headline}
 							ref={titleRef}
 							id={titleId}
 							tabIndex={-1}
 							className="ms3-bottom-sheet__title"
 						>
 							{title}
-						</h2>
+						</Heading>
 					) : null}
 					{hideCloseButton || !onDismiss ? null : (
 						<CloseOverlayButton
@@ -430,7 +437,11 @@ export default function BottomSheet({
 					ref={bodyRef}
 					className="ms3-bottom-sheet__body"
 				>
-					{children}
+					<HeadingContent
+						headingAs={title != null ? Headline : undefined}
+					>
+						{children}
+					</HeadingContent>
 				</div>
 			</div>
 			<SheetFocusTarget

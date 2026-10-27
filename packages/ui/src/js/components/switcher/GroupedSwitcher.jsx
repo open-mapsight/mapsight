@@ -7,7 +7,7 @@ function GroupedSwitcher(props) {
 		as: T = "div",
 		className = "ms3-grouped-switcher",
 		renderEntry,
-		headlineAs = "h3",
+		headlineAs,
 		renderHeader = undefined,
 		ungroupedIds = [],
 		groupedIds = {},
