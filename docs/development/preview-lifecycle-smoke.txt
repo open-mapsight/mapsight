@@ -1,0 +1,2 @@
+Temporary PR-only probe of automatic showcase deployment and cleanup.
+Close this pull request without merging after verification.
