@@ -52,6 +52,7 @@ const de: Record<string, string> = {
 	"ui.place-actions.share.copied": "Kopiert",
 	"ui.place-actions.share.close": "Teilen-Dialog schließen",
 	"ui.place-actions.share.permalink": "Permalink",
+	"ui.place-actions.share.copy-success": "Link kopiert",
 	"ui.place-actions.navigate": "Route",
 	"ui.place-actions.navigate.tooltip":
 		"Zu diesem Ort mit einer anderen App navigieren",
@@ -64,10 +65,13 @@ const de: Record<string, string> = {
 	"ui.place-actions.copy-coords": "Koordinaten kopieren",
 	"ui.place-actions.copy-coords.tooltip": "Diese Koordinaten kopieren",
 	"ui.place-actions.copy-coords.copied": "Kopiert",
+	"ui.place-actions.copy-coords.copy-success": "Koordinaten kopiert",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Website dieses Ortes öffnen",
 	"ui.place-actions.call": "Anrufen",
 	"ui.place-actions.call.tooltip": "Diesen Ort anrufen",
+	"ui.place-actions.copy-failed":
+		"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
 
 	"ui.feature-details.content-inner.error": "Fehler beim Laden der Details.",
 	"ui.feature-details.content-inner.gotoPage": "Direkt zur Seite springen",
@@ -204,6 +208,9 @@ const de: Record<string, string> = {
 
 	"ui.user-geo-location-button.label": "Zum eigenen Standort springen",
 	"ui.user-geo-location-button.ariaLabel": "Zum eigenen Standort springen",
+	"ui.user-geo-location-button.requesting": "Standort wird ermittelt …",
+	"ui.user-geo-location-button.error":
+		"Standort konnte nicht ermittelt werden.",
 
 	// List chrome accessibility.
 	"ui.pagination.label": "Seitennavigation",

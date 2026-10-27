@@ -52,6 +52,7 @@ const en: Record<string, string> = {
 	"ui.place-actions.share.copied": "Copied",
 	"ui.place-actions.share.close": "Close share dialog",
 	"ui.place-actions.share.permalink": "Permalink",
+	"ui.place-actions.share.copy-success": "Link copied",
 	"ui.place-actions.navigate": "Directions",
 	"ui.place-actions.navigate.tooltip":
 		"Navigate to this place with another app",
@@ -64,10 +65,13 @@ const en: Record<string, string> = {
 	"ui.place-actions.copy-coords": "Copy coordinates",
 	"ui.place-actions.copy-coords.tooltip": "Copy these coordinates",
 	"ui.place-actions.copy-coords.copied": "Copied",
+	"ui.place-actions.copy-coords.copy-success": "Coordinates copied",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Open this place’s website",
 	"ui.place-actions.call": "Call",
 	"ui.place-actions.call.tooltip": "Call this place",
+	"ui.place-actions.copy-failed":
+		"Copy failed. Please copy the text manually.",
 
 	"ui.feature-details.content-inner.error": "error at loading details",
 	"ui.feature-details.content-inner.gotoPage": "jump to page",
@@ -198,6 +202,9 @@ const en: Record<string, string> = {
 
 	"ui.user-geo-location-button.label": "jump to your location",
 	"ui.user-geo-location-button.ariaLabel": "jump to your location",
+	"ui.user-geo-location-button.requesting": "Requesting your location …",
+	"ui.user-geo-location-button.error":
+		"Your location could not be determined.",
 
 	// List chrome accessibility.
 	"ui.pagination.label": "Page navigation",

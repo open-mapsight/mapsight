@@ -1,13 +1,15 @@
+import {memo, useCallback, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+
+import proj4 from "proj4";
+
 import {hasGeolocationSupport} from "@mapsight/core/lib/helpers";
 import {animate} from "@mapsight/core/lib/map/actions";
 import {getGeolocation} from "@mapsight/core/lib/user-geolocation/actions";
 import {createUserGeolocationSelector} from "@mapsight/core/lib/user-geolocation/selectors";
 
-import proj4 from "proj4";
-import  {memo, useCallback, useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import * as c from "../../config/constants/controllers";
-
+import {announceStatus} from "../../helpers/announce-status";
 import {translate} from "../../helpers/i18n";
 import modClasses from "../../helpers/mod-classes";
 
@@ -46,6 +48,16 @@ const UserGeoLocationButton = memo(
 				);
 			}
 		}, [dispatch, longitude, latitude, moveToGeoLoc]);
+
+		useEffect(() => {
+			if (isRequesting) {
+				announceStatus(
+					translate("ui.user-geo-location-button.requesting"),
+				);
+			} else if (error) {
+				announceStatus(translate("ui.user-geo-location-button.error"));
+			}
+		}, [isRequesting, error]);
 
 		const onClick = useCallback(
 			/** @param {React.MouseEvent} e event */
