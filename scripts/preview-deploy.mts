@@ -36,6 +36,7 @@ export interface Pull {
 	number: number;
 	state: string;
 	base: {ref: string};
+	stack?: {base: {ref: string}} | null;
 	head: {sha: string; ref: string; repo: {full_name: string} | null};
 }
 
@@ -93,7 +94,7 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
 				headers: {
 					Authorization: `Bearer ${required("GH_TOKEN")}`,
 					Accept: "application/vnd.github+json",
-					"X-GitHub-Api-Version": "2022-11-28",
+					"X-GitHub-Api-Version": "2026-03-10",
 					"Content-Type": "application/json",
 					"Cache-Control": "no-cache",
 				},
@@ -116,6 +117,11 @@ async function list<T>(path: string): Promise<T[]> {
 		result.push(...values);
 		if (values.length < 100) return result;
 	}
+}
+
+/** Native stack layers target their trunk even when based on another PR. */
+export function targetsMain(pull: Pick<Pull, "base" | "stack">): boolean {
+	return (pull.stack?.base.ref ?? pull.base.ref) === "main";
 }
 
 /** Associate builds with GitHub's current PR metadata, including fork PRs. */
@@ -143,7 +149,7 @@ export function deploymentTarget(
 	const pull = pulls.find(
 		(candidate) =>
 			candidate.state === "open" &&
-			candidate.base.ref === "main" &&
+			targetsMain(candidate) &&
 			candidate.head.sha === run.head_sha &&
 			candidate.head.ref === run.head_branch &&
 			candidate.head.repo?.full_name === run.head_repository.full_name,
@@ -180,7 +186,7 @@ async function plan(): Promise<void> {
 		const run = await api<BuildRun>(`/actions/runs/${runId}`);
 		const pulls =
 			run.event === "pull_request"
-				? await list<Pull>("/pulls?state=open&base=main")
+				? await list<Pull>("/pulls?state=open")
 				: [];
 		const mainSha =
 			run.event === "push"

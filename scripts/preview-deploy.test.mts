@@ -33,6 +33,17 @@ test("fork builds resolve against GitHub PR data without trusting artifact metad
 	assert.equal(deploymentTarget(run, [pull]), "pr-123");
 });
 
+test("native stack layers deploy only when their stack targets main", () => {
+	const layer = {...pull, base: {ref: "parent-pr"}};
+	assert.equal(
+		deploymentTarget(run, [{...layer, stack: {base: {ref: "main"}}}]),
+		"pr-123",
+	);
+	for (const stack of [undefined, null, {base: {ref: "release"}}]) {
+		assert.equal(deploymentTarget(run, [{...layer, stack}]), undefined);
+	}
+});
+
 test("closed, superseded, or unrelated builds cannot select a preview", () => {
 	for (const candidate of [
 		{...pull, state: "closed"},

@@ -2,7 +2,7 @@ import {execFileSync} from "node:child_process";
 import {appendFileSync, existsSync, lstatSync, readFileSync} from "node:fs";
 import {pathToFileURL} from "node:url";
 
-import {retryGitHubRequest} from "./preview-deploy.mts";
+import {retryGitHubRequest, targetsMain} from "./preview-deploy.mts";
 import {
 	type Change,
 	PreviewProject,
@@ -29,6 +29,7 @@ interface Pull {
 	changed_files: number;
 	head: {sha: string};
 	base: {ref: string};
+	stack?: {base: {ref: string}} | null;
 }
 interface Deployment {
 	id: number;
@@ -192,7 +193,7 @@ async function github<T>(
 					Authorization: `Bearer ${process.env.GH_TOKEN}`,
 					Accept: "application/vnd.github+json",
 					"Content-Type": "application/json",
-					"X-GitHub-Api-Version": "2022-11-28",
+					"X-GitHub-Api-Version": "2026-03-10",
 					"Cache-Control": "no-cache",
 				},
 				...(body === undefined ? {} : {body: JSON.stringify(body)}),
@@ -275,7 +276,7 @@ export async function updateReview(options: {
 		return "Closed PR: removed review links";
 	}
 	const sha = options.sha ?? pull.head.sha;
-	if (pull.base.ref !== "main" || pull.head.sha !== sha)
+	if (!targetsMain(pull) || pull.head.sha !== sha)
 		return "Skipped superseded PR head";
 	const deployment = await currentDeployment(api, number, sha);
 	if (!deployment || (await options.liveSha(origin)) !== sha)
@@ -306,7 +307,7 @@ export async function updateReview(options: {
 	const current = await api<Pull>(`/pulls/${number}`);
 	if (
 		current.state !== "open" ||
-		current.base.ref !== "main" ||
+		!targetsMain(current) ||
 		current.head.sha !== sha ||
 		!(await currentDeployment(api, number, sha)) ||
 		(await options.liveSha(origin)) !== sha
