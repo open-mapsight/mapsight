@@ -97,6 +97,8 @@ describe("runAudit on the defects fixture", () => {
 		// tabindex=-1 items whose container ignores ArrowDown
 		expect(clickable).toContain("Eins");
 		expect(clickable).not.toContain("Drei");
+		// roving tabindex where the tab stop is a sibling item
+		expect(clickable).not.toContain("Sechs");
 		expect(find("dialog/activation-key")[0]?.examples[0]?.name).toBe(
 			"Nur Maus",
 		);

@@ -151,6 +151,19 @@
 					<div class="clickable" tabindex="-1">Vier</div>
 				</div>
 
+				<ul class="roving-siblings">
+					<li><button type="button" class="good">Fünf</button></li>
+					<li>
+						<button
+							type="button"
+							class="good clickable"
+							tabindex="-1"
+						>
+							Sechs
+						</button>
+					</li>
+				</ul>
+
 				<p class="tight">Dieser Text passt genau in eine Zeile.</p>
 				<div class="wide">Breiter Block</div>
 
@@ -197,6 +210,12 @@
 							.focus();
 					}
 				});
+			const siblings = document.querySelector(".roving-siblings");
+			siblings.addEventListener("keydown", (event) => {
+				if (event.key === "ArrowDown") {
+					siblings.querySelectorAll("button")[1].focus();
+				}
+			});
 			const canvas = document.querySelector("canvas");
 			const context = canvas.getContext("2d");
 			context.fillStyle = "#9c9";

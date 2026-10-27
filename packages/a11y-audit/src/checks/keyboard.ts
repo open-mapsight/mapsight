@@ -429,6 +429,7 @@ async function reportUnreachable(
 				tabindex: string | null;
 				text: string;
 				container: string | null;
+				group: string | null;
 			}> = [];
 			for (const element of root.querySelectorAll("*")) {
 				if (!api.isVisible(element)) {
@@ -469,9 +470,25 @@ async function reportUnreachable(
 				) {
 					continue;
 				}
-				const container =
+				let container =
 					visited.find((focused) => focused.contains(element)) ??
 					null;
+				// Roving tabindex: the tab stop is a sibling item of the same
+				// composite widget, not a container around it.
+				const group =
+					container || element.getAttribute("tabindex") !== "-1"
+						? null
+						: element.closest(
+								'ul, ol, [role="list"], [role="listbox"], [role="grid"], [role="tablist"], [role="toolbar"], [role="menu"], [role="menubar"], [role="radiogroup"], [role="tree"]',
+							);
+				if (group && root.contains(group)) {
+					container =
+						visited.find(
+							(focused) =>
+								group.contains(focused) &&
+								!focused.contains(element),
+						) ?? null;
+				}
 				out.push({
 					mark: api.mark(element),
 					info: api.describe(element),
@@ -480,6 +497,7 @@ async function reportUnreachable(
 						.trim()
 						.slice(0, 60),
 					container: container ? api.mark(container) : null,
+					group: group && container ? api.mark(group) : null,
 				});
 			}
 			return out;
@@ -495,9 +513,12 @@ async function reportUnreachable(
 				: [],
 		),
 	)) {
-		const items = candidates
-			.filter((candidate) => candidate.container === container)
-			.map((candidate) => candidate.mark);
+		const members = candidates.filter(
+			(candidate) => candidate.container === container,
+		);
+		const items = members.map((candidate) => candidate.mark);
+		const group =
+			members.find((candidate) => candidate.group)?.group ?? null;
 		await page.evaluate((mark) => {
 			(
 				window.__mapsightA11y!.byMark(mark) as HTMLElement | null
@@ -506,10 +527,19 @@ async function reportUnreachable(
 		await page.keyboard.press("ArrowDown");
 		await settle(page, 150);
 		const reached = await page.evaluate(
-			({containerMark, itemMarks}) => {
+			({containerMark, itemMarks, groupMark}) => {
 				const api = window.__mapsightA11y!;
 				const box = api.byMark(containerMark);
 				const active = api.deepActiveElement();
+				if (groupMark) {
+					// sibling tab stop: ArrowDown must move focus to another item
+					const groupElement = api.byMark(groupMark);
+					return Boolean(
+						active &&
+						active !== box &&
+						groupElement?.contains(active),
+					);
+				}
 				const descendantId = (active ?? box)?.getAttribute(
 					"aria-activedescendant",
 				);
@@ -529,7 +559,7 @@ async function reportUnreachable(
 					}),
 				);
 			},
-			{containerMark: container, itemMarks: items},
+			{containerMark: container, itemMarks: items, groupMark: group},
 		);
 		rovingWorks.set(container, reached);
 	}
@@ -542,7 +572,9 @@ async function reportUnreachable(
 					context,
 					"keyboard/not-focusable-clickable",
 					element,
-					`Item ("${candidate.text}") has tabindex=-1; Tab reaches its container, but ArrowDown there moves neither focus nor aria-activedescendant to the items.`,
+					candidate.group
+						? `Item ("${candidate.text}") has tabindex=-1; Tab reaches another item of its group, but ArrowDown there does not move focus.`
+						: `Item ("${candidate.text}") has tabindex=-1; Tab reaches its container, but ArrowDown there moves neither focus nor aria-activedescendant to the items.`,
 				);
 			}
 			continue;
