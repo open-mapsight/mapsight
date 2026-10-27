@@ -1,4 +1,5 @@
 import {StrictMode, createRef} from "react";
+import {FocusScope} from "react-aria";
 
 import {
 	cleanup,
@@ -363,6 +364,31 @@ describe("BottomSheet", () => {
 		await new Promise((resolve) => requestAnimationFrame(resolve));
 		expect(document.activeElement).toBe(
 			screen.getByRole("heading", {name: "Second"}),
+		);
+	});
+	it("uses the parent scope when the original opener was removed", async () => {
+		const opener = document.createElement("button");
+		document.body.append(opener);
+		opener.focus();
+		const content = (open: boolean) => (
+			<FocusScope>
+				<button type="button">fallback</button>
+				<BottomSheet
+					open={open}
+					label="Details"
+					title="Place"
+					initialFocus
+					restoreFocus
+				/>
+			</FocusScope>
+		);
+		const {rerender} = render(content(true));
+		opener.remove();
+		rerender(content(false));
+		await waitFor(() =>
+			expect(document.activeElement).toBe(
+				screen.getByRole("button", {name: "fallback"}),
+			),
 		);
 	});
 });

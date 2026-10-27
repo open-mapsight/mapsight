@@ -35,6 +35,7 @@ function MainPanel() {
 				{isShowingSelectionInfo && (
 					<FeatureSelectionInfo
 						feature={retained.feature}
+						isOpen={!collapsed && contentType === "selectionInfo"}
 						enableKeyboardControl={
 							!collapsed && contentType === "selectionInfo"
 						}

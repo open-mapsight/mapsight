@@ -1,3 +1,4 @@
+import {FocusScope} from "react-aria";
 import {Provider, useSelector} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
@@ -29,6 +30,7 @@ function setup({
 	stickyHeader = false,
 	trapFocus = false,
 	enableKeyboardControl = true,
+	retain = false,
 } = {}) {
 	const store = configureStore({
 		reducer: (
@@ -49,30 +51,33 @@ function setup({
 			(state: ReturnType<typeof store.getState>) => state.selected,
 		);
 		return (
-			<div className="ms3-wrapper">
-				<div className="ms3-list">
-					<button type="button">first row</button>
-					<button
-						type="button"
-						onClick={() => store.dispatch({type: "select"})}
-					>
-						origin row
-					</button>
-				</div>
-				<div
-					className="ms3-map-target"
-					tabIndex={-1}
-					role="region"
-					aria-label="Map"
-				/>
-				{selected && (
-					<FeatureSelectionInfo
-						feature={feature}
-						enableKeyboardControl={enableKeyboardControl}
+			<FocusScope>
+				<div className="ms3-wrapper">
+					<div className="ms3-list">
+						<button type="button">first row</button>
+						<button
+							type="button"
+							onClick={() => store.dispatch({type: "select"})}
+						>
+							origin row
+						</button>
+					</div>
+					<div
+						className="ms3-map-target"
+						tabIndex={-1}
+						role="region"
+						aria-label="Map"
 					/>
-				)}
-				<button type="button">after details</button>
-			</div>
+					{(selected || retain) && (
+						<FeatureSelectionInfo
+							feature={feature}
+							isOpen={selected}
+							enableKeyboardControl={enableKeyboardControl}
+						/>
+					)}
+					<button type="button">after details</button>
+				</div>
+			</FocusScope>
 		);
 	}
 	const result = render(
@@ -137,7 +142,7 @@ describe("selection details focus", () => {
 		await waitFor(() => expect(document.activeElement).toBe(origin));
 	});
 
-	it("falls back to the list when the original row disappears", async () => {
+	it("falls back to the first remaining control in the parent scope when the original row disappears", async () => {
 		const {origin} = setup();
 		origin.remove();
 		fireEvent.click(
@@ -145,14 +150,16 @@ describe("selection details focus", () => {
 		);
 		await waitFor(() =>
 			expect(document.activeElement).toBe(
-				document.querySelector(".ms3-list"),
+				screen.getByRole("button", {name: "first row"}),
 			),
 		);
 	});
 
 	it("falls back to the map when the list is inert", async () => {
 		setup();
-		document.querySelector(".ms3-list")!.setAttribute("inert", "");
+		const list = document.querySelector<HTMLElement>(".ms3-list")!;
+		list.inert = true;
+		list.setAttribute("inert", "");
 		fireEvent.click(
 			screen.getByRole("button", {name: "Informationsdialog schließen"}),
 		);
@@ -185,15 +192,35 @@ describe("selection details focus", () => {
 	it("allows focus trapping to be explicitly enabled", async () => {
 		const {store} = setup({trapFocus: true});
 		screen.getByRole("button", {name: "after details"}).focus();
-		expect(
-			screen
-				.getByRole("region", {name: "Place"})
-				.contains(document.activeElement),
-		).toBe(true);
+		await waitFor(() =>
+			expect(
+				screen
+					.getByRole("region", {name: "Place"})
+					.contains(document.activeElement),
+			).toBe(true),
+		);
 		fireEvent.keyDown(document.activeElement!, {key: "Escape"});
 		expect(store.getState().selected).toBe(false);
 		await act(async () => {
 			await new Promise((resolve) => requestAnimationFrame(resolve));
 		});
+	});
+	it("unmounts the live scope and restores focus while retaining an inert animation snapshot", async () => {
+		const {origin, container} = setup({retain: true});
+		const scopeCount = container.querySelectorAll(
+			"[data-focus-scope-start]",
+		).length;
+		fireEvent.click(
+			screen.getByRole("button", {name: "Informationsdialog schließen"}),
+		);
+		expect(
+			container.querySelectorAll("[data-focus-scope-start]"),
+		).toHaveLength(scopeCount - 1);
+		expect(
+			container
+				.querySelector(".ms3-feature-selection-info__wrapper")
+				?.hasAttribute("inert"),
+		).toBe(true);
+		await waitFor(() => expect(document.activeElement).toBe(origin));
 	});
 });

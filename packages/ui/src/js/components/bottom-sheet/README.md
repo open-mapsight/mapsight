@@ -32,6 +32,15 @@ value text use the UI translations; `resizeLabel` and `snapValueText` override t
 </BottomSheet>
 ```
 
+React Aria `FocusScope` manages the opening/closing focus session and restores
+the opener for `restoreFocus={true}`. Tab leaving that restoring scope continues
+after the opener, following React Aria's traversal. A shared target adapter focuses the heading
+or explicit refs, because the scope API only accepts booleans. If an opener was
+removed, React Aria falls back through parent scopes; custom embeddings can wrap
+their controls in a `FocusScope` to provide that fallback. The adapter also covers
+a connected opener that becomes inert by focusing the parent scope's first
+focusable control. It never searches for Mapsight CSS classes.
+
 Changing focus options while the sheet is open does not start another focus
 session. Closing and opening it does. A changed place in an already open sheet
 can be focused explicitly by the host, or given a new React key when a new focus

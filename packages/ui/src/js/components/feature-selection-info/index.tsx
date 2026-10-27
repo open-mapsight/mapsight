@@ -1,5 +1,5 @@
 import {type HTMLAttributes, type Ref, useCallback, useId, useRef} from "react";
-import {mergeRefs} from "react-aria";
+import {FocusScope, mergeRefs, useFocusManager} from "react-aria";
 import {useDispatch, useSelector} from "react-redux";
 
 import {removeFrom} from "@mapsight/core/lib/base/actions";
@@ -13,7 +13,6 @@ import ErrorBoundary from "../error-boundary";
 import FeatureDetailsContent from "../feature-details-content";
 import CloseButton from "./close-button";
 import Header from "./header";
-import useSelectionFocus from "./useSelectionFocus";
 import WithStickyHeader from "./with-sticky-header";
 import WithoutStickyHeader from "./without-sticky-header";
 import Wrapper from "./wrapper";
@@ -22,41 +21,44 @@ export default function FeatureSelectionInfo({
 	feature,
 	enableKeyboardControl,
 	trapFocus: trapFocusProp,
+	isOpen = true,
 }: {
 	feature: MapsightUiFeature | null;
 	enableKeyboardControl: boolean;
 	/** Opt in to trapping Tab focus in this non-modal region. Defaults to false. */
 	trapFocus?: boolean;
+	/** False renders only the inert collapse-animation snapshot, outside the live focus scope. */
+	isOpen?: boolean;
 }) {
 	const dispatch = useDispatch();
 	const options = useSelector(featureSelectionInfoUiOptionsSelector);
 	const hasStickyHeader = options.stickyHeader;
 	const trapFocus = trapFocusProp ?? options.trapFocus ?? false;
 	const headingId = useId();
+	const parentFocusManager = useFocusManager();
+	const fallbackFocus = useCallback(() => {
+		parentFocusManager?.focusFirst();
+	}, [parentFocusManager]);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-	const {rememberOrigin, restoreFocus} = useSelectionFocus();
 
 	const removeSelection = useCallback(() => {
-		restoreFocus();
 		dispatch(
 			removeFrom(
 				[FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT, "features"],
 				feature?.id,
 			),
 		);
-	}, [dispatch, feature?.id, restoreFocus]);
+	}, [dispatch, feature?.id]);
 
 	const renderWrapper = useCallback(
 		(
 			attrs: HTMLAttributes<HTMLDivElement> & {ref?: Ref<HTMLDivElement>},
 		) => (
 			<Wrapper
-				feature={feature}
-				enableKeyboardControl={enableKeyboardControl}
-				trapFocus={trapFocus}
-				onBeforeFocus={rememberOrigin}
+				enableKeyboardControl={isOpen && enableKeyboardControl}
 				onKeyDown={(event) => {
 					if (
+						isOpen &&
 						enableKeyboardControl &&
 						shouldDismissOnEscape(
 							event.nativeEvent,
@@ -67,6 +69,9 @@ export default function FeatureSelectionInfo({
 						removeSelection();
 					}
 				}}
+				fallbackFocus={isOpen ? fallbackFocus : undefined}
+				inert={!isOpen}
+				aria-hidden={!isOpen || undefined}
 				role="region"
 				aria-labelledby={headingId}
 				{...attrs}
@@ -75,11 +80,10 @@ export default function FeatureSelectionInfo({
 		),
 		[
 			enableKeyboardControl,
-			feature,
 			headingId,
-			rememberOrigin,
 			removeSelection,
-			trapFocus,
+			isOpen,
+			fallbackFocus,
 		],
 	);
 
@@ -88,19 +92,33 @@ export default function FeatureSelectionInfo({
 	}
 
 	const T = hasStickyHeader ? WithStickyHeader : WithoutStickyHeader;
+	const content = (
+		<T
+			feature={feature}
+			close={<CloseButton onClose={removeSelection} />}
+			header={<Header feature={feature} id={headingId} />}
+			content={
+				<div className="ms3-feature-selection-info__content">
+					<FeatureDetailsContent feature={feature} />
+				</div>
+			}
+			renderWrapper={renderWrapper}
+		/>
+	);
 	return (
 		<ErrorBoundary resetKeys={[feature.id]} variant="region">
-			<T
-				feature={feature}
-				close={<CloseButton onClose={removeSelection} />}
-				header={<Header feature={feature} id={headingId} />}
-				content={
-					<div className="ms3-feature-selection-info__content">
-						<FeatureDetailsContent feature={feature} />
-					</div>
-				}
-				renderWrapper={renderWrapper}
-			/>
+			{isOpen ? (
+				<FocusScope
+					key={feature.id}
+					autoFocus={enableKeyboardControl}
+					restoreFocus
+					contain={enableKeyboardControl && trapFocus}
+				>
+					{content}
+				</FocusScope>
+			) : (
+				content
+			)}
 		</ErrorBoundary>
 	);
 }

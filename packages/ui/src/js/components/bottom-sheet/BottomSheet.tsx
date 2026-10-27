@@ -11,8 +11,10 @@ import {
 	useRef,
 	useState,
 } from "react";
+import {FocusScope, useFocusManager} from "react-aria";
 
 import {translate} from "../../helpers/i18n";
+import useFocusScopeTarget from "../../hooks/useFocusScopeTarget";
 import useOverlayDismiss, {
 	type EscapeDismissMode,
 	shouldDismissOnEscape,
@@ -129,13 +131,8 @@ export default function BottomSheet({
 	const bodyId = useId();
 	const titleId = useId();
 	const rootRef = useRef<HTMLDivElement>(null);
+	const parentFocusManager = useFocusManager();
 	const titleRef = useRef<HTMLHeadingElement>(null);
-	const focusOptionsRef = useRef({initialFocus, restoreFocus});
-	useEffect(() => {
-		focusOptionsRef.current = {initialFocus, restoreFocus};
-	}, [initialFocus, restoreFocus]);
-	const restoreFrameRef = useRef<number | null>(null);
-	const focusSessionRef = useRef<{origin: Element | null} | null>(null);
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const heightRef = useRef(0);
 	const dragRef = useRef<{
@@ -241,55 +238,6 @@ export default function BottomSheet({
 		dismissOnOutsidePointer: false,
 		dismissOnEscape,
 	});
-
-	// Only opening starts a focus session; changing options while open must not
-	// steal focus or replace the opener. Keep it across StrictMode effect replay.
-	useEffect(() => {
-		if (!open) {
-			focusSessionRef.current = null;
-			return;
-		}
-		if (restoreFrameRef.current !== null) {
-			cancelAnimationFrame(restoreFrameRef.current);
-		}
-		focusSessionRef.current ??= {origin: document.activeElement};
-		const {origin} = focusSessionRef.current;
-		const sheet = rootRef.current;
-		const initial = focusOptionsRef.current.initialFocus;
-		const target =
-			initial === true
-				? (titleRef.current ?? rootRef.current)
-				: initial
-					? initial.current
-					: null;
-		target?.focus({preventScroll: true});
-		return () => {
-			const restore = focusOptionsRef.current.restoreFocus;
-			if (!restore) {
-				return;
-			}
-			restoreFrameRef.current = requestAnimationFrame(() => {
-				restoreFrameRef.current = null;
-				// Do not override focus already moved into another overlay by the host.
-				const active = document.activeElement;
-				if (
-					active &&
-					active !== document.body &&
-					!sheet?.contains(active)
-				) {
-					return;
-				}
-				const target = restore === true ? origin : restore.current;
-				if (
-					target instanceof HTMLElement &&
-					target.isConnected &&
-					!target.closest("[inert]")
-				) {
-					target.focus({preventScroll: true});
-				}
-			});
-		};
-	}, [open]);
 
 	const onMovePointerDown = useCallback(
 		(event: ReactPointerEvent<HTMLDivElement>) => {
@@ -401,78 +349,116 @@ export default function BottomSheet({
 		.join(" ");
 
 	return (
-		// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Delegate Escape from interactive descendants of the region.
-		<div
-			ref={rootRef}
-			tabIndex={-1}
-			className={rootClass}
-			style={{...style, height}}
-			data-snap-index={snapIndex}
-			role="region"
-			aria-label={title == null ? label : undefined}
-			aria-labelledby={title != null ? titleId : undefined}
-			onKeyDown={(event) => {
-				if (
-					onDismiss &&
-					dismissOnEscape !== false &&
-					shouldDismissOnEscape(event.nativeEvent, rootRef.current)
-				) {
-					event.preventDefault();
-					onDismiss();
-				}
-			}}
+		<FocusScope
+			autoFocus={Boolean(initialFocus)}
+			restoreFocus={restoreFocus === true}
 		>
-			<header className="ms3-bottom-sheet__header">
-				{/*
+			{/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Delegate Escape from interactive descendants of the region. */}
+			<div
+				ref={rootRef}
+				tabIndex={-1}
+				className={rootClass}
+				style={{...style, height}}
+				data-snap-index={snapIndex}
+				role="region"
+				aria-label={title == null ? label : undefined}
+				aria-labelledby={title != null ? titleId : undefined}
+				onKeyDown={(event) => {
+					if (
+						onDismiss &&
+						dismissOnEscape !== false &&
+						shouldDismissOnEscape(
+							event.nativeEvent,
+							rootRef.current,
+						)
+					) {
+						event.preventDefault();
+						onDismiss();
+					}
+				}}
+			>
+				<header className="ms3-bottom-sheet__header">
+					{/*
 				  Focusable separator (window splitter). jsx-a11y treats separator
 				  as non-interactive; tabindex + handlers are required by APG.
 				  https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/
 				*/}
-				{/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- APG focusable separator */}
-				<div
-					className="ms3-bottom-sheet__move"
-					role="separator"
-					aria-orientation="horizontal"
-					aria-controls={bodyId}
-					aria-describedby={title != null ? titleId : undefined}
-					aria-valuemin={minH}
-					aria-valuemax={maxH}
-					aria-valuenow={height}
-					aria-valuetext={valueText}
-					aria-label={resizeLabel}
-					tabIndex={0}
-					onPointerDown={onMovePointerDown}
-					onPointerMove={onMovePointerMove}
-					onPointerUp={endMoveDrag}
-					onPointerCancel={endMoveDrag}
-					onKeyDown={onSeparatorKeyDown}
-				>
+					{/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- APG focusable separator */}
 					<div
-						className="ms3-bottom-sheet__handle"
-						aria-hidden="true"
-					/>
-				</div>
-				{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
-				{title != null ? (
-					<h2
-						ref={titleRef}
-						id={titleId}
-						tabIndex={-1}
-						className="ms3-bottom-sheet__title"
+						className="ms3-bottom-sheet__move"
+						role="separator"
+						aria-orientation="horizontal"
+						aria-controls={bodyId}
+						aria-describedby={title != null ? titleId : undefined}
+						aria-valuemin={minH}
+						aria-valuemax={maxH}
+						aria-valuenow={height}
+						aria-valuetext={valueText}
+						aria-label={resizeLabel}
+						tabIndex={0}
+						onPointerDown={onMovePointerDown}
+						onPointerMove={onMovePointerMove}
+						onPointerUp={endMoveDrag}
+						onPointerCancel={endMoveDrag}
+						onKeyDown={onSeparatorKeyDown}
 					>
-						{title}
-					</h2>
-				) : null}
-				{hideCloseButton || !onDismiss ? null : (
-					<CloseOverlayButton
-						label={closeLabel}
-						onClose={onDismiss}
-					/>
-				)}
-			</header>
-			<div id={bodyId} ref={bodyRef} className="ms3-bottom-sheet__body">
-				{children}
+						<div
+							className="ms3-bottom-sheet__handle"
+							aria-hidden="true"
+						/>
+					</div>
+					{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
+					{title != null ? (
+						<h2
+							ref={titleRef}
+							id={titleId}
+							tabIndex={-1}
+							className="ms3-bottom-sheet__title"
+						>
+							{title}
+						</h2>
+					) : null}
+					{hideCloseButton || !onDismiss ? null : (
+						<CloseOverlayButton
+							label={closeLabel}
+							onClose={onDismiss}
+						/>
+					)}
+				</header>
+				<div
+					id={bodyId}
+					ref={bodyRef}
+					className="ms3-bottom-sheet__body"
+				>
+					{children}
+				</div>
 			</div>
-		</div>
+			<SheetFocusTarget
+				scopeRef={rootRef}
+				initialFocusRef={
+					initialFocus === true
+						? title != null
+							? titleRef
+							: rootRef
+						: initialFocus || undefined
+				}
+				fallbackFocus={
+					restoreFocus && parentFocusManager
+						? () => {
+								parentFocusManager.focusFirst();
+							}
+						: undefined
+				}
+				restoreFocusRef={
+					typeof restoreFocus === "object" ? restoreFocus : undefined
+				}
+			/>
+		</FocusScope>
 	);
+}
+
+/** Must mount inside FocusScope so explicit targeting follows the same open/close lifetime. */
+function SheetFocusTarget(props: Parameters<typeof useFocusScopeTarget>[0]) {
+	useFocusScopeTarget(props);
+	return null;
 }

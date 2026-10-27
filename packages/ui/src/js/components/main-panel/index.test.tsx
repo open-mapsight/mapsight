@@ -14,8 +14,18 @@ vi.mock("../feature-list", () => ({
 	),
 }));
 vi.mock("../feature-selection-info", () => ({
-	default: ({enableKeyboardControl}: {enableKeyboardControl: boolean}) => (
-		<button type="button" data-enabled={enableKeyboardControl}>
+	default: ({
+		enableKeyboardControl,
+		isOpen,
+	}: {
+		enableKeyboardControl: boolean;
+		isOpen: boolean;
+	}) => (
+		<button
+			type="button"
+			data-enabled={enableKeyboardControl}
+			data-open={isOpen}
+		>
 			details
 		</button>
 	),
@@ -54,6 +64,9 @@ describe("MainPanel collapse", () => {
 		rerender(<MainPanel />);
 		const inner = container.querySelector(".ms3-panel__inner")!;
 		expect(inner.hasAttribute("inert")).toBe(true);
+		expect(screen.getByText("details").getAttribute("data-open")).toBe(
+			"false",
+		);
 		expect(inner.getAttribute("aria-hidden")).toBe("true");
 		expect(screen.getByText("details").getAttribute("data-enabled")).toBe(
 			"false",
