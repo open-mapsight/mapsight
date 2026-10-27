@@ -42,7 +42,7 @@ export type MapsightUiStore = EnhancedStore<RootStateSlice>;
  * plugins will be passed this object and may manipulate it's properties
  */
 export type MapsightUiContext = {
-	/** indicates if the instance has been rendered at least once (available after init) */
+	/** indicates if the instance has committed at least once (available after init) */
 	hasRendered: boolean;
 	/** the container element the instance should be rendered into (available after init) */
 	container: HTMLElement | null;
@@ -64,6 +64,8 @@ export type MapsightUiContext = {
 	storeEnhancer?: StoreEnhancer;
 	/** redux store (available after create) */
 	store?: MapsightUiStore;
+	/** Stable initial snapshot for React hydration, captured before afterCreate plugins. */
+	serverState?: State;
 	/**
 	 * Function to render the app (available after create). Render without waiting for plugins
 	 * (for e.g. waiting on external data).
@@ -102,9 +104,9 @@ export type PluginInstance = {
 	afterInit?: PluginFunction;
 	/** optional plugin to be called after creation */
 	afterCreate?: PluginFunction;
-	/** optional plugin to be called after rendering */
+	/** optional plugin to be called before scheduling rendering */
 	beforeRender?: PluginFunction;
-	/** optional plugin to be called after rendering */
+	/** Called after commit (or renderer return for legacy synchronous renderers). */
 	afterRender?: PluginFunction;
 };
 
@@ -112,6 +114,10 @@ export type PluginDefinition = [string, null | PluginInstance];
 
 export type InternalMapsightUiRendererProps = {
 	store: Store<State>;
+	/** Pass to React-Redux Provider for the lifetime of a hydrated tree. */
+	serverState?: State;
+	/** Call during the renderer invocation, then signal commit with the returned callback. */
+	deferCommit?: () => () => void;
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
 	future?: FutureFlags;

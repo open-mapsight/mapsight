@@ -1,18 +1,18 @@
+import {memo, useCallback, useEffect, useRef} from "react";
+import {useDispatch, useSelector} from "react-redux";
+
+// TODO: Make optional to reduce bundle size
+import flatpickr from "flatpickr";
+// TODO: Make optional to reduce bundle size
+// TODO: Support other languages
+import {German as flatpickrGermanLocale} from "flatpickr/dist/l10n/de";
+
 import {mergeFilterOptions} from "@mapsight/core/lib/filter/actions";
 
 // TODO: Replace with generic tracking solution that does not rely on simplejs to be used globally
 import {trackEvent} from "@mapsight/lib-js/misc/piwik";
 
-// TODO: Make optional to reduce bundle size
-import flatpickr from "flatpickr";
-
-// TODO: Make optional to reduce bundle size
-// TODO: Support other languages
-import {German as flatpickrGermanLocale} from "flatpickr/dist/l10n/de";
-import { memo, useCallback, useEffect, useRef} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import {TIME_FILTER} from "../config/constants/controllers";
-
 import {translate} from "../helpers/i18n";
 
 const ID_FROM = "ms3-timefilter__from";
@@ -23,8 +23,6 @@ const DATEPICKER_OPTIONS = {
 	locale: flatpickrGermanLocale,
 	dateFormat: "d.m.Y", // TODO: i18n
 };
-
-const leftPad = (str, padding) => (padding + str).substring(str.length);
 
 const parseDate = (str) => {
 	const parts = str.replace(/\s/, "").match(/(\d+)/g);
@@ -43,11 +41,15 @@ const formatDate = (date) => {
 		return "";
 	}
 
-	const day = date.getDate();
-	const monthIndex = date.getMonth();
-	const year = date.getFullYear();
+	// State crosses the JSON boundary as ISO strings. Use the same UTC date
+	// on the server and client, irrespective of the host process timezone.
+	const value = new Date(date);
+	if (isNaN(value.getTime())) return "";
+	const day = value.getUTCDate();
+	const monthIndex = value.getUTCMonth();
+	const year = value.getUTCFullYear();
 
-	return day + "." + leftPad(monthIndex + 1, "00") + "." + year;
+	return day + "." + String(monthIndex + 1).padStart(2, "0") + "." + year;
 };
 
 function fromDateSelector(state) {

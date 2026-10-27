@@ -18,12 +18,8 @@ export function useMapsightIcon(
 	error: Error | null;
 } {
 	const key = mapsightIconCacheKey(mapsightIconId, variant);
-	const [bitmap, setBitmap] = useState<IconBitmap | null>(
-		() => getCachedIcon(mapsightIconId, variant) ?? null,
-	);
-	const [loading, setLoading] = useState(
-		() => getCachedIcon(mapsightIconId, variant) == null,
-	);
+	const [bitmap, setBitmap] = useState<IconBitmap | null>(null);
+	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
 
 	useEffect(() => {
