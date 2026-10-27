@@ -94,6 +94,30 @@ describe("ToolOverlay Escape", () => {
 		expect(onKeyDown.mock.calls[1]![0].defaultPrevented).toBe(true);
 	});
 
+	it("also closes for Escape on the map target and on its toggle", () => {
+		const onClose = vi.fn();
+		render(
+			<>
+				<div className="ms3-map-target" data-testid="map" />
+				<button type="button" aria-controls="tool">
+					toggle
+				</button>
+				<input aria-label="search" />
+				<ToolOverlay id="tool" label="Tool" text="" onClose={onClose} />
+			</>,
+		);
+		fireEvent.keyDown(screen.getByRole("textbox", {name: "search"}), {
+			key: "Escape",
+		});
+		expect(onClose).not.toHaveBeenCalled();
+		fireEvent.keyDown(screen.getByTestId("map"), {key: "Escape"});
+		expect(onClose).toHaveBeenCalledOnce();
+		fireEvent.keyDown(screen.getByRole("button", {name: "toggle"}), {
+			key: "Escape",
+		});
+		expect(onClose).toHaveBeenCalledTimes(2);
+	});
+
 	it("respects child preventDefault and nested dialogs", () => {
 		const onClose = vi.fn();
 		render(
