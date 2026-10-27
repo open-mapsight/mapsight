@@ -1,10 +1,12 @@
 import {Fragment, useCallback, useEffect, useId, useMemo, useRef} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector, useStore} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
 import {removeAllFeatures} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
+import type {MapController} from "@mapsight/core/lib/map/controller";
+import type {EnhancedStore} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES, MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
@@ -12,6 +14,7 @@ import useControllableState from "../../hooks/useControllableState";
 import {
 	createActivateAction,
 	createDeactivateAction,
+	finishKeyboardMeasurement,
 } from "../../plugins/common/measure-distance";
 import MeasureDistanceInfo from "./measure-distance-overlay";
 import ToolOverlay from "./tool-overlay";
@@ -58,6 +61,19 @@ const MeasureDistanceButton = ({
 		[pluginName],
 	);
 
+	const store = useStore() as EnhancedStore;
+	const keyboardDrawing = useSelector(
+		(state: {
+			map?: {
+				interactions?: Record<
+					string,
+					{options?: {keyboardTool?: string}}
+				>;
+			};
+		}) =>
+			state.map?.interactions?.[`${pluginName}_drawInteraction`]?.options
+				?.keyboardTool === pluginName,
+	);
 	const dispatch = useDispatch();
 	const feature = useSelector(featureSelector);
 
@@ -106,11 +122,30 @@ const MeasureDistanceButton = ({
 					label={translate("ui.measure-distance.title")}
 					onClose={closeAndReset}
 					text={translate(
-						feature
-							? "ui.measure-distance.instructions-done"
-							: "ui.measure-distance.instructions",
+						keyboardDrawing
+							? feature
+								? "ui.measure-distance.keyboard-instructions-done"
+								: "ui.measure-distance.keyboard-instructions"
+							: feature
+								? "ui.measure-distance.instructions-done"
+								: "ui.measure-distance.instructions",
 					)}
 				>
+					{keyboardDrawing && (
+						<button
+							className="ms3-map-tool-action"
+							type="button"
+							onClick={() => {
+								const map = (
+									store.getController(MAP) as MapController
+								).getMap();
+								if (map)
+									finishKeyboardMeasurement(map, pluginName);
+							}}
+						>
+							{translate("ui.measure-distance.finish")}
+						</button>
+					)}
 					{feature && <MeasureDistanceInfo feature={feature} />}
 				</ToolOverlay>
 			)}

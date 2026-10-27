@@ -237,8 +237,13 @@ const en: Record<string, string> = {
 		"Click on the map to share a position.",
 	"ui.share-position-link.shareTitle": "Share marked position",
 	"ui.share-position-link.shareButtonLabel": "Share marked position",
+	"ui.share-position-link.share-center": "Share map centre",
+	"ui.share-position-link.keyboard-instructions":
+		"Click the map or choose “Share map centre”. With the map focused: arrow keys pan, Enter or Space selects the centre, and Backspace removes the point.",
 
 	"ui.link-share.input": "Link to share",
+
+	"ui.measure-distance.finish": "Done",
 };
 
 export default en;

@@ -264,6 +264,53 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
+	it("uses the current view centre after pointer use and keyboard panning", async () => {
+		const mapTarget = document.createElement("div");
+		mapTarget.tabIndex = 0;
+		document.body.append(mapTarget);
+		const store = createStore(mapTarget);
+		let center = [11, 53];
+		Object.assign(store, {
+			getController: () => ({
+				getMap: () => ({
+					getTargetElement: () => mapTarget,
+					getEventCoordinate: () => [10, 52],
+					getPixelFromCoordinate: () => [100, 100],
+					getView: () => ({getCenter: () => center}),
+				}),
+			}),
+		});
+		const writeText = vi.fn().mockResolvedValue(undefined);
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			clipboard: {writeText},
+		});
+		render(
+			<Provider store={store}>
+				<MapPointContextMenu />
+			</Provider>,
+		);
+		fireEvent.pointerMove(mapTarget, {clientX: 10, clientY: 20});
+		mapTarget.focus();
+		fireEvent.keyDown(mapTarget, {key: "F10", shiftKey: true});
+		fireEvent.click(
+			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
+		);
+		await vi.waitFor(() => {
+			expect(writeText).toHaveBeenCalledWith("53.000000, 11.000000");
+		});
+		center = [12, 54];
+		mapTarget.focus();
+		fireEvent.keyDown(mapTarget, {key: "F10", shiftKey: true});
+		fireEvent.click(
+			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
+		);
+		await vi.waitFor(() => {
+			expect(writeText).toHaveBeenCalledWith("54.000000, 12.000000");
+		});
+		mapTarget.remove();
+	});
+
 	it("builds origin URLs for from-here", () => {
 		expect(originNavHref("google", 10.52, 52.26)).toBe(
 			"https://www.google.com/maps/dir/?api=1&origin=52.26,10.52",
