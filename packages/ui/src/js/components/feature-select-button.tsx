@@ -63,18 +63,28 @@ function FeatureSelectButton({
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent<HTMLElement>) => {
-			if (e.key === "Enter") {
+			if (e.key === "Enter" || e.key === " ") {
 				e.preventDefault();
 
-				if (selectOnClick && onSelect) {
+				if (isSelected && deselectOnClick) {
+					onDeselect?.(featureId, {keyboard: true});
+				} else if (selectOnClick && onSelect) {
 					onSelect(featureId, {keyboard: true});
 				}
 			}
 		},
-		[selectOnClick, onSelect, featureId],
+		[
+			isSelected,
+			deselectOnClick,
+			onDeselect,
+			selectOnClick,
+			onSelect,
+			featureId,
+		],
 	);
 
 	const interactiveAttributes = {
+		"aria-pressed": isSelected,
 		...attributes,
 		onPointerDown: handlePointerDown,
 		onClick: handleClick,

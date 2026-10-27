@@ -43,14 +43,13 @@ function FeatureListGroupedContent(
 			featureSource,
 		},
 		itemProps,
+		listUiOptions: {renderAs: listAs = "ul"},
 		enableKeyboardControl,
 	} = useFeatureListContext();
-	const rootProps = {
-		...useKeyboardNavigation(enableKeyboardControl, ref),
-		ref: ref,
-	};
+	const rootProps = useKeyboardNavigation(enableKeyboardControl, ref);
 
-	listProps.emptyAs = itemProps.as;
+	listProps.as = listAs;
+	listProps.emptyAs = listAs === "ul" || listAs === "ol" ? "li" : "div";
 	listProps.featureSourceId = featureSourceId;
 
 	const hasSource =
@@ -85,13 +84,16 @@ function FeatureListGroupedContent(
 	const itemGroups = useFeatureListItemGroups(
 		groupAs,
 		features,
-		itemAs,
+		itemAs || (listAs === "ul" || listAs === "ol" ? "li" : "p"),
 		itemProps,
 	);
 
 	const emptyMessage = (
 		<FeatureListContent status={listStatus} {...listProps} {...rootProps}>
-			<FeatureListEmptyMessage as={itemProps.as} hasSource={hasSource} />
+			<FeatureListEmptyMessage
+				as={listProps.emptyAs}
+				hasSource={hasSource}
+			/>
 		</FeatureListContent>
 	);
 
