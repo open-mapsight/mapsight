@@ -4,7 +4,10 @@ import type {AuditReport, Finding} from "./types.ts";
 import {getCriterion} from "./wcag.ts";
 
 function escapeCell(value: string): string {
-	return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
+	return value
+		.replace(/\\/g, "\\\\")
+		.replace(/\|/g, "\\|")
+		.replace(/\n/g, " ");
 }
 
 function code(value: string): string {

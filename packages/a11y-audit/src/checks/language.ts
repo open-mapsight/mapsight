@@ -13,11 +13,12 @@ export function matchLexicon(
 	text: string,
 	lexicon: string[],
 ): string | undefined {
-	const normalized = text
-		.replace(/\s+/g, " ")
-		.replace(/[\s.…:]+$/u, "")
-		.trim()
-		.toLowerCase();
+	let normalized = text.replace(/\s+/g, " ").trim().toLowerCase();
+	// trailing punctuation ("Suche …", "Loading list…"), trimmed without a
+	// backtracking regular expression
+	while (/[\s.…:]/u.test(normalized.at(-1) ?? "")) {
+		normalized = normalized.slice(0, -1);
+	}
 	if (!normalized) {
 		return undefined;
 	}
