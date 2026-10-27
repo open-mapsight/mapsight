@@ -317,7 +317,7 @@ export default function createMeasureDistancePlugin(
 	options: {
 		name?: string;
 		enableDrawing?: boolean;
-		/** Draw at the view centre with the keyboard. @default true */
+		/** Draw at the view centre with the keyboard. @default false */
 		keyboardDrawing?: boolean;
 		mapControllerName?: string;
 		featureSourcesControllerName?: string;
@@ -331,7 +331,7 @@ export default function createMeasureDistancePlugin(
 	const {
 		name = "measureDistance",
 		enableDrawing = true,
-		keyboardDrawing = true,
+		keyboardDrawing = false,
 		mapControllerName = MAP,
 		featureSourcesControllerName = FEATURE_SOURCES,
 		featureSelectionsControllerName = FEATURE_SELECTIONS,

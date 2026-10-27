@@ -103,7 +103,7 @@ describe("lonLatFromDrawnGeometry", () => {
 
 describe("share position keyboard drawing", () => {
 	it.each([undefined, true, false])(
-		"supports keyboardDrawing=%s (default true)",
+		"supports keyboardDrawing=%s (default false)",
 		(keyboardDrawing) => {
 			const context = create(
 				null,
@@ -128,7 +128,7 @@ describe("share position keyboard drawing", () => {
 			).getMap()!;
 			try {
 				expect(!!getKeyboardDraw(map, "sharePositionLink")).toBe(
-					keyboardDrawing !== false,
+					keyboardDrawing === true,
 				);
 			} finally {
 				map.dispose();
@@ -148,6 +148,7 @@ describe("share position keyboard drawing", () => {
 					[
 						"share",
 						createSharePositionPlugin({
+							keyboardDrawing: true,
 							name: "hostShare",
 							markerName: "Host marker",
 							markerFeatureId: "host-marker",

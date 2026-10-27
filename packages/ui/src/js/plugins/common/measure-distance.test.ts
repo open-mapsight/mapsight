@@ -182,7 +182,7 @@ describe("keyboard drawing", () => {
 	});
 
 	it.each([undefined, true, false])(
-		"supports keyboardDrawing=%s (default true)",
+		"supports keyboardDrawing=%s (default false)",
 		(keyboardDrawing) => {
 			const context = create(
 				null,
@@ -204,7 +204,7 @@ describe("keyboard drawing", () => {
 			).getMap()!;
 			cleanups.push(() => map.dispose());
 			expect(!!getKeyboardDraw(map, "measureDistance")).toBe(
-				keyboardDrawing !== false,
+				keyboardDrawing === true,
 			);
 		},
 	);

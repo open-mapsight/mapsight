@@ -125,8 +125,11 @@ export const baseMapsightConfig = {
 
 export const createOptions: CreateOptions = {
 	plugins: [
-		["shareLink", createShareLinkPlugin()],
-		["measureDistance", createMeasureDistancePlugin()],
+		["shareLink", createShareLinkPlugin({keyboardDrawing: true})],
+		[
+			"measureDistance",
+			createMeasureDistancePlugin({keyboardDrawing: true}),
+		],
 		["nativeFullscreen", createNativeFullscreenPlugin()],
 	],
 	imagesUrl: "/img/",

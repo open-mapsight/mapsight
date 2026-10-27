@@ -433,7 +433,7 @@ export type Options = {
 	 * @default true
 	 */
 	enableDrawing?: boolean;
-	/** Enable centre-point keyboard input while drawing. @default true */
+	/** Enable centre-point keyboard input while drawing. @default false */
 	keyboardDrawing?: boolean;
 
 	/**
@@ -532,7 +532,7 @@ export default function createShareLinkPlugin(
 	const {
 		name = "sharePositionLink",
 		enableDrawing = true,
-		keyboardDrawing = true,
+		keyboardDrawing = false,
 		mapControllerName = MAP,
 		featureSourcesControllerName = FEATURE_SOURCES,
 		featureSelectionsControllerName = FEATURE_SELECTIONS,
