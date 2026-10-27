@@ -12,4 +12,4 @@ Layer and tag switchers accept `headlineAs` (default `h3`); split layer switcher
 
 Regional locales such as `en-GB` fall back to their base language while exact host translations still take precedence. Add missing shared labels and search messages, and verify literal translation-key coverage in German and English.
 
-Control tooltips use the hoverable, Escape-dismissible ARIA tooltip by default. Hosts can retain hint.css with `future.v8_ariaControlTooltip: false`.
+The ARIA control tooltip (opt-in via `future.v8_ariaControlTooltip`) no longer makes group containers such as the region list an extra Tab stop.

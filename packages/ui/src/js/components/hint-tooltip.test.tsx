@@ -9,14 +9,12 @@ afterEach(cleanup);
 describe("HintTooltip", () => {
 	it("keeps hint.css classes when the future flag is off", () => {
 		render(
-			<FutureFlagsContext.Provider value={{v8_ariaControlTooltip: false}}>
-				<HintTooltip text="Center map on a region" placement="right">
-					<ul
-						aria-label="Center map on a region"
-						className="ms3-region-selector"
-					/>
-				</HintTooltip>
-			</FutureFlagsContext.Provider>,
+			<HintTooltip text="Center map on a region" placement="right">
+				<ul
+					aria-label="Center map on a region"
+					className="ms3-region-selector"
+				/>
+			</HintTooltip>,
 		);
 
 		const list = screen.getByRole("list", {
@@ -27,9 +25,9 @@ describe("HintTooltip", () => {
 		expect(screen.queryByRole("tooltip")).toBeNull();
 	});
 
-	it("uses the ARIA tooltip by default", async () => {
+	it("uses the ARIA tooltip when v8_ariaControlTooltip is on", async () => {
 		render(
-			<FutureFlagsContext.Provider value={{}}>
+			<FutureFlagsContext.Provider value={{v8_ariaControlTooltip: true}}>
 				<HintTooltip text="Center map on a region" placement="right">
 					<ul
 						aria-label="Center map on a region"
