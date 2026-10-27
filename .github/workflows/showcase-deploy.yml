@@ -5,7 +5,6 @@ on:
     workflows: [Showcase build]
     types: [completed]
   pull_request_target:
-    branches: [main]
     types: [closed]
   schedule:
     - cron: "19 3 * * *"

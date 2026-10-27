@@ -3,8 +3,12 @@
 - Latest `main`: <https://showcase.open-mapsight.org>
 - Pull request 123: `https://pr-123.preview.open-mapsight.org`
 
-Every PR targeting `main`, including forks and drafts, builds the showcase and
-its workspace dependencies in `Showcase build`. Fork runs remain subject to
+Every PR builds the showcase and its workspace dependencies in `Showcase build`.
+PRs targeting `main`, including forks and drafts, and native stack layers whose
+stack targets `main` are eligible for deployment. Each layer's preview includes
+the changes below it, so the top PR previews the complete stack. Unstacked PRs
+targeting other branches and stacks rooted elsewhere are not deployed.
+Fork runs remain subject to
 GitHub's contributor-run approval policy. Each successful current build updates
 the same PR URL. Failed or superseded builds leave the last preview available.
 Closing or merging a PR removes its files and marks its GitHub deployments

@@ -541,6 +541,7 @@ function harness() {
 			state: "open",
 			head: {sha},
 			base: {ref: "main"},
+			stack: null as {base: {ref: string}} | null,
 			changed_files: 1,
 		},
 		liveSha: sha as string | undefined,
@@ -587,6 +588,16 @@ const own = (id: number, body = marker): FakeComment => ({
 	id,
 	body,
 	user: {login: "github-actions[bot]", type: "Bot"},
+});
+
+test("review links follow the native stack trunk and reject unrelated bases", async () => {
+	for (const trunk of ["main", "release", undefined]) {
+		const {state, options} = harness();
+		state.pull.base.ref = "parent-pr";
+		state.pull.stack = trunk ? {base: {ref: trunk}} : null;
+		await updateReview(options);
+		assert.equal(state.writes.length, trunk === "main" ? 1 : 0);
+	}
 });
 
 test("dry runs never write; successful matching previews create one marked comment", async () => {
@@ -652,6 +663,10 @@ test("failed, inactive, wrong-URL, outdated and unavailable deployments never ch
 
 test("a new head, PR closure or changed live preview during analysis prevents a write", async () => {
 	for (const mutate of [
+		(state: ReturnType<typeof harness>["state"]) => {
+			state.pull.base.ref = "parent-pr";
+			state.pull.stack = {base: {ref: "release"}};
+		},
 		(state: ReturnType<typeof harness>["state"]) => {
 			state.pull.head.sha = mainSha;
 		},
