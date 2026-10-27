@@ -30,7 +30,9 @@ jobs:
       - name: Build showcase and its workspace dependencies
         run: pnpm turbo build --filter=@mapsight/showcase
       - name: Verify deployment orchestration
-        run: node --test scripts/preview-deploy.test.mts
+        run: node --test scripts/preview-deploy.test.mts scripts/preview-review-links.test.mts
+      - name: Validate review guides and generated source dependencies
+        run: node scripts/preview-review-links.mts --check
       - name: Install browser for static hosting checks
         run: pnpm exec playwright install --with-deps chromium
       - name: Verify production showcase without mock server middleware

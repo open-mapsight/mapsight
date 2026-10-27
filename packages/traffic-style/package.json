@@ -65,6 +65,33 @@
 	},
 	"license": "MIT",
 	"main": "default.js",
+	"mapsight": {
+		"preview": {
+			"generated": [
+				{
+					"inputs": [
+						"src/icons/",
+						"src/meta.json",
+						"scripts/dev/create-meta-json.ts",
+						"scripts/optimize-icons.ts"
+					],
+					"consumers": [
+						"src/lib/icon-meta.ts"
+					]
+				},
+				{
+					"inputs": [
+						"src/pictograms/",
+						"scripts/dev/import-pictograms.ts",
+						"scripts/dev/import-fontawesome.ts"
+					],
+					"outputs": [
+						"src/generated/pictograms/"
+					]
+				}
+			]
+		}
+	},
 	"peerDependencies": {
 		"ol": "catalog:",
 		"react": "catalog:"

@@ -101,3 +101,35 @@ jobs:
           SHOWCASE_HOST: ${{ vars.SHOWCASE_HOST }}
           PREVIEW_SSH_KEY: ${{ secrets.PREVIEW_SSH_KEY }}
           PREVIEW_KNOWN_HOSTS: ${{ secrets.PREVIEW_KNOWN_HOSTS }}
+
+  review-links:
+    needs: [plan, publish]
+    if: startsWith(needs.plan.outputs.target, 'pr-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Comment writes have their own job/token and no deployment environment.
+    permissions:
+      contents: read
+      deployments: read
+      pull-requests: write
+    concurrency:
+      group: showcase-review-links-${{ needs.plan.outputs.target }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Install trusted analysis dependencies without lifecycle scripts
+        run: pnpm install --filter @mapsight/root --frozen-lockfile --ignore-scripts
+      - name: Update reviewer guidance for the deployed PR revision
+        run: node scripts/preview-review-links.mts --write
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_TARGET: ${{ needs.plan.outputs.target }}
+          PREVIEW_SHA: ${{ needs.plan.outputs.sha }}
