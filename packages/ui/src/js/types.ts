@@ -354,15 +354,16 @@ export type MapsightCoreReducer<
 export type MapsightUiAppReducer = MapsightCoreReducer<UiState>;
 
 /**
- * Opt-in switches for the next major of `@mapsight/ui`.
- * `true` is next-major behavior now; omitted/`false` is today’s default.
+ * Compatibility switches for the next major of `@mapsight/ui`.
+ * Defaults are documented per flag; explicit `false` keeps legacy behavior.
  * Keys are added only when a leftover behavior must stay dual-path in this major.
  * Flags are removed when that major ships. See Decision 012.
  */
 export type FutureFlags = {
 	/**
 	 * Use the ARIA `Tooltip` for leftover hint.css call sites (RegionSelector).
-	 * Default `false` (hint.css). This will be the only behavior in v8.
+	 * Default `true`; explicit `false` keeps hint.css. The ARIA tooltip will be
+	 * the only behavior in v8.
 	 */
 	v8_ariaControlTooltip?: boolean;
 	/**

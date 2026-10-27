@@ -9,12 +9,14 @@ afterEach(cleanup);
 describe("HintTooltip", () => {
 	it("keeps hint.css classes when the future flag is off", () => {
 		render(
-			<HintTooltip text="Center map on a region" placement="right">
-				<ul
-					aria-label="Center map on a region"
-					className="ms3-region-selector"
-				/>
-			</HintTooltip>,
+			<FutureFlagsContext.Provider value={{v8_ariaControlTooltip: false}}>
+				<HintTooltip text="Center map on a region" placement="right">
+					<ul
+						aria-label="Center map on a region"
+						className="ms3-region-selector"
+					/>
+				</HintTooltip>
+			</FutureFlagsContext.Provider>,
 		);
 
 		const list = screen.getByRole("list", {
@@ -25,9 +27,9 @@ describe("HintTooltip", () => {
 		expect(screen.queryByRole("tooltip")).toBeNull();
 	});
 
-	it("uses the ARIA tooltip when v8_ariaControlTooltip is on", async () => {
+	it("uses the ARIA tooltip by default", async () => {
 		render(
-			<FutureFlagsContext.Provider value={{v8_ariaControlTooltip: true}}>
+			<FutureFlagsContext.Provider value={{}}>
 				<HintTooltip text="Center map on a region" placement="right">
 					<ul
 						aria-label="Center map on a region"
@@ -41,6 +43,8 @@ describe("HintTooltip", () => {
 			name: "Center map on a region",
 		});
 		expect(list.className).not.toContain("ms3-hint--");
+		expect(list.tabIndex).toBe(-1);
+		expect(list.hasAttribute("tabindex")).toBe(false);
 
 		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
 		fireEvent.pointerEnter(list, {pointerType: "mouse"});

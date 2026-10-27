@@ -1,6 +1,6 @@
-import {type ReactElement, cloneElement} from "react";
+import {type ReactElement, cloneElement, useContext} from "react";
 
-import {useFutureFlag} from "../future/context";
+import {FutureFlagsContext} from "../future/context";
 import Tooltip, {
 	type TooltipPlacement,
 	type TooltipTriggerElement,
@@ -13,15 +13,16 @@ export type HintTooltipProps = {
 };
 
 /**
- * Leftover hint.css call sites. Default keeps `ms3-hint--*` classes.
- * `future.v8_ariaControlTooltip` switches to {@link Tooltip}. Removed in v8.
+ * Control tooltip with Escape dismissal and hoverable content.
+ * Set `future.v8_ariaControlTooltip: false` to opt out and retain hint.css.
  */
 export default function HintTooltip({
 	text,
 	children,
 	placement = "right",
 }: HintTooltipProps): ReactElement {
-	const useAria = useFutureFlag("v8_ariaControlTooltip");
+	const useAria =
+		useContext(FutureFlagsContext).v8_ariaControlTooltip !== false;
 	const namedChild = cloneElement(children, {
 		"aria-label": children.props["aria-label"] ?? text,
 	});

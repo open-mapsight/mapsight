@@ -1,5 +1,5 @@
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
 import Tooltip from "./tooltip";
 
@@ -76,4 +76,28 @@ describe("Tooltip", () => {
 		fireEvent.keyDown(trigger, {key: "Escape"});
 		expect(screen.queryByRole("tooltip")).toBeNull();
 	});
+});
+
+it("stays open while the pointer moves from the trigger onto the tooltip", () => {
+	vi.useFakeTimers();
+	try {
+		render(
+			<Tooltip text="Zoom in">
+				<button type="button" aria-label="Zoom in" />
+			</Tooltip>,
+		);
+		const trigger = screen.getByRole("button", {name: "Zoom in"});
+		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
+		fireEvent.pointerEnter(trigger, {pointerType: "mouse"});
+		void act(() => vi.advanceTimersByTime(350));
+		const tooltip = screen.getByRole("tooltip");
+		fireEvent.pointerLeave(trigger, {pointerType: "mouse"});
+		fireEvent.pointerEnter(tooltip, {pointerType: "mouse"});
+		void act(() => vi.advanceTimersByTime(1000));
+		expect(screen.getByRole("tooltip")).toBe(tooltip);
+		fireEvent.keyDown(document.body, {key: "Escape"});
+		expect(screen.queryByRole("tooltip")).toBeNull();
+	} finally {
+		vi.useRealTimers();
+	}
 });

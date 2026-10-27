@@ -50,6 +50,10 @@ export function translate(
 ): string {
 	return (
 		DICTIONARY[language]?.[key] ??
+		DICTIONARY[language.toLowerCase().replaceAll("_", "-")]?.[key] ??
+		DICTIONARY[
+			language.toLowerCase().split(/[-_]/)[0] ?? DEFAULT_LANGUAGE
+		]?.[key] ??
 		DICTIONARY[DEFAULT_LANGUAGE]?.[key] ??
 		key
 	);
