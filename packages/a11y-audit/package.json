@@ -1,0 +1,50 @@
+{
+	"name": "@mapsight/a11y-audit",
+	"description": "Rerunnable accessibility audit for Mapsight integrations: axe-core plus keyboard, dialog, map, reflow and language checks, with ownership, baselines and a WCAG coverage matrix",
+	"version": "0.0.0",
+	"type": "module",
+	"bin": {
+		"mapsight-a11y-audit": "./dist/cli.js"
+	},
+	"dependencies": {
+		"axe-core": "^4.14.0",
+		"playwright": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"engines": {
+		"node": "^24.15.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/a11y-audit#readme",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"tag": "beta"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/a11y-audit"
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"clean": "rm -rf dist",
+		"clean-build": "npm-run-all clean build",
+		"lint": "eslint",
+		"test": "vitest run",
+		"test:e2e": "vitest run --config vitest.e2e.config.ts",
+		"typecheck": "tsc --noEmit"
+	}
+}
