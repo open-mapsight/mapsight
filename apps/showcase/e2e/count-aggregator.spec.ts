@@ -49,6 +49,10 @@ test.describe("count-aggregator showcase demo", () => {
 		}, csvUrl);
 		expect(csv.type).toContain("text/csv");
 		expect(csv.body).toContain("Zeitpunkt;Station;Wert");
+
+		const download = page.waitForEvent("download");
+		await page.getByRole("link", {name: /csv/i}).click();
+		expect((await download).suggestedFilename()).toMatch(/\.csv$/);
 	});
 
 	test("headless demo loads values with host-owned UI", async ({page}) => {
