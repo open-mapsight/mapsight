@@ -51,7 +51,7 @@ describe("locale fallback", () => {
 
 it("provides German and English for every translate literal in the UI package", () => {
 	const root = resolve(process.cwd(), "src/js");
-	// TODO: drop once the measurement labels land with the map tools change (#376).
+	// Registered at runtime by the measure-distance plugin, not the shared dictionaries.
 	const allowedMissing = new Set([
 		"ui.measure-distance.measurement",
 		"ui.measure-distance.title",
