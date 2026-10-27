@@ -6,6 +6,7 @@ import {
 	type BuildRun,
 	type Pull,
 	deploymentTarget,
+	retryGitHubRequest,
 	streamArchive,
 } from "./preview-deploy.mts";
 
@@ -106,4 +107,61 @@ test("an early receiver exit is left to the SSH exit status", async () => {
 		stopped = true;
 	});
 	assert.equal(stopped, false);
+});
+
+test("transient GitHub status/read failures are retried with a bounded backoff", async () => {
+	let calls = 0;
+	const pauses: number[] = [];
+	const response = await retryGitHubRequest(
+		() =>
+			Promise.resolve(
+				new Response("{}", {status: ++calls < 3 ? 500 : 200}),
+			),
+		true,
+		(milliseconds) => {
+			pauses.push(milliseconds);
+			return Promise.resolve();
+		},
+	);
+	assert.equal(response.status, 200);
+	assert.equal(calls, 3);
+	assert.deepEqual(pauses, [500, 1000]);
+});
+
+test("deployment creation is never replayed and authorization failures are not retried", async () => {
+	for (const [retryable, status] of [
+		[false, 500],
+		[true, 403],
+	] as const) {
+		let calls = 0;
+		const response = await retryGitHubRequest(
+			() => {
+				calls++;
+				return Promise.resolve(new Response("{}", {status}));
+			},
+			retryable,
+			() => {
+				throw new Error("Should not pause");
+			},
+		);
+		assert.equal(response.status, status);
+		assert.equal(calls, 1);
+	}
+});
+
+test("network failures stop after four attempts and preserve the original error", async () => {
+	const failure = new Error("connection reset");
+	let calls = 0;
+	await assert.rejects(
+		retryGitHubRequest(
+			() => {
+				calls++;
+				return Promise.reject(failure);
+			},
+			true,
+			() => Promise.resolve(),
+		),
+		failure,
+	);
+	assert.equal(calls, 4);
 });

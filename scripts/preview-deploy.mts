@@ -14,6 +14,7 @@ import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {type Readable, type Writable} from "node:stream";
 import {pipeline} from "node:stream/promises";
+import {setTimeout as delay} from "node:timers/promises";
 import {pathToFileURL} from "node:url";
 
 const REPOSITORY = "open-mapsight/mapsight";
@@ -65,21 +66,41 @@ function required(name: string): string {
 	return value;
 }
 
+/** Retry reads/status updates; creating deployments is intentionally not retried. */
+export async function retryGitHubRequest(
+	request: () => Promise<Response>,
+	retryable: boolean,
+	pause: (milliseconds: number) => Promise<void> = delay,
+): Promise<Response> {
+	for (let attempt = 0; ; attempt++) {
+		try {
+			const response = await request();
+			if (!retryable || response.status < 500 || attempt === 3)
+				return response;
+			await response.body?.cancel();
+		} catch (error) {
+			if (!retryable || attempt === 3) throw error;
+		}
+		await pause(500 * 2 ** attempt);
+	}
+}
+
 async function api<T>(path: string, body?: unknown): Promise<T> {
-	const response = await fetch(
-		`https://api.github.com/repos/${REPOSITORY}${path}`,
-		{
-			method: body === undefined ? "GET" : "POST",
-			headers: {
-				Authorization: `Bearer ${required("GH_TOKEN")}`,
-				Accept: "application/vnd.github+json",
-				"X-GitHub-Api-Version": "2022-11-28",
-				"Content-Type": "application/json",
-				"Cache-Control": "no-cache",
-			},
-			...(body === undefined ? {} : {body: JSON.stringify(body)}),
-			signal: AbortSignal.timeout(30_000),
-		},
+	const response = await retryGitHubRequest(
+		() =>
+			fetch(`https://api.github.com/repos/${REPOSITORY}${path}`, {
+				method: body === undefined ? "GET" : "POST",
+				headers: {
+					Authorization: `Bearer ${required("GH_TOKEN")}`,
+					Accept: "application/vnd.github+json",
+					"X-GitHub-Api-Version": "2022-11-28",
+					"Content-Type": "application/json",
+					"Cache-Control": "no-cache",
+				},
+				...(body === undefined ? {} : {body: JSON.stringify(body)}),
+				signal: AbortSignal.timeout(30_000),
+			}),
+		body === undefined || path.endsWith("/statuses"),
 	);
 	if (!response.ok)
 		throw new Error(`GitHub ${path}: HTTP ${response.status}`);
@@ -390,7 +411,17 @@ async function publish(): Promise<void> {
 		}
 		console.log(`Published ${url}`);
 	} catch (error) {
-		await status("failure", "Preview deployment failed; see workflow logs");
+		try {
+			await status(
+				"failure",
+				"Preview deployment failed; see workflow logs",
+			);
+		} catch (reportingError) {
+			console.error(
+				"Could not record deployment failure status",
+				reportingError,
+			);
+		}
 		throw error;
 	}
 }
