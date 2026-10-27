@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 
-// Temporary preview-review lifecycle check. This draft PR is closed without merging.
+// Second preview-review revision checks that the existing bot comment is updated.
 
 const sections = [
 	{
