@@ -1,8 +1,13 @@
 import type {ChangeEvent, ReactNode} from "react";
-import {forwardRef, useCallback, useLayoutEffect, useRef} from "react";
+import {
+	forwardRef,
+	useCallback,
+	useImperativeHandle,
+	useLayoutEffect,
+	useRef,
+} from "react";
 
 import {translate} from "../helpers/i18n";
-import {forwardRefValue} from "../helpers/react";
 
 /* NOTE: for attribute not required because of nesting */
 
@@ -33,7 +38,7 @@ const QueryInput = forwardRef<HTMLInputElement, Props>(function QueryInput(
 	forwardedRef,
 ) {
 	const inputRef = useRef<HTMLInputElement>(null);
-	forwardRefValue(inputRef, forwardedRef);
+	useImperativeHandle(forwardedRef, () => inputRef.current!, []);
 
 	// React's `autoFocus` focuses on mount but does not always set the HTML
 	// `autofocus` attribute. Native `<dialog showModal>` (and useNativeDialog)

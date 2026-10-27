@@ -1,9 +1,9 @@
 import {memo, useMemo} from "react";
 import {useSelector} from "react-redux";
 
-import AsyncStatusRegion from "../async-status/AsyncStatusRegion";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
+import {useAsyncStatusDisplay} from "../../lib/async-status";
 import {
 	SEARCH_STATUS_INACTIVE,
 	searchStatusToView,
@@ -12,12 +12,17 @@ import {
 	searchResultFeaturesSelector,
 	searchStatusSelector,
 } from "../../store/selectors";
-
+import AsyncStatusIndicator from "../async-status/AsyncStatusIndicator";
 import SearchResultEntry from "./result-entry";
 
 const defaultGroup = "__default__";
 
-function SearchResult({closeSearch, onReturnFocus}) {
+function SearchResult({
+	closeSearch,
+	onReturnFocus,
+	onResultSelected,
+	groupHeadlineAs: GroupHeadline = "h4",
+}) {
 	const status = useSelector(searchStatusSelector);
 	const features = useSelector(searchResultFeaturesSelector);
 
@@ -25,6 +30,12 @@ function SearchResult({closeSearch, onReturnFocus}) {
 		() => searchStatusToView(status, features),
 		[status, features],
 	);
+
+	const display = useAsyncStatusDisplay(view, {
+		isEmpty: () => !features?.length,
+	});
+	const hasContent =
+		display.phase === "content" || display.phase === "refreshing";
 
 	const groupedEntries = useMemo(() => {
 		const entries = {};
@@ -37,11 +48,12 @@ function SearchResult({closeSearch, onReturnFocus}) {
 					feature={feature}
 					closeSearch={closeSearch}
 					onReturnFocus={onReturnFocus}
+					onResultSelected={onResultSelected}
 				/>,
 			);
 		});
 		return entries;
-	}, [closeSearch, features, onReturnFocus]);
+	}, [closeSearch, features, onReturnFocus, onResultSelected]);
 
 	const listContent = useMemo(() => {
 		if (!features?.length) {
@@ -51,7 +63,9 @@ function SearchResult({closeSearch, onReturnFocus}) {
 		return Object.keys(groupedEntries).map((group) => (
 			<div className="ms3-search-result__group" key={group}>
 				{group && group !== defaultGroup ? (
-					<h4 className="ms3-search-result__group-head">{group}</h4>
+					<GroupHeadline className="ms3-search-result__group-head">
+						{group}
+					</GroupHeadline>
 				) : null}
 
 				<ul className="ms3-search-result__list">
@@ -59,38 +73,70 @@ function SearchResult({closeSearch, onReturnFocus}) {
 				</ul>
 			</div>
 		));
-	}, [features, groupedEntries]);
+	}, [features, groupedEntries, GroupHeadline]);
 
 	if (status === SEARCH_STATUS_INACTIVE) {
 		return (
-			<div
-				className={`ms3-search-result ms3-search-result--${status}`}
-			/>
+			<div className={`ms3-search-result ms3-search-result--${status}`} />
 		);
 	}
 
 	return (
 		<div className={`ms3-search-result ms3-search-result--${status}`}>
-			<AsyncStatusRegion
-				className="ms3-search-result__status-region"
-				contentClassName="ms3-search-result__content"
-				emptyMessage={
-					<p className="ms3-search-result__empty-message">
-						{translate("ui.search.result.empty")}
-					</p>
-				}
-				errorMessage={
-					<p className="ms3-search-result__error">
-						{translate("ui.search.result.error")}
-					</p>
-				}
-				isEmpty={() => !features?.length}
-				loadingMessage={null}
-				variant="placeholder"
-				view={view}
+			<div
+				className={`ms3-async-status-region ms3-search-result__status-region${display.phase === "refreshing" ? " ms3-async-status-region--refreshing" : ""}`}
 			>
-				{listContent}
-			</AsyncStatusRegion>
+				{/* Search owns the single live region, including when hosts opt out. */}
+				<div className="ms3-async-status-region__status">
+					{display.phase === "loading" && (
+						<AsyncStatusIndicator
+							aria-live="off"
+							phase="loading"
+							message={null}
+						/>
+					)}
+					{display.phase === "empty" && (
+						<p className="ms3-search-result__empty-message">
+							{translate("ui.search.result.empty")}
+						</p>
+					)}
+					{hasContent && display.showRefreshing && (
+						<AsyncStatusIndicator
+							aria-live="off"
+							phase="refreshing"
+							variant="inline"
+							className="ms3-async-status-region__refresh-indicator"
+						/>
+					)}
+				</div>
+				{display.phase === "error" && (
+					<AsyncStatusIndicator
+						aria-live="off"
+						phase="error"
+						error={
+							<p className="ms3-search-result__error">
+								{translate("ui.search.result.error")}
+							</p>
+						}
+					/>
+				)}
+				{display.phase === "refreshing" && display.showError && (
+					<div className="ms3-async-status-region__error-banner">
+						{translate("ui.search.result.error")}
+					</div>
+				)}
+				{hasContent && (
+					<div
+						className="ms3-search-result__content"
+						aria-busy={
+							display.phase === "refreshing" &&
+							display.showRefreshing
+						}
+					>
+						{listContent}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
