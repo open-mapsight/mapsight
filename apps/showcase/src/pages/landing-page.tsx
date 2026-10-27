@@ -1,5 +1,7 @@
 import {Link} from "react-router-dom";
 
+// Temporary preview-review lifecycle check. This draft PR is closed without merging.
+
 const sections = [
 	{
 		to: "/ui/combined-list",
