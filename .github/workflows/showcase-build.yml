@@ -44,3 +44,4 @@ jobs:
           path: apps/showcase/dist
           if-no-files-found: error
           retention-days: 3
+          include-hidden-files: true
