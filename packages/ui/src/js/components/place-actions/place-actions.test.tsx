@@ -6,6 +6,7 @@ import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import {ANIMATE} from "@mapsight/core/lib/map/actions";
 
+import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
 import {
@@ -15,6 +16,8 @@ import {
 import FeaturePlaceActions from "./feature-place-actions";
 import PlaceActions from "./place-actions";
 import type {PlaceActionsConfig} from "./types";
+
+vi.mock("../../helpers/announce-status", () => ({announceStatus: vi.fn()}));
 
 vi.mock("../popover-dialog", () => ({
 	default: function MockPopover({
@@ -100,6 +103,7 @@ describe("PlaceActions", () => {
 
 	afterEach(() => {
 		cleanup();
+		vi.clearAllMocks();
 		setDocumentLanguage("de");
 		vi.unstubAllGlobals();
 	});
@@ -246,6 +250,7 @@ describe("PlaceActions", () => {
 
 		fireEvent.click(screen.getByRole("button", {name: "Link kopieren"}));
 		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith("Link kopiert");
 			expect(writeText).toHaveBeenCalledWith(
 				"https://example.de/plan?feature=schlosspark",
 			);
@@ -484,5 +489,67 @@ describe("PlaceActions", () => {
 		expect(permalink.getAttribute("href")).toBe(
 			"https://example.de/plan?feature=schlosspark",
 		);
+		expect(permalink.tabIndex).toBe(-1);
+	});
+
+	it.each([true, false])(
+		"announces coordinate copy success=%s",
+		async (success) => {
+			vi.stubGlobal("navigator", {
+				...window.navigator,
+				clipboard: {
+					writeText: success
+						? vi.fn().mockResolvedValue(undefined)
+						: vi.fn().mockRejectedValue(new Error("denied")),
+				},
+			});
+			render(
+				<PlaceActions.Root
+					feature={feature()}
+					config={{...isolated, copyCoords: true}}
+				>
+					<PlaceActions.CopyCoords />
+				</PlaceActions.Root>,
+			);
+			fireEvent.click(
+				screen.getByRole("button", {
+					name: "Diese Koordinaten kopieren",
+				}),
+			);
+			await vi.waitFor(() => {
+				expect(announceStatus).toHaveBeenCalledWith(
+					success
+						? "Koordinaten kopiert"
+						: "Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
+				);
+			});
+		},
+	);
+
+	it("announces link copy failure", async () => {
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			share: undefined,
+			clipboard: {
+				writeText: vi.fn().mockRejectedValue(new Error("denied")),
+			},
+		});
+		render(
+			<PlaceActions.Root
+				feature={feature()}
+				config={{...isolated, permalink: "https://example.de/place"}}
+			>
+				<PlaceActions.Share />
+			</PlaceActions.Root>,
+		);
+		fireEvent.click(
+			screen.getByRole("button", {name: "Diesen Ort teilen"}),
+		);
+		fireEvent.click(screen.getByRole("button", {name: "Link kopieren"}));
+		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith(
+				"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
+			);
+		});
 	});
 });

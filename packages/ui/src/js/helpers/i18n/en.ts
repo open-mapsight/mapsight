@@ -19,6 +19,17 @@ import {
 /*  eslint quote-props: 0 */
 
 const en: Record<string, string> = {
+	// Map surface and tool accessibility.
+	"ui.map.label": "Interactive map",
+	"ui.map.roledescription": "Map",
+	"ui.place-actions.share.copy-success": "Link copied",
+	"ui.place-actions.copy-coords.copy-success": "Coordinates copied",
+	"ui.place-actions.copy-failed":
+		"Copy failed. Please copy the text manually.",
+	"ui.user-geo-location-button.requesting": "Requesting your location …",
+	"ui.user-geo-location-button.error":
+		"Your location could not be determined.",
+
 	open: "open",
 	close: "close",
 	reset: "reset",
@@ -153,6 +164,7 @@ const en: Record<string, string> = {
 		'<dt><kbd aria-label="Arrow up">↑</kbd></dt><dd>move up</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>zoom in</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>zoom out</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Open the menu at the map centre</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
 

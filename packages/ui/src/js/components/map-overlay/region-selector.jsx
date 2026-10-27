@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {translate} from "../../helpers/i18n";
 import {setSelectedRegionIdAndAnimateMap} from "../../store/actions";
 import {regionsSelector, selectedRegionIdSelector} from "../../store/selectors";
-import HintTooltip from "../hint-tooltip";
 
 const RegionSelectorEntry = memo(
 	/**
@@ -31,7 +30,11 @@ const RegionSelectorEntry = memo(
 						: ""
 				}`}
 			>
-				<button type="button" onClick={onClick}>
+				<button
+					type="button"
+					onClick={onClick}
+					aria-pressed={regionId === selectedRegionId}
+				>
 					{region.label}
 				</button>
 			</li>
@@ -52,17 +55,11 @@ const RegionSelector = memo(function RegionSelector({
 	const label = translate("ui.region-selector.label");
 
 	return (
-		<HintTooltip text={label} placement="right">
-			<T className="ms3-region-selector" style={style} aria-label={label}>
-				{Object.entries(regions).map(([id, region]) => (
-					<RegionSelectorEntry
-						key={id}
-						regionId={id}
-						region={region}
-					/>
-				))}
-			</T>
-		</HintTooltip>
+		<T className="ms3-region-selector" style={style} aria-label={label}>
+			{Object.entries(regions).map(([id, region]) => (
+				<RegionSelectorEntry key={id} regionId={id} region={region} />
+			))}
+		</T>
 	);
 });
 

@@ -4,7 +4,9 @@
 	line-height: 1;
 	font-size: var(--ms3-font-size-base);
 
-	background: var(--ms3-attributions-background-color);
+	// Keep a solid backing even when a host supplies a translucent token.
+	background: linear-gradient(var(--ms3-attributions-background-color), var(--ms3-attributions-background-color)), #fff;
+	color: #222;
 	border-top-left-radius: var(--ms3-border-radius);
 
 	max-width: calc(100% - 15px);

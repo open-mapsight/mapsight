@@ -14,6 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {animate} from "@mapsight/core/lib/map/actions";
 
 import {MAP} from "../../config/constants/controllers";
+import {announceStatus} from "../../helpers/announce-status";
 import {mapExtentFromFeature} from "../../helpers/geo";
 import {translate} from "../../helpers/i18n";
 import {isMapOutOfViewportSelector} from "../../store/selectors";
@@ -161,8 +162,10 @@ function Share({
 		try {
 			await window.navigator.clipboard.writeText(share.href);
 			setCopied(true);
+			announceStatus(translate("ui.place-actions.share.copy-success"));
 		} catch {
 			setCopied(false);
+			announceStatus(translate("ui.place-actions.copy-failed"));
 		}
 	}, [share]);
 
@@ -219,6 +222,7 @@ function Share({
 			</PlaceActionTooltip>
 			<a
 				className="ms3-place-actions__permalink ms3-visuallyhidden"
+				tabIndex={-1}
 				href={share.href}
 			>
 				{permalinkLabel}
@@ -329,8 +333,12 @@ function CopyCoords({
 		try {
 			await window.navigator.clipboard.writeText(copyCoords.text);
 			setCopied(true);
+			announceStatus(
+				translate("ui.place-actions.copy-coords.copy-success"),
+			);
 		} catch {
 			setCopied(false);
+			announceStatus(translate("ui.place-actions.copy-failed"));
 		}
 	}, [copyCoords]);
 

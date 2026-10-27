@@ -61,6 +61,7 @@
 
 	&__button {
 		display: block;
+		min-width: 24px;
 		@if (variables.$ms3-option-mapOverlayButtonsShowLabel) {
 			width: 80px;
 			min-height: 50px;

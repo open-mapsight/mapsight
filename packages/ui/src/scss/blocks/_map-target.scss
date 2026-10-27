@@ -2,5 +2,10 @@
 .ms3-map-target {
 	width: 100%;
 	height: 100%;
+	&:focus-visible {
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: -3px;
+	}
+
 	background: var(--ms3-map-background-color);
 }

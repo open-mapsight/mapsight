@@ -19,6 +19,17 @@ import {
 /*  eslint quote-props: 0 */
 
 const de: Record<string, string> = {
+	// Map surface and tool accessibility.
+	"ui.map.label": "Interaktive Karte",
+	"ui.map.roledescription": "Karte",
+	"ui.place-actions.share.copy-success": "Link kopiert",
+	"ui.place-actions.copy-coords.copy-success": "Koordinaten kopiert",
+	"ui.place-actions.copy-failed":
+		"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
+	"ui.user-geo-location-button.requesting": "Standort wird ermittelt …",
+	"ui.user-geo-location-button.error":
+		"Standort konnte nicht ermittelt werden.",
+
 	open: "öffnen",
 	close: "schließen",
 	reset: "zurücksetzen",
@@ -159,6 +170,7 @@ const de: Record<string, string> = {
 		'<dt><kbd aria-label="Cursor hoch">↑</kbd></dt><dd>nach oben verschieben</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>hineinzoomen</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>herauszoomen</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Menü am Kartenmittelpunkt öffnen</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden":
 		"Dieser Bereich der Webseite zeigt eine Landkarte.",
