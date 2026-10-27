@@ -56,6 +56,12 @@ export default defineConfig(({command}) => ({
 			},
 		},
 	},
+	worker: {
+		format: "iife",
+		rolldownOptions: {
+			output: {entryFileNames: "mock-service-worker.js"},
+		},
+	},
 	server: {
 		watch: {
 			ignored: ["**/node_modules/**", "!**/node_modules/@mapsight/**"],

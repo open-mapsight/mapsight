@@ -3,3 +3,5 @@ rules:
     ignore:
       # Actor-gated to dependabot[bot] with deps:npm label; workflow runs from base branch.
       - dependabot-changeset.yml
+      # Privilege separation: checks out main; artifacts are static data and never executed.
+      - showcase-deploy.yml
