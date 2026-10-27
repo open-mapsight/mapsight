@@ -40,6 +40,35 @@
 		"vite": "^8.3.3"
 	},
 	"license": "MIT",
+	"mapsight": {
+		"preview": {
+			"guides": "preview-guides.json",
+			"generated": [
+				{
+					"inputs": [
+						"src/vector-styles/"
+					],
+					"outputs": [
+						"src/generated/mapsight-vector-styles/"
+					],
+					"tools": [
+						"@mapsight/vector-style-compiler"
+					]
+				},
+				{
+					"inputs": [
+						"src/mock-service-worker.ts",
+						"src/count-aggregator/mock-api.ts",
+						"src/count-aggregator/register-static-mock.ts"
+					],
+					"consumers": [
+						"src/count-aggregator/count-aggregator-demo-page.tsx",
+						"src/count-aggregator/count-aggregator-headless-page.tsx"
+					]
+				}
+			]
+		}
+	},
 	"repository": {
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
