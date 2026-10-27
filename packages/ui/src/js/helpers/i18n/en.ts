@@ -158,14 +158,17 @@ const en: Record<string, string> = {
 	"ui.map.usage.heading": "Keyboard shortcuts for map usage",
 	"ui.map.usage.html":
 		'<dl class="ms3-map-usage">' +
-		'<dt><kbd aria-label="Arrow right">→</kbd></dt><dd>move right</dd>' +
-		'<dt><kbd aria-label="Arrow left">←</kbd></dt><dd>move left</dd>' +
-		'<dt><kbd aria-label="Arrow down">↓</kbd></dt><dd>move down</dd>' +
-		'<dt><kbd aria-label="Arrow up">↑</kbd></dt><dd>move up</dd>' +
+		'<dt><kbd><span aria-hidden="true">→</span><span class="ms3-visuallyhidden">Arrow right</span></kbd></dt><dd>move right</dd>' +
+		'<dt><kbd><span aria-hidden="true">←</span><span class="ms3-visuallyhidden">Arrow left</span></kbd></dt><dd>move left</dd>' +
+		'<dt><kbd><span aria-hidden="true">↓</span><span class="ms3-visuallyhidden">Arrow down</span></kbd></dt><dd>move down</dd>' +
+		'<dt><kbd><span aria-hidden="true">↑</span><span class="ms3-visuallyhidden">Arrow up</span></kbd></dt><dd>move up</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>zoom in</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>zoom out</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Open the menu at the map centre</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
+	"ui.map.label": "Interactive map",
+	"ui.map.roledescription": "Map",
 
 	"ui.wrapper.overlay.fullscreen": "Fullscreen map",
 	"ui.wrapper.overlay.mapOnly": "Map",
