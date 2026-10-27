@@ -9,21 +9,21 @@
 		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
 		outline-offset: -3px;
 	}
+}
 
-	// Crosshair at the map centre while a keyboard drawing tool is active.
-	&--keyboard-drawing::after {
-		content: "";
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		width: 24px;
-		height: 24px;
-		transform: translate(-50%, -50%);
-		pointer-events: none;
-		border-radius: 50%;
-		box-shadow: 0 0 0 2px #fff;
-		background:
-			linear-gradient(#222, #222) center / 2px 100% no-repeat,
-			linear-gradient(#222, #222) center / 100% 2px no-repeat;
-	}
+// Crosshair at the map centre while a keyboard drawing tool is active.
+.ms3-map-target--keyboard-drawing::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 24px;
+	height: 24px;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	border-radius: 50%;
+	box-shadow: 0 0 0 2px #fff;
+	background:
+		linear-gradient(#222, #222) center / 2px 100% no-repeat,
+		linear-gradient(#222, #222) center / 100% 2px no-repeat;
 }
