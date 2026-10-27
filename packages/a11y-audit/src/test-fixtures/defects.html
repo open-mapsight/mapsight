@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+		<title>a11y-audit fixture</title>
+		<style>
+			body {
+				font: 16px/1.2 sans-serif;
+				margin: 0;
+			}
+			button {
+				font: inherit;
+			}
+			.good:focus-visible {
+				outline: 3px solid #005a9c;
+			}
+			.no-ring:focus {
+				outline: none;
+			}
+			.clickable {
+				cursor: pointer;
+				display: inline-block;
+				padding: 8px;
+			}
+			.tight {
+				height: 1.2em;
+				overflow: hidden;
+				width: 300px;
+			}
+			.wide {
+				min-width: 600px;
+				background: #eee;
+			}
+			.ol-viewport {
+				width: 300px;
+				height: 150px;
+				position: relative;
+			}
+			.ol-viewport canvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+			.popup {
+				border: 1px solid;
+				padding: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>Fixture</h1>
+			<div id="app" class="bs-embed">
+				<button type="button" class="good">Gute Schaltfläche</button>
+				<button type="button" class="ms3-icon-button">
+					<svg width="16" height="16" aria-hidden="true"></svg>
+				</button>
+				<button type="button" class="no-ring ms3-plain">
+					Ohne Fokusrahmen
+				</button>
+				<div class="clickable" onclick="this.textContent = 'geklickt'">
+					Klick mich
+				</div>
+				<button type="button" aria-label="Zoom in" class="good">
+					+
+				</button>
+
+				<button
+					type="button"
+					class="good"
+					id="stale"
+					aria-expanded="false"
+					aria-controls="stale-panel"
+				>
+					Mehr
+				</button>
+				<div id="stale-panel" hidden>Inhalt</div>
+
+				<button
+					type="button"
+					class="good"
+					id="popover-trigger"
+					aria-haspopup="dialog"
+					aria-expanded="false"
+				>
+					Optionen
+				</button>
+				<div id="popover" role="dialog" class="popup" hidden>
+					<button type="button" class="good">Option A</button>
+				</div>
+
+				<button
+					type="button"
+					class="good"
+					id="modal-trigger"
+					aria-haspopup="dialog"
+					aria-expanded="false"
+				>
+					Modal
+				</button>
+				<div
+					id="modal"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Modal"
+					class="popup"
+					hidden
+				>
+					<button type="button" class="good" id="modal-first">
+						Erste
+					</button>
+					<button type="button" class="good">Zweite</button>
+				</div>
+
+				<div
+					role="button"
+					class="clickable"
+					id="mouse-only"
+					aria-expanded="false"
+					onclick="
+						this.setAttribute(
+							'aria-expanded',
+							this.getAttribute('aria-expanded') === 'true'
+								? 'false'
+								: 'true',
+						);
+						document.getElementById('mouse-panel').hidden =
+							!document.getElementById('mouse-panel').hidden;
+					"
+					tabindex="0"
+				>
+					Nur Maus
+				</div>
+				<div id="mouse-panel" hidden>Panel</div>
+
+				<div
+					tabindex="0"
+					class="good"
+					aria-label="Liste ohne Pfeiltasten"
+				>
+					<div class="clickable" tabindex="-1">Eins</div>
+					<div class="clickable" tabindex="-1">Zwei</div>
+				</div>
+				<div
+					tabindex="0"
+					class="good"
+					aria-label="Liste mit Pfeiltasten"
+					id="roving-ok"
+				>
+					<div class="clickable" tabindex="-1">Drei</div>
+					<div class="clickable" tabindex="-1">Vier</div>
+				</div>
+
+				<ul class="roving-siblings">
+					<li><button type="button" class="good">Fünf</button></li>
+					<li>
+						<button
+							type="button"
+							class="good clickable"
+							tabindex="-1"
+						>
+							Sechs
+						</button>
+					</li>
+				</ul>
+
+				<p class="tight">Dieser Text passt genau in eine Zeile.</p>
+				<div class="wide">Breiter Block</div>
+
+				<div class="ol-viewport">
+					<canvas width="300" height="150"></canvas>
+				</div>
+			</div>
+		</main>
+		<script>
+			const stale = document.getElementById("stale");
+			stale.addEventListener("click", () => {
+				const panel = document.getElementById("stale-panel");
+				panel.hidden = !panel.hidden; // aria-expanded never updated
+			});
+			const popoverTrigger = document.getElementById("popover-trigger");
+			popoverTrigger.addEventListener("click", () => {
+				const popover = document.getElementById("popover");
+				popover.hidden = !popover.hidden;
+				popoverTrigger.setAttribute(
+					"aria-expanded",
+					String(!popover.hidden),
+				);
+			});
+			const modalTrigger = document.getElementById("modal-trigger");
+			const modal = document.getElementById("modal");
+			modalTrigger.addEventListener("click", () => {
+				modal.hidden = false;
+				modalTrigger.setAttribute("aria-expanded", "true");
+				document.getElementById("modal-first").focus();
+			});
+			modal.addEventListener("keydown", (event) => {
+				if (event.key === "Escape") {
+					modal.hidden = true;
+					modalTrigger.setAttribute("aria-expanded", "false");
+					document.activeElement.blur(); // focus is not returned
+				}
+			});
+			document
+				.getElementById("roving-ok")
+				.addEventListener("keydown", (event) => {
+					if (event.key === "ArrowDown") {
+						event.currentTarget
+							.querySelector("[tabindex='-1']")
+							.focus();
+					}
+				});
+			const siblings = document.querySelector(".roving-siblings");
+			siblings.addEventListener("keydown", (event) => {
+				if (event.key === "ArrowDown") {
+					siblings.querySelectorAll("button")[1].focus();
+				}
+			});
+			const canvas = document.querySelector("canvas");
+			const context = canvas.getContext("2d");
+			context.fillStyle = "#9c9";
+			context.fillRect(0, 0, 300, 150);
+		</script>
+	</body>
+</html>

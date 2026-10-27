@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"exclude": ["**/*.test.ts", "src/test-fixtures/**"],
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "dist"
+	}
+}
