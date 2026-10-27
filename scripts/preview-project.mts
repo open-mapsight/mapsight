@@ -448,7 +448,7 @@ export class PreviewProject {
 					continue;
 				for (const target of targets) {
 					const resolved = this.sourceFile(
-						target.replace(
+						target.replaceAll(
 							"*",
 							specifier.slice(
 								prefix!.length,
@@ -554,7 +554,11 @@ export class PreviewProject {
 						route = value.startsWith("/")
 							? value
 							: path.join(parent, value);
-						if (!/^\/(?:[a-z0-9-]+\/?)*$/.test(route)) return;
+						if (
+							!/^\/[a-z0-9/-]*$/.test(route) ||
+							route.includes("//")
+						)
+							return;
 						navigable = true;
 					}
 					if (

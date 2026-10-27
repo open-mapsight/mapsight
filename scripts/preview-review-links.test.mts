@@ -186,6 +186,22 @@ test("routes come from literal mounted pages; redirects and unresolved parameter
 	);
 });
 
+test("route validation rejects long invalid paths and repeated leading slashes", () => {
+	for (const route of [`ui/${"-".repeat(10_000)}?`, "//another-host"]) {
+		const src = sources();
+		src.set(
+			"apps/showcase/src/app.tsx",
+			src
+				.get("apps/showcase/src/app.tsx")!
+				.replace('path="ui/full"', `path="${route}"`),
+		);
+		assert.deepEqual(
+			showcaseRoutes(src).map((route) => route.path),
+			["/", "/icons/catalog", "/count-aggregator/headless"],
+		);
+	}
+});
+
 test("new workspace packages, inherited emit roots, publish directories and aliases need no bot mapping", () => {
 	const src = sources();
 	src.set(
@@ -502,7 +518,11 @@ test("comments provide exact deployed revision, comparable paths and mock-data c
 	assert.ok(body.startsWith(marker));
 	assert.match(body, /aaaaaaa/);
 	assert.ok(body.includes(`${origin}/icons/catalog`));
-	assert.match(body, /https:\/\/showcase.open-mapsight.org\/icons\/catalog/);
+	assert.ok(
+		body.includes(
+			"[Compare](https://showcase.open-mapsight.org/icons/catalog)",
+		),
+	);
 	assert.match(body, /New screen/);
 	assert.match(body, /incomplete changed-file list/);
 	assert.match(body, /local mock data/);
