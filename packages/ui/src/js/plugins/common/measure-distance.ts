@@ -1,3 +1,8 @@
+import type OlMap from "ol/Map";
+import LineString from "ol/geom/LineString";
+import Draw from "ol/interaction/Draw";
+import type VectorSource from "ol/source/Vector";
+
 import {createSelector} from "@reduxjs/toolkit";
 
 import {mergeAll} from "@mapsight/core/lib/base/actions";
@@ -6,12 +11,13 @@ import {
 	activateInteraction,
 	deactivateInteraction,
 } from "@mapsight/core/lib/map/actions";
+import type {MapController} from "@mapsight/core/lib/map/controller";
 import {
 	DEFAULT_DISPLAY_STYLE,
 	DEFAULT_PROJECTION,
 } from "@mapsight/core/mixins/EditorMixin";
 import type {Definition} from "@mapsight/core/ol-proxy";
-import {di} from "@mapsight/core/ol-proxy";
+import {OPTION_SET, di} from "@mapsight/core/ol-proxy";
 import DrawInteraction from "@mapsight/core/ol-proxy/definitions/interaction/DrawInteraction";
 import type {EnhancedStore} from "@mapsight/core/types";
 
@@ -29,6 +35,128 @@ export const createActivateAction = (mapController: string, name: string) =>
 	activateInteraction(mapController, `${name}_drawInteraction`);
 export const createDeactivateAction = (mapController: string, name: string) =>
 	deactivateInteraction(mapController, `${name}_drawInteraction`);
+
+/** Add a tool identifier while preserving custom definitions and event names. */
+export function keyboardDrawingDefinition(definition: Definition): Definition {
+	return {
+		...definition,
+		optionMap: {...definition.optionMap, keyboardTool: OPTION_SET},
+	};
+}
+
+export function getKeyboardDraw(map: OlMap, name: string): Draw | undefined {
+	return map
+		.getInteractions()
+		.getArray()
+		.find(
+			(interaction): interaction is Draw =>
+				interaction instanceof Draw &&
+				interaction.get("keyboardTool") === name,
+		);
+}
+
+function vertexCount(draw: Draw): number {
+	const source = draw.getOverlay().getSource() as VectorSource | null;
+	const line = source
+		?.getFeatures()
+		.find((feature) => feature.getGeometry() instanceof LineString)
+		?.getGeometry();
+	// The last sketch coordinate follows the pointer and is not a fixed vertex.
+	return line instanceof LineString ? line.getCoordinates().length - 1 : 0;
+}
+
+export function finishKeyboardMeasurement(map: OlMap, name: string): void {
+	const draw = getKeyboardDraw(map, name);
+	if (draw?.getActive() && vertexCount(draw) >= 2) {
+		draw.finishDrawing();
+	}
+}
+
+/** Bind to the OL target lifecycle, including unmount/remount. Arrow keys stay with OL. */
+export function installKeyboardDrawing(
+	map: OlMap,
+	name: string,
+	pointActions?: {add: () => void; remove: () => void},
+): () => void {
+	if (typeof document === "undefined") return () => {};
+	let target: HTMLElement | null = null;
+	const updateCrosshair = () => {
+		const active = map
+			.getInteractions()
+			.getArray()
+			.some(
+				(interaction) =>
+					interaction instanceof Draw &&
+					interaction.get("keyboardTool") &&
+					interaction.getActive(),
+			);
+		target?.classList.toggle(
+			"ms3-map-target--keyboard-drawing",
+			active && document.activeElement === target,
+		);
+	};
+	const onKeyDown = (event: KeyboardEvent) => {
+		const draw = getKeyboardDraw(map, name);
+		if (
+			!draw?.getActive() ||
+			event.defaultPrevented ||
+			event.target !== target ||
+			document.activeElement !== target ||
+			event.altKey ||
+			event.ctrlKey ||
+			event.metaKey ||
+			event.shiftKey ||
+			event.repeat
+		)
+			return;
+		if (!["Enter", " ", "Backspace"].includes(event.key)) return;
+		event.preventDefault();
+		if (event.key === "Backspace") {
+			if (pointActions) pointActions.remove();
+			else draw.removeLastPoint();
+		} else if (pointActions) {
+			pointActions.add();
+		} else if (event.key === "Enter" && vertexCount(draw) >= 2) {
+			draw.finishDrawing();
+		} else {
+			const center = map.getView().getCenter();
+			if (center) draw.appendCoordinates([center.slice()]);
+		}
+	};
+	const detach = () => {
+		target?.removeEventListener("keydown", onKeyDown);
+		target?.removeEventListener("focus", updateCrosshair);
+		target?.removeEventListener("blur", updateCrosshair);
+		target?.classList.remove("ms3-map-target--keyboard-drawing");
+	};
+	const attach = () => {
+		detach();
+		target = map.getTargetElement() ?? null;
+		target?.addEventListener("keydown", onKeyDown);
+		target?.addEventListener("focus", updateCrosshair);
+		target?.addEventListener("blur", updateCrosshair);
+		updateCrosshair();
+	};
+	let observedDraw: Draw | undefined;
+	const watchDraw = () => {
+		observedDraw?.un("change:active", updateCrosshair);
+		observedDraw = getKeyboardDraw(map, name);
+		observedDraw?.on("change:active", updateCrosshair);
+		updateCrosshair();
+	};
+	map.on("change:target", attach);
+	map.getInteractions().on("add", watchDraw);
+	map.getInteractions().on("remove", watchDraw);
+	watchDraw();
+	attach();
+	return () => {
+		detach();
+		map.un("change:target", attach);
+		map.getInteractions().un("add", watchDraw);
+		map.getInteractions().un("remove", watchDraw);
+		observedDraw?.un("change:active", updateCrosshair);
+	};
+}
 
 /**
  * @param options options
@@ -49,6 +177,8 @@ function setupDrawInteraction({
 	drawStyle,
 	displayStyle,
 	zIndex,
+	interactionType,
+	keyboardDrawing,
 }: {
 	store: EnhancedStore;
 	name: string;
@@ -58,6 +188,8 @@ function setupDrawInteraction({
 	drawStyle: string;
 	displayStyle: string;
 	zIndex?: number;
+	interactionType: string;
+	keyboardDrawing: boolean;
 }) {
 	const fSId = `${name}_featureSource`;
 	const drawLayerId = `${name}_drawLayer`;
@@ -81,9 +213,10 @@ function setupDrawInteraction({
 			[mapControllerName]: {
 				interactions: {
 					[interactionId]: {
-						type: "DrawInteraction",
+						type: interactionType,
 						options: {
 							active: false,
+							keyboardTool: keyboardDrawing ? name : undefined,
 							type: "LineString",
 							style: drawStyle,
 							replacePrevious: true,
@@ -145,6 +278,10 @@ const translations = {
 			"Klicken Sie auf die Karte um Punkte hinzuzufügen. Ein Doppelklick schließt die Strecke ab.",
 		"ui.measure-distance.instructions-done":
 			"Klicken Sie auf die Karte um eine neue Strecke zu messen.",
+		"ui.measure-distance.keyboard-instructions":
+			"Klicken Sie auf die Karte, um Punkte hinzuzufügen; Doppelklick beendet die Strecke. Mit Fokus auf der Karte: Leertaste oder Eingabe setzt einen Punkt in der Kartenmitte. Pfeiltasten verschieben die Karte. Rücktaste entfernt den letzten Punkt. Ab zwei Punkten beendet Eingabe oder Fertig die Strecke.",
+		"ui.measure-distance.keyboard-instructions-done":
+			"Klicken Sie auf die Karte oder drücken Sie bei fokussierter Karte die Leertaste, um eine neue Strecke zu messen.",
 		"ui.measure-distance.measurement": "Streckenlänge",
 	},
 	en: {
@@ -153,6 +290,10 @@ const translations = {
 			"Click on the map to add points. Double click to end the line.",
 		"ui.measure-distance.instructions-done":
 			"Click on the map to start measuring a new line.",
+		"ui.measure-distance.keyboard-instructions":
+			"Click the map to add points; double click to finish. With the map focused: Space or Enter adds a point at the map centre. Arrow keys pan the map. Backspace removes the last point. After two points, Enter or Done finishes the line.",
+		"ui.measure-distance.keyboard-instructions-done":
+			"Click the map or press Space with the map focused to start a new line.",
 		"ui.measure-distance.measurement": "Distance",
 	},
 } as const;
@@ -176,6 +317,8 @@ export default function createMeasureDistancePlugin(
 	options: {
 		name?: string;
 		enableDrawing?: boolean;
+		/** Draw at the view centre with the keyboard. @default true */
+		keyboardDrawing?: boolean;
 		mapControllerName?: string;
 		featureSourcesControllerName?: string;
 		featureSelectionsControllerName?: string;
@@ -188,6 +331,7 @@ export default function createMeasureDistancePlugin(
 	const {
 		name = "measureDistance",
 		enableDrawing = true,
+		keyboardDrawing = true,
 		mapControllerName = MAP,
 		featureSourcesControllerName = FEATURE_SOURCES,
 		featureSelectionsControllerName = FEATURE_SELECTIONS,
@@ -209,8 +353,12 @@ export default function createMeasureDistancePlugin(
 				return;
 			}
 
-			if (drawInteraction) {
-				di.injectDefinitions([drawInteraction]);
+			const definition =
+				drawInteraction && keyboardDrawing
+					? keyboardDrawingDefinition(drawInteraction)
+					: drawInteraction;
+			if (definition) {
+				di.injectDefinitions([definition]);
 			}
 
 			setupDrawInteraction({
@@ -223,7 +371,13 @@ export default function createMeasureDistancePlugin(
 				drawStyle: drawStyle,
 				displayStyle: displayStyle,
 				zIndex,
+				interactionType: definition?.type ?? "DrawInteraction",
+				keyboardDrawing,
 			});
+			const map = (
+				store.getController(mapControllerName) as MapController
+			).getMap();
+			if (keyboardDrawing && map) installKeyboardDrawing(map, name);
 		},
 	};
 }

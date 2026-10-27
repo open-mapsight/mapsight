@@ -32,6 +32,7 @@ describe("map accessibility", () => {
 			map.getAttribute("aria-describedby")!,
 		);
 		expect(usage?.textContent).toContain("Shift+F10");
+		expect(usage?.querySelector("kbd[aria-label]")).toBeNull();
 		expect(usage?.textContent).toContain("hineinzoomen");
 		expect(usage?.textContent).toContain("verschieben");
 	});

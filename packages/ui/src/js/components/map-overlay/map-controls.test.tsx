@@ -1,6 +1,6 @@
 import {Provider} from "react-redux";
 
-import {configureStore} from "@reduxjs/toolkit";
+import {configureStore, createAction} from "@reduxjs/toolkit";
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
@@ -47,6 +47,17 @@ describe("map overlay accessibility", () => {
 		expect(screen.getByRole("button", {name: "City"}).tabIndex).toBe(0);
 	});
 
+	it("does not create a focus stop for an empty zero-height region list", () => {
+		const store = configureStore({reducer: () => ({app: {regions: {}}})});
+		render(
+			<Provider store={store}>
+				<RegionSelector />
+			</Provider>,
+		);
+		expect(screen.getByRole("list").tabIndex).toBe(-1);
+		expect(screen.queryAllByRole("button")).toHaveLength(0);
+	});
+
 	it("opens information from a named native logo button", () => {
 		const store = configureStore({reducer: () => ({app: {}})});
 		const dispatch = vi.spyOn(store, "dispatch");
@@ -67,12 +78,17 @@ describe("map overlay accessibility", () => {
 	});
 
 	it("announces geolocation progress and failure once per state change", () => {
+		const updateGeo = createAction<{isRequesting: boolean; error: boolean}>(
+			"geo",
+		);
 		const store = configureStore({
 			reducer: (
-				state = {userGeolocation: {isRequesting: false, error: false}},
+				state: {
+					userGeolocation: {isRequesting: boolean; error: boolean};
+				} = {userGeolocation: {isRequesting: false, error: false}},
 				action,
 			) =>
-				action.type === "geo"
+				updateGeo.match(action)
 					? {userGeolocation: action.payload}
 					: state,
 		});

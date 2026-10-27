@@ -20,6 +20,10 @@ import {
 
 const de: Record<string, string> = {
 	// Map surface and tool accessibility.
+	"ui.measure-distance.finish": "Fertig",
+	"ui.share-position-link.share-center": "Kartenmitte teilen",
+	"ui.share-position-link.keyboard-instructions":
+		"Klicken Sie auf die Karte oder wählen Sie „Kartenmitte teilen“. Mit Fokus auf der Karte: Pfeiltasten verschieben die Karte, Eingabe oder Leertaste wählt die Kartenmitte, Rücktaste entfernt den Punkt.",
 	"ui.map.label": "Interaktive Karte",
 	"ui.map.roledescription": "Karte",
 	"ui.place-actions.share.copy-success": "Link kopiert",
@@ -164,10 +168,10 @@ const de: Record<string, string> = {
 	"ui.map.usage.heading": "Tastaturbedienung der Karte",
 	"ui.map.usage.html":
 		'<dl class="ms3-map-usage">' +
-		'<dt><kbd aria-label="Cursor rechts">→</kbd></dt><dd>nach rechts verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor links">←</kbd></dt><dd>nach links verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor runter">↓</kbd></dt><dd>nach unten verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor hoch">↑</kbd></dt><dd>nach oben verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">→</span><span class="ms3-visuallyhidden">Cursor rechts</span></kbd></dt><dd>nach rechts verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">←</span><span class="ms3-visuallyhidden">Cursor links</span></kbd></dt><dd>nach links verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">↓</span><span class="ms3-visuallyhidden">Cursor runter</span></kbd></dt><dd>nach unten verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">↑</span><span class="ms3-visuallyhidden">Cursor hoch</span></kbd></dt><dd>nach oben verschieben</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>hineinzoomen</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>herauszoomen</dd>" +
 		"<dt><kbd>Shift+F10</kbd></dt><dd>Menü am Kartenmittelpunkt öffnen</dd>" +
