@@ -1,6 +1,7 @@
 import type {PropsWithChildren, ReactNode} from "react";
-import {useEffect, useId} from "react";
+import {useId, useRef} from "react";
 
+import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import CloseOverlayButton from "../close-overlay-button";
 
 type Props = {
@@ -18,26 +19,24 @@ const ToolOverlay = ({
 	onClose,
 }: PropsWithChildren<Props>) => {
 	const headingId = useId();
-
-	// Capture Escape at the document so it does not reach outer handlers, without
-	// putting a keyboard listener on the non-interactive region element.
-	useEffect(() => {
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				event.stopPropagation();
-				onClose();
-			}
-		};
-		document.addEventListener("keydown", onKeyDown, true);
-		return () => document.removeEventListener("keydown", onKeyDown, true);
-	}, [onClose]);
+	const overlayRef = useRef<HTMLDivElement>(null);
 
 	return (
+		// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Delegate Escape from interactive descendants of the region.
 		<div
+			ref={overlayRef}
 			id={id}
 			className="ms3-tool-overlay"
 			role="region"
 			aria-labelledby={headingId}
+			onKeyDown={(event) => {
+				if (
+					shouldDismissOnEscape(event.nativeEvent, overlayRef.current)
+				) {
+					event.preventDefault();
+					onClose();
+				}
+			}}
 		>
 			<CloseOverlayButton onClose={onClose} />
 			<h3 className="ms3-tool-overlay__header" id={headingId}>

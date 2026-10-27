@@ -29,29 +29,6 @@ describe("ToolOverlay", () => {
 		expect(region.textContent).toContain("Click the map");
 		expect(region.textContent).toContain("result");
 	});
-
-	it("closes on Escape without letting the key reach outer handlers", () => {
-		const onClose = vi.fn();
-		const outerKeyDown = vi.fn();
-		document.addEventListener("keydown", outerKeyDown);
-
-		render(
-			<ToolOverlay
-				label="Measure distance"
-				text={null}
-				onClose={onClose}
-			/>,
-		);
-
-		fireEvent.keyDown(screen.getByRole("button"), {key: "Escape"});
-		expect(onClose).toHaveBeenCalledTimes(1);
-		expect(outerKeyDown).not.toHaveBeenCalled();
-
-		fireEvent.keyDown(screen.getByRole("button"), {key: "Enter"});
-		expect(onClose).toHaveBeenCalledTimes(1);
-
-		document.removeEventListener("keydown", outerKeyDown);
-	});
 });
 
 describe("MeasureDistanceButton", () => {
@@ -90,5 +67,52 @@ describe("MeasureDistanceButton", () => {
 		expect(screen.queryByRole("region")).toBeNull();
 		expect(toggle.getAttribute("aria-expanded")).toBe("false");
 		expect(document.activeElement).toBe(toggle);
+	});
+});
+
+describe("ToolOverlay Escape", () => {
+	it("closes only for Escape inside the tool and lets the event bubble", () => {
+		const onClose = vi.fn();
+		const onKeyDown = vi.fn();
+		render(
+			<div onKeyDown={onKeyDown} role="presentation">
+				<button type="button">outside</button>
+				<ToolOverlay label="Tool" text="Instructions" onClose={onClose}>
+					<button type="button">inside</button>
+				</ToolOverlay>
+			</div>,
+		);
+		fireEvent.keyDown(screen.getByRole("button", {name: "outside"}), {
+			key: "Escape",
+		});
+		expect(onClose).not.toHaveBeenCalled();
+		fireEvent.keyDown(screen.getByRole("button", {name: "inside"}), {
+			key: "Escape",
+		});
+		expect(onClose).toHaveBeenCalledOnce();
+		expect(onKeyDown).toHaveBeenCalledTimes(2);
+		expect(onKeyDown.mock.calls[1]![0].defaultPrevented).toBe(true);
+	});
+
+	it("respects child preventDefault and nested dialogs", () => {
+		const onClose = vi.fn();
+		render(
+			<ToolOverlay label="Tool" text="" onClose={onClose}>
+				<input
+					aria-label="handled"
+					onKeyDown={(event) => event.preventDefault()}
+				/>
+				<dialog open>
+					<input aria-label="dialog" />
+				</dialog>
+			</ToolOverlay>,
+		);
+		fireEvent.keyDown(screen.getByRole("textbox", {name: "handled"}), {
+			key: "Escape",
+		});
+		fireEvent.keyDown(screen.getByRole("textbox", {name: "dialog"}), {
+			key: "Escape",
+		});
+		expect(onClose).not.toHaveBeenCalled();
 	});
 });

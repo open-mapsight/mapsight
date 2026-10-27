@@ -67,7 +67,8 @@ function AppWrapper({
 		() => ({
 			allowOutsideClick: true,
 			clickOutsideDeactivates: false,
-			escapeDeactivates: true,
+			escapeDeactivates: (event: KeyboardEvent) =>
+				!event.defaultPrevented,
 			preventScroll: true,
 			returnFocusOnDeactivate: true,
 			fallbackFocus: () => wrapperRef.current ?? document.body,

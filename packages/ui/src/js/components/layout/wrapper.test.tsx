@@ -22,6 +22,8 @@ import {
 import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import {SET_VIEW} from "../../store/actions";
+import BottomSheet from "../bottom-sheet/BottomSheet";
+import ToolOverlay from "../map-overlay/tool-overlay";
 import AppWrapper from "./wrapper";
 
 vi.mock("../../helpers/announce-status", () => ({
@@ -260,4 +262,34 @@ describe("AppWrapper overlay chrome", () => {
 			screen.getByRole("dialog").contains(document.activeElement),
 		).toBe(true);
 	});
+	it.each(["sheet", "legacy sheet", "tool"])(
+		"does not exit fullscreen when Escape dismisses an inner %s",
+		(kind) => {
+			const dismiss = vi.fn();
+			const contents = <button type="button">inner</button>;
+			const {store} = renderWrapper(
+				VIEW_FULLSCREEN,
+				kind !== "tool" ? (
+					<BottomSheet
+						label="Details"
+						onDismiss={dismiss}
+						dismissOnEscape={
+							kind === "legacy sheet" ? "document" : "within"
+						}
+					>
+						{contents}
+					</BottomSheet>
+				) : (
+					<ToolOverlay label="Tool" text="" onClose={dismiss}>
+						{contents}
+					</ToolOverlay>
+				),
+			);
+			fireEvent.keyDown(screen.getByRole("button", {name: "inner"}), {
+				key: "Escape",
+			});
+			expect(dismiss).toHaveBeenCalledOnce();
+			expect(store.getState().app.view).toBe(VIEW_FULLSCREEN);
+		},
+	);
 });

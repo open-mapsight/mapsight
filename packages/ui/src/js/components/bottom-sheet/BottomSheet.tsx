@@ -4,6 +4,7 @@ import {
 	type KeyboardEvent as ReactKeyboardEvent,
 	type ReactNode,
 	type PointerEvent as ReactPointerEvent,
+	type RefObject,
 	useCallback,
 	useEffect,
 	useId,
@@ -11,6 +12,11 @@ import {
 	useState,
 } from "react";
 
+import {translate} from "../../helpers/i18n";
+import useOverlayDismiss, {
+	type EscapeDismissMode,
+	shouldDismissOnEscape,
+} from "../../hooks/useOverlayDismiss";
 import CloseOverlayButton from "../close-overlay-button";
 import {
 	SNAP_EPSILON_PX,
@@ -45,14 +51,20 @@ export type BottomSheetProps = {
 	 * Default: `snaps.length - 2` (medium when using four defaults).
 	 */
 	scrollFromSnapIndex?: number;
-	/** Region accessible name. */
+	/** Fallback region accessible name when no title is rendered. */
 	label: string;
 	/** Accessible name for the resize separator. */
 	resizeLabel?: string;
-	/** Optional valuetext for the current snap (screen readers). */
+	/** Custom value text for the current snap. Defaults to a translated "Position n of m". */
 	snapValueText?: (index: number, height: number) => string;
 	/** Escape and close button. */
 	onDismiss?: () => void;
+	/** Escape only within the sheet by default; document restores the legacy scope. */
+	dismissOnEscape?: EscapeDismissMode;
+	/** Opt in after a user action: true focuses the title (or region); a ref selects another target. */
+	initialFocus?: boolean | RefObject<HTMLElement | null>;
+	/** Opt in to focus return on close/unmount: true uses the opener; a ref overrides it. */
+	restoreFocus?: boolean | RefObject<HTMLElement | null>;
 	hideCloseButton?: boolean;
 	closeLabel?: string;
 	title?: ReactNode;
@@ -99,9 +111,12 @@ export default function BottomSheet({
 	onHeightChange,
 	scrollFromSnapIndex,
 	label,
-	resizeLabel = "Resize",
+	resizeLabel = translate("ui.bottom-sheet.resize"),
 	snapValueText,
 	onDismiss,
+	dismissOnEscape = "within",
+	initialFocus = false,
+	restoreFocus = false,
 	hideCloseButton = false,
 	closeLabel,
 	title,
@@ -112,6 +127,15 @@ export default function BottomSheet({
 	tallRatio = 0.6,
 }: BottomSheetProps): ReactElement | null {
 	const bodyId = useId();
+	const titleId = useId();
+	const rootRef = useRef<HTMLDivElement>(null);
+	const titleRef = useRef<HTMLHeadingElement>(null);
+	const focusOptionsRef = useRef({initialFocus, restoreFocus});
+	useEffect(() => {
+		focusOptionsRef.current = {initialFocus, restoreFocus};
+	}, [initialFocus, restoreFocus]);
+	const restoreFrameRef = useRef<number | null>(null);
+	const focusSessionRef = useRef<{origin: Element | null} | null>(null);
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const heightRef = useRef(0);
 	const dragRef = useRef<{
@@ -210,18 +234,62 @@ export default function BottomSheet({
 		onTallChange?.(tall);
 	}, [height, onTallChange, open, tallRatio]);
 
+	useOverlayDismiss({
+		isActive: open && Boolean(onDismiss) && dismissOnEscape === "document",
+		onDismiss: () => onDismiss?.(),
+		excludeRefs: [rootRef],
+		dismissOnOutsidePointer: false,
+		dismissOnEscape,
+	});
+
+	// Only opening starts a focus session; changing options while open must not
+	// steal focus or replace the opener. Keep it across StrictMode effect replay.
 	useEffect(() => {
-		if (!open || !onDismiss) {
+		if (!open) {
+			focusSessionRef.current = null;
 			return;
 		}
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				onDismiss();
+		if (restoreFrameRef.current !== null) {
+			cancelAnimationFrame(restoreFrameRef.current);
+		}
+		focusSessionRef.current ??= {origin: document.activeElement};
+		const {origin} = focusSessionRef.current;
+		const sheet = rootRef.current;
+		const initial = focusOptionsRef.current.initialFocus;
+		const target =
+			initial === true
+				? (titleRef.current ?? rootRef.current)
+				: initial
+					? initial.current
+					: null;
+		target?.focus({preventScroll: true});
+		return () => {
+			const restore = focusOptionsRef.current.restoreFocus;
+			if (!restore) {
+				return;
 			}
+			restoreFrameRef.current = requestAnimationFrame(() => {
+				restoreFrameRef.current = null;
+				// Do not override focus already moved into another overlay by the host.
+				const active = document.activeElement;
+				if (
+					active &&
+					active !== document.body &&
+					!sheet?.contains(active)
+				) {
+					return;
+				}
+				const target = restore === true ? origin : restore.current;
+				if (
+					target instanceof HTMLElement &&
+					target.isConnected &&
+					!target.closest("[inert]")
+				) {
+					target.focus({preventScroll: true});
+				}
+			});
 		};
-		document.addEventListener("keydown", onKeyDown);
-		return () => document.removeEventListener("keydown", onKeyDown);
-	}, [onDismiss, open]);
+	}, [open]);
 
 	const onMovePointerDown = useCallback(
 		(event: ReactPointerEvent<HTMLDivElement>) => {
@@ -315,7 +383,11 @@ export default function BottomSheet({
 
 	const minH = heights[0]!;
 	const maxH = heights[heights.length - 1]!;
-	const valueText = snapValueText?.(snapIndex, height);
+	const valueText =
+		snapValueText?.(snapIndex, height) ??
+		translate("ui.bottom-sheet.snap-value")
+			.replace("{position}", String(snapIndex + 1))
+			.replace("{count}", String(heights.length));
 
 	const rootClass = [
 		"ms3-bottom-sheet",
@@ -329,12 +401,26 @@ export default function BottomSheet({
 		.join(" ");
 
 	return (
+		// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Delegate Escape from interactive descendants of the region.
 		<div
+			ref={rootRef}
+			tabIndex={-1}
 			className={rootClass}
 			style={{...style, height}}
 			data-snap-index={snapIndex}
 			role="region"
-			aria-label={label}
+			aria-label={title == null ? label : undefined}
+			aria-labelledby={title != null ? titleId : undefined}
+			onKeyDown={(event) => {
+				if (
+					onDismiss &&
+					dismissOnEscape !== false &&
+					shouldDismissOnEscape(event.nativeEvent, rootRef.current)
+				) {
+					event.preventDefault();
+					onDismiss();
+				}
+			}}
 		>
 			<header className="ms3-bottom-sheet__header">
 				{/*
@@ -348,6 +434,7 @@ export default function BottomSheet({
 					role="separator"
 					aria-orientation="horizontal"
 					aria-controls={bodyId}
+					aria-describedby={title != null ? titleId : undefined}
 					aria-valuemin={minH}
 					aria-valuemax={maxH}
 					aria-valuenow={height}
@@ -364,11 +451,18 @@ export default function BottomSheet({
 						className="ms3-bottom-sheet__handle"
 						aria-hidden="true"
 					/>
-					{title != null ? (
-						<h2 className="ms3-bottom-sheet__title">{title}</h2>
-					) : null}
 				</div>
 				{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
+				{title != null ? (
+					<h2
+						ref={titleRef}
+						id={titleId}
+						tabIndex={-1}
+						className="ms3-bottom-sheet__title"
+					>
+						{title}
+					</h2>
+				) : null}
 				{hideCloseButton || !onDismiss ? null : (
 					<CloseOverlayButton
 						label={closeLabel}
