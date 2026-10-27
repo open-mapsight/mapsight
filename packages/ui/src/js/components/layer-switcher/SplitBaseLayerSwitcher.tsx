@@ -1,4 +1,10 @@
-import {type ReactNode, useCallback, useId, useState} from "react";
+import {
+	type ElementType,
+	type ReactNode,
+	useCallback,
+	useId,
+	useState,
+} from "react";
 import {connect, shallowEqual} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
@@ -8,6 +14,7 @@ import type {State} from "@mapsight/core/types";
 
 import {MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
+import SwitcherRadioGroup from "../switcher/SwitcherRadioGroup";
 
 type LayerGroup = {
 	group: string;
@@ -27,6 +34,10 @@ type SplitBaseLayerSwitcherOwnProps = {
 	renderEntry: (id: string, group?: string | null) => ReactNode;
 	/** When true, overlay groups can collapse and show visible/total counts. */
 	collapsibleGroups?: boolean;
+	/** Section title element; use a non-heading tag for control labels. Default h3. */
+	headlineAs?: ElementType;
+	/** Overlay group title element. Default h4. */
+	groupHeadlineAs?: ElementType;
 };
 
 function getSplitLayerIds(ids: string[], layers: MapState["layers"]) {
@@ -72,7 +83,9 @@ function CollapsibleOverlayGroup({
 	collapsed,
 	onToggle,
 	renderEntry,
+	groupHeadlineAs: GroupHeadline,
 }: {
+	groupHeadlineAs: ElementType;
 	group: string;
 	layerIds: string[];
 	visibleCount: number;
@@ -98,7 +111,7 @@ function CollapsibleOverlayGroup({
 			}`}
 			data-ms3-switcher-group={group}
 		>
-			<h4
+			<GroupHeadline
 				className="ms3-layer-switcher__header ms3-grouped-switcher__header"
 				data-ms3-switcher-header-group={group}
 			>
@@ -107,7 +120,7 @@ function CollapsibleOverlayGroup({
 					className="ms3-grouped-switcher__toggle"
 					aria-expanded={!collapsed}
 					aria-controls={panelId}
-					aria-label={`${group}: ${countLabel}. ${toggleLabel}`}
+					aria-label={`${group} ${countLabel} ${toggleLabel}`}
 					onClick={onToggle}
 				>
 					<span className="ms3-switcher-header__label">{group}</span>
@@ -125,7 +138,7 @@ function CollapsibleOverlayGroup({
 						/>
 					</span>
 				</button>
-			</h4>
+			</GroupHeadline>
 			<ul
 				id={panelId}
 				className="ms3-layer-switcher__entries"
@@ -145,6 +158,8 @@ function SplitBaseLayerSwitcher({
 	renderBaseLayerEntry,
 	renderEntry,
 	collapsibleGroups = false,
+	headlineAs: Headline = "h3",
+	groupHeadlineAs: GroupHeadline = "h4",
 }: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
 	const baseLayersHeadingId = useId();
 	const hasOverlayLayers = groups.length > 0 || ungroupedLayerIds.length > 0;
@@ -186,29 +201,28 @@ function SplitBaseLayerSwitcher({
 		>
 			{baseLayerIds.length > 0 ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--base-layers">
-					<h3
+					<Headline
 						id={baseLayersHeadingId}
 						className="ms3-layer-switcher__section-title"
 					>
 						{translate("ui.layer-switcher.baseLayers")}
-					</h3>
-					<ul
+					</Headline>
+					<SwitcherRadioGroup
 						className="ms3-layer-switcher__entries ms3-layer-switcher__entries--base-layers"
-						role="radiogroup"
 						aria-labelledby={baseLayersHeadingId}
 					>
 						{baseLayerIds.map((layerId) =>
 							renderBaseLayerEntry(layerId, null),
 						)}
-					</ul>
+					</SwitcherRadioGroup>
 				</section>
 			) : null}
 
 			{hasOverlayLayers ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--overlay-layers">
-					<h3 className="ms3-layer-switcher__section-title">
+					<Headline className="ms3-layer-switcher__section-title">
 						{translate("ui.layer-switcher.overlayLayers")}
-					</h3>
+					</Headline>
 					<div className="ms3-grouped-switcher ms3-grouped-switcher--wrapped">
 						{groups.map(({group, layerIds, visibleCount}) => {
 							const collapsed = isGroupCollapsed(
@@ -218,6 +232,7 @@ function SplitBaseLayerSwitcher({
 
 							return collapsibleGroups ? (
 								<CollapsibleOverlayGroup
+									groupHeadlineAs={GroupHeadline}
 									key={group}
 									group={group}
 									layerIds={layerIds}
@@ -234,14 +249,14 @@ function SplitBaseLayerSwitcher({
 									className="ms3-grouped-switcher__group"
 									data-ms3-switcher-group={group}
 								>
-									<h4
+									<GroupHeadline
 										className="ms3-layer-switcher__header"
 										data-ms3-switcher-header-group={group}
 									>
 										<span className="ms3-switcher-header__label">
 											{group}
 										</span>
-									</h4>
+									</GroupHeadline>
 									<ul
 										className="ms3-layer-switcher__entries"
 										data-ms3-switcher-entries-group={group}

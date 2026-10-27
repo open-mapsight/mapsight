@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe("SwitcherEntry exclusive base-layer selection", () => {
-	it("disables the active exclusive button with a cannot-deselect label", () => {
+	it("keeps the checked radio focusable and makes re-selection a no-op", () => {
 		setDocumentLanguage("en");
 		const toggleActive = vi.fn();
 
@@ -24,11 +24,12 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 		);
 
 		const button = screen.getByRole("radio", {
-			name: /Street map, active\. A base map must remain selected\./i,
+			name: "Street map",
 		});
-		expect(button.hasAttribute("disabled")).toBe(true);
+		expect(button.hasAttribute("disabled")).toBe(false);
+		expect(button.tabIndex).toBe(0);
 		expect(button.getAttribute("aria-checked")).toBe("true");
-		expect(button.getAttribute("aria-disabled")).toBe("true");
+		expect(button.getAttribute("aria-disabled")).toBeNull();
 
 		fireEvent.click(button);
 		expect(toggleActive).not.toHaveBeenCalled();
@@ -47,7 +48,7 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 			/>,
 		);
 
-		const button = screen.getByRole("radio", {name: "Aerial, inactive"});
+		const button = screen.getByRole("radio", {name: "Aerial"});
 		expect(button.hasAttribute("disabled")).toBe(false);
 		expect(button.getAttribute("aria-checked")).toBe("false");
 		expect(button.getAttribute("aria-disabled")).toBeNull();

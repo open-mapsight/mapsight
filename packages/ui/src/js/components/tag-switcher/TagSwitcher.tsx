@@ -10,6 +10,7 @@ function TagSwitcher({
 	featureSourceId,
 	toggleableGroups = false,
 	sortTags = true,
+	headlineAs = "h3",
 }) {
 	function renderEntry(id, group) {
 		const E = createTagSwitcherEntry(featureSourceId, group, id);
@@ -51,6 +52,7 @@ function TagSwitcher({
 	return (
 		<GroupedSwitcher
 			className="ms3-tag-switcher"
+			headlineAs={headlineAs}
 			groupedIds={groupedIds}
 			renderEntry={renderEntry}
 			renderHeader={renderHeader}
