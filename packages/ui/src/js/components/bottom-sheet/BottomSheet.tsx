@@ -64,6 +64,14 @@ export type BottomSheetProps = {
 	tallRatio?: number;
 };
 
+// Viewport-dependent factories run after commit. The initial HTML uses the
+// same fallback on the server and client, or the explicit serializable snaps.
+function initialSnaps(snaps: BottomSheetProps["snaps"]): SnapHeights {
+	return Array.isArray(snaps) && snaps.length > 0
+		? snaps
+		: defaultViewportSnapHeights(800);
+}
+
 function resolveSnaps(snaps: BottomSheetProps["snaps"]): SnapHeights {
 	if (typeof snaps === "function") {
 		return snaps();
@@ -113,9 +121,9 @@ export default function BottomSheet({
 		didDrag: boolean;
 	} | null>(null);
 
-	const [heights, setHeights] = useState(() => resolveSnaps(snapsProp));
+	const [heights, setHeights] = useState(() => initialSnaps(snapsProp));
 	const [uncontrolledIndex, setUncontrolledIndex] = useState(() => {
-		const initial = resolveSnaps(snapsProp);
+		const initial = initialSnaps(snapsProp);
 		return Math.max(0, Math.min(initial.length - 1, defaultSnapIndex));
 	});
 	const [isDragging, setIsDragging] = useState(false);

@@ -99,13 +99,13 @@ export default function createPlugin(
 						currentWidth,
 					);
 					if (
-						(context.hasRendered &&
+						context.hasRendered &&
+						(diffBreakpoints(breakpointsBefore, currentBreakpoints)
+							.length ||
 							diffBreakpoints(
-								breakpointsBefore,
 								currentBreakpoints,
-							).length) ||
-						diffBreakpoints(currentBreakpoints, breakpointsBefore)
-							.length
+								breakpointsBefore,
+							).length)
 					) {
 						context.store?.dispatch(
 							setViewBreakpoints(currentBreakpoints),

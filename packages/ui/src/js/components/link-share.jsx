@@ -2,6 +2,7 @@
 import {useCallback} from "react";
 
 import {translate} from "../helpers/i18n";
+import useHydrated from "../hooks/useHydrated";
 
 const selectInputContent = (e) =>
 	e.target.setSelectionRange(0, e.target.value.length);
@@ -14,6 +15,8 @@ function LinkShare({
 	onFinished,
 	onError,
 }) {
+	const hydrated = useHydrated();
+	const canShare = hydrated && typeof navigator?.share === "function";
 	const share = useCallback(
 		function () {
 			if (navigator?.share) {
@@ -40,7 +43,7 @@ function LinkShare({
 
 	return (
 		<div className="ms3-link-share">
-			{navigator?.share ? (
+			{canShare ? (
 				<button
 					className="ms3-link-share__button"
 					type="button"

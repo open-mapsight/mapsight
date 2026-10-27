@@ -1,27 +1,19 @@
+import {useMemo} from "react";
+
 import GeoJSON from "ol/format/GeoJSON";
-
 import {getLength} from "ol/sphere";
-import  {useMemo} from "react";
 
-import {translate} from "../../helpers/i18n";
+import {getDocumentLanguage, translate} from "../../helpers/i18n";
 
 const geoJsonFormat = new GeoJSON();
-const meterFormat = new Intl.NumberFormat(undefined, {
-	style: "unit",
-	maximumFractionDigits: 2,
-	unit: "meter",
-});
-const kilometerFormat = new Intl.NumberFormat(undefined, {
-	style: "unit",
-	maximumFractionDigits: 2,
-	unit: "kilometer",
-});
-
 function formatLength(length) {
 	const isKilometer = length > 1000;
-	const format = isKilometer ? kilometerFormat : meterFormat;
-	const amount = isKilometer ? length / 1000 : length;
-	return format.format(amount);
+	const format = new Intl.NumberFormat(getDocumentLanguage(), {
+		style: "unit",
+		maximumFractionDigits: 2,
+		unit: isKilometer ? "kilometer" : "meter",
+	});
+	return format.format(isKilometer ? length / 1000 : length);
 }
 
 function MeasureDistanceInfo({feature}) {

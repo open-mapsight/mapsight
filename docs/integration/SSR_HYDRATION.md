@@ -34,6 +34,85 @@ Large GeoJSON payloads may **lazy-load after shell hydrate** — keep dehydrated
 
 ---
 
+## Renderer commit lifecycle
+
+`hydrateRoot()` and `root.render()` schedule React work. Returning from either call does **not** mean the initial
+DOM has committed. Viewport, local-storage, deep-link, and geolocation `afterRender` plugins must wait for that commit.
+The default browser renderer and declarative `<Instance>` handle this automatically.
+
+Custom asynchronous renderers opt in with `props.deferCommit()` **during the renderer call**, before scheduling React.
+It returns an idempotent commit callback. Pass that callback to `AppContext.onCommit`, which invokes it from a passive
+effect after commit:
+
+```tsx
+import {createRoot, hydrateRoot} from "react-dom/client";
+
+import App from "@mapsight/ui/components/app";
+import AppContext from "@mapsight/ui/components/helping/app-context";
+import type {MapsightUiRenderer} from "@mapsight/ui/types";
+
+const renderer: MapsightUiRenderer = (container, props, hydrate) => {
+	if (!container) return;
+	const onCommit = props.deferCommit?.();
+	const app = (
+		<AppContext {...props} onCommit={onCommit}>
+			<App />
+		</AppContext>
+	);
+	if (hydrate) {
+		hydrateRoot(container, app);
+	} else {
+		createRoot(container).render(app);
+	}
+};
+```
+
+This example schedules one initial render. A renderer supporting later `context.render()` calls must retain and reuse
+its React root. The default renderer coalesces additional calls until the first commit. Do not call `root.render()` immediately after `hydrateRoot()`; that can interrupt hydration. Avoid
+replacing a pending initial tree before it commits.
+
+- Calling `deferCommit()` delays `context.hasRendered = true` and `afterRender` until the returned callback runs.
+  Repeated signals (including StrictMode effect replay) are ignored. A superseded render's signal is ignored.
+- The renderer's return value still becomes `context.renderRef` and is returned by `render()`.
+- `renderAsync()` waits for `beforeRender` plugins, then schedules the renderer; it does **not** await React commit.
+- Existing renderers that do not call `deferCommit()` retain synchronous completion on return. This is appropriate for
+  `renderToString` and legacy synchronous DOM renderers. Existing asynchronous custom renderers must adopt the callback
+  contract to defer plugins correctly.
+- A failed or abandoned deferred render must not signal commit. No timer or animation frame substitutes for commit.
+
+`props.serverState` contains the initial rehydrated store snapshot, captured before `afterCreate` plugins, resumed
+requests, or host dispatches can update the live store. Spread these props onto `AppContext`; it passes `serverState`
+to React-Redux. Keep it for the lifetime of that hydrated tree so even later-hydrating Suspense descendants read the
+SSR snapshot first. Normal client updates use the live store after hydration. A custom Redux provider must explicitly
+pass `serverState={props.serverState}` and signal commit from an effect in the committed subtree.
+
+The signal covers the subtree containing that effect. For a host that suspends the main app, place the commit signal
+inside the relevant Suspense boundary if plugins require that subtree to be ready. Hosts still own their router/query
+SSR bootstrap, matching server/client JSX shape (including optional siblings), `identifierPrefix`, and any CMS scripts
+that mutate the server DOM. Enhance SSR rich-HTML islands only after their hydration has committed.
+
+`<Instance>` uses the same lifecycle and runs `beforeRender` / `afterRender` plugins. Without an explicit
+`reHydratedState`, it uses the shared base config and UI options as its initial snapshot on both sides; browser view
+and preference detection happens after commit. Hosts with server-loaded state must pass that same snapshot to the
+client.
+
+### Deterministic initial rendering
+
+Choose the same `lang`, translation catalogs, component overrides, image URLs, and data on server and client. The
+implicit UI language is always `de`; it no longer reads the browser document's `lang` attribute. Set `createOptions.lang`
+with the default language plugin, or call `setDocumentLanguage()` on both sides before rendering. Translation catalogs
+and site config are currently shared module state, so hosts must configure them consistently across SSR requests.
+
+Browser capability UI (native share), dialog portals, icon cache results, and viewport-dependent
+bottom-sheet snaps activate after hydration. Explicit bottom-sheet snap arrays must match on both sides; snap factories
+run after commit. Measurements and tag sorting use the configured UI locale. Time-filter values accept serialized ISO
+strings and display their UTC calendar date consistently across process timezones.
+
+The render-path audit and regression coverage are recorded in
+[the UI hydration audit](../../packages/ui/docs/HYDRATION_AUDIT.md).
+
+---
+
 ## Graceful degradation (required)
 
 Production CMS integrations **must work when SSR is down**:

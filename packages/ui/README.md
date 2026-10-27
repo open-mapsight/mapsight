@@ -51,6 +51,14 @@ Peer dependency: `react`, `react-dom`. Optional peer for Query helpers: `@tansta
 Loading/error presentation architecture:
 [docs/ASYNC_STATUS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/ASYNC_STATUS.md).
 
+## Hydration
+
+The browser embed renderer and `<Instance>` run `afterRender` plugins after React commits. Asynchronous host renderers
+call `props.deferCommit()` before scheduling React and pass the returned callback to `AppContext.onCommit`. Spread
+`props.serverState` into `AppContext` to pin React-Redux's hydration snapshot. Synchronous custom renderers retain
+completion on return. See [SSR and hydration](../../docs/integration/SSR_HYDRATION.md#renderer-commit-lifecycle)
+for the contract and migration example.
+
 ## SCSS (host builds)
 
 The npm package includes `src/scss/` (variables, reset, default theme partials). Host apps compile their own stylesheet

@@ -255,27 +255,57 @@ export function create(
 			: {},
 	);
 
+	// Redux updates replace this snapshot; never recapture it from a live store
+	// after browser plugins, resumed fetches, or host code have run.
+	context.serverState = context.isStateReHydrated
+		? context.store.getState()
+		: undefined;
+
+	let hasScheduledRender = false;
+	let renderVersion = 0;
+
 	// render
 	function internalRender(): unknown {
-		const hydrate = !context.hasRendered && context.isStateReHydrated;
+		const hydrate = !hasScheduledRender && context.isStateReHydrated;
 		nonNull.assert(context.store);
 		nonNull.assert(context.createOptions.renderer);
 
+		const version = ++renderVersion;
+		let deferred = false;
+		let committed = false;
+		let returned = false;
+		const finishCommit = () => {
+			if (committed || version !== renderVersion) return;
+			committed = true;
+			context.hasRendered = true;
+			callAndForgetPlugins(context, "afterRender");
+		};
+		let signaled = false;
+		const onCommit = () => {
+			signaled = true;
+			// Synchronous renderers can commit before returning their renderRef.
+			if (returned) finishCommit();
+		};
 		const props: MapsightUiRendererProps = {
 			store: context.store,
 			components: context.createOptions.components || {},
 			appChannelListeners: context.appChannelListeners,
 			future: context.createOptions.future,
 			...context.rendererProps,
+			serverState: context.serverState,
+			deferCommit: () => {
+				deferred = true;
+				return onCommit;
+			},
 		};
 		context.renderRef = context.createOptions.renderer(
 			context.container,
 			props,
 			hydrate,
 		);
-		context.hasRendered = true;
-
-		callAndForgetPlugins(context, "afterRender");
+		hasScheduledRender = true;
+		returned = true;
+		if (!deferred || signaled) finishCommit();
 
 		return context.renderRef;
 	}

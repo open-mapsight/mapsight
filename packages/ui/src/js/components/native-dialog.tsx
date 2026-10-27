@@ -6,6 +6,7 @@ import {
 } from "react";
 import {createPortal} from "react-dom";
 
+import useHydrated from "../hooks/useHydrated";
 import useNativeDialog from "../hooks/useNativeDialog";
 import CloseOverlayButton from "./close-overlay-button";
 
@@ -79,18 +80,15 @@ export default function NativeDialog({
 	headerActions,
 	hideCloseButton = false,
 }: NativeDialogProps): ReactElement | null {
+	const hydrated = useHydrated();
 	const generatedTitleId = useId();
 	const titleId =
 		labelledBy ?? (title != null ? generatedTitleId : undefined);
 	const {dialogRef, dialogProps} = useNativeDialog({
-		isOpen,
+		isOpen: isOpen && (portal === false || hydrated),
 		onClose,
 		dismissOnBackdrop,
 	});
-
-	if (typeof document === "undefined") {
-		return null;
-	}
 
 	// Keep the node mounted while closed so the ref syncs open/close reliably.
 	const dialog = (
@@ -130,6 +128,9 @@ export default function NativeDialog({
 	if (portal === false) {
 		return dialog;
 	}
+
+	// React cannot server-render portals. Omit them on both initial renders.
+	if (!hydrated) return null;
 
 	const target = portal === true ? document.body : portal;
 	return createPortal(dialog, target);
