@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
+import {Readable, Writable} from "node:stream";
 import {test} from "node:test";
 
-import {type BuildRun, type Pull, deploymentTarget} from "./preview-deploy.mts";
+import {
+	type BuildRun,
+	type Pull,
+	deploymentTarget,
+	streamArchive,
+} from "./preview-deploy.mts";
 
 const sha = "a".repeat(40);
 const run: BuildRun = {
@@ -62,4 +68,42 @@ test("the showcase accepts only a successful build of the current main commit", 
 		deploymentTarget({...main, head_branch: "feature"}, [], sha),
 		undefined,
 	);
+});
+
+test("an archive read error propagates and stops the receiver", async () => {
+	const failure = new Error("archive read failed");
+	const source = new Readable({
+		read() {
+			this.destroy(failure);
+		},
+	});
+	const destination = new Writable({
+		write(_chunk, _encoding, callback) {
+			callback();
+		},
+	});
+	let stopped = false;
+	await assert.rejects(
+		streamArchive(source, destination, () => {
+			stopped = true;
+		}),
+		failure,
+	);
+	assert.equal(stopped, true);
+});
+
+test("an early receiver exit is left to the SSH exit status", async () => {
+	const source = Readable.from(["archive bytes"]);
+	const destination = new Writable({
+		write(_chunk, _encoding, callback) {
+			callback(
+				Object.assign(new Error("receiver closed"), {code: "EPIPE"}),
+			);
+		},
+	});
+	let stopped = false;
+	await streamArchive(source, destination, () => {
+		stopped = true;
+	});
+	assert.equal(stopped, false);
 });

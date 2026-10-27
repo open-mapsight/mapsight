@@ -12,6 +12,8 @@ import {
 } from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
+import {type Readable, type Writable} from "node:stream";
+import {pipeline} from "node:stream/promises";
 import {pathToFileURL} from "node:url";
 
 const REPOSITORY = "open-mapsight/mapsight";
@@ -206,6 +208,23 @@ function validateFiles(directory: string): void {
 	}
 }
 
+/** Preserve source errors while allowing a receiver to reject stale uploads early. */
+export async function streamArchive(
+	source: Readable,
+	destination: Writable,
+	stopReceiver: () => void,
+): Promise<void> {
+	try {
+		await pipeline(source, destination);
+	} catch (error) {
+		const code =
+			error instanceof Error && "code" in error ? error.code : undefined;
+		if (code === "EPIPE" || code === "ERR_STREAM_PREMATURE_CLOSE") return;
+		stopReceiver();
+		throw error;
+	}
+}
+
 async function receive(request: Plan): Promise<Result> {
 	const temporary = mkdtempSync(join(tmpdir(), "mapsight-preview-"));
 	try {
@@ -265,12 +284,16 @@ async function receive(request: Plan): Promise<Result> {
 		ssh.stdin.write(
 			`${JSON.stringify({...request, token: required("GH_TOKEN")})}\n`,
 		);
-		if (archive) createReadStream(archive).pipe(ssh.stdin);
-		else ssh.stdin.end();
-		const [code] = (await once(ssh, "close")) as [
-			number | null,
-			string | null,
-		];
+		const closed = once(ssh, "close") as Promise<
+			[number | null, string | null]
+		>;
+		let upload = Promise.resolve();
+		if (archive) {
+			upload = streamArchive(createReadStream(archive), ssh.stdin, () => {
+				ssh.kill();
+			});
+		} else ssh.stdin.end();
+		const [[code]] = await Promise.all([closed, upload]);
 		if (code !== 0)
 			throw new Error(`Preview receiver exited with code ${code}`);
 		return JSON.parse(output) as Result;
