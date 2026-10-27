@@ -1,5 +1,5 @@
 import type {ChangeEvent, ReactElement} from "react";
-import {memo, useCallback} from "react";
+import {memo, useCallback, useId} from "react";
 
 import {hasGeolocationSupport} from "@mapsight/core/lib/helpers";
 
@@ -59,6 +59,7 @@ function FeatureSorter({
 	onChange: (value: string) => void;
 	requestGeolocation: () => void;
 }) {
+	const labelId = useId();
 	const onSelectChange = useCallback(
 		(e: ChangeEvent<HTMLSelectElement>) => {
 			const newValue = e.target.value;
@@ -79,9 +80,15 @@ function FeatureSorter({
 			buttonActiveClassName="ms3-filter-button--icon-sort-active"
 			title={translate("ui.feature-list.sorting.announcements")}
 		>
-			{translate("ui.feature-list.sorting.byDistance")}
+			<span id={labelId}>
+				{translate("ui.feature-list.sorting.byDistance")}
+			</span>
 
-			<select value={sorting || ""} onChange={onSelectChange}>
+			<select
+				aria-labelledby={labelId}
+				value={sorting || ""}
+				onChange={onSelectChange}
+			>
 				<option value="">
 					{translate("ui.feature-list.sorting.choose")}
 				</option>

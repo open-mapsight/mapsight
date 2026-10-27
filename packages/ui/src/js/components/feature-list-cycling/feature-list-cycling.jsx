@@ -1,15 +1,10 @@
-import debounce from "lodash/debounce";
-import {
-	memo,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-} from "react";
+import {memo, useCallback, useEffect, useLayoutEffect, useRef} from "react";
 
+import debounce from "lodash/debounce";
+
+import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import FeatureListCyclingButton from "./button";
-
 import FeatureListCyclingDot from "./dot";
 
 function FeatureListCycling({
@@ -30,6 +25,20 @@ function FeatureListCycling({
 	if (selectedIdx === undefined) {
 		selectedIdx = -2;
 	}
+	const selectedFeature = filteredFeatures?.[selectedIdx];
+	const status = selectedFeature
+		? translate("ui.feature-list.cycling.status")
+				.replace("{n}", String(selectedIdx + 1))
+				.replace("{total}", String(filteredFeatures.length))
+				.replace(
+					"{name}",
+					String(
+						getFeatureProperty(selectedFeature, "listName") ||
+							getFeatureProperty(selectedFeature, "name") ||
+							selectedFeature.id,
+					),
+				)
+		: "";
 
 	const handlePrev = useCallback(() => {
 		if (filteredFeatures?.length) {
@@ -146,6 +155,14 @@ function FeatureListCycling({
 				label={translate("nextEntry")}
 				onClick={handleNext}
 			/>
+			<span
+				className="ms3-visuallyhidden"
+				role="status"
+				aria-live="polite"
+				aria-atomic="true"
+			>
+				{status}
+			</span>
 		</div>
 	);
 }

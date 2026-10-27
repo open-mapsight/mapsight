@@ -16,6 +16,21 @@
 		padding: 7px;
 	}
 
+	&__page-link,
+	&__break-link {
+		min-width: 24px;
+		min-height: 24px;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+	}
+
+	&__break-link {
+		padding: 0;
+		cursor: pointer;
+	}
+
 	&__page-link {
 		&:hover,
 		&:focus {
