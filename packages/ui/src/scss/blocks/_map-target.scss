@@ -5,9 +5,23 @@
 	position: relative;
 	background: var(--ms3-map-background-color);
 
+	// The OL canvas layers (positioned, z-index 0) paint over an inset outline
+	// on the target itself, so draw the keyboard focus ring on a pseudo-element
+	// above them. The white inner ring keeps it visible on dark or blue tiles;
+	// the outline (not the shadow) survives forced-colors mode.
 	&:focus-visible {
+		outline: none;
+	}
+
+	&:focus-visible::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
 		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
 		outline-offset: -3px;
+		box-shadow: inset 0 0 0 5px #fff;
 	}
 }
 
