@@ -35,6 +35,7 @@ export default function FeatureSelectionInfo({
 	trapFocus: trapFocusProp,
 	isOpen = true,
 	headlineAs,
+	landmark = true,
 }: {
 	feature: MapsightUiFeature | null;
 	enableKeyboardControl: boolean;
@@ -43,6 +44,8 @@ export default function FeatureSelectionInfo({
 	/** False renders only the inert collapse-animation snapshot, outside the live focus scope. */
 	isOpen?: boolean;
 	headlineAs?: ElementType;
+	/** Disable inside an already named region (e.g. BottomSheet); keeps the details heading. */
+	landmark?: boolean;
 }) {
 	const Headline = useHeadingElement("featureDetailsTitle", "h3", headlineAs);
 	const automatic = useAutomaticHeadings();
@@ -88,8 +91,8 @@ export default function FeatureSelectionInfo({
 				fallbackFocus={isOpen ? fallbackFocus : undefined}
 				inert={!isOpen}
 				aria-hidden={!isOpen || undefined}
-				role="region"
-				aria-labelledby={headingId}
+				role={landmark ? "region" : undefined}
+				aria-labelledby={landmark ? headingId : undefined}
 				{...attrs}
 				ref={mergeRefs(attrs.ref, wrapperRef)}
 			/>
@@ -97,6 +100,7 @@ export default function FeatureSelectionInfo({
 		[
 			enableKeyboardControl,
 			headingId,
+			landmark,
 			removeSelection,
 			isOpen,
 			fallbackFocus,

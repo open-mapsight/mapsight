@@ -21,7 +21,7 @@ const Header = memo(function FeatureSelectionInfoHeader({
 	const name = getFeatureProperty(feature, "name") as string;
 	const Headline = useHeadingElement("featureDetailsTitle", "h3", headlineAs);
 	return (
-		<header className="ms3-feature-selection-info__header">
+		<div className="ms3-feature-selection-info__header">
 			<Heading
 				as={Headline}
 				id={id}
@@ -29,7 +29,7 @@ const Header = memo(function FeatureSelectionInfoHeader({
 			>
 				{name}
 			</Heading>
-		</header>
+		</div>
 	);
 });
 

@@ -1,5 +1,7 @@
 # @mapsight/ui
 
+![Mapsight UI (@mapsight/ui): Composable React UI. Work in progress; used in controlled production deployments, not yet turnkey.](https://raw.githubusercontent.com/open-mapsight/mapsight/main/docs/assets/brand/ui-npm-header-en.png)
+
 Default **React UI** for [Mapsight](https://github.com/open-mapsight/mapsight) — maps, feature lists, filters, layer
 switchers, and embed helpers on top of [
 `@mapsight/core`](https://github.com/open-mapsight/mapsight/blob/main/packages/core/README.md). Pass a compiled vector

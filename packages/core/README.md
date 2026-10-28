@@ -1,5 +1,7 @@
 # @mapsight/core
 
+![Mapsight Core (@mapsight/core): Redux Store. Work in progress; used in controlled production deployments, not yet turnkey.](https://raw.githubusercontent.com/open-mapsight/mapsight/main/docs/assets/brand/core-npm-header-en.png)
+
 **Mapsight Core** — the Redux GIS runtime for web mapping with OpenLayers. The entire map (layers, view, controls, interactions, feature data) lives as serializable JSON in one store; **controllers** sync that state to OpenLayers and back. React is optional — [`@mapsight/ui`](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md) is the default view layer on top.
 
 See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for architecture, integration patterns, and licensing.

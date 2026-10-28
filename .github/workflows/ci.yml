@@ -352,6 +352,39 @@ jobs:
         run: pnpm run test:starters:e2e
         shell: bash
 
+  accessibility:
+    name: Showcase accessibility
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: false
+
+      - uses: $/.github/actions/setup/
+        with:
+          sync-main-ref: false
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build showcase and audit
+        run: pnpm turbo run build --filter=@mapsight/showcase --filter=@mapsight/a11y-audit
+
+      - name: Check accessibility against baseline
+        run: pnpm --filter @mapsight/showcase test:a11y
+
+      - name: Upload accessibility evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: showcase-accessibility
+          path: apps/showcase/a11y-report
+          if-no-files-found: warn
+          retention-days: 14
+
   starters-copy-out:
     name: Starters copy-out
     timeout-minutes: 20
@@ -534,6 +567,7 @@ jobs:
         test,
         starters-e2e,
         starters-copy-out,
+        accessibility,
         ssr-sidecar-image,
         lint-dependencies,
         zizmor,

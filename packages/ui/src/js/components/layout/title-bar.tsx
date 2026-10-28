@@ -17,9 +17,11 @@ function TitleBar({headlineAs}: TitleBarProps) {
 			<div
 				className={`ms3-page-title ms3-flex-grow${automatic ? " ms3-page-title--automatic-headings" : ""}`}
 			>
-				<Heading as={Headline} className="ms3-page-title__headline">
-					{title || ""}
-				</Heading>
+				{title && (
+					<Heading as={Headline} className="ms3-page-title__headline">
+						{title}
+					</Heading>
+				)}
 			</div>
 		</div>
 	);
