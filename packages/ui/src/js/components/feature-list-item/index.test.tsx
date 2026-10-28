@@ -1,22 +1,45 @@
 import {Provider} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
-import {act, cleanup, render} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {
+	act,
+	cleanup,
+	fireEvent,
+	render,
+	renderHook,
+} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
-import {VIEW_DESKTOP} from "../../config/constants/app";
+import {
+	VIEW_DESKTOP,
+	VIEW_MAP_ONLY,
+	VIEW_MOBILE,
+} from "../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {
 	FEATURE_SELECTION_HIGHLIGHT,
 	FEATURE_SELECTION_PRESELECT,
 	FEATURE_SELECTION_SELECT,
 } from "../../config/feature/selections";
+import {setView} from "../../store/actions";
 import type {MapsightUiFeature} from "../../types";
 import {
 	FeatureListContextProvider,
 	type FeatureListContextValue,
 } from "../feature-list/context";
+import useSelectFeature from "../feature-list/hooks/useSelectFeature";
 import FeatureListItem from "./index";
+
+vi.mock("../feature-details-content", () => ({
+	default: () => (
+		<div>
+			<button type="button">Details action</button>
+			<div role="dialog">
+				<button type="button">Nested action</button>
+			</div>
+		</div>
+	),
+}));
 
 afterEach(cleanup);
 
@@ -43,14 +66,22 @@ function emptySelections() {
 	};
 }
 
-function makeStore() {
+function makeStore(view = VIEW_DESKTOP, list = listContext.listUiOptions) {
 	return configureStore({
 		reducer: {
-			app: (state = {view: VIEW_DESKTOP}) => state,
+			app: (state = {view, list}) => state,
 			[FEATURE_SELECTIONS]: (
 				state = emptySelections(),
 				action: {type: string; features?: string[]},
 			) => {
+				if (action.type === "test/select") {
+					return {
+						...state,
+						[FEATURE_SELECTION_SELECT]: {
+							features: action.features ?? [],
+						},
+					};
+				}
 				if (action.type === "test/highlight") {
 					return {
 						...state,
@@ -117,4 +148,98 @@ describe("FeatureListItem listInformation HTML", () => {
 			img,
 		);
 	});
+});
+
+function renderInlineRow(mobileNavigation = false) {
+	const store = makeStore(VIEW_MOBILE);
+	const context = {
+		...listContext,
+		listUiOptions: {
+			...listContext.listUiOptions,
+			detailsInList: true,
+			showSelectedOnly: true,
+			selectionBehavior: {
+				desktop: "scrollToMap" as const,
+				mobile: mobileNavigation
+					? ("showInMapOnlyView" as const)
+					: ("expandInList" as const),
+			},
+		},
+	};
+	const {container, getByText} = render(
+		<Provider store={store}>
+			<FeatureListContextProvider value={context}>
+				<FeatureListItem
+					as="li"
+					feature={museumFeature()}
+					selectFeature={() =>
+						store.dispatch({
+							type: "test/select",
+							features: ["museum-1"],
+						})
+					}
+					deselectFeatures={() =>
+						store.dispatch({type: "test/select", features: []})
+					}
+				/>
+			</FeatureListContextProvider>
+		</Provider>,
+	);
+	const trigger = container.querySelector<HTMLButtonElement>(
+		"[data-ms3-list-nav]",
+	)!;
+	return {container, getByText, trigger};
+}
+
+it("treats mobile round-tour map navigation as selection even with detailsInList", () => {
+	const {trigger} = renderInlineRow(true);
+	// The real list action switches views, rather than opening a popup.
+	const store = makeStore(VIEW_MOBILE, {
+		...listContext.listUiOptions,
+		detailsInList: true,
+		showSelectedOnly: true,
+		selectionBehavior: {
+			desktop: "scrollToMap",
+			mobile: "showInMapOnlyView",
+		},
+	});
+	const {result} = renderHook(() => useSelectFeature(), {
+		wrapper: ({children}) => <Provider store={store}>{children}</Provider>,
+	});
+	expect(result.current("museum-1")).toEqual(
+		expect.objectContaining({
+			payload: expect.arrayContaining([setView(VIEW_MAP_ONLY)]),
+		}),
+	);
+	expect(trigger.getAttribute("aria-expanded")).toBeNull();
+	expect(trigger.getAttribute("aria-controls")).toBeNull();
+	expect(trigger.getAttribute("aria-pressed")).toBe("false");
+	fireEvent.keyDown(trigger, {key: "Enter"});
+	expect(trigger.getAttribute("aria-pressed")).toBe("true");
+});
+
+it("closes inline details on scoped Escape and restores focus to their trigger", () => {
+	const {container, getByText, trigger} = renderInlineRow();
+	const details = document.getElementById(
+		trigger.getAttribute("aria-controls")!,
+	)!;
+	expect(trigger.getAttribute("aria-expanded")).toBe("false");
+	expect(details.hidden).toBe(true);
+	fireEvent.keyDown(trigger, {key: "Enter"});
+	expect(trigger.getAttribute("aria-expanded")).toBe("true");
+	expect(details.hidden).toBe(false);
+	fireEvent.keyDown(document.body, {key: "Escape"});
+	fireEvent.keyDown(getByText("Nested action"), {key: "Escape"});
+	const action = getByText("Details action");
+	action.addEventListener("keydown", (event) => event.preventDefault(), {
+		once: true,
+	});
+	fireEvent.keyDown(action, {key: "Escape"});
+	expect(trigger.getAttribute("aria-expanded")).toBe("true");
+	action.focus();
+	fireEvent.keyDown(action, {key: "Escape"});
+	expect(trigger.getAttribute("aria-expanded")).toBe("false");
+	expect(details.hidden).toBe(true);
+	expect(document.activeElement).toBe(trigger);
+	expect(container.querySelector(".ms3-list__item--selected")).toBeNull();
 });
