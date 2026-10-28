@@ -87,6 +87,32 @@ describe("keyboard tool controls", () => {
 		).toMatch(/#lm=0\/0$/);
 	});
 
+	it("keeps the overlay text to one sentence and the key list collapsed", () => {
+		const {store} = setup(true);
+		const {container} = render(
+			<Provider store={store}>
+				<MeasureDistanceButton opened />
+				<SharePositionLinkButton opened />
+			</Provider>,
+		);
+		const texts = [
+			...container.querySelectorAll(".ms3-tool-overlay__text"),
+		].map((text) => text.textContent);
+		expect(texts).toHaveLength(2);
+		for (const text of texts) {
+			expect(text).not.toMatch(/Rücktaste|Leertaste|Pfeiltasten/);
+			expect(text.length).toBeLessThan(100);
+		}
+		const helps = screen.getAllByText("Tastaturbedienung");
+		expect(helps).toHaveLength(2);
+		for (const summary of helps) {
+			const details = summary.closest("details")!;
+			expect(summary.tagName).toBe("SUMMARY");
+			expect(details.open).toBe(false);
+			expect(details.textContent).toContain("Rücktaste");
+		}
+	});
+
 	it("keeps keyboard drawing off by default on both plugins", () => {
 		const {store, map} = setup();
 		render(

@@ -17,6 +17,7 @@ import {
 	shareMapCenter,
 } from "../../plugins/browser/share-position-link";
 import LinkShare from "../link-share";
+import ToolKeyboardHelp from "./tool-keyboard-help";
 import ToolOverlay from "./tool-overlay";
 
 type SharePositionLinkButtonProps = {
@@ -152,6 +153,33 @@ const SharePositionLinkButton = ({
 						>
 							{translate("ui.share-position-link.share-center")}
 						</button>
+					)}
+					{keyboardDrawing && (
+						<ToolKeyboardHelp
+							items={[
+								{
+									keys: [
+										translate("ui.keys.space"),
+										translate("ui.keys.enter"),
+									],
+									action: translate(
+										"ui.share-position-link.keyboard.select",
+									),
+								},
+								{
+									keys: [translate("ui.keys.backspace")],
+									action: translate(
+										"ui.share-position-link.keyboard.remove",
+									),
+								},
+								{
+									keys: [translate("ui.keys.arrows")],
+									action: translate(
+										"ui.tool-overlay.keyboard.pan",
+									),
+								},
+							]}
+						/>
 					)}
 					{feature && (
 						<LinkShare

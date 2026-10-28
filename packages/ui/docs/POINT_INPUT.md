@@ -12,7 +12,9 @@ import PointInputControls from "@mapsight/ui/components/point-input";
 Use the source ID created by `EditorMixin`, with `draw.type: "Point"` and
 `draw.replacePrevious: true`. The map must be keyboard-focusable with OL
 KeyboardPan/KeyboardZoom interactions (the UI defaults). Tab to the map, pan with
-the arrows and zoom with +/−. The crosshair marks the view centre. Enter or Space
+the arrows and zoom with +/−. While the map shows its keyboard focus indicator
+(`:focus-visible`), a crosshair marks the view centre; pointer clicks do not show
+it. Enter or Space
 on the focused map, or the visible **Use map centre** button, confirms it. While
 the map is still moving (e.g. a keyboard pan), confirmation waits until it stops,
 so the point lands under the crosshair. Tab can leave the map normally. The status

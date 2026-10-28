@@ -245,7 +245,17 @@ const en: Record<string, string> = {
 	"ui.share-position-link.shareButtonLabel": "Share marked position",
 	"ui.share-position-link.share-center": "Share map centre",
 	"ui.share-position-link.keyboard-instructions":
-		"Click the map or choose “Share map centre”. With the map focused: arrow keys pan, Enter or Space selects the centre, and Backspace removes the point.",
+		"Click the map or choose “Share map centre”.",
+	"ui.share-position-link.keyboard.select": "Choose the map centre",
+	"ui.share-position-link.keyboard.remove": "Remove the point",
+
+	"ui.tool-overlay.keyboard-help": "Keyboard controls",
+	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",
+	"ui.tool-overlay.keyboard.pan": "Pan the map",
+	"ui.keys.space": "Space",
+	"ui.keys.enter": "Enter",
+	"ui.keys.backspace": "Backspace",
+	"ui.keys.arrows": "Arrow keys",
 
 	"ui.link-share.input": "Link to share",
 

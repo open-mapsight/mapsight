@@ -252,7 +252,17 @@ const de: Record<string, string> = {
 	"ui.share-position-link.shareButtonLabel": "Markierten Ort teilen",
 	"ui.share-position-link.share-center": "Kartenmitte teilen",
 	"ui.share-position-link.keyboard-instructions":
-		"Klicken Sie auf die Karte oder wählen Sie „Kartenmitte teilen“. Mit Fokus auf der Karte: Pfeiltasten verschieben die Karte, Eingabe oder Leertaste wählt die Kartenmitte, Rücktaste entfernt den Punkt.",
+		"Klicken Sie auf die Karte oder wählen Sie „Kartenmitte teilen“.",
+	"ui.share-position-link.keyboard.select": "Kartenmitte wählen",
+	"ui.share-position-link.keyboard.remove": "Punkt entfernen",
+
+	"ui.tool-overlay.keyboard-help": "Tastaturbedienung",
+	"ui.tool-overlay.keyboard-help.focus": "Bei fokussierter Karte:",
+	"ui.tool-overlay.keyboard.pan": "Karte verschieben",
+	"ui.keys.space": "Leertaste",
+	"ui.keys.enter": "Eingabe",
+	"ui.keys.backspace": "Rücktaste",
+	"ui.keys.arrows": "Pfeiltasten",
 
 	"ui.link-share.input": "Link zum Teilen",
 

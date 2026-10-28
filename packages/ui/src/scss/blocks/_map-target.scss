@@ -26,9 +26,11 @@
 }
 
 // Crosshair at the view centre while a keyboard drawing tool or point input is
-// active. The custom properties follow view padding (see map-target-keyboard).
-.ms3-map-target--keyboard-drawing::after,
-.ms3-map-target--point-input::after {
+// active, shown with the keyboard focus indicator only: pointer users click
+// where they mean, and a centre mark would only distract them. The custom
+// properties follow view padding (see map-target-keyboard).
+.ms3-map-target--keyboard-drawing:focus-visible::after,
+.ms3-map-target--point-input:focus-visible::after {
 	content: "";
 	position: absolute;
 	left: var(--ms3-view-center-x, 50%);

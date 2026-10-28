@@ -252,9 +252,13 @@ const translations = {
 		"ui.measure-distance.instructions-done":
 			"Klicken Sie auf die Karte um eine neue Strecke zu messen.",
 		"ui.measure-distance.keyboard-instructions":
-			"Klicken Sie auf die Karte, um Punkte hinzuzufügen; Doppelklick beendet die Strecke. Mit Fokus auf der Karte: Leertaste oder Eingabe setzt einen Punkt in der Kartenmitte. Pfeiltasten verschieben die Karte. Rücktaste entfernt den letzten Punkt. Ab zwei Punkten beendet Eingabe oder Fertig die Strecke.",
+			"Klicken Sie auf die Karte, um Punkte zu setzen. Doppelklick oder „Fertig“ beendet die Strecke.",
 		"ui.measure-distance.keyboard-instructions-done":
-			"Klicken Sie auf die Karte oder drücken Sie bei fokussierter Karte die Leertaste, um eine neue Strecke zu messen.",
+			"Klicken Sie auf die Karte, um eine neue Strecke zu messen.",
+		"ui.measure-distance.keyboard.add": "Punkt in der Kartenmitte setzen",
+		"ui.measure-distance.keyboard.finish":
+			"Strecke beenden (ab zwei Punkten)",
+		"ui.measure-distance.keyboard.remove": "Letzten Punkt entfernen",
 		"ui.measure-distance.measurement": "Streckenlänge",
 	},
 	en: {
@@ -264,9 +268,13 @@ const translations = {
 		"ui.measure-distance.instructions-done":
 			"Click on the map to start measuring a new line.",
 		"ui.measure-distance.keyboard-instructions":
-			"Click the map to add points; double click to finish. With the map focused: Space or Enter adds a point at the map centre. Arrow keys pan the map. Backspace removes the last point. After two points, Enter or Done finishes the line.",
+			"Click the map to add points. Double-click or “Done” finishes the line.",
 		"ui.measure-distance.keyboard-instructions-done":
-			"Click the map or press Space with the map focused to start a new line.",
+			"Click the map to measure a new line.",
+		"ui.measure-distance.keyboard.add": "Add a point at the map centre",
+		"ui.measure-distance.keyboard.finish":
+			"Finish the line (from two points)",
+		"ui.measure-distance.keyboard.remove": "Remove the last point",
 		"ui.measure-distance.measurement": "Distance",
 	},
 } as const;

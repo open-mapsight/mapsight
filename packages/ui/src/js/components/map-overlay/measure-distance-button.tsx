@@ -17,6 +17,7 @@ import {
 	finishKeyboardMeasurement,
 } from "../../plugins/common/measure-distance";
 import MeasureDistanceInfo from "./measure-distance-overlay";
+import ToolKeyboardHelp from "./tool-keyboard-help";
 import ToolOverlay from "./tool-overlay";
 
 type MeasureDistanceButtonProps = {
@@ -145,6 +146,36 @@ const MeasureDistanceButton = ({
 						>
 							{translate("ui.measure-distance.finish")}
 						</button>
+					)}
+					{keyboardDrawing && (
+						<ToolKeyboardHelp
+							items={[
+								{
+									keys: [translate("ui.keys.space")],
+									action: translate(
+										"ui.measure-distance.keyboard.add",
+									),
+								},
+								{
+									keys: [translate("ui.keys.enter")],
+									action: translate(
+										"ui.measure-distance.keyboard.finish",
+									),
+								},
+								{
+									keys: [translate("ui.keys.backspace")],
+									action: translate(
+										"ui.measure-distance.keyboard.remove",
+									),
+								},
+								{
+									keys: [translate("ui.keys.arrows")],
+									action: translate(
+										"ui.tool-overlay.keyboard.pan",
+									),
+								},
+							]}
+						/>
 					)}
 					{feature && <MeasureDistanceInfo feature={feature} />}
 				</ToolOverlay>

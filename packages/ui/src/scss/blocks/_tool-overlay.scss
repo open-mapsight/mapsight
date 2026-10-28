@@ -39,4 +39,35 @@
 		margin: 10px 0;
 		padding: 0 6px;
 	}
+
+	&__keyboard-help {
+		margin: 6px 0;
+		padding: 0 6px;
+		font-size: 0.875em;
+		user-select: text;
+
+		summary {
+			cursor: pointer;
+
+			&:focus-visible {
+				outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+				outline-offset: 2px;
+			}
+		}
+
+		p {
+			margin: 4px 0;
+		}
+
+		dl {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 2px 8px;
+			margin: 0;
+		}
+
+		dd {
+			margin: 0;
+		}
+	}
 }
