@@ -115,20 +115,21 @@ export default defineConfig([
 					caughtErrorsIgnorePattern: "^_",
 				},
 			],
+			// Match the Node minimum declared in the root and sidecar engines.
 			"n/no-unsupported-features/node-builtins": [
 				"error",
-				{version: ">=24.0.0"},
+				{version: ">=24.15.0"},
 			],
 			"n/no-unsupported-features/es-builtins": [
 				"error",
 				{
-					version: ">=24.0.0",
+					version: ">=24.15.0",
 				},
 			],
 			"n/no-unsupported-features/es-syntax": [
 				"error",
 				{
-					version: ">=24.0.0",
+					version: ">=24.15.0",
 				},
 			],
 			"n/no-missing-import": "off",
