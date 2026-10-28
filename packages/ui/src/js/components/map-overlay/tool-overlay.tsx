@@ -22,7 +22,8 @@ const ToolOverlay = ({
 	const overlayRef = useRef<HTMLDivElement>(null);
 
 	// Keyboard users operate the tool on the map and reach it from its toggle,
-	// so Escape there closes it too (bubble phase, handled events excluded).
+	// so Escape there closes it too. Listen after React's bubble handlers but
+	// before document-level focus traps, which may otherwise exit fullscreen.
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			const overlay = overlayRef.current;
@@ -52,8 +53,9 @@ const ToolOverlay = ({
 			event.preventDefault();
 			onClose();
 		};
-		document.addEventListener("keydown", onKeyDown);
-		return () => document.removeEventListener("keydown", onKeyDown);
+		const root = document.body;
+		root.addEventListener("keydown", onKeyDown);
+		return () => root.removeEventListener("keydown", onKeyDown);
 	}, [id, onClose]);
 
 	return (

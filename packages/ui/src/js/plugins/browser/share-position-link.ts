@@ -2,12 +2,16 @@ import {createSelector} from "@reduxjs/toolkit";
 import proj4 from "proj4";
 
 import {mergeAll, set} from "@mapsight/core/lib/base/actions";
-import {setData} from "@mapsight/core/lib/feature-sources/actions";
+import {
+	removeAllFeatures,
+	setData,
+} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
 import {
 	activateInteraction,
 	deactivateInteraction,
 } from "@mapsight/core/lib/map/actions";
+import type {MapController} from "@mapsight/core/lib/map/controller";
 import {
 	DEFAULT_DISPLAY_STYLE,
 	DEFAULT_DRAW_STYLE,
@@ -16,6 +20,7 @@ import {
 import type {Definition} from "@mapsight/core/ol-proxy";
 import {di} from "@mapsight/core/ol-proxy";
 import DrawInteraction from "@mapsight/core/ol-proxy/definitions/interaction/DrawInteraction";
+import type {EnhancedStore} from "@mapsight/core/types";
 
 import {observeState} from "@mapsight/lib-redux/observe-state";
 
@@ -27,6 +32,10 @@ import {
 } from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
 import type {PluginInstance} from "../../types";
+import {
+	installKeyboardDrawing,
+	keyboardDrawingDefinition,
+} from "../common/measure-distance";
 import {
 	ensureMarkedPointLayerAction,
 	isMarkedPointFeature,
@@ -145,6 +154,8 @@ function setupDrawInteraction({
 	markerStyle,
 	markerLayerGroup,
 	zIndex,
+	interactionType,
+	keyboardDrawing,
 }) {
 	const fSId = markedPointSourceId(name);
 	const interactionId = `${name}_drawInteraction`;
@@ -167,9 +178,10 @@ function setupDrawInteraction({
 			[mapControllerName]: {
 				interactions: {
 					[interactionId]: {
-						type: "DrawInteraction",
+						type: interactionType,
 						options: {
 							active: false,
+							keyboardTool: keyboardDrawing ? name : undefined,
 							type: "Point",
 							style: drawStyle,
 							replacePrevious: true,
@@ -228,6 +240,36 @@ function setupDrawInteraction({
 			}),
 		);
 	});
+}
+
+/** Share the current centre using the same source and marker styling as drawing. */
+export function shareMapCenter(
+	store: EnhancedStore,
+	name = "sharePositionLink",
+	mapControllerName = MAP,
+	featureSourcesControllerName = FEATURE_SOURCES,
+): void {
+	const controller = store.getController(mapControllerName) as MapController;
+	const center = controller.getMap()?.getView().getCenter();
+	const point = center && lonLatFromMapCoordinate(center);
+	if (!point) return;
+	store.dispatch(
+		setData(featureSourcesControllerName, markedPointSourceId(name), {
+			type: "FeatureCollection",
+			features: [
+				{
+					type: "Feature",
+					geometry: {
+						type: "Point",
+						coordinates: [point.lon, point.lat],
+					},
+					properties: {},
+				},
+			],
+		}),
+	);
+	// The source observer finishes pointer draws. Keep keyboard editing available.
+	store.dispatch(createActivateAction(mapControllerName, name));
 }
 
 export type MarkerPoint = {
@@ -391,6 +433,8 @@ export type Options = {
 	 * @default true
 	 */
 	enableDrawing?: boolean;
+	/** Enable centre-point keyboard input while drawing. @default false */
+	keyboardDrawing?: boolean;
 
 	/**
 	 * style for the shared marked-point layer when `markerStyle` is omitted
@@ -488,6 +532,7 @@ export default function createShareLinkPlugin(
 	const {
 		name = "sharePositionLink",
 		enableDrawing = true,
+		keyboardDrawing = false,
 		mapControllerName = MAP,
 		featureSourcesControllerName = FEATURE_SOURCES,
 		featureSelectionsControllerName = FEATURE_SELECTIONS,
@@ -525,8 +570,12 @@ export default function createShareLinkPlugin(
 			);
 
 			if (enableDrawing) {
-				if (drawInteraction) {
-					di.injectDefinitions([drawInteraction]);
+				const definition =
+					drawInteraction && keyboardDrawing
+						? keyboardDrawingDefinition(drawInteraction)
+						: drawInteraction;
+				if (definition) {
+					di.injectDefinitions([definition]);
 				}
 
 				setupDrawInteraction({
@@ -536,12 +585,36 @@ export default function createShareLinkPlugin(
 					featureSourcesControllerName,
 					featureSelectionsControllerName,
 					drawStyle,
+					interactionType: definition?.type ?? "DrawInteraction",
+					keyboardDrawing,
 					markerFeatureId,
 					markerName,
 					markerStyle,
 					markerLayerGroup,
 					zIndex,
 				});
+				const controller = store.getController(
+					mapControllerName,
+				) as MapController;
+				const map = controller.getMap();
+				if (keyboardDrawing && map)
+					installKeyboardDrawing(map, name, {
+						add: () =>
+							shareMapCenter(
+								store,
+								name,
+								mapControllerName,
+								featureSourcesControllerName,
+							),
+						remove: () => {
+							store.dispatch(
+								removeAllFeatures(
+									featureSourcesControllerName,
+									markedPointSourceId(name),
+								),
+							);
+						},
+					});
 			}
 
 			if (showMarker) {

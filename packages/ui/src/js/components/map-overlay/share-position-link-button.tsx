@@ -1,10 +1,11 @@
 import {Fragment, useCallback, useEffect, useId, useMemo, useRef} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector, useStore} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
 import {removeAllFeatures} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
+import type {EnhancedStore} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES, MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
@@ -13,6 +14,7 @@ import {
 	createActivateAction,
 	createDeactivateAction,
 	formatLinkMarkerHash,
+	shareMapCenter,
 } from "../../plugins/browser/share-position-link";
 import LinkShare from "../link-share";
 import ToolOverlay from "./tool-overlay";
@@ -59,6 +61,19 @@ const SharePositionLinkButton = ({
 		[pluginName],
 	);
 
+	const store = useStore() as EnhancedStore;
+	const keyboardDrawing = useSelector(
+		(state: {
+			map?: {
+				interactions?: Record<
+					string,
+					{options?: {keyboardTool?: string}}
+				>;
+			};
+		}) =>
+			state.map?.interactions?.[`${pluginName}_drawInteraction`]?.options
+				?.keyboardTool === pluginName,
+	);
 	const dispatch = useDispatch();
 	const feature = useSelector(featureSelector);
 
@@ -123,8 +138,21 @@ const SharePositionLinkButton = ({
 					id={overlayId}
 					label={translate("ui.share-position-link.title")}
 					onClose={closeAndReset}
-					text={translate("ui.share-position-link.instructions")}
+					text={translate(
+						keyboardDrawing
+							? "ui.share-position-link.keyboard-instructions"
+							: "ui.share-position-link.instructions",
+					)}
 				>
+					{keyboardDrawing && (
+						<button
+							className="ms3-map-tool-action"
+							type="button"
+							onClick={() => shareMapCenter(store, pluginName)}
+						>
+							{translate("ui.share-position-link.share-center")}
+						</button>
+					)}
 					{feature && (
 						<LinkShare
 							url={shareUrl}
