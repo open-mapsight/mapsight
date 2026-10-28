@@ -3,6 +3,11 @@ import {useSelector} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
+import {
+	HeadingContent,
+	useAutomaticHeadings,
+	useHeadingElement,
+} from "../headings";
 import {useContextComponentWithFallback} from "../helpers/components";
 import {
 	isViewFullscreen,
@@ -17,6 +22,7 @@ import {
 	pageTitleShowSelector,
 	tagSwitcherShowSelector,
 	timeFilterVisible,
+	titleSelector,
 	viewSelector,
 } from "../store/selectors";
 import ErrorBoundary from "./error-boundary";
@@ -75,6 +81,11 @@ function App() {
 	const isFullscreen = isViewFullscreen(view);
 	const isMapOnly = isViewMapOnly(view);
 	const showAdditional = !isFullscreen && !isMapOnly;
+	const showTitle = useSelector(pageTitleShowSelector);
+	const title = useSelector(titleSelector);
+	const automatic = useAutomaticHeadings();
+	const hasTitle = showTitle && (!automatic || Boolean(title));
+	const titleHeadingAs = useHeadingElement("appTitle", "h2");
 	const showDetailsInList = useSelector(listUiOptionDetailsSelector);
 	const showListInMapRow =
 		useSelector(listVisible) && !showDetailsInList && isFullscreen;
@@ -96,150 +107,166 @@ function App() {
 	return (
 		<AppWrapper>
 			<MainContainer>
-				<VisibilityWrapper visibleSelector={pageTitleShowSelector}>
-					<ErrorBoundary variant="region">
-						<TitleBar />
-					</ErrorBoundary>
-				</VisibilityWrapper>
-
-				<VisibilityWrapper visibleSelector={mapVisible}>
-					<MapRow>
-						{!isMobile && (
-							<MainPanelContextProvider
-								collapsible={showListInMapRow}
-								showSelectionInfo={!showDetailsInList}
-								showList={showListInMapRow}
-								panelPosition="left"
-							>
-								<MainPanelContainer>
-									<MainPanelListToggleButton />
-									<MainPanel />
-								</MainPanelContainer>
-							</MainPanelContextProvider>
-						)}
-
-						<MapWrapper>
-							<Map />
-							<MapSyncedInterlay />
-							<MapOverlay>
-								<MapPointContextMenu />
-								<ErrorBoundary variant="overlay">
-									{mapOverlayStart()}
-								</ErrorBoundary>
-
-								<MapOverlayArea position="top-left">
-									{mapOverlayTopLeft(
-										<Fragment>
-											<SearchOverlay />
-											<RegionSelector />
-										</Fragment>,
-									)}
-								</MapOverlayArea>
-
-								<MapOverlayArea position="bottom-left">
-									{mapOverlayBottomLeft(
-										<Fragment>
-											<InfoOverlayLeft />
-										</Fragment>,
-									)}
-								</MapOverlayArea>
-
-								<MapOverlayArea position="top-right">
-									{mapOverlayTopRight(
-										<Fragment>
-											<LayerSwitcherOverlay />
-											<DesktopViewToggleButton />
-										</Fragment>,
-									)}
-								</MapOverlayArea>
-
-								<MapOverlayArea position="bottom-right">
-									{mapOverlayBottomRight(
-										<Fragment>
-											<ZoomButtons />
-											<UserGeoLocationButton />
-											<MobileViewToggleButton />
-											<InfoOverlayRight />
-										</Fragment>,
-									)}
-								</MapOverlayArea>
-
-								<ErrorBoundary variant="overlay">
-									{mapOverlayEnd()}
-								</ErrorBoundary>
-
-								<InfoOverlayModal>
-									{mapOverlayModal(
-										<Fragment>
-											{isMobile && <Attribution />}
-											<Legend />
-											<Logo />
-										</Fragment>,
-									)}
-								</InfoOverlayModal>
-							</MapOverlay>
-						</MapWrapper>
-					</MapRow>
-				</VisibilityWrapper>
-
-				{isMapOnly && (
-					<MainPanelContextProvider
-						panelPosition="below"
-						showSelectionInfo={true}
-					>
-						<MainPanelContainer>
-							<MainPanel />
-						</MainPanelContainer>
-					</MainPanelContextProvider>
+				{(!automatic || Boolean(title)) && (
+					<VisibilityWrapper visibleSelector={pageTitleShowSelector}>
+						<ErrorBoundary variant="region">
+							<TitleBar
+								{...(automatic
+									? {headlineAs: titleHeadingAs}
+									: {})}
+							/>
+						</ErrorBoundary>
+					</VisibilityWrapper>
 				)}
+
+				<HeadingContent
+					headingAs={hasTitle ? titleHeadingAs : undefined}
+				>
+					<VisibilityWrapper visibleSelector={mapVisible}>
+						<MapRow>
+							{!isMobile && (
+								<MainPanelContextProvider
+									collapsible={showListInMapRow}
+									showSelectionInfo={!showDetailsInList}
+									showList={showListInMapRow}
+									panelPosition="left"
+								>
+									<MainPanelContainer>
+										<MainPanelListToggleButton />
+										<MainPanel />
+									</MainPanelContainer>
+								</MainPanelContextProvider>
+							)}
+
+							<MapWrapper>
+								<Map />
+								<MapSyncedInterlay />
+								<MapOverlay>
+									<MapPointContextMenu />
+									<ErrorBoundary variant="overlay">
+										{mapOverlayStart()}
+									</ErrorBoundary>
+
+									<MapOverlayArea position="top-left">
+										{mapOverlayTopLeft(
+											<Fragment>
+												<SearchOverlay />
+												<RegionSelector />
+											</Fragment>,
+										)}
+									</MapOverlayArea>
+
+									<MapOverlayArea position="bottom-left">
+										{mapOverlayBottomLeft(
+											<Fragment>
+												<InfoOverlayLeft />
+											</Fragment>,
+										)}
+									</MapOverlayArea>
+
+									<MapOverlayArea position="top-right">
+										{mapOverlayTopRight(
+											<Fragment>
+												<LayerSwitcherOverlay />
+												<DesktopViewToggleButton />
+											</Fragment>,
+										)}
+									</MapOverlayArea>
+
+									<MapOverlayArea position="bottom-right">
+										{mapOverlayBottomRight(
+											<Fragment>
+												<ZoomButtons />
+												<UserGeoLocationButton />
+												<MobileViewToggleButton />
+												<InfoOverlayRight />
+											</Fragment>,
+										)}
+									</MapOverlayArea>
+
+									<ErrorBoundary variant="overlay">
+										{mapOverlayEnd()}
+									</ErrorBoundary>
+
+									<InfoOverlayModal>
+										{mapOverlayModal(
+											<Fragment>
+												{isMobile && <Attribution />}
+												<Legend />
+												<Logo />
+											</Fragment>,
+										)}
+									</InfoOverlayModal>
+								</MapOverlay>
+							</MapWrapper>
+						</MapRow>
+					</VisibilityWrapper>
+
+					{isMapOnly && (
+						<MainPanelContextProvider
+							panelPosition="below"
+							showSelectionInfo={true}
+						>
+							<MainPanelContainer>
+								<MainPanel />
+							</MainPanelContainer>
+						</MainPanelContextProvider>
+					)}
+				</HeadingContent>
 			</MainContainer>
 
-			{showAdditional && (
-				<AdditionalContainer>
-					<VisibilityWrapper visibleSelector={marginalLeftSelector}>
-						<Marginal position="left">
-							<ErrorBoundary variant="region">
-								<VisibilityWrapper
-									visibleSelector={(state) =>
-										!!layerSwitcherConfigExternalSelector(
-											state,
-										)
-									}
-								>
-									<LayerSwitcher
-										configSelector={
-											layerSwitcherConfigExternalSelector
+			<HeadingContent headingAs={hasTitle ? titleHeadingAs : undefined}>
+				{showAdditional && (
+					<AdditionalContainer>
+						<VisibilityWrapper
+							visibleSelector={marginalLeftSelector}
+						>
+							<Marginal position="left">
+								<ErrorBoundary variant="region">
+									<VisibilityWrapper
+										visibleSelector={(state) =>
+											!!layerSwitcherConfigExternalSelector(
+												state,
+											)
 										}
-									/>
-								</VisibilityWrapper>
-								<VisibilityWrapper
-									visibleSelector={tagSwitcherShowSelector}
-								>
-									<TagSwitcher />
-								</VisibilityWrapper>
-							</ErrorBoundary>
-						</Marginal>
-					</VisibilityWrapper>
-
-					<AdditionalContent>
-						<VisibilityWrapper visibleSelector={listVisible}>
-							<FeatureList enableKeyboardControl={true} />
+									>
+										<LayerSwitcher
+											configSelector={
+												layerSwitcherConfigExternalSelector
+											}
+										/>
+									</VisibilityWrapper>
+									<VisibilityWrapper
+										visibleSelector={
+											tagSwitcherShowSelector
+										}
+									>
+										<TagSwitcher />
+									</VisibilityWrapper>
+								</ErrorBoundary>
+							</Marginal>
 						</VisibilityWrapper>
-					</AdditionalContent>
 
-					<VisibilityWrapper visibleSelector={timeFilterVisible}>
-						<Marginal position="right">
-							<ErrorBoundary variant="region">
-								<TimeFilter />
-							</ErrorBoundary>
-						</Marginal>
-					</VisibilityWrapper>
-				</AdditionalContainer>
-			)}
+						<AdditionalContent>
+							<VisibilityWrapper visibleSelector={listVisible}>
+								<FeatureList enableKeyboardControl={true} />
+							</VisibilityWrapper>
+						</AdditionalContent>
 
-			<VisibilityWrapper visibleSelector={mapAndListVisible}>
-				<ViewportViewToggleButton />
-			</VisibilityWrapper>
+						<VisibilityWrapper visibleSelector={timeFilterVisible}>
+							<Marginal position="right">
+								<ErrorBoundary variant="region">
+									<TimeFilter />
+								</ErrorBoundary>
+							</Marginal>
+						</VisibilityWrapper>
+					</AdditionalContainer>
+				)}
+
+				<VisibilityWrapper visibleSelector={mapAndListVisible}>
+					<ViewportViewToggleButton />
+				</VisibilityWrapper>
+			</HeadingContent>
 		</AppWrapper>
 	);
 }

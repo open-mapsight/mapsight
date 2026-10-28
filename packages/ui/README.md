@@ -39,6 +39,7 @@ Next.js host).
 | -------------------------------------- | ------------------------------------------------------------------------------ |
 | `@mapsight/ui`                         | `create()`, React components, plugins, hooks                                   |
 | `@mapsight/ui/config`                  | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
+| `@mapsight/ui/headings`                | Contextual native headings and scopes for host-composed UI                     |
 | `@mapsight/ui/async-status`            | Loading / error / empty view model + adapters (no Query peer)                  |
 | `@mapsight/ui/async-status/components` | `AsyncStatusRegion`, `AsyncStatusIndicator`                                    |
 | `@mapsight/ui/react-query`             | TanStack Query adapters (`QueryStatusRegion`) — optional peer                  |
@@ -51,12 +52,19 @@ Peer dependency: `react`, `react-dom`. Optional peer for Query helpers: `@tansta
 Loading/error presentation architecture:
 [docs/ASYNC_STATUS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/ASYNC_STATUS.md).
 
+## Heading hierarchy
+
+For headings that fit the host page, set `future.v8_automaticHeadings: true` and `headings.baseLevel` on create
+options (`2` beneath the host's `h1`). Without the flag, existing 7.x heading elements remain. See
+[Heading hierarchy](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/HEADINGS.md) for composed
+hosts, explicit overrides, list grouping, and SSR configuration.
+
 ## Hydration
 
 The browser embed renderer and `<Instance>` run `afterRender` plugins after React commits. Asynchronous host renderers
 call `props.deferCommit()` before scheduling React and pass the returned callback to `AppContext.onCommit`. Spread
 `props.serverState` into `AppContext` to pin React-Redux's hydration snapshot. Synchronous custom renderers retain
-completion on return. See [SSR and hydration](../../docs/integration/SSR_HYDRATION.md#renderer-commit-lifecycle)
+completion on return. See [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md#renderer-commit-lifecycle)
 for the contract and migration example.
 
 ## SCSS (host builds)

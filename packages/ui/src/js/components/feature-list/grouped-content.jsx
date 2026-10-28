@@ -5,6 +5,7 @@ import {async} from "@mapsight/core/lib/base/actions";
 import {load} from "@mapsight/core/lib/feature-sources/actions";
 
 import {FEATURE_SOURCES} from "../../config/constants/controllers";
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {translate} from "../../helpers/i18n";
 import {
 	featureSourceToView,
@@ -32,6 +33,11 @@ function FeatureListGroupedContent(
 	{as: T = "div", groupAs = null, itemAs, ...listProps},
 	forwardedRef,
 ) {
+	const GroupNameT = useHeadingElement(
+		"featureListGroup",
+		"h3",
+		groupAs === "auto" ? undefined : (groupAs ?? undefined),
+	);
 	const ownRef = useRef();
 	const ref = forwardedRef || ownRef;
 	const dispatch = useDispatch();
@@ -101,26 +107,33 @@ function FeatureListGroupedContent(
 
 	if (features.length) {
 		if (itemGroups.groups) {
-			const GroupNameT = groupAs;
-
 			listContent = (
 				<T className="ms3-list-groups ms3-scroll-target" {...rootProps}>
 					{itemGroups.groups.map(function composeGroup(group, index) {
 						return (
 							<Fragment key={group.name}>
 								{group.name ? (
-									<GroupNameT className="ms3-list__group ms3-list__group--name">
+									<Heading
+										as={GroupNameT}
+										className="ms3-list__group ms3-list__group--name"
+									>
 										{group.name}
-									</GroupNameT>
+									</Heading>
 								) : null}
 
-								<FeatureListContent
-									data-ms3-group-name={group.name}
-									status={listStatus}
-									{...listProps}
+								<HeadingContent
+									headingAs={
+										group.name ? GroupNameT : undefined
+									}
 								>
-									{itemGroups.items[index]}
-								</FeatureListContent>
+									<FeatureListContent
+										data-ms3-group-name={group.name}
+										status={listStatus}
+										{...listProps}
+									>
+										{itemGroups.items[index]}
+									</FeatureListContent>
+								</HeadingContent>
 							</Fragment>
 						);
 					})}

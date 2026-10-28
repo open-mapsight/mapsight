@@ -13,6 +13,7 @@ import type {MapState} from "@mapsight/core/lib/map/types";
 import type {State} from "@mapsight/core/types";
 
 import {MAP} from "../../config/constants/controllers";
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {translate} from "../../helpers/i18n";
 import SwitcherRadioGroup from "../switcher/SwitcherRadioGroup";
 
@@ -111,7 +112,8 @@ function CollapsibleOverlayGroup({
 			}`}
 			data-ms3-switcher-group={group}
 		>
-			<GroupHeadline
+			<Heading
+				as={GroupHeadline}
 				className="ms3-layer-switcher__header ms3-grouped-switcher__header"
 				data-ms3-switcher-header-group={group}
 			>
@@ -138,15 +140,17 @@ function CollapsibleOverlayGroup({
 						/>
 					</span>
 				</button>
-			</GroupHeadline>
-			<ul
-				id={panelId}
-				className="ms3-layer-switcher__entries"
-				data-ms3-switcher-entries-group={group}
-				hidden={collapsed}
-			>
-				{layerIds.map((layerId) => renderEntry(layerId, group))}
-			</ul>
+			</Heading>
+			<HeadingContent headingAs={GroupHeadline}>
+				<ul
+					id={panelId}
+					className="ms3-layer-switcher__entries"
+					data-ms3-switcher-entries-group={group}
+					hidden={collapsed}
+				>
+					{layerIds.map((layerId) => renderEntry(layerId, group))}
+				</ul>
+			</HeadingContent>
 		</section>
 	);
 }
@@ -158,9 +162,16 @@ function SplitBaseLayerSwitcher({
 	renderBaseLayerEntry,
 	renderEntry,
 	collapsibleGroups = false,
-	headlineAs: Headline = "h3",
-	groupHeadlineAs: GroupHeadline = "h4",
+	headlineAs,
+	groupHeadlineAs,
 }: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
+	const Headline = useHeadingElement("switcher", "h3", headlineAs);
+	const GroupHeadline = useHeadingElement(
+		"switcherGroup",
+		"h4",
+		groupHeadlineAs,
+		{parentAs: Headline},
+	);
 	const baseLayersHeadingId = useId();
 	const hasOverlayLayers = groups.length > 0 || ungroupedLayerIds.length > 0;
 	/** Explicit user overrides; unset keys use the default (collapsed when none visible). */
@@ -201,84 +212,101 @@ function SplitBaseLayerSwitcher({
 		>
 			{baseLayerIds.length > 0 ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--base-layers">
-					<Headline
+					<Heading
+						as={Headline}
 						id={baseLayersHeadingId}
 						className="ms3-layer-switcher__section-title"
 					>
 						{translate("ui.layer-switcher.baseLayers")}
-					</Headline>
-					<SwitcherRadioGroup
-						className="ms3-layer-switcher__entries ms3-layer-switcher__entries--base-layers"
-						aria-labelledby={baseLayersHeadingId}
-					>
-						{baseLayerIds.map((layerId) =>
-							renderBaseLayerEntry(layerId, null),
-						)}
-					</SwitcherRadioGroup>
+					</Heading>
+					<HeadingContent headingAs={Headline}>
+						<SwitcherRadioGroup
+							className="ms3-layer-switcher__entries ms3-layer-switcher__entries--base-layers"
+							aria-labelledby={baseLayersHeadingId}
+						>
+							{baseLayerIds.map((layerId) =>
+								renderBaseLayerEntry(layerId, null),
+							)}
+						</SwitcherRadioGroup>
+					</HeadingContent>
 				</section>
 			) : null}
 
 			{hasOverlayLayers ? (
 				<section className="ms3-layer-switcher__section ms3-layer-switcher__section--overlay-layers">
-					<Headline className="ms3-layer-switcher__section-title">
+					<Heading
+						as={Headline}
+						className="ms3-layer-switcher__section-title"
+					>
 						{translate("ui.layer-switcher.overlayLayers")}
-					</Headline>
-					<div className="ms3-grouped-switcher ms3-grouped-switcher--wrapped">
-						{groups.map(({group, layerIds, visibleCount}) => {
-							const collapsed = isGroupCollapsed(
-								group,
-								visibleCount,
-							);
+					</Heading>
+					<HeadingContent headingAs={Headline}>
+						<div className="ms3-grouped-switcher ms3-grouped-switcher--wrapped">
+							{groups.map(({group, layerIds, visibleCount}) => {
+								const collapsed = isGroupCollapsed(
+									group,
+									visibleCount,
+								);
 
-							return collapsibleGroups ? (
-								<CollapsibleOverlayGroup
-									groupHeadlineAs={GroupHeadline}
-									key={group}
-									group={group}
-									layerIds={layerIds}
-									visibleCount={visibleCount}
-									collapsed={collapsed}
-									onToggle={() =>
-										toggleGroup(group, collapsed)
-									}
-									renderEntry={renderEntry}
-								/>
-							) : (
-								<section
-									key={group}
-									className="ms3-grouped-switcher__group"
-									data-ms3-switcher-group={group}
-								>
-									<GroupHeadline
-										className="ms3-layer-switcher__header"
-										data-ms3-switcher-header-group={group}
+								return collapsibleGroups ? (
+									<CollapsibleOverlayGroup
+										groupHeadlineAs={GroupHeadline}
+										key={group}
+										group={group}
+										layerIds={layerIds}
+										visibleCount={visibleCount}
+										collapsed={collapsed}
+										onToggle={() =>
+											toggleGroup(group, collapsed)
+										}
+										renderEntry={renderEntry}
+									/>
+								) : (
+									<section
+										key={group}
+										className="ms3-grouped-switcher__group"
+										data-ms3-switcher-group={group}
 									>
-										<span className="ms3-switcher-header__label">
-											{group}
-										</span>
-									</GroupHeadline>
-									<ul
-										className="ms3-layer-switcher__entries"
-										data-ms3-switcher-entries-group={group}
-									>
-										{layerIds.map((layerId) =>
-											renderEntry(layerId, group),
+										<Heading
+											as={GroupHeadline}
+											className="ms3-layer-switcher__header"
+											data-ms3-switcher-header-group={
+												group
+											}
+										>
+											<span className="ms3-switcher-header__label">
+												{group}
+											</span>
+										</Heading>
+										<HeadingContent
+											headingAs={GroupHeadline}
+										>
+											<ul
+												className="ms3-layer-switcher__entries"
+												data-ms3-switcher-entries-group={
+													group
+												}
+											>
+												{layerIds.map((layerId) =>
+													renderEntry(layerId, group),
+												)}
+											</ul>
+										</HeadingContent>
+									</section>
+								);
+							})}
+
+							{ungroupedLayerIds.length > 0 ? (
+								<section className="ms3-grouped-switcher__group">
+									<ul className="ms3-layer-switcher__entries">
+										{ungroupedLayerIds.map((layerId) =>
+											renderEntry(layerId, null),
 										)}
 									</ul>
 								</section>
-							);
-						})}
-
-						{ungroupedLayerIds.length > 0 ? (
-							<section className="ms3-grouped-switcher__group">
-								<ul className="ms3-layer-switcher__entries">
-									{ungroupedLayerIds.map((layerId) =>
-										renderEntry(layerId, null),
-									)}
-								</ul>
-							</section>
-						) : null}
-					</div>
+							) : null}
+						</div>
+					</HeadingContent>
 				</section>
 			) : null}
 		</div>

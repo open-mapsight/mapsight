@@ -1,11 +1,18 @@
 import {
 	type CSSProperties,
+	type ElementType,
 	type ReactElement,
 	type ReactNode,
 	useId,
 } from "react";
 import {createPortal} from "react-dom";
 
+import {
+	Heading,
+	HeadingContent,
+	HeadingLevel,
+	useHeadingElement,
+} from "../headings";
 import useHydrated from "../hooks/useHydrated";
 import useNativeDialog from "../hooks/useNativeDialog";
 import CloseOverlayButton from "./close-overlay-button";
@@ -30,6 +37,7 @@ type NativeDialogBaseProps = {
 	headerActions?: ReactNode;
 	/** Hide the default close button (host provides its own). */
 	hideCloseButton?: boolean;
+	headlineAs?: ElementType;
 };
 
 type NativeDialogNameProps =
@@ -79,7 +87,11 @@ export default function NativeDialog({
 	children,
 	headerActions,
 	hideCloseButton = false,
+	headlineAs,
 }: NativeDialogProps): ReactElement | null {
+	const Headline = useHeadingElement("dialogTitle", "h2", headlineAs, {
+		level: 2,
+	});
 	const hydrated = useHydrated();
 	const generatedTitleId = useId();
 	const titleId =
@@ -100,28 +112,37 @@ export default function NativeDialog({
 			aria-label={titleId ? undefined : ariaLabel}
 			{...dialogProps}
 		>
-			<div className={sheetClassName}>
-				{title != null || !hideCloseButton || headerActions != null ? (
-					<header className="ms3-native-dialog__header">
-						{title != null ? (
-							<h2
-								className="ms3-native-dialog__title"
-								id={titleId}
-							>
-								{title}
-							</h2>
-						) : null}
-						{headerActions}
-						{hideCloseButton ? null : (
-							<CloseOverlayButton
-								label={closeLabel}
-								onClose={onClose}
-							/>
-						)}
-					</header>
-				) : null}
-				{children}
-			</div>
+			<HeadingLevel level={2}>
+				<div className={sheetClassName}>
+					{title != null ||
+					!hideCloseButton ||
+					headerActions != null ? (
+						<header className="ms3-native-dialog__header">
+							{title != null ? (
+								<Heading
+									as={Headline}
+									className="ms3-native-dialog__title"
+									id={titleId}
+								>
+									{title}
+								</Heading>
+							) : null}
+							{headerActions}
+							{hideCloseButton ? null : (
+								<CloseOverlayButton
+									label={closeLabel}
+									onClose={onClose}
+								/>
+							)}
+						</header>
+					) : null}
+					<HeadingContent
+						headingAs={title != null ? Headline : undefined}
+					>
+						{children}
+					</HeadingContent>
+				</div>
+			</HeadingLevel>
 		</dialog>
 	);
 

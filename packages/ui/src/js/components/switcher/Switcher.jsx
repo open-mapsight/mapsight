@@ -1,5 +1,6 @@
 import {Fragment, memo} from "react";
 
+import {HeadingContent, useHeadingElement} from "../../headings";
 import SwitcherHeader from "./SwitcherHeader";
 
 const defaultRenderHeader = (label, props) => (
@@ -9,7 +10,7 @@ const defaultRenderHeader = (label, props) => (
 function Switcher(props) {
 	const {
 		as: T = "div",
-		headlineAs = "h3",
+		headlineAs,
 		entriesAs: V = "ul",
 		baseClass = "ms3-layer-switcher", // TODO: Move to generic class name
 		renderEntry,
@@ -20,6 +21,7 @@ function Switcher(props) {
 		entriesAttributes: entriesAttributes_ = {},
 		...attributes
 	} = props;
+	const Headline = useHeadingElement("switcher", "h3", headlineAs);
 
 	const headerAttributes = {...headerAttributes_};
 	const entriesAttributes = {...entriesAttributes_};
@@ -41,12 +43,14 @@ function Switcher(props) {
 	return (
 		<T {...(T === Fragment ? {} : attributes)}>
 			{group
-				? renderHeader(group, {as: headlineAs, ...headerAttributes})
+				? renderHeader(group, {as: Headline, ...headerAttributes})
 				: null}
 
-			<V {...entriesAttributes}>
-				{ids.map((id) => renderEntry(id, group))}
-			</V>
+			<HeadingContent headingAs={group ? Headline : undefined}>
+				<V {...entriesAttributes}>
+					{ids.map((id) => renderEntry(id, group))}
+				</V>
+			</HeadingContent>
 		</T>
 	);
 }

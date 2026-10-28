@@ -1,4 +1,11 @@
-import {type HTMLAttributes, type Ref, useCallback, useId, useRef} from "react";
+import {
+	type ElementType,
+	type HTMLAttributes,
+	type Ref,
+	useCallback,
+	useId,
+	useRef,
+} from "react";
 import {FocusScope, mergeRefs, useFocusManager} from "react-aria";
 import {useDispatch, useSelector} from "react-redux";
 
@@ -6,6 +13,11 @@ import {removeFrom} from "@mapsight/core/lib/base/actions";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
+import {
+	HeadingContent,
+	useAutomaticHeadings,
+	useHeadingElement,
+} from "../../headings";
 import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
@@ -22,6 +34,7 @@ export default function FeatureSelectionInfo({
 	enableKeyboardControl,
 	trapFocus: trapFocusProp,
 	isOpen = true,
+	headlineAs,
 }: {
 	feature: MapsightUiFeature | null;
 	enableKeyboardControl: boolean;
@@ -29,7 +42,10 @@ export default function FeatureSelectionInfo({
 	trapFocus?: boolean;
 	/** False renders only the inert collapse-animation snapshot, outside the live focus scope. */
 	isOpen?: boolean;
+	headlineAs?: ElementType;
 }) {
+	const Headline = useHeadingElement("featureDetailsTitle", "h3", headlineAs);
+	const automatic = useAutomaticHeadings();
 	const dispatch = useDispatch();
 	const options = useSelector(featureSelectionInfoUiOptionsSelector);
 	const hasStickyHeader = options.stickyHeader;
@@ -96,11 +112,21 @@ export default function FeatureSelectionInfo({
 		<T
 			feature={feature}
 			close={<CloseButton onClose={removeSelection} />}
-			header={<Header feature={feature} id={headingId} />}
+			header={
+				<Header
+					feature={feature}
+					id={headingId}
+					{...(automatic || headlineAs !== undefined
+						? {headlineAs: Headline}
+						: {})}
+				/>
+			}
 			content={
-				<div className="ms3-feature-selection-info__content">
-					<FeatureDetailsContent feature={feature} />
-				</div>
+				<HeadingContent headingAs={Headline}>
+					<div className="ms3-feature-selection-info__content">
+						<FeatureDetailsContent feature={feature} />
+					</div>
+				</HeadingContent>
 			}
 			renderWrapper={renderWrapper}
 		/>

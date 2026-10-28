@@ -32,7 +32,7 @@ function Search({
 	autoFocus,
 	announceResults = true,
 	onResultSelected,
-	groupHeadlineAs = "h4",
+	groupHeadlineAs = undefined,
 }) {
 	const dispatch = useDispatch();
 	const query = useSelector(searchQuerySelector);

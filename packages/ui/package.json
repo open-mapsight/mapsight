@@ -43,6 +43,10 @@
 		"vitest": "catalog:"
 	},
 	"exports": {
+		"./headings": {
+			"types": "./dist/headings/index.d.ts",
+			"default": "./dist/headings/index.js"
+		},
 		"./*": {
 			"types": "./dist/*.d.ts",
 			"default": "./dist/*.js"

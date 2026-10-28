@@ -1,6 +1,7 @@
-import type {PropsWithChildren, ReactNode} from "react";
+import type {ElementType, PropsWithChildren, ReactNode} from "react";
 import {useEffect, useId, useRef} from "react";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import CloseOverlayButton from "../close-overlay-button";
 
@@ -9,6 +10,7 @@ type Props = {
 	text: ReactNode;
 	label: ReactNode;
 	onClose: () => void;
+	headlineAs?: ElementType;
 };
 
 const ToolOverlay = ({
@@ -17,7 +19,9 @@ const ToolOverlay = ({
 	children,
 	label,
 	onClose,
+	headlineAs,
 }: PropsWithChildren<Props>) => {
+	const Headline = useHeadingElement("toolTitle", "h3", headlineAs);
 	const headingId = useId();
 	const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -76,11 +80,17 @@ const ToolOverlay = ({
 			}}
 		>
 			<CloseOverlayButton onClose={onClose} />
-			<h3 className="ms3-tool-overlay__header" id={headingId}>
+			<Heading
+				as={Headline}
+				className="ms3-tool-overlay__header"
+				id={headingId}
+			>
 				{label}
-			</h3>
-			{text && <p className="ms3-tool-overlay__text">{text}</p>}
-			{children}
+			</Heading>
+			<HeadingContent headingAs={Headline}>
+				{text && <p className="ms3-tool-overlay__text">{text}</p>}
+				{children}
+			</HeadingContent>
 		</div>
 	);
 };

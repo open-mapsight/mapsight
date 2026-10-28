@@ -1,15 +1,31 @@
-import type {KeyboardEvent, MouseEvent, ReactNode} from "react";
+import type {ElementType, KeyboardEvent, MouseEvent, ReactNode} from "react";
 import type {Props as ReactModalProps} from "react-modal";
 import ReactModal from "react-modal";
 
+import {
+	Heading,
+	HeadingContent,
+	HeadingLevel,
+	useHeadingElement,
+} from "../headings";
 import CloseOverlayButton from "./close-overlay-button";
 
 export type Props = ReactModalProps & {
 	closeLabel?: string;
 	headline: ReactNode;
+	headlineAs?: ElementType;
 };
 
-const Modal = ({children, closeLabel, headline, ...props}: Props) => {
+const Modal = ({
+	children,
+	closeLabel,
+	headline,
+	headlineAs,
+	...props
+}: Props) => {
+	const Headline = useHeadingElement("dialogTitle", "h3", headlineAs, {
+		level: 2,
+	});
 	const handleClose = (event: MouseEvent | KeyboardEvent) =>
 		props.onRequestClose?.(event);
 
@@ -21,18 +37,24 @@ const Modal = ({children, closeLabel, headline, ...props}: Props) => {
 			shouldCloseOnOverlayClick={true}
 			{...props}
 		>
-			<div className="ms3-modal__inner ms3-modal__inner--search">
-				<div className="ms3-modal__header">
-					<h3 className="ms3-modal__headline">{headline}</h3>
-					<div className="ms3-modal__close">
-						<CloseOverlayButton
-							label={closeLabel}
-							onClose={(event) => handleClose(event)}
-						/>
+			<HeadingLevel level={2}>
+				<div className="ms3-modal__inner ms3-modal__inner--search">
+					<div className="ms3-modal__header">
+						<Heading as={Headline} className="ms3-modal__headline">
+							{headline}
+						</Heading>
+						<div className="ms3-modal__close">
+							<CloseOverlayButton
+								label={closeLabel}
+								onClose={(event) => handleClose(event)}
+							/>
+						</div>
 					</div>
+					<HeadingContent headingAs={Headline}>
+						{children}
+					</HeadingContent>
 				</div>
-				{children}
-			</div>
+			</HeadingLevel>
 		</ReactModal>
 	);
 };

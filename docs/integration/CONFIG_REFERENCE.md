@@ -110,6 +110,7 @@ createOptions: {
 	future: {
 		v8_ariaControlTooltip: true,
 		v8_listSearchButton: true,
+		v8_automaticHeadings: true,
 	},
 }
 ```
@@ -121,6 +122,29 @@ Omitted or `false` keeps `ms3-hint--*` classes.
 label + input so 7.x host CSS does not break. This will be the only list-search chrome in v8.
 
 New UI is not hidden behind flags; only leftover behavior that must stay dual-path in this major.
+
+### `createOptions.headings`
+
+With `future.v8_automaticHeadings: true`, choose the first native heading rank inside the instance:
+
+```ts
+createOptions: {
+	future: {v8_automaticHeadings: true},
+	headings: {
+		baseLevel: 2,
+		overrides: {timeFilter: "div"},
+	},
+}
+```
+
+`baseLevel` accepts integers 1–6 and defaults to 2 in automatic mode. Use 3 inside a host `h2` section.
+Overrides accept `h1`–`h6`, `div`, or `p` by semantic slot. Explicit component element props take precedence.
+Without the flag, the heading options are inactive and historical elements remain.
+
+For feature lists, change a fixed `uiState.list.renderGroupAs: "h3"` to `"auto"` to adopt contextual headings;
+falsy values still disable grouping. `<Instance>` and default renderers share the same context. Supply identical
+options during SSR and hydration. See the [heading guide](../../packages/ui/docs/HEADINGS.md) for slots, composition,
+dialogs, limits, and migration.
 
 ---
 
