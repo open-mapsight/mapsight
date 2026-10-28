@@ -16,10 +16,78 @@
 	--ms3-background-color: var(--kern-color-layout-background-default);
 	--ms3-background-color-offset: var(--kern-color-layout-background-hued);
 	--ms3-border-color: var(--kern-color-layout-border);
+	// KERN's semantic roles switch at prefers-color-scheme (no data-theme).
+	--ms3-inverted-primary-color: var(--kern-color-layout-text-inverse);
+	--ms3-secondary-color: var(--kern-color-layout-text-muted);
+	--ms3-tertiary-color: var(--kern-color-action-default);
+	--ms3-theme-color-b: var(--kern-color-action-default);
+	--ms3-background-color-offset-2: var(
+		--kern-color-layout-background-level-2
+	);
+	--ms3-page-background-color: var(--kern-color-layout-background-default);
+	--ms3-background-highlight-color: var(--kern-color-layout-background-hued);
+	--ms3-table-line-color: var(--kern-color-layout-border);
+	--ms3-dots-shadow-color: var(--kern-color-layout-border);
+	--ms3-tooltip-background-color: var(--kern-color-layout-background-default);
+	--ms3-tooltip-border-color: var(--kern-color-layout-border);
+	--ms3-attributions-background-color: var(
+		--kern-color-layout-background-default
+	);
+	--ms3-background-color-app-overlay: var(
+		--kern-color-layout-background-hued
+	);
+	--ms3-map-background-color: var(--kern-color-layout-background-hued);
+	--ms3-hint-default-color: var(--kern-color-layout-text-muted);
+	--ms3-place-actions-fg: var(--kern-color-action-default);
+	--ms3-outbound-fg: var(--kern-color-action-default);
+	--ms3-scrollbar-track-color: var(--kern-color-layout-background-default);
+	--ms3-scrollbar-thumb: var(--kern-color-layout-border);
+	--ms3-scrollbar-thumb-hover: var(--kern-color-layout-text-muted);
+	--ms3-scrollbar-thumb-firefox: var(--kern-color-layout-border);
+	--ms3-scrollbar-thumb-firefox-hover: var(--kern-color-layout-text-muted);
 	--ms3-font-size-base: var(--kern-typography-font-size-medium-static);
 	--ms3-font-size-input: var(--kern-typography-font-size-medium-static);
 	--ms3-font-size-headline: var(--kern-typography-font-size-large-static);
 	--ms3-border-radius: var(--kern-metric-border-radius-default);
+	// TODO: drop with $ms3-future-v8-themedSurfaces — wrapper background: white.
+	&.ms3-wrapper {
+		background: var(--ms3-background-color);
+		color: var(--ms3-foreground-color);
+	}
+	// TODO: drop with $ms3-future-v8-themedSurfaces — attribution's #fff base and #222 text.
+	.ms3-attribution {
+		background: var(--ms3-attributions-background-color);
+		color: var(--ms3-foreground-color);
+		a {
+			color: var(--kern-color-action-default);
+		}
+	}
+	// TODO: drop with $ms3-future-v8-themedSurfaces — mobile rgba(255,255,255,.9).
+	.ms3-map-overlay__button,
+	.ms3-map-overlay-combined-buttons {
+		background: var(--ms3-background-color);
+	}
+	// TODO: drop with $ms3-future-v8-themedSurfaces and $ms3-future-v8-themedIcons.
+	// The fixed blue zoom SVGs lose contrast on the corrected dark surface.
+	.ms3-map-overlay__button--zoom--zoomIn::before,
+	.ms3-map-overlay__button--zoom--zoomOut::before {
+		background: var(--ms3-foreground-color);
+		mask: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-in.svg") center /
+			auto no-repeat;
+	}
+	.ms3-map-overlay__button--zoom--zoomOut::before {
+		mask-image: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-out.svg");
+	}
+	// TODO: drop with $ms3-future-v8-themedSurfaces — disabled pagination #555.
+	.ms3-list-pagination__page--disabled {
+		color: var(--ms3-secondary-color);
+	}
+	// TODO: drop with $ms3-future-v8-themedSurfaces — query #222/#fff/#ccc.
+	.ms3-query-input-with-label__input {
+		color: var(--ms3-foreground-color);
+		background: var(--kern-color-form-input-background);
+		border-color: var(--kern-color-form-input-border);
+	}
 	font-family: var(--kern-typography-font-family-default);
 	position: relative;
 	.service-workspace {
@@ -78,6 +146,8 @@
 	}
 	input:not([type="checkbox"]),
 	select {
+		color: var(--ms3-foreground-color);
+		background: var(--kern-color-form-input-background);
 		font: inherit;
 		padding: 0.5rem;
 		border: 1px solid var(--kern-color-form-input-border);

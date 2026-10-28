@@ -113,6 +113,7 @@ createRoot(document.getElementById("root")!).render(
 					]}
 					gaps={[
 						"G1: Einige Bedienicons sind derzeit noch blau. Die Produktkorrektur erfolgt separat.",
+						"G14: Einige Produktoberflächen setzen einen hellen Hintergrund voraus. Der Host korrigiert sie hier für beide Farbschemata; eine Produktkorrektur ist in Arbeit.",
 						"G2: Mapsight orientiert sich am Viewport, nicht an der Containerbreite. Der Host komponiert Karte und Liste selbst.",
 						"G3: Keine freie Adresssuche; Entfernung nur ab hinterlegtem Ausgangspunkt oder freigegebenem Gerätestandort.",
 						"G5: Detailinhalte sind HTML aus den lokalen Demodaten, kein kommunales Fachverfahren.",

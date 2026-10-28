@@ -1,3 +1,7 @@
+:root {
+	/* KERN 2.8 follows the OS media query; let native controls follow too. */
+	color-scheme: light dark;
+}
 body {
 	margin: 0;
 	font-family: "Fira Sans", sans-serif;
