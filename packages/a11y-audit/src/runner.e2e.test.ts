@@ -3,8 +3,10 @@ import {tmpdir} from "node:os";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 
+import {chromium} from "playwright";
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
 
+import {installInPage} from "./page/instrument.ts";
 import {runAudit, writeReport} from "./runner.ts";
 import type {AuditReport, Finding} from "./types.ts";
 
@@ -139,4 +141,43 @@ describe("runAudit on the defects fixture", () => {
 		const flashes = report.coverage.find((row) => row.sc === "2.3.1");
 		expect(flashes?.result).toBe("incomplete");
 	});
+});
+
+it("clips normal and captured fixed content, but not viewport-fixed chrome", async () => {
+	const browser = await chromium.launch({
+		executablePath: process.env.MAPSIGHT_A11Y_BROWSER,
+	});
+	try {
+		const page = await browser.newPage();
+		await page.setContent(`<div id="clip" style="margin-top:200px;height:40px;overflow:hidden">
+			<div id="fixed" style="position:fixed;top:0;left:0;width:100px;height:40px"><button>Visible</button></div>
+			<button id="normal" style="margin-top:100px">Clipped</button>
+		</div>`);
+		await page.evaluate(installInPage, {
+			root: "body",
+			owners: [],
+			hostOwner: "fixture",
+			mapViewport: ".ol-viewport",
+			mapControls: "button",
+		});
+		const visibility = () =>
+			page.evaluate(() => ({
+				fixed: window.__mapsightA11y!.visibleRect(
+					document.querySelector("#fixed button")!,
+				),
+				normal: window.__mapsightA11y!.visibleRect(
+					document.querySelector("#normal")!,
+				),
+			}));
+		expect((await visibility()).fixed).not.toBeNull();
+		expect((await visibility()).normal).toBeNull();
+		await page.locator("#clip").evaluate((el: HTMLElement) => {
+			el.style.transform = "translateZ(0)";
+			el.style.position = "relative";
+			el.style.top = "-240px";
+		});
+		expect((await visibility()).fixed).toBeNull();
+	} finally {
+		await browser.close();
+	}
 });

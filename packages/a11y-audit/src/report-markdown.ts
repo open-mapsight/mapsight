@@ -281,6 +281,10 @@ export function renderMarkdown(report: AuditReport): string {
 						`- ${target.id} · ${state.viewport} · ${state.scenario}: ${state.steps.length ? `steps: ${state.steps.join(" → ")}. ` : ""}${state.announcements.length ? `announced: ${state.announcements.map((text) => `“${text}”`).join(", ")}` : "no live-region announcements"}`,
 					]
 				: []),
+			...(state.notes ?? []).map(
+				(note) =>
+					`- ${target.id} · ${state.viewport} · ${state.scenario}: ${note}`,
+			),
 			...state.errors.map(
 				(error) =>
 					`- ${target.id} · ${state.viewport} · ${state.scenario}: ⚠ ${error}`,

@@ -54,3 +54,7 @@ lerna-debug.log*
 
 # AI stuff (for now)
 /AGENTS.md
+
+# Local closeout evidence and generated accessibility reports
+/.scratch/
+/apps/showcase/a11y-report/

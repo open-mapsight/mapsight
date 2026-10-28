@@ -50,6 +50,22 @@ const config: AuditConfig = {
 					expectFocusWithin: ".ms3-feature-selection-info",
 					checks: ["axe", "keyboard"],
 				},
+				{
+					id: "select-and-close",
+					title: "Close details and return to the list",
+					viewports: ["desktop", "mobile"],
+					run: async (context) => {
+						await selectFirstListEntry(context);
+						context.step("close details");
+						await context.root
+							.getByRole("button", {
+								name: "Informationsdialog schließen",
+							})
+							.click();
+					},
+					expectFocusWithin: ".ms3-list",
+					checks: ["axe", "keyboard"],
+				},
 			],
 		},
 		{

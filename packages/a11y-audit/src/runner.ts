@@ -80,8 +80,12 @@ async function waitUntilReady(
 	page: Page,
 	target: TargetConfig,
 	url: string,
+	navigationTimeoutMs: number,
 ): Promise<void> {
-	await page.goto(url, {waitUntil: "domcontentloaded", timeout: 60_000});
+	await page.goto(url, {
+		waitUntil: "domcontentloaded",
+		timeout: navigationTimeoutMs,
+	});
 	await page
 		.locator(target.root ?? "body")
 		.first()
@@ -151,7 +155,13 @@ async function auditViewport(
 				target,
 				viewport,
 				reload: async () => {
-					await waitUntilReady(page, target, url);
+					await waitUntilReady(
+						page,
+						target,
+						url,
+						target.navigationTimeoutMs ??
+							config.navigationTimeoutMs,
+					);
 				},
 				report: (raw) =>
 					entries.push({
@@ -160,7 +170,10 @@ async function auditViewport(
 						scenario: scenarioId,
 						viewport: viewport.id,
 					}),
-				note: (message) => state.errors.push(message),
+				note: (message, isError = true) =>
+					(isError ? state.errors : (state.notes ??= [])).push(
+						message,
+					),
 			};
 			const attempt = async (label: string, run: () => Promise<void>) => {
 				try {
@@ -174,7 +187,12 @@ async function auditViewport(
 			pageErrors.length = 0;
 			log(`${target.id} · ${viewport.id} · ${scenarioId}`);
 			try {
-				await waitUntilReady(page, target, url);
+				await waitUntilReady(
+					page,
+					target,
+					url,
+					target.navigationTimeoutMs ?? config.navigationTimeoutMs,
+				);
 			} catch (error) {
 				state.errors.push(
 					`load: ${(error as Error).message.split("\n")[0]}`,
@@ -263,7 +281,6 @@ async function auditViewport(
 					}
 				}
 				if (failed) {
-					states.push(state);
 					return state;
 				}
 			}

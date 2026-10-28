@@ -13,6 +13,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {Heading, type HeadingOptions, HeadingsProvider} from "../../headings";
 import {setDocumentLanguage} from "../../helpers/i18n";
+import BottomSheet from "../bottom-sheet";
 import FeatureSelectionInfo from "./index";
 
 vi.mock("../feature-details-content", () => ({
@@ -128,6 +129,33 @@ describe("selection details focus", () => {
 		const id = region.getAttribute("aria-labelledby");
 		expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1);
 		expect(screen.getByRole("heading", {name: "Place"}).id).toBe(id);
+	});
+
+	it("composes details in a named sheet without duplicate landmarks or banners", () => {
+		const store = configureStore({
+			reducer: () => ({
+				app: {featureSelectionInfo: {stickyHeader: true}},
+			}),
+		});
+		render(
+			<Provider store={store}>
+				<BottomSheet label="Details" title="Place" initialFocus>
+					<FeatureSelectionInfo
+						feature={feature}
+						enableKeyboardControl={false}
+						landmark={false}
+					/>
+				</BottomSheet>
+			</Provider>,
+		);
+		expect(screen.getAllByRole("region", {name: "Place"})).toHaveLength(1);
+		expect(screen.queryByRole("banner")).toBeNull();
+		expect(
+			screen.getByRole("heading", {name: "Place", level: 3}),
+		).toBeTruthy();
+		expect(document.activeElement).toBe(
+			screen.getByRole("heading", {name: "Place", level: 2}),
+		);
 	});
 
 	it("traps focus only when trapFocus opts in", async () => {
