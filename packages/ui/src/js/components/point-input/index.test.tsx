@@ -18,6 +18,7 @@ import {
 import type {Feature as GeoJsonFeature, Point as GeoJsonPoint} from "geojson";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {setData} from "@mapsight/core/lib/feature-sources/actions";
 import type {FeatureSourceState} from "@mapsight/core/lib/feature-sources/types";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type Draw from "@mapsight/core/lib/map/lib/DrawInteraction";
@@ -46,7 +47,7 @@ afterEach(() => {
 	setDocumentLanguage("de");
 });
 
-function setup() {
+function setup(projection = "EPSG:4326") {
 	di.injectDefinitions([
 		DrawDefinition,
 		ModifyDefinition,
@@ -75,6 +76,7 @@ function setup() {
 	);
 	const store = context.store!;
 	new EditorMixin(store, "pointInput", {
+		projection,
 		draw: {active: true, type: "Point", replacePrevious: true},
 	});
 	const map = (store.getController("map") as MapController).getMap()!;
@@ -95,6 +97,7 @@ function setup() {
 		<Provider store={store}>
 			<PointInputControls
 				featureSourceId="pointInput_featureSource"
+				featureProjection={projection}
 				enabled={enabled}
 			/>
 		</Provider>
@@ -234,3 +237,81 @@ describe("PointInputControls", () => {
 		expect(features()![0]!.geometry.coordinates[1]).toBeCloseTo(51);
 	});
 });
+
+it.each(["EPSG:3857", "EPSG:4326"])(
+	"round-trips point coordinates and collection metadata through the real source reader (%s)",
+	(projection) => {
+		const {map, store, tree, features} = setup(projection);
+		const data = {
+			type: "FeatureCollection" as const,
+			crs: {type: "name", properties: {name: projection}},
+			metadata: {editor: "host"},
+			features: [],
+		};
+		store.dispatch(
+			setData("featureSources", "pointInput_featureSource", data),
+		);
+		render(tree());
+		fireEvent.click(
+			screen.getByRole("button", {name: "Kartenmitte übernehmen"}),
+		);
+		const current = (
+			store.getState() as unknown as {
+				featureSources: Record<string, FeatureSourceState>;
+			}
+		).featureSources.pointInput_featureSource!.data!;
+		expect(current).toMatchObject({crs: data.crs, metadata: data.metadata});
+		const expected = fromLonLat([10.52, 52.27]);
+		const layer = map
+			.getAllLayers()
+			.find(
+				(layer) => getIdForLayer(layer) === "pointInput_layer",
+			) as VectorLayer<VectorSource>;
+		map.renderSync();
+		const coordinates = (
+			layer.getSource()!.getFeatures()[0]!.getGeometry() as Point
+		).getCoordinates();
+		expect(coordinates.every(Number.isFinite)).toBe(true);
+		expect(coordinates[0]).toBeCloseTo(expected[0]!);
+		expect(coordinates[1]).toBeCloseTo(expected[1]!);
+		if (projection === "EPSG:3857")
+			expect(features()![0]!.geometry.coordinates).toEqual(expected);
+		else expect(features()![0]!.geometry.coordinates[0]).toBeCloseTo(10.52);
+	},
+);
+
+it.each([undefined, "EPSG:4326"])(
+	"writes a correct CRS for a non-geographic source with prior CRS %s",
+	(priorCrs) => {
+		const {map, store, tree} = setup("EPSG:3857");
+		store.dispatch(
+			setData("featureSources", "pointInput_featureSource", {
+				type: "FeatureCollection",
+				...(priorCrs
+					? {crs: {type: "name", properties: {name: priorCrs}}}
+					: {}),
+				features: [],
+			}),
+		);
+		render(tree());
+		fireEvent.click(
+			screen.getByRole("button", {name: "Kartenmitte übernehmen"}),
+		);
+		map.renderSync();
+		const layer = map
+			.getAllLayers()
+			.find(
+				(layer) => getIdForLayer(layer) === "pointInput_layer",
+			) as VectorLayer<VectorSource>;
+		const point = layer
+			.getSource()!
+			.getFeatures()[0]!
+			.getGeometry() as Point;
+		expect(point.getCoordinates()[0]).toBeCloseTo(
+			map.getView().getCenter()![0]!,
+		);
+		expect(point.getCoordinates()[1]).toBeCloseTo(
+			map.getView().getCenter()![1]!,
+		);
+	},
+);

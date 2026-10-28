@@ -2,10 +2,11 @@ import {useCallback, useEffect, useId, useState} from "react";
 import {useStore} from "react-redux";
 
 import type OlMap from "ol/Map";
-import {getUserProjection, transform} from "ol/proj";
+import {get as getProjection, getUserProjection, transform} from "ol/proj";
 import type {ProjectionLike} from "ol/proj";
 
 import {setData} from "@mapsight/core/lib/feature-sources/actions";
+import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {EnhancedStore} from "@mapsight/core/types";
 
@@ -58,11 +59,21 @@ export default function PointInputControls({
 		if (!enabled) return;
 		const coordinates = centerInProjection(map, featureProjection);
 		if (!coordinates) return;
+		const source = (
+			store.getState()[featureSourcesControllerName] as
+				FeatureSourcesState | undefined
+		)?.[featureSourceId];
+		const projection = getProjection(featureProjection);
+		if (!projection) return;
 		// OL Draw.appendCoordinates supports lines/polygons only. Commit a Point
 		// through the same Redux source used by the pointer editor instead.
 		store.dispatch(
 			setData(featureSourcesControllerName, featureSourceId, {
+				...source?.data,
 				type: "FeatureCollection",
+				// The reader uses collection CRS before its fallback projection. Keep
+				// metadata, but always describe the coordinates actually written.
+				crs: {type: "name", properties: {name: projection.getCode()}},
 				features: [
 					{
 						type: "Feature",

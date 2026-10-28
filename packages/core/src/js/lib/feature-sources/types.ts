@@ -9,6 +9,8 @@ export type {FeatureSourceConfig, FeatureSourcesConfig};
 
 export type FeatureSourceData = {
 	type?: "FeatureCollection";
+	/** Optional legacy GeoJSON CRS, read by OL before the source fallback projection. */
+	crs?: unknown;
 	features?: Array<Feature>;
 };
 

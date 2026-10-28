@@ -18,7 +18,11 @@ the map normally. The status reports latitude/longitude and confirmation.
 
 Confirmation replaces the source's FeatureCollection with a single Point,
 projected from the actual OL view/user projection into `featureProjection`
-(default EPSG:4326). The source must be dedicated to this one-point input.
+(default EPSG:4326). Set this to the editor source projection, including for
+non-geographic sources. Confirmation preserves collection metadata and writes a
+named GeoJSON `crs` for the coordinates actually committed, so the source reader
+can project them back into the map. The source must be dedicated to this
+one-point input.
 `mapControllerName`, `featureSourcesControllerName` and `featureId` can be set for
 custom controllers and IDs. Disable/unmount these controls outside point-input
 mode; multiple simultaneously enabled editors on the same target are unsupported.
@@ -28,8 +32,15 @@ This uses the same Redux source as pointer input, so host form observers receive
 the result. It deliberately does not synthesize pointer events or `drawend`:
 OL's public `Draw.appendCoordinates()` supports lines/polygons, not Points.
 Hosts depending on `drawend` need to observe the point source for both paths.
-The component itself does not modify host form fields. Restore the initial point
-as usual before mounting; panning alone never changes that value.
+The component itself does not modify host form fields. For embedding inside a CMS
+`<form>`, set `createOptions.uiState.searchRenderForm: false` on both server and
+client. SearchOverlay then renders its search as a `div`, including in its mobile
+dialog, preventing invalid nested forms and hydration replacement. Direct Search
+embeddings can use `renderForm={false}`; SearchOverlay also accepts that prop.
+Enter in the search input and the search button perform the address/place search
+without submitting the host form. The host's explicit submit button remains usable.
+The default remains a search form for existing integrations.
+Restore the initial point as usual before mounting; panning alone never changes that value.
 
 The component reads DOM only in effects, binds Enter to the current map target,
 ignores nested controls/modifiers/repeat, and removes listeners/descriptions on
@@ -38,9 +49,12 @@ confirmation button without dispatching; hydration enables it after mount. The
 keyboard enhancement does not change existing editor/tool defaults.
 
 Core map animate/fit and feature-centering methods honor reduced motion at
-execution time. Enabling reduce motion during a core transition cancels it and
-settles its destination with zero duration. Idle/detached/replaced views release
-the preference listener. Native OL keyboard pan/zoom choose a zero-duration OL
+execution time. Enabling reduced motion completes the actual pending OL animation
+steps with zero duration, retaining the original destination and native callback.
+Parallel/serial requests finish in completion order; unrelated direct OL work is
+not cancelled. The small adapter for OL's internal animation queue is covered by
+real View/Map regression tests and must be checked when upgrading OL.
+Idle/detached/replaced views release the preference listener. Native OL keyboard pan/zoom choose a zero-duration OL
 handler per key event while preserving configured conditions, deltas and normal
 durations otherwise. UI scroll requests use `instant` under reduced motion
 (`auto` could inherit CSS smooth scrolling). No preference is serialized into SSR
@@ -49,8 +63,13 @@ state. Custom OL interactions, kinetic pointer movement and external direct
 
 Automated evidence: core tests exercise queued/in-flight preference changes,
 actions, geometry/feature fits, centering, native keyboard duration and no-DOM
-execution. UI tests use an actual OL map and EditorMixin source to pan, confirm,
+execution, plus callback counts, original fit destinations, concurrent/serial
+requests and preservation of unrelated animations. UI tests use an actual OL map
+and EditorMixin source to pan, confirm,
 replace a pointer-created point, validate projections, isolate focus and remount,
-and render without a DOM. These are programmatic checks, not manual browser or
+and render without a DOM. Search tests parse a complete outer CMS form,
+hydrate the real SearchOverlay without replacing its SSR nodes, select a street
+result and check Enter suppression, hidden field ownership and explicit submission.
+These are programmatic checks, not manual browser or
 screen-reader acceptance. Host form/CMS integration, overlay placement on small
 maps and manual assistive-technology checks remain host release gates.

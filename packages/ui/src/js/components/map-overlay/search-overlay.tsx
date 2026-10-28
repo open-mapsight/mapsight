@@ -5,11 +5,16 @@ import {translate} from "../../helpers/i18n";
 import {
 	haveSearchInMapSelector,
 	isViewMobileOrMapOnlySelector,
+	searchRenderFormSelector,
 } from "../../store/selectors";
 import Modal from "../modal";
 import Search from "../search";
 
-function SearchOverlay() {
+export type SearchOverlayProps = {renderForm?: boolean};
+
+function SearchOverlay({renderForm}: SearchOverlayProps) {
+	const configuredRenderForm = useSelector(searchRenderFormSelector);
+	const searchProps = {renderForm: renderForm ?? configuredRenderForm};
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const searchInMap = useSelector(haveSearchInMapSelector);
@@ -56,12 +61,12 @@ function SearchOverlay() {
 					headline={translate("ui.map-overlay.search.modal.headline")}
 					onRequestClose={closeSearch}
 				>
-					<Search closeSearch={closeSearch} />
+					<Search {...searchProps} closeSearch={closeSearch} />
 				</Modal>
 			</div>
 		);
 	} else {
-		children = <Search />;
+		children = <Search {...searchProps} />;
 	}
 
 	return (

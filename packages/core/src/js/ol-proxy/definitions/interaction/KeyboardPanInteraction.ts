@@ -1,6 +1,6 @@
 import KeyboardPan from "ol/interaction/KeyboardPan";
 
-import {getMotionPreference} from "@/lib/map/lib/runWithMotionPreference";
+import runWithMotionPreference from "@/lib/map/lib/runWithMotionPreference";
 import type {Definition} from "@/ol-proxy";
 
 import base from "./_base";
@@ -14,9 +14,13 @@ class MotionAwareKeyboardPan extends KeyboardPan {
 		this.instant = new KeyboardPan({...options, duration: 0});
 	}
 	override handleEvent(...args: Parameters<KeyboardPan["handleEvent"]>) {
-		return getMotionPreference()?.matches
-			? this.instant.handleEvent(...args)
-			: super.handleEvent(...args);
+		let propagate = true;
+		runWithMotionPreference(args[0].map, (reduced) => {
+			propagate = reduced
+				? this.instant.handleEvent(...args)
+				: super.handleEvent(...args);
+		});
+		return propagate;
 	}
 }
 

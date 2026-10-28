@@ -245,6 +245,9 @@ export const searchResultFeaturesSelector: Selector<
 	MapsightUiFeature[]
 > = createSelector(searchResultSelector, getSearchResultFeatures);
 
+export const searchRenderFormSelector = (state: RootStateSlice) =>
+	state.app.searchRenderForm !== false;
+
 export const haveSearchInMapSelector = (state: RootStateSlice) =>
 	state.app.searchInMap;
 export const isEmbeddedMapSelector = (state: RootStateSlice) =>

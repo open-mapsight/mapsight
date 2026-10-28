@@ -34,17 +34,11 @@ function motionOptions<T extends {duration?: number}>(
 
 export default class WithAnimations extends WithMap {
 	_pendingAnimation: (() => void) | null = null;
-	private _stopMotionPreference?: () => void;
 
 	_enqueueAnimation(animationFunction: AnimationFunction) {
 		const map = this.getMap();
 		this._pendingAnimation = () => {
-			this._stopMotionPreference?.();
-			if (map)
-				this._stopMotionPreference = runWithMotionPreference(
-					map,
-					animationFunction,
-				);
+			if (map) runWithMotionPreference(map, animationFunction);
 		};
 		map?.render(); // trigger render to ensure the animation is fulfilled timely
 	}
