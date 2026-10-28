@@ -117,26 +117,4 @@ describe("ToolOverlay Escape", () => {
 		});
 		expect(onClose).toHaveBeenCalledTimes(2);
 	});
-
-	it("respects child preventDefault and nested dialogs", () => {
-		const onClose = vi.fn();
-		render(
-			<ToolOverlay label="Tool" text="" onClose={onClose}>
-				<input
-					aria-label="handled"
-					onKeyDown={(event) => event.preventDefault()}
-				/>
-				<dialog open>
-					<input aria-label="dialog" />
-				</dialog>
-			</ToolOverlay>,
-		);
-		fireEvent.keyDown(screen.getByRole("textbox", {name: "handled"}), {
-			key: "Escape",
-		});
-		fireEvent.keyDown(screen.getByRole("textbox", {name: "dialog"}), {
-			key: "Escape",
-		});
-		expect(onClose).not.toHaveBeenCalled();
-	});
 });

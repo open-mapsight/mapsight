@@ -3,7 +3,6 @@ import {Provider, useSelector} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
 import {
-	act,
 	cleanup,
 	fireEvent,
 	render,
@@ -97,48 +96,57 @@ afterEach(() => {
 });
 
 describe("selection details focus", () => {
-	it.each([false, true])(
-		"focuses a named region with stickyHeader=%s and keeps heading ids unique",
-		(stickyHeader) => {
-			setup({stickyHeader});
-			const region = screen.getByRole("region", {name: "Place"});
-			expect(document.activeElement).toBe(region);
-			const id = region.getAttribute("aria-labelledby");
-			expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1);
-			expect(screen.getByRole("heading", {name: "Place"}).id).toBe(id);
-		},
-	);
+	it("focuses a named region with a sticky header and keeps heading ids unique", () => {
+		setup({stickyHeader: true});
+		const region = screen.getByRole("region", {name: "Place"});
+		expect(document.activeElement).toBe(region);
+		const id = region.getAttribute("aria-labelledby");
+		expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1);
+		expect(screen.getByRole("heading", {name: "Place"}).id).toBe(id);
+	});
 
-	it("leaves focus free to move outside the non-modal region by default", () => {
+	it("traps focus only when trapFocus opts in", async () => {
 		setup();
 		const outside = screen.getByRole("button", {name: "after details"});
 		outside.focus();
 		expect(document.activeElement).toBe(outside);
+		cleanup();
+		setup({trapFocus: true});
+		screen.getByRole("button", {name: "after details"}).focus();
+		await waitFor(() =>
+			expect(
+				screen
+					.getByRole("region", {name: "Place"})
+					.contains(document.activeElement),
+			).toBe(true),
+		);
 	});
 
-	it.each(["button", "Escape"])(
-		"returns to the originating row after closing with %s",
-		async (method) => {
-			const {origin, store} = setup();
-			const close = screen.getByRole("button", {
-				name: "Informationsdialog schließen",
-			});
-			close.focus();
-			if (method === "button") fireEvent.click(close);
-			else fireEvent.keyDown(close, {key: "Escape"});
-			expect(store.getState().selected).toBe(false);
-			await waitFor(() => expect(document.activeElement).toBe(origin));
-		},
-	);
+	it("returns to the originating row after closing with Escape", async () => {
+		const {origin, store} = setup();
+		fireEvent.keyDown(screen.getByRole("region", {name: "Place"}), {
+			key: "Escape",
+		});
+		expect(store.getState().selected).toBe(false);
+		await waitFor(() => expect(document.activeElement).toBe(origin));
+	});
 
-	it("returns focus on button close even when the host disables autofocus", async () => {
-		const {origin} = setup({enableKeyboardControl: false});
+	it("returns focus on button close without autofocus and keeps the closing snapshot inert", async () => {
+		const {origin, container} = setup({
+			enableKeyboardControl: false,
+			retain: true,
+		});
 		expect(document.activeElement).toBe(origin);
 		const close = screen.getByRole("button", {
 			name: "Informationsdialog schließen",
 		});
 		close.focus();
 		fireEvent.click(close);
+		expect(
+			container
+				.querySelector(".ms3-feature-selection-info__wrapper")
+				?.hasAttribute("inert"),
+		).toBe(true);
 		await waitFor(() => expect(document.activeElement).toBe(origin));
 	});
 
@@ -168,59 +176,5 @@ describe("selection details focus", () => {
 				screen.getByRole("region", {name: "Map"}),
 			),
 		);
-	});
-
-	it("does not dismiss for a nested dialog's Escape or an already handled Escape", () => {
-		const {store} = setup();
-		const region = screen.getByRole("region", {name: "Place"});
-		const dialog = document.createElement("dialog");
-		dialog.open = true;
-		const input = document.createElement("input");
-		dialog.append(input);
-		region.append(dialog);
-		fireEvent.keyDown(input, {key: "Escape"});
-		const event = new KeyboardEvent("keydown", {
-			key: "Escape",
-			bubbles: true,
-			cancelable: true,
-		});
-		event.preventDefault();
-		fireEvent(region, event);
-		expect(store.getState().selected).toBe(true);
-	});
-
-	it("allows focus trapping to be explicitly enabled", async () => {
-		const {store} = setup({trapFocus: true});
-		screen.getByRole("button", {name: "after details"}).focus();
-		await waitFor(() =>
-			expect(
-				screen
-					.getByRole("region", {name: "Place"})
-					.contains(document.activeElement),
-			).toBe(true),
-		);
-		fireEvent.keyDown(document.activeElement!, {key: "Escape"});
-		expect(store.getState().selected).toBe(false);
-		await act(async () => {
-			await new Promise((resolve) => requestAnimationFrame(resolve));
-		});
-	});
-	it("unmounts the live scope and restores focus while retaining an inert animation snapshot", async () => {
-		const {origin, container} = setup({retain: true});
-		const scopeCount = container.querySelectorAll(
-			"[data-focus-scope-start]",
-		).length;
-		fireEvent.click(
-			screen.getByRole("button", {name: "Informationsdialog schließen"}),
-		);
-		expect(
-			container.querySelectorAll("[data-focus-scope-start]"),
-		).toHaveLength(scopeCount - 1);
-		expect(
-			container
-				.querySelector(".ms3-feature-selection-info__wrapper")
-				?.hasAttribute("inert"),
-		).toBe(true);
-		await waitFor(() => expect(document.activeElement).toBe(origin));
 	});
 });

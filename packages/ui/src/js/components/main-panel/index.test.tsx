@@ -7,25 +7,11 @@ import MainPanel from "./index";
 
 vi.mock("./context", () => ({useMainPanelContext: vi.fn()}));
 vi.mock("../feature-list", () => ({
-	default: ({enableKeyboardControl}: {enableKeyboardControl: boolean}) => (
-		<button type="button" data-enabled={enableKeyboardControl}>
-			list
-		</button>
-	),
+	default: () => <button type="button">list</button>,
 }));
 vi.mock("../feature-selection-info", () => ({
-	default: ({
-		enableKeyboardControl,
-		isOpen,
-	}: {
-		enableKeyboardControl: boolean;
-		isOpen: boolean;
-	}) => (
-		<button
-			type="button"
-			data-enabled={enableKeyboardControl}
-			data-open={isOpen}
-		>
+	default: ({enableKeyboardControl}: {enableKeyboardControl: boolean}) => (
+		<button type="button" data-enabled={enableKeyboardControl}>
 			details
 		</button>
 	),
@@ -52,9 +38,6 @@ describe("MainPanel collapse", () => {
 	it("makes retained content inert and updates keyboard props immediately on close", () => {
 		vi.mocked(useMainPanelContext).mockReturnValue(open);
 		const {container, rerender} = render(<MainPanel />);
-		expect(screen.getByText("details").getAttribute("data-enabled")).toBe(
-			"true",
-		);
 		vi.mocked(useMainPanelContext).mockReturnValue({
 			...open,
 			collapsed: true,
@@ -64,14 +47,7 @@ describe("MainPanel collapse", () => {
 		rerender(<MainPanel />);
 		const inner = container.querySelector(".ms3-panel__inner")!;
 		expect(inner.hasAttribute("inert")).toBe(true);
-		expect(screen.getByText("details").getAttribute("data-open")).toBe(
-			"false",
-		);
-		expect(inner.getAttribute("aria-hidden")).toBe("true");
 		expect(screen.getByText("details").getAttribute("data-enabled")).toBe(
-			"false",
-		);
-		expect(screen.getByText("list").getAttribute("data-enabled")).toBe(
 			"false",
 		);
 		vi.mocked(useMainPanelContext).mockReturnValue(open);

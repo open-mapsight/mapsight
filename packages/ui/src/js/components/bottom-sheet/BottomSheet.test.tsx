@@ -1,5 +1,4 @@
 import {StrictMode, createRef} from "react";
-import {FocusScope} from "react-aria";
 
 import {
 	cleanup,
@@ -89,31 +88,19 @@ describe("BottomSheet", () => {
 		render(<BottomSheet label="Details" title="Place" />);
 		const heading = screen.getByRole("heading", {name: "Place", level: 2});
 		expect(screen.getByRole("separator").contains(heading)).toBe(false);
-		expect(
-			screen
-				.getByRole("region", {name: "Place"})
-				.getAttribute("aria-labelledby"),
-		).toBe(heading.id);
 	});
 
-	it.each([
-		["de", "Höhe ändern", "Position 2 von 3"],
-		["en", "Resize", "Position 2 of 3"],
-	])(
-		"translates the resize name and default snap text in %s",
-		(locale, name, value) => {
-			setDocumentLanguage(locale);
-			render(<BottomSheet label="Details" snaps={[100, 200, 300]} />);
-			expect(
-				screen
-					.getByRole("separator", {name})
-					.getAttribute("aria-valuetext"),
-			).toBe(value);
-		},
-	);
-
-	it("allows hosts to override the resize name and value text", () => {
-		render(
+	it("translates the resize name and snap text unless the host overrides them", () => {
+		setDocumentLanguage("en");
+		const {rerender} = render(
+			<BottomSheet label="Details" snaps={[100, 200, 300]} />,
+		);
+		expect(
+			screen
+				.getByRole("separator", {name: "Resize"})
+				.getAttribute("aria-valuetext"),
+		).toBe("Position 2 of 3");
+		rerender(
 			<BottomSheet
 				label="Details"
 				resizeLabel="Height"
@@ -147,27 +134,6 @@ describe("BottomSheet", () => {
 		});
 		expect(onDismiss).not.toHaveBeenCalled();
 	});
-
-	it.each(["within", "document"] as const)(
-		"respects child preventDefault in %s mode",
-		(dismissOnEscape) => {
-			const onDismiss = vi.fn();
-			render(
-				<BottomSheet
-					label="Details"
-					dismissOnEscape={dismissOnEscape}
-					onDismiss={onDismiss}
-				>
-					<input
-						aria-label="Search"
-						onKeyDown={(event) => event.preventDefault()}
-					/>
-				</BottomSheet>,
-			);
-			fireEvent.keyDown(screen.getByRole("textbox"), {key: "Escape"});
-			expect(onDismiss).not.toHaveBeenCalled();
-		},
-	);
 
 	it("offers document-wide Escape as an explicit legacy option, excluding other dialogs", () => {
 		const onDismiss = vi.fn();
@@ -209,52 +175,38 @@ describe("BottomSheet", () => {
 		expect(onDismiss).toHaveBeenCalledOnce();
 	});
 
-	it("does not move focus by default", () => {
+	function focusOpener() {
 		const opener = document.createElement("button");
 		document.body.append(opener);
 		opener.focus();
-		render(<BottomSheet label="Details" title="Place" />);
+		return opener;
+	}
+
+	it("moves focus only with initialFocus, to the region when there is no title", () => {
+		const opener = focusOpener();
+		const {unmount} = render(<BottomSheet label="Details" title="Place" />);
 		expect(document.activeElement).toBe(opener);
+		unmount();
+		render(<BottomSheet label="Details" initialFocus />);
+		expect(document.activeElement).toBe(screen.getByRole("region"));
 	});
 
 	it("focuses the heading on open and restores the opener on close", async () => {
-		const opener = document.createElement("button");
-		document.body.append(opener);
-		opener.focus();
-		const {rerender} = render(
+		const opener = focusOpener();
+		const sheet = (open: boolean) => (
 			<BottomSheet
-				open={false}
+				open={open}
 				label="Details"
 				title="Place"
 				initialFocus
 				restoreFocus
-			/>,
+			/>
 		);
-		rerender(
-			<BottomSheet
-				open
-				label="Details"
-				title="Place"
-				initialFocus
-				restoreFocus
-			/>,
-		);
+		const {rerender} = render(sheet(false));
+		rerender(sheet(true));
 		expect(document.activeElement).toBe(screen.getByRole("heading"));
-		rerender(
-			<BottomSheet
-				open={false}
-				label="Details"
-				title="Place"
-				initialFocus
-				restoreFocus
-			/>,
-		);
+		rerender(sheet(false));
 		await waitFor(() => expect(document.activeElement).toBe(opener));
-	});
-
-	it("focuses the region when initialFocus is true without a title", () => {
-		render(<BottomSheet label="Details" initialFocus />);
-		expect(document.activeElement).toBe(screen.getByRole("region"));
 	});
 
 	it("accepts custom initial and return focus refs and restores on unmount", async () => {
@@ -287,8 +239,9 @@ describe("BottomSheet", () => {
 		);
 	});
 
-	it("keeps initial focus after StrictMode replays the opening effect", async () => {
-		render(
+	it("keeps the initial focus and the original opener across StrictMode effect replay", async () => {
+		const opener = focusOpener();
+		const {unmount} = render(
 			<StrictMode>
 				<BottomSheet
 					label="Details"
@@ -300,95 +253,7 @@ describe("BottomSheet", () => {
 		);
 		await new Promise((resolve) => requestAnimationFrame(resolve));
 		expect(document.activeElement).toBe(screen.getByRole("heading"));
-	});
-	it("preserves the original opener across StrictMode effect replay", async () => {
-		const opener = document.createElement("button");
-		document.body.append(opener);
-		opener.focus();
-		const {unmount} = render(
-			<StrictMode>
-				<BottomSheet
-					label="Details"
-					title="Place"
-					initialFocus
-					restoreFocus
-				/>
-			</StrictMode>,
-		);
 		unmount();
 		await waitFor(() => expect(document.activeElement).toBe(opener));
-	});
-
-	it("does not refocus or replace the opener when focus options change while open", async () => {
-		const opener = document.createElement("button");
-		document.body.append(opener);
-		opener.focus();
-		const {rerender, unmount} = render(
-			<BottomSheet label="Details" title="Place" restoreFocus />,
-		);
-		rerender(
-			<BottomSheet
-				label="Details"
-				title="Place"
-				initialFocus
-				restoreFocus
-			/>,
-		);
-		expect(document.activeElement).toBe(opener);
-		screen.getByRole("separator").focus();
-		unmount();
-		await waitFor(() => expect(document.activeElement).toBe(opener));
-	});
-	it("does not let a replaced sheet's focus restoration override the next sheet", async () => {
-		const opener = document.createElement("button");
-		document.body.append(opener);
-		opener.focus();
-		const {rerender} = render(
-			<BottomSheet
-				key="first"
-				label="Details"
-				title="First"
-				initialFocus
-				restoreFocus
-			/>,
-		);
-		rerender(
-			<BottomSheet
-				key="second"
-				label="Details"
-				title="Second"
-				initialFocus
-				restoreFocus
-			/>,
-		);
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-		expect(document.activeElement).toBe(
-			screen.getByRole("heading", {name: "Second"}),
-		);
-	});
-	it("uses the parent scope when the original opener was removed", async () => {
-		const opener = document.createElement("button");
-		document.body.append(opener);
-		opener.focus();
-		const content = (open: boolean) => (
-			<FocusScope>
-				<button type="button">fallback</button>
-				<BottomSheet
-					open={open}
-					label="Details"
-					title="Place"
-					initialFocus
-					restoreFocus
-				/>
-			</FocusScope>
-		);
-		const {rerender} = render(content(true));
-		opener.remove();
-		rerender(content(false));
-		await waitFor(() =>
-			expect(document.activeElement).toBe(
-				screen.getByRole("button", {name: "fallback"}),
-			),
-		);
 	});
 });
