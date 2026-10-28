@@ -53,7 +53,9 @@ export default function useFeatureListItemScrollAndFocus(
 			ref.current.scrollIntoView({block: "start", behavior: "smooth"});
 
 			if (enableKeyboardControl) {
-				ref.current.focus({preventScroll: true});
+				ref.current
+					.querySelector<HTMLElement>("[data-ms3-list-nav]")
+					?.focus({preventScroll: true});
 			}
 		}
 	}, [

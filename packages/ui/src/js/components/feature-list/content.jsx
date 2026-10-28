@@ -8,7 +8,7 @@ const FeatureListContent = memo(
 			status,
 			children,
 			showFeatureListInfo: _showFeatureListInfo,
-			as: T = "div",
+			as: T = "ul",
 			emptyAs,
 			featureSourceId,
 			...attributes
@@ -20,7 +20,10 @@ const FeatureListContent = memo(
 				featureSourceId !== undefined &&
 				featureSourceId !== "";
 			content = (
-				<FeatureListEmptyMessage as={emptyAs} hasSource={hasSource} />
+				<FeatureListEmptyMessage
+					as={emptyAs || (T === "ul" || T === "ol" ? "li" : "div")}
+					hasSource={hasSource}
+				/>
 			);
 		}
 

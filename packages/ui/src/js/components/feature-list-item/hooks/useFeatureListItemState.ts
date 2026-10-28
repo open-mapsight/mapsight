@@ -46,6 +46,7 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 			isPreselected: isPreselected,
 			// Inline details only for expandInList / detailsInList — not when
 			// selection opens mapOnly (showInMapOnlyView) or scrolls to map.
+			detailsInline: !!(detailsInList || expandInList),
 			showDetails: !!(isSelected && (detailsInList || expandInList)),
 			scrollOnSelection: !!(expandInList && !showSelectedOnly),
 		};

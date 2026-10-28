@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
+import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {
 	layerSwitcherConfigExternalSelector,
@@ -114,7 +115,7 @@ function FeatureListInner(
 		showVaryingListInfoOnly,
 		renderGroupAs,
 		renderAs = DEFAULT_LIST_RENDER_AS,
-		selectionBehaviorSelection,
+		selectionBehaviorSelection = FEATURE_SELECTION_SELECT,
 	} = listUiOptions;
 	const state = useFeatureListState(
 		listUiOptions,
