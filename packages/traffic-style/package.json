@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/lib-ol": "workspace:^",
-		"chokidar": "^5.0.0",
+		"chokidar": "^6.0.0",
 		"fs-extra": "^11.4.1",
 		"lru-cache": "^11.5.3",
 		"merge-stream": "^2.0.0",
