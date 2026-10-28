@@ -1,4 +1,5 @@
 @use "../mixins/icon";
+@use "../mixins/surface";
 
 .ms3-tool-overlay {
 	position: relative;
@@ -11,7 +12,11 @@
 	margin-left: 15px;
 
 	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-	background-color: white;
+	@if surface.$themed {
+		background-color: var(--ms3-background-color);
+	} @else {
+		background-color: white;
+	}
 
 	pointer-events: auto;
 	user-select: none;

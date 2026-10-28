@@ -1,3 +1,4 @@
+@use "../mixins/surface";
 @use "../variables";
 
 .ms3-map-point-menu__anchor {
@@ -36,7 +37,11 @@
 	min-inline-size: 12em;
 	margin: 0;
 	padding: 4px 0;
-	border: 1px solid rgb(0 0 0 / 10%);
+	@if surface.$themed {
+		border: 1px solid surface.$hairline;
+	} @else {
+		border: 1px solid rgb(0 0 0 / 10%);
+	}
 	border-radius: 5px;
 	background: var(--ms3-background-color, #fff);
 	color: var(--ms3-foreground-color, inherit);

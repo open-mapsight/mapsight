@@ -133,6 +133,9 @@ per stylesheet, but you can attach that set (or pure CSS overrides) to different
 You can also keep auto-emit on `.ms3-wrapper` and only add modifier overrides — no need for `null`
 unless you want a selector that is not `$ms3-tokens-selector`.
 
+Some surfaces ignore the colour tokens until you set `$ms3-future-v8-themedSurfaces: true`; see
+[Themed surfaces and dark host themes](#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces).
+
 ### Themed chrome icons (`$ms3-future-v8-themedIcons`)
 
 By default the UI chrome icons (`mapsight-ui/*.svg`: map controls, list filter buttons, layer switcher checkboxes,
@@ -186,6 +189,106 @@ watermark (`.ms3-logo`) stays as it is.
 - In forced-colors (high contrast) mode the icons use system colours (`ButtonText`, `CanvasText`, `LinkText`,
   `GrayText`; `Highlight` for active states) instead of the theme colours. Browsers print icons like other
   backgrounds: only when the user enables background graphics.
+
+In v8 this becomes the only behaviour and the flag is removed (see
+[Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
+
+### Themed surfaces and dark host themes (`$ms3-future-v8-themedSurfaces`)
+
+By default a few surfaces keep fixed light colours whatever the `--ms3-*` tokens say: the `.ms3-wrapper` background
+(white), the attribution box, the tool overlay, the mini legend, the link share field and button, the list search input,
+and the map controls on narrow screens (`rgba(255, 255, 255, 0.9)`). A host with a dark theme, for example one
+following `prefers-color-scheme: dark`, then gets light boxes with light text in them. Opt in to take these colours from
+the tokens:
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-future-v8-themedSurfaces: true,
+	$ms3-future-v8-themedIcons: true // recommended with dark themes, see above
+);
+@use "@mapsight/ui/src/scss/default";
+```
+
+| Surface or text                                        | Before                     | With the flag                                                                          |
+| ------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------------------- |
+| `.ms3-wrapper` (also map-only and fullscreen)          | `white`                    | `var(--ms3-page-background-color)`                                                     |
+| Attribution backing and text                           | `#fff`, `#222`             | `var(--ms3-background-color)`, `var(--ms3-primary-color)`                              |
+| Tool overlay, mini legend, link share button           | `white`                    | `var(--ms3-background-color)`                                                          |
+| Link share field                                       | `#444` on `#f5f5f5`        | `var(--ms3-primary-color)` on `var(--ms3-background-color-offset)`                     |
+| Link share icon (inline SVG)                           | `#000`                     | `var(--ms3-foreground-color)`                                                          |
+| List search input                                      | `#222` on `#fff`, `#ccc`   | `var(--ms3-primary-color)` on `var(--ms3-background-color)`, `var(--ms3-border-color)` |
+| Map controls on narrow screens                         | `rgba(255, 255, 255, 0.9)` | `var(--ms3-map-control-background-color)`, see below                                   |
+| Search reset circle                                    | `#eee`                     | `var(--ms3-background-color-offset)`                                                   |
+| Disabled page in list pagination                       | `#555`                     | `var(--ms3-secondary-color)`                                                           |
+| Marked point coordinates                               | `#5c5c5c`                  | `var(--ms3-marked-point-coords-fg, var(--ms3-secondary-color))`                        |
+| Map point menu border                                  | `rgb(0 0 0 / 10%)`         | `--ms3-foreground-color` at 10 % opacity                                               |
+| Text in buttons, inputs and selects without own colour | browser default            | inherited, like other text in the wrapper                                              |
+
+Two optional properties, not emitted by `tokens`:
+
+- `--ms3-map-control-background-color`: background of the map controls on narrow screens. Default:
+  `--ms3-background-color` at 90 % opacity.
+- `--ms3-color-scheme`: `color-scheme` of `.ms3-wrapper`. Unset, the wrapper inherits the page's `color-scheme`, so
+  checkboxes, select menus and scrollbars follow the host. Set it (for example to `dark`) when only the Mapsight
+  tokens are dark and the page itself is not.
+
+In the default theme the result matches today's colours, except that four near-duplicate greys now come from the
+tokens: the link share field (`#444` on `#f5f5f5` becomes `#222` on `#f2f2f2`), the disabled page number and the marked
+point coordinates (`#555` and `#5c5c5c` become `#636567`), and the search reset circle (`#eee` becomes `#f2f2f2`).
+
+Text that Mapsight does not colour itself inherits the host's text colour, as before. A dark theme therefore sets the
+colour tokens **and** a light text colour on the page or the wrapper. Load it after the Mapsight CSS, because `tokens`
+emits the defaults on the same `:root` selector:
+
+```css
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--ms3-primary-color: #e8ecf1;
+		--ms3-inverted-primary-color: #111418;
+		--ms3-secondary-color: #aeb6c0;
+		--ms3-tertiary-color: #aeb6c0;
+		--ms3-theme-color-a: #7cc0ff;
+		--ms3-theme-color-b: #ff9b8a;
+		--ms3-background-color: #1a1e23;
+		--ms3-background-color-offset: #242a31;
+		--ms3-background-color-offset-2: #2e353e;
+		--ms3-page-background-color: #111418;
+		--ms3-background-highlight-color: #2b323a;
+		--ms3-foreground-color: #f3f5f8;
+		--ms3-border-color: #6b7682;
+		--ms3-table-line-color: #3c444e;
+		--ms3-tooltip-background-color: #242a31;
+		--ms3-tooltip-border-color: #aeb6c0;
+		--ms3-attributions-background-color: rgb(26 30 35 / 85%);
+		--ms3-focus-ring-color: #3b82f6;
+		--ms3-scrollbar-track-color: #1a1e23;
+		--ms3-scrollbar-thumb: rgb(220 228 236 / 30%);
+		--ms3-scrollbar-thumb-hover: rgb(220 228 236 / 50%);
+	}
+
+	.ms3-wrapper {
+		color: #e8ecf1;
+	}
+}
+```
+
+With this sample every text pair stays at 4.5:1 or more, and icons, focus rings and field borders at 3:1 or more. Set
+`--ms3-attributions-background-color` too, because the default is translucent white. Also set `--ms3-focus-ring-color`:
+it draws the map's focus ring on the (still light) tiles and the focus ring of the point input buttons on dark panels,
+so it needs a mid-tone with 3:1 against both. The default `#005fcc` has only 2.8:1 on `#1a1e23`; `#3b82f6` has 3.2:1 on
+light tiles (`#f2efe9`) and 4.6:1 on `#1a1e23`.
+
+**Compatibility.** Without the flag, the compiled CSS is unchanged. With the flag:
+
+- Hosts that already set `--ms3-background-color` or `--ms3-page-background-color` to something other than white now
+  see that colour on the wrapper and the surfaces above.
+- Buttons, inputs and selects that Mapsight does not colour inherit the text colour instead of the browser's
+  `buttontext`/`fieldtext`. The rule has no specificity, so any host rule wins. `reset` already did this.
+- Not covered: map tiles and feature styles (`@mapsight/traffic-style`), the white halos around the map focus ring
+  and keyboard crosshair (they sit on tiles), drop shadows, the deprecated hint.css tooltips, and OpenLayers' own
+  controls (theme those with the `--ol-*` properties).
 
 In v8 this becomes the only behaviour and the flag is removed (see
 [Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
