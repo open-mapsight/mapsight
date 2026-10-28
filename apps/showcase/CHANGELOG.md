@@ -1,5 +1,14 @@
 # @mapsight/showcase
 
+## 0.1.8
+
+### Patch Changes
+
+- 1ea59f1: Guide PR reviewers to affected showcase screens with suggested checks and main comparisons after successful preview deployments. Infer workspace source mappings and validate declarative review guides and generated dependencies in CI.
+- 7a2598e: Support static showcase hosting with a browser mock API for count queries and CSV exports, and publish automatic pull-request previews.
+- Updated dependencies [`0143205`, `8f88cd5`, `65abc99`, `2081daa`, `743286d`, `6dfb922`, `fc68480`, `a02ab12`, `cd3cdf9`, `23fd018`]:
+    - `@mapsight/ui@7.7.0 → 7.8.0` (minor)
+
 ## 0.1.7
 
 ### Patch Changes
