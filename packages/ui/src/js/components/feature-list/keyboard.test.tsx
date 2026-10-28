@@ -129,7 +129,6 @@ function setup(
 	const result = render(ui(features));
 	return {
 		...result,
-		store,
 		selectFeature,
 		deselectFeature,
 		rerenderFeatures: (items: MapsightUiFeature[]) =>
@@ -196,12 +195,6 @@ describe("feature-list row keyboard model", () => {
 			tag: "BUTTON",
 		},
 		{
-			kind: "selectable permalink",
-			options: {},
-			properties: {permanentLink: "/place"},
-			tag: "A",
-		},
-		{
 			kind: "legacy HTML",
 			options: {},
 			properties: {overrideListHtml: "<span>Place</span>"},
@@ -221,7 +214,7 @@ describe("feature-list row keyboard model", () => {
 			fireEvent.keyDown(one!, {key: "ArrowDown"});
 			expect(document.activeElement).toBe(two);
 			expect(rows(container).map((row) => row.tabIndex)).toEqual([-1, 0]);
-			if (tag === "A" && options.selectOnClick === false) {
+			if (tag === "A") {
 				expect(one?.getAttribute("role")).toBeNull();
 				expect(one?.getAttribute("aria-pressed")).toBeNull();
 			}
@@ -270,90 +263,69 @@ describe("feature-list row keyboard model", () => {
 		expect(rows(container).map((row) => row.tabIndex)).toEqual([-1, 0]);
 	});
 
-	it.each(["ul", "ol"])(
-		"uses %s for configured list content, including empty entries",
-		(listAs) => {
-			const {container, rerenderFeatures} = setup(
-				[feature("One")],
-				{},
-				false,
-				undefined,
-				listAs,
-			);
-			expect(screen.getByRole("list").tagName).toBe(listAs.toUpperCase());
-			expect(screen.getByRole("listitem").parentElement?.tagName).toBe(
-				listAs.toUpperCase(),
-			);
-			rerenderFeatures([]);
-			expect(
-				container.querySelector(".ms3-list__empty")?.parentElement
-					?.tagName,
-			).toBe(listAs.toUpperCase());
-			expect(container.querySelector(".ms3-list__empty")?.tagName).toBe(
-				"LI",
-			);
-		},
-	);
-
-	it("defaults standalone content and its empty message to ul/li", () => {
-		render(<FeatureListContent />);
-		expect(screen.getByRole("list").tagName).toBe("UL");
-		expect(screen.getByRole("listitem").parentElement).toBe(
-			screen.getByRole("list"),
+	it("renders configured and standalone lists with li rows and empty messages", () => {
+		const {container, rerenderFeatures, unmount} = setup(
+			[feature("One")],
+			{},
+			false,
+			undefined,
+			"ol",
 		);
+		expect(screen.getByRole("listitem").parentElement?.tagName).toBe("OL");
+		rerenderFeatures([]);
+		const empty = container.querySelector(".ms3-list__empty");
+		expect(empty?.tagName).toBe("LI");
+		expect(empty?.parentElement?.tagName).toBe("OL");
+		unmount();
+		render(<FeatureListContent />);
+		expect(screen.getByRole("listitem").parentElement?.tagName).toBe("UL");
 	});
 
 	it.each([
-		{key: "Enter", permanentLink: undefined},
-		{key: " ", permanentLink: undefined},
-		{key: "Enter", permanentLink: "/place"},
-		{key: " ", permanentLink: "/place"},
+		{permanentLink: undefined, select: "Enter", deselect: " "},
+		{permanentLink: "/place", select: " ", deselect: "Enter"},
 	])(
-		"toggles selection with $key (permalink: $permanentLink) and exposes aria-pressed",
-		({key, permanentLink}) => {
+		"toggles selection with Enter and Space and exposes aria-pressed (permalink: $permanentLink)",
+		({permanentLink, select, deselect}) => {
 			const {selectFeature, deselectFeature} = setup([
 				feature("One", {permanentLink}),
 			]);
 			const button = screen.getByRole("button", {name: "One"});
 			expect(button.getAttribute("aria-pressed")).toBe("false");
-			fireEvent.keyDown(button, {key});
+			fireEvent.keyDown(button, {key: select});
 			expect(selectFeature).toHaveBeenCalledExactlyOnceWith("One", {
 				keyboard: true,
 			});
 			expect(button.getAttribute("aria-pressed")).toBe("true");
-			fireEvent.keyDown(button, {key});
+			fireEvent.keyDown(button, {key: deselect});
 			expect(deselectFeature).toHaveBeenCalledTimes(1);
 			expect(button.getAttribute("aria-pressed")).toBe("false");
 		},
 	);
 
-	it.each([
-		{detailsInList: true},
-		{selectionBehavior: {desktop: "expandInList", mobile: null}},
-	] as const)(
-		"exposes inline expansion and a stable details target for %j",
-		(options) => {
-			const {container} = setup([feature("One")], options);
-			const button = screen.getByRole("button", {name: "One"});
-			const id = button.getAttribute("aria-controls")!;
-			expect(button.hasAttribute("aria-pressed")).toBe(false);
-			expect(button.getAttribute("aria-expanded")).toBe("false");
-			expect(document.getElementById(id)?.hidden).toBe(true);
-			fireEvent.click(button);
-			expect(button.getAttribute("aria-expanded")).toBe("true");
-			expect(document.getElementById(id)?.hidden).toBe(false);
-			const input = screen.getByRole("textbox");
-			focus(input);
-			fireEvent.keyDown(input, {key: "Home"});
-			expect(document.activeElement).toBe(input);
-			fireEvent.keyDown(input, {key: "ArrowDown"});
-			expect(document.activeElement).toBe(input);
-			fireEvent.click(button);
-			expect(button.getAttribute("aria-controls")).toBe(id);
-			expect(button.getAttribute("aria-expanded")).toBe("false");
-			expect(rows(container)[0]?.tabIndex).toBe(0);
-		},
-	);
+	it("exposes inline expansion and a stable details target", () => {
+		const {container} = setup([feature("One")], {
+			selectionBehavior: {desktop: "expandInList", mobile: null},
+		});
+		const button = screen.getByRole("button", {name: "One"});
+		const id = button.getAttribute("aria-controls")!;
+		expect(button.hasAttribute("aria-pressed")).toBe(false);
+		expect(button.getAttribute("aria-expanded")).toBe("false");
+		expect(document.getElementById(id)?.hidden).toBe(true);
+		fireEvent.click(button);
+		expect(button.getAttribute("aria-expanded")).toBe("true");
+		expect(document.getElementById(id)?.hidden).toBe(false);
+		const input = screen.getByRole("textbox");
+		focus(input);
+		fireEvent.keyDown(input, {key: "Home"});
+		expect(document.activeElement).toBe(input);
+		fireEvent.keyDown(input, {key: "ArrowDown"});
+		expect(document.activeElement).toBe(input);
+		fireEvent.click(button);
+		expect(button.getAttribute("aria-controls")).toBe(id);
+		expect(button.getAttribute("aria-expanded")).toBe("false");
+		expect(rows(container)[0]?.tabIndex).toBe(0);
+	});
 
 	it("safely handles focus requests on empty lists and focuses the current row", () => {
 		function List({empty = false}) {

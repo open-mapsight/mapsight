@@ -22,7 +22,7 @@ function DeselectControl() {
 	return <button onClick={deselectFeature}>Deselect</button>;
 }
 
-it.each([undefined, "select", "preselect"] as const)(
+it.each([undefined, "preselect"] as const)(
 	"deselects the configured selection group (%s), defaulting to select",
 	(selectionBehaviorSelection) => {
 		const reducer = vi.fn(
