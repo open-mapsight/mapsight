@@ -12,6 +12,13 @@ const packageRoot = path.resolve(
 );
 const scssRoot = path.join(packageRoot, "src/scss");
 const iconRoot = path.join(packageRoot, "src/img/mapsight-ui");
+const attributionRoot = path.join(packageRoot, "src/img/attribution");
+const attributionFiles = new Set([
+	"built-with-mapsight-de-120x40-light.svg",
+	"built-with-mapsight-en-120x40-light.svg",
+	"built-with-mapsight-de-90x30-light.svg",
+	"built-with-mapsight-en-90x30-light.svg",
+]);
 
 function compile(themedIcons?: boolean) {
 	const flag =
@@ -57,13 +64,28 @@ describe("chrome icon SCSS", () => {
 		}
 	});
 
-	it("paints every icon except the watermark as a mask when opted in", () => {
+	it("paints chrome icons as masks while preserving the attribution artwork", () => {
 		const declarations = iconDeclarations(themed);
 		const background = declarations.filter(
 			({property}) => !property.includes("mask"),
 		);
 		expect(background).toEqual([
-			{property: "background", file: "watermark.svg"},
+			{
+				property: "background",
+				file: "built-with-mapsight-de-120x40-light.svg",
+			},
+			{
+				property: "background-image",
+				file: "built-with-mapsight-en-120x40-light.svg",
+			},
+			{
+				property: "background-image",
+				file: "built-with-mapsight-de-90x30-light.svg",
+			},
+			{
+				property: "background-image",
+				file: "built-with-mapsight-en-90x30-light.svg",
+			},
 		]);
 
 		const legacyFiles = new Set(
@@ -74,7 +96,9 @@ describe("chrome icon SCSS", () => {
 				.filter(({property}) => property === "mask-image")
 				.map((d) => d.file),
 		);
-		legacyFiles.delete("watermark.svg");
+		for (const file of attributionFiles) {
+			legacyFiles.delete(file);
+		}
 		expect(maskFiles).toEqual(legacyFiles);
 		for (const file of maskFiles) {
 			expect(themed).toContain(
@@ -114,7 +138,10 @@ describe("chrome icon SCSS", () => {
 
 	it("references only existing icon files", () => {
 		for (const {file} of iconDeclarations(themed)) {
-			expect(existsSync(path.join(iconRoot, file)), file).toBe(true);
+			const root = attributionFiles.has(file)
+				? attributionRoot
+				: iconRoot;
+			expect(existsSync(path.join(root, file)), file).toBe(true);
 		}
 	});
 

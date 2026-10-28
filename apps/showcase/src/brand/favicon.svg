@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32" role="img">
+<title>Mapsight favicon 32 px (Kandidat, G2 ausstehend / candidate, G2 pending)</title>
+<desc>Neonaut #9CB6C3 field with the standard symbol in ink. Padding 2 px (4 units): documented favicon exception to the 16-unit clear space.</desc>
+<rect width="64" height="64" fill="#9CB6C3"/>
+<g fill="#111518"><path d="M4 4H24V34H4Z"/><path fill-rule="evenodd" d="M30 4H60V34H30ZM40 12V24H50V12Z"/><path d="M4 40H35L15 60H4Z"/><path d="M44 40H60V60H24Z"/></g>
+</svg>

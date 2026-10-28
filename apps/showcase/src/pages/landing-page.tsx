@@ -23,13 +23,17 @@ const sections = [
 
 export function LandingPage() {
 	return (
-		<div className="showcase-page landing">
+		<div className="showcase-page landing msb-content">
 			<div className="showcase-page__hero">
-				<h1>Mapsight ecosystem showcase</h1>
-				<p>
-					Interactive demos for the modular Mapsight packages — UI
-					components, count-aggregator, traffic-style icons, and
-					runtime composition.
+				<p className="msb-eyebrow">Mapsight / Showcase</p>
+				<h1>Maps that fit your site.</h1>
+				<p className="msb-intro">
+					An open-source framework for communicative web maps,
+					designed to take on the look of the page they sit on.
+				</p>
+				<p className="msb-status">
+					Work in progress; used in controlled production deployments,
+					not yet turnkey.
 				</p>
 			</div>
 

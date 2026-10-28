@@ -2,7 +2,7 @@ import {legalDetails} from "./legal-details.ts";
 
 export function PrivacyPage() {
 	return (
-		<article className="showcase-page legal-page">
+		<article className="showcase-page legal-page msb-content">
 			<div className="showcase-page__hero">
 				<h1>Privacy policy</h1>
 			</div>
