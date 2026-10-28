@@ -20,6 +20,7 @@ import type {CreateOptions} from "@mapsight/ui/types";
 
 import createNativeFullscreenPlugin from "../../features/native-fullscreen/plugin.ts";
 import styleFunction from "../../generated/mapsight-vector-styles/demo.js";
+import {osmTileUrl} from "../../osm-tile-url.ts";
 import {demoGeoJsonUrl} from "../../ui-demos/demo-geojson.ts";
 import {UiDemoShell} from "./ui-demo-shell.tsx";
 
@@ -27,7 +28,7 @@ const baseMapsightConfig = {
 	...config.map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",

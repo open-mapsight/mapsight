@@ -13,6 +13,8 @@ import {
 import createCombinedVisibleLayersPlugin from "@mapsight/ui/plugins/common/combined-visible-layers";
 import type {CreateOptions} from "@mapsight/ui/types";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
+
 /** Feature source and layer id for the parks demo layer. */
 export const PARKS_LAYER_ID = "parks";
 
@@ -51,7 +53,7 @@ export function createCombinedListDemo(urls: CombinedListDemoUrls): {
 		...config.map(
 			{
 				osm: osm(
-					"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+					osmTileUrl,
 					true,
 					metaData(
 						"OSM",

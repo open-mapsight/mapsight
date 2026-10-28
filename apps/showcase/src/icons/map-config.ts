@@ -11,6 +11,7 @@ import type {CreateOptions, PluginDefinition} from "@mapsight/ui/types";
 
 import {load} from "@mapsight/core/lib/feature-sources/actions";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
 import {demoMapFeatures, formatMapsightIcon} from "./demo-features.ts";
 
 export {default as styleFunction} from "../generated/mapsight-vector-styles/icon-demo";
@@ -104,7 +105,7 @@ export function createBaseMapsightConfig(options: {plainMap?: boolean} = {}) {
 		...config.map(
 			{
 				osm: osm(
-					"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+					osmTileUrl,
 					true,
 					metaData(
 						"OSM",
