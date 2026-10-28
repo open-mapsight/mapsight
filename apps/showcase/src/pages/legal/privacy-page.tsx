@@ -90,6 +90,18 @@ export function PrivacyPage() {
 			</section>
 
 			<section>
+				<h2>Local demo storage</h2>
+				<p>
+					The standard Mapsight demos store only the list visibility
+					preference under mapsight--v3-ui in local storage. The
+					citizen-service scenario does not use that plugin.
+					Count-aggregator demos use a same-origin service worker to
+					answer fictional API requests locally; it does not cache app
+					assets. Location access is optional and requires browser
+					permission.
+				</p>
+			</section>
+			<section>
 				<h2>Your rights</h2>
 				<p>
 					Under the GDPR, you may have rights to access,

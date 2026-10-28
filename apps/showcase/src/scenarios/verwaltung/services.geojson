@@ -1,0 +1,645 @@
+{
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "muster-service-01",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.52884,
+					52.28629
+				]
+			},
+			"properties": {
+				"id": "muster-service-01",
+				"name": "Servicestelle Mustermitte 01",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-02",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.47877,
+					52.27246
+				]
+			},
+			"properties": {
+				"id": "muster-service-02",
+				"name": "Servicestelle Musternord 02",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-03",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.51567,
+					52.2541
+				]
+			},
+			"properties": {
+				"id": "muster-service-03",
+				"name": "Servicestelle Musterost 03",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Zugang über Stufen",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: drei Stufen, kein Aufzug.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufen"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-04",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.48229,
+					52.27855
+				]
+			},
+			"properties": {
+				"id": "muster-service-04",
+				"name": "Servicestelle Musterwest 04",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-05",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.52175,
+					52.27386
+				]
+			},
+			"properties": {
+				"id": "muster-service-05",
+				"name": "Servicestelle Mustermitte 05",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-06",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.50229,
+					52.27224
+				]
+			},
+			"properties": {
+				"id": "muster-service-06",
+				"name": "Servicestelle Musternord 06",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-07",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.52879,
+					52.29226
+				]
+			},
+			"properties": {
+				"id": "muster-service-07",
+				"name": "Servicestelle Musterost 07",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Zugang über Stufen",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: drei Stufen, kein Aufzug.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufen"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-08",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.48485,
+					52.25125
+				]
+			},
+			"properties": {
+				"id": "muster-service-08",
+				"name": "Servicestelle Musterwest 08",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-09",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.5589,
+					52.28217
+				]
+			},
+			"properties": {
+				"id": "muster-service-09",
+				"name": "Servicestelle Mustermitte 09",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-10",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.5147,
+					52.27861
+				]
+			},
+			"properties": {
+				"id": "muster-service-10",
+				"name": "Servicestelle Musternord 10",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-11",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.50271,
+					52.26351
+				]
+			},
+			"properties": {
+				"id": "muster-service-11",
+				"name": "Servicestelle Musterost 11",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Zugang über Stufen",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: drei Stufen, kein Aufzug.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufen"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-12",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.53682,
+					52.27138
+				]
+			},
+			"properties": {
+				"id": "muster-service-12",
+				"name": "Servicestelle Musterwest 12",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-13",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.52946,
+					52.28104
+				]
+			},
+			"properties": {
+				"id": "muster-service-13",
+				"name": "Servicestelle Mustermitte 13",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-14",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.51186,
+					52.29227
+				]
+			},
+			"properties": {
+				"id": "muster-service-14",
+				"name": "Servicestelle Musternord 14",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-15",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.55384,
+					52.28668
+				]
+			},
+			"properties": {
+				"id": "muster-service-15",
+				"name": "Servicestelle Musterost 15",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Zugang über Stufen",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: drei Stufen, kein Aufzug.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufen"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-16",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.55132,
+					52.24444
+				]
+			},
+			"properties": {
+				"id": "muster-service-16",
+				"name": "Servicestelle Musterwest 16",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-17",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.5505,
+					52.25024
+				]
+			},
+			"properties": {
+				"id": "muster-service-17",
+				"name": "Servicestelle Mustermitte 17",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-18",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.49505,
+					52.27477
+				]
+			},
+			"properties": {
+				"id": "muster-service-18",
+				"name": "Servicestelle Musternord 18",
+				"mapsightIconId": "info",
+				"listInformation": "Sozialberatung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Sozialberatung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Sozialberatung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-19",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.48231,
+					52.26727
+				]
+			},
+			"properties": {
+				"id": "muster-service-19",
+				"name": "Servicestelle Musterost 19",
+				"mapsightIconId": "info",
+				"listInformation": "Ausweis und Pass · Zugang über Stufen",
+				"description": "<p>Fiktive Servicestelle · Ausweis und Pass.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: drei Stufen, kein Aufzug.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Ausweis und Pass"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufen"
+						]
+					}
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "muster-service-20",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					10.56511,
+					52.25573
+				]
+			},
+			"properties": {
+				"id": "muster-service-20",
+				"name": "Servicestelle Musterwest 20",
+				"mapsightIconId": "info",
+				"listInformation": "Anmeldung · Stufenlos",
+				"description": "<p>Fiktive Servicestelle · Anmeldung.</p><p>Öffnungszeiten: Montag und Donnerstag 09–16 Uhr, Dienstag 09–12 Uhr. Nur Beispielzeiten, keine Terminbuchung.</p><p>Zugang: stufenlos, Aufzug vorhanden.</p><p>Fiktive Demodaten. Keine reale Adresse oder Telefonnummer.</p>",
+				"tagGroups": {
+					"Anliegen": {
+						"andJunction": false,
+						"tags": [
+							"Anmeldung"
+						]
+					},
+					"Zugang": {
+						"andJunction": false,
+						"tags": [
+							"Stufenlos"
+						]
+					}
+				}
+			}
+		}
+	]
+}

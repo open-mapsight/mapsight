@@ -2,7 +2,6 @@ import {Fragment} from "react";
 
 import MeasureDistanceButton from "@mapsight/ui/components/map-overlay/measure-distance-button";
 import RegionSelector from "@mapsight/ui/components/map-overlay/region-selector";
-import SearchOverlay from "@mapsight/ui/components/map-overlay/search-overlay";
 import SharePositionLinkButton from "@mapsight/ui/components/map-overlay/share-position-link-button";
 import * as config from "@mapsight/ui/config";
 import {
@@ -65,7 +64,7 @@ export const baseMapsightConfig = {
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,
@@ -137,7 +136,6 @@ export const createOptions: CreateOptions = {
 	components: {
 		MapOverlayTopLeft: () => (
 			<Fragment>
-				<SearchOverlay />
 				<RegionSelector />
 				<SharePositionLinkButton />
 				<MeasureDistanceButton />

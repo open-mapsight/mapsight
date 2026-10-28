@@ -13,7 +13,7 @@ export const baseMapsightConfig = {
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,

@@ -20,6 +20,11 @@ Includes:
 
 Full text: [LICENSE](../LICENSE) at repository root.
 
+The showcase also redistributes unmodified KERN CSS (`@kern-ux/native` 2.8.2,
+EUPL-1.2) and Fira Sans (SIL OFL-1.1) under their own licences. Licence copies
+and source notices accompany those files in `apps/showcase/public/vendor/kern/`;
+these third-party files are not covered by the repository MIT licence.
+
 **Trademark:** MIT does not grant use of the **Mapsight** name or logo — [TRADEMARK.md](TRADEMARK.md).
 
 ---

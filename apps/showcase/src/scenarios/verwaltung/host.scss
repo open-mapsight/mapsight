@@ -1,0 +1,118 @@
+@use "~@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-tokens-selector: ".service-map",
+	// Icon-only overlay buttons; the labels stay available to assistive technology.
+	$ms3-option-mapOverlayButtonsShowLabel: false,
+	$ms3-rem-px-ratio: 16
+);
+@use "~@mapsight/ui/src/scss/reset";
+@use "~@mapsight/ui/src/scss/default";
+.service-map {
+	// Let the map match the result list beside it (the product default caps it lower).
+	--ms3-map-max-height-default: 34rem;
+	--ms3-theme-color-a: var(--kern-color-action-default);
+	--ms3-primary-color: var(--kern-color-layout-text-default);
+	--ms3-foreground-color: var(--kern-color-layout-text-default);
+	--ms3-background-color: var(--kern-color-layout-background-default);
+	--ms3-background-color-offset: var(--kern-color-layout-background-hued);
+	--ms3-border-color: var(--kern-color-layout-border);
+	--ms3-font-size-base: var(--kern-typography-font-size-medium-static);
+	--ms3-font-size-input: var(--kern-typography-font-size-medium-static);
+	--ms3-font-size-headline: var(--kern-typography-font-size-large-static);
+	--ms3-border-radius: var(--kern-metric-border-radius-default);
+	font-family: var(--kern-typography-font-family-default);
+	position: relative;
+	.service-workspace {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: var(--kern-metric-space-x-large);
+		align-items: start;
+	}
+	.service-filters {
+		padding: var(--kern-metric-space-large);
+		margin-bottom: 2rem;
+		background: var(--kern-color-layout-background-hued);
+	}
+	.service-cartography,
+	.service-results {
+		min-width: 0;
+	}
+	.ms3-map-wrapper {
+		height: 34rem;
+		min-height: 24rem;
+		position: relative;
+	}
+	.ms3-map {
+		height: 100%;
+	}
+	.ms3-list__item {
+		border-bottom: 1px solid var(--ms3-border-color);
+		padding-block: 0.75rem;
+	}
+	.ms3-list__main {
+		font-weight: 700;
+	}
+	.ms3-list__info {
+		display: block;
+		padding: 0.5rem;
+		line-height: 1.5;
+	}
+	.ms3-feature-selection-info {
+		position: relative;
+		padding: var(--kern-metric-space-large);
+		background: var(--kern-color-layout-background-hued);
+		margin-top: 1rem;
+	}
+	.ms3-feature-selection-info__headline {
+		font-weight: 700;
+		font-size: 1.25rem;
+	}
+	.ms3-feature-details-content p {
+		margin-block: 1rem;
+	}
+	.ms3-attribution {
+		padding: 0.25rem;
+	}
+	.ms3-list-header {
+		position: relative;
+	}
+	input:not([type="checkbox"]),
+	select {
+		font: inherit;
+		padding: 0.5rem;
+		border: 1px solid var(--kern-color-form-input-border);
+		border-radius: 0.25rem;
+		max-width: 100%;
+	}
+	:focus-visible {
+		outline: 3px solid var(--kern-color-action-default);
+		outline-offset: 3px;
+	}
+}
+@media (max-width: 900px) {
+	.service-map .service-workspace {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.service-map {
+	.service-zoom {
+		position: absolute;
+		right: 1rem;
+		top: 1rem;
+	}
+	.ms3-attribution {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+	}
+	.ms3-list__item__head {
+		display: flex;
+		gap: var(--kern-metric-space-small);
+		align-items: center;
+	}
+	.ms3-layer-switcher__button {
+		min-height: 2.75rem;
+		padding: var(--kern-metric-space-small);
+	}
+}
