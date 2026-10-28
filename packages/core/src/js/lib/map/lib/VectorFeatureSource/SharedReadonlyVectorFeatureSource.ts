@@ -182,10 +182,17 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		}
 
 		try {
+			// A named `crs` wins, then the source's configured projection (the one
+			// its writes use), then GeoJSON's EPSG:4326 default. readProjection
+			// alone returns that default for every collection without a `crs`.
+			const dataProjection =
+				(data.crs != null
+					? this._format.readProjection(data)
+					: undefined) ??
+				this._externalProjection ??
+				this._format.readProjection(data);
 			const newFeatures = this._format.readFeatures(data, {
-				dataProjection:
-					this._format.readProjection(data) ||
-					this._externalProjection,
+				dataProjection,
 				featureProjection: this._internalProjection,
 			}) as Array<OlFeature>;
 

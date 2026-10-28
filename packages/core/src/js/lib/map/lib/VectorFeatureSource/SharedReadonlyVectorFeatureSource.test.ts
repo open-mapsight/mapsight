@@ -1,4 +1,6 @@
 import GeoJSON from "ol/format/GeoJSON";
+import type Point from "ol/geom/Point";
+import {fromLonLat, transform} from "ol/proj";
 
 import {describe, expect, it, vi} from "vitest";
 
@@ -205,6 +207,66 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 
 		expect(readFeatures).toHaveBeenCalledTimes(2);
 	});
+
+	it.each([
+		[
+			"the configured source projection without a crs",
+			"EPSG:3857",
+			undefined,
+			"EPSG:3857",
+		],
+		[
+			"EPSG:4326 without a crs or configured projection",
+			undefined,
+			undefined,
+			"EPSG:4326",
+		],
+		[
+			"a named crs over the configured projection",
+			"EPSG:3857",
+			"EPSG:4326",
+			"EPSG:4326",
+		],
+	] as const)(
+		"reads coordinates in %s",
+		(_label, external, crsName, dataProjection) => {
+			const coordinates = transform(
+				[10.5, 52.2],
+				"EPSG:4326",
+				dataProjection,
+			);
+			const store = createStore(
+				sourceState(
+					[
+						{
+							...placeFeature,
+							geometry: {
+								type: "Point",
+								coordinates: [...coordinates],
+							},
+						},
+					],
+					crsName
+						? {crs: {type: "name", properties: {name: crsName}}}
+						: undefined,
+				),
+			);
+			const {instance} = SharedReadonlyVectorFeatureSource.subscribe(
+				store as unknown as EnhancedStore,
+				"featureSources",
+				"parking",
+				"map",
+				new GeoJSON(),
+				"EPSG:3857",
+				external,
+				vi.fn(),
+			);
+			const point = instance.getFeatures()[0]!.getGeometry() as Point;
+			const expected = fromLonLat([10.5, 52.2]);
+			expect(point.getCoordinates()[0]).toBeCloseTo(expected[0]!, 4);
+			expect(point.getCoordinates()[1]).toBeCloseTo(expected[1]!, 4);
+		},
+	);
 
 	it("reads again when a feature actually changes", () => {
 		const format = new GeoJSON();
