@@ -185,6 +185,15 @@ const en: Record<string, string> = {
 	"ui.user-geo-location-button.label": "jump to your location",
 	"ui.user-geo-location-button.ariaLabel": "jump to your location",
 
+	// List chrome accessibility.
+	"ui.pagination.label": "Page navigation",
+	"ui.pagination.jumpForward": "Jump forward",
+	"ui.pagination.jumpBackward": "Jump backward",
+	"ui.pagination.status": "Page {n} of {total}",
+	"ui.feature-list.filter.status": "{n} of {total} entries",
+	"ui.feature-list.filter.empty": "No entries",
+	"ui.feature-list.cycling.status": "Station {n} of {total}: {name}",
+
 	"ui.pagination.nextPage": ">",
 	"ui.pagination.prevPage": "<",
 	"ui.pagination.nextPageLabel": "Go to next page",

@@ -191,6 +191,15 @@ const de: Record<string, string> = {
 	"ui.user-geo-location-button.label": "Zum eigenen Standort springen",
 	"ui.user-geo-location-button.ariaLabel": "Zum eigenen Standort springen",
 
+	// List chrome accessibility.
+	"ui.pagination.label": "Seitennavigation",
+	"ui.pagination.jumpForward": "Mehrere Seiten vorwärts blättern",
+	"ui.pagination.jumpBackward": "Mehrere Seiten zurück blättern",
+	"ui.pagination.status": "Seite {n} von {total}",
+	"ui.feature-list.filter.status": "{n} von {total} Einträgen",
+	"ui.feature-list.filter.empty": "Keine Einträge",
+	"ui.feature-list.cycling.status": "Station {n} von {total}: {name}",
+
 	"ui.pagination.nextPage": ">",
 	"ui.pagination.prevPage": "<",
 	"ui.pagination.nextPageLabel": "Zur nächsten Seite blättern",

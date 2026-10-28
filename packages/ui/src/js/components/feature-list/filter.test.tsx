@@ -1,12 +1,27 @@
 import {type ReactNode} from "react";
-import {Provider} from "react-redux";
+import {Provider, useSelector} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
+import {announceStatus} from "../../helpers/announce-status";
 import {FILTER_LIST_QUERY, filterListQuery} from "../../store/actions";
+import type {MapsightUiFeature} from "../../types";
+import {
+	FeatureListContextProvider,
+	type FeatureListContextValue,
+} from "./context";
 import FeatureFilter from "./filter";
+import {filterFeatures} from "./hooks/usePaginatedFilteredFeatures";
+
+vi.mock("../../helpers/announce-status", () => ({announceStatus: vi.fn()}));
+
+const features = [
+	{id: "a", properties: {name: "Cafe"}},
+	{id: "b", properties: {name: "Castle"}},
+	{id: "c", properties: {name: "Museum"}},
+] as MapsightUiFeature[];
 
 type TestState = {
 	app: {listQuery: string; listQueryEpoch?: number};
@@ -34,8 +49,24 @@ function makeStore(listQuery = "") {
 }
 
 function renderFilter(store: ReturnType<typeof makeStore>) {
+	function Context({children}: {children: ReactNode}) {
+		const query = useSelector((state: TestState) => state.app.listQuery);
+		const value = {
+			state: {
+				features,
+				featureCount: filterFeatures(query, features).length,
+			},
+		} as FeatureListContextValue;
+		return (
+			<FeatureListContextProvider value={value}>
+				{children}
+			</FeatureListContextProvider>
+		);
+	}
 	const wrapper = ({children}: {children: ReactNode}) => (
-		<Provider store={store}>{children}</Provider>
+		<Provider store={store}>
+			<Context>{children}</Context>
+		</Provider>
 	);
 	return render(<FeatureFilter />, {wrapper});
 }
@@ -43,6 +74,7 @@ function renderFilter(store: ReturnType<typeof makeStore>) {
 describe("FeatureFilter", () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
+		vi.mocked(announceStatus).mockClear();
 	});
 
 	afterEach(() => {
@@ -96,5 +128,58 @@ describe("FeatureFilter", () => {
 		});
 
 		expect(screen.getByRole("searchbox")).toHaveProperty("value", "");
+	});
+
+	it("announces the settled query's result count or empty text", () => {
+		renderFilter(makeStore());
+		act(() => {
+			vi.advanceTimersByTime(1000);
+		});
+		expect(announceStatus).not.toHaveBeenCalled();
+		const input = screen.getByRole("searchbox");
+		fireEvent.change(input, {target: {value: "ca"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		fireEvent.change(input, {target: {value: "castle"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		expect(announceStatus).not.toHaveBeenCalled();
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(announceStatus).toHaveBeenCalledExactlyOnceWith(
+			"1 von 3 Einträgen",
+		);
+		fireEvent.change(input, {target: {value: "missing"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(announceStatus).toHaveBeenLastCalledWith("Keine Einträge");
+	});
+
+	it("announces external query changes, including queries with the same result count", () => {
+		const store = makeStore();
+		renderFilter(store);
+		act(() => {
+			store.dispatch(filterListQuery("castle") as never);
+		});
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		act(() => {
+			store.dispatch(filterListQuery("museum") as never);
+		});
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(announceStatus).toHaveBeenCalledTimes(2);
 	});
 });

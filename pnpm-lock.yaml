@@ -762,9 +762,6 @@ importers:
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react-paginate:
-        specifier: ^8.3.0
-        version: 8.3.0(react@19.3.0)
       react-redux:
         specifier: 'catalog:'
         version: 9.3.0(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1)
@@ -4636,11 +4633,6 @@ packages:
     peerDependencies:
       react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
       react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
-
-  react-paginate@8.3.0:
-    resolution: {integrity: sha512-TptZE37HPkT3R+7AszWA++LOTIsIHXcCSWMP9WW/abeF8sLpJzExFB/dVs7xbtqteJ5njF6kk+udTDC0AR3y5w==}
-    peerDependencies:
-      react: ^16 || ^17 || ^18 || ^19
 
   react-redux@9.3.0:
     resolution: {integrity: sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==}
@@ -8980,11 +8972,6 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
-
-  react-paginate@8.3.0(react@19.3.0):
-    dependencies:
-      prop-types: 15.8.1
-      react: 19.3.0
 
   react-redux@9.3.0(@types/react@19.3.0)(react@19.3.0)(redux@5.0.1):
     dependencies:

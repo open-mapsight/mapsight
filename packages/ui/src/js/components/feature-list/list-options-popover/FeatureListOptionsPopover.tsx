@@ -45,6 +45,7 @@ export default function FeatureListOptionsPopover({
 	const [isOpen, setIsOpen] = useState(false);
 	const [maxHeight, setMaxHeight] = useState<number | null>(null);
 	const popoverId = useId();
+	const titleId = useId();
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const updatePositionRef = useRef<() => void>(() => {});
@@ -89,6 +90,7 @@ export default function FeatureListOptionsPopover({
 			offset: 6,
 			shouldCloseOnBlur: false,
 			popoverId,
+			labelledBy: titleId,
 		});
 
 	const {buttonProps} = useButton(
@@ -208,6 +210,7 @@ export default function FeatureListOptionsPopover({
 							<div className="ms3-list-options__header">
 								<h3
 									{...titleProps}
+									id={titleId}
 									className="ms3-list-options__title"
 								>
 									{translate("ui.feature-list.options.title")}

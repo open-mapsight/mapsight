@@ -26,6 +26,7 @@ function FeatureListCyclingDot({
 
 	return (
 		<button
+			aria-hidden="true"
 			tabIndex={-1}
 			type="button"
 			className={
