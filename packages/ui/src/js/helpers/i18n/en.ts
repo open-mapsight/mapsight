@@ -22,6 +22,13 @@ const en: Record<string, string> = {
 	// BottomSheet accessibility defaults.
 	"ui.bottom-sheet.resize": "Resize",
 	"ui.bottom-sheet.snap-value": "Position {position} of {count}",
+	// UE: search status and previously missing shared labels.
+	shareLink: "Share link",
+	marker: "Marker",
+	"ui.search.result.loading": "Searching…",
+	"ui.search.result.count": "{count} results",
+	"ui.search.result.none": "No results",
+	"ui.search.result.selected": "{name} selected",
 
 	open: "open",
 	close: "close",

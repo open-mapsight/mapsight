@@ -14,6 +14,7 @@ function SwitcherButton(props) {
 		<button
 			type="button"
 			role={role}
+			tabIndex={role === "radio" ? (active ? 0 : -1) : undefined}
 			aria-checked={active ? "true" : "false"}
 			aria-label={ariaLabel}
 			aria-disabled={disabled ? "true" : undefined}

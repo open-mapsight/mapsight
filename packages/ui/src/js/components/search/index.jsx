@@ -1,18 +1,39 @@
 import {memo, useCallback, useEffect, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
+import {announceStatus} from "../../helpers/announce-status";
+import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import useDebounce from "../../hooks/useDebounce";
+import useHandleEscapeKeyDown from "../../hooks/useHandleEscapeKeyDown";
 import {search} from "../../store/actions";
 import {searchQuerySelector} from "../../store/selectors";
-
 import SearchQueryInput from "./query-input";
 import SearchResult from "./result";
-import useHandleEscapeKeyDown from "../../hooks/useHandleEscapeKeyDown";
+import SearchStatus from "./status";
 
 const preventDefault = (e) => e.preventDefault();
 
-function Search({closeSearch, autoFocus}) {
+/**
+ * announceResults=false lets hosts provide their own search status.
+ * onResultSelected runs after the selection has rendered. Hosts can move focus
+ * there; otherwise visible details/the selected row, then the input, receive it.
+ * groupHeadlineAs accepts a heading tag or a non-heading label such as "div".
+ * @param {{
+ *   closeSearch?: () => void,
+ *   autoFocus?: boolean,
+ *   announceResults?: boolean,
+ *   onResultSelected?: (feature: import("../../types").MapsightUiFeature) => void,
+ *   groupHeadlineAs?: import("react").ElementType,
+ * }} props props
+ */
+function Search({
+	closeSearch,
+	autoFocus,
+	announceResults = true,
+	onResultSelected,
+	groupHeadlineAs = "h4",
+}) {
 	const dispatch = useDispatch();
 	const query = useSelector(searchQuerySelector);
 
@@ -41,7 +62,55 @@ function Search({closeSearch, autoFocus}) {
 
 	useHandleEscapeKeyDown(
 		inputRef,
-		useCallback(() => dispatch(search(""), [dispatch])),
+		useCallback(() => dispatch(search("")), [dispatch]),
+	);
+
+	const handleResultSelected = useCallback(
+		(feature) => {
+			const input = inputRef.current;
+			const form = input?.closest("form");
+			const root = input?.closest(".ms3-wrapper");
+			// Redux clears the query and removes the result button in this commit.
+			setTimeout(() => {
+				const previousFocus = document.activeElement;
+				onResultSelected?.(feature);
+				const focused = document.activeElement;
+				if (
+					focused &&
+					focused !== document.body &&
+					focused.isConnected &&
+					(focused !== previousFocus || !form?.contains(focused))
+				) {
+					return;
+				}
+				const targets = root?.querySelectorAll(
+					".ms3-feature-selection-info__wrapper, .ms3-list__item--selected",
+				);
+				const target = Array.from(targets || []).find(
+					(element) =>
+						!element.closest(
+							"[hidden], [inert], [aria-hidden='true']",
+						) &&
+						element.getClientRects().length > 0 &&
+						getComputedStyle(element).visibility !== "hidden",
+				);
+				if (target) {
+					target.setAttribute("tabindex", "-1");
+					target.focus();
+				} else if (input?.isConnected) {
+					input.focus();
+					if (announceResults) {
+						announceStatus(
+							translate("ui.search.result.selected").replace(
+								"{name}",
+								getFeatureProperty(feature, "name"),
+							),
+						);
+					}
+				}
+			}, 0);
+		},
+		[announceResults, onResultSelected],
 	);
 
 	const handleReturnFocus = useCallback(() => inputRef.current?.focus(), []);
@@ -64,17 +133,17 @@ function Search({closeSearch, autoFocus}) {
 				</button>
 			</div>
 
+			{announceResults && <SearchStatus />}
+
 			{query && (
-				<output
-					className="ms3-search__output"
-					name="search-output"
-					htmlFor="search"
-				>
+				<div className="ms3-search__output">
 					<SearchResult
 						onReturnFocus={handleReturnFocus}
 						closeSearch={closeSearch}
+						onResultSelected={handleResultSelected}
+						groupHeadlineAs={groupHeadlineAs}
 					/>
-				</output>
+				</div>
 			)}
 		</form>
 	);

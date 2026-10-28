@@ -1,13 +1,19 @@
-import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
 import {memo, useCallback} from "react";
 import {useDispatch} from "react-redux";
+
+import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
+
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
-
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {search, selectSearchResult} from "../../store/actions";
 
-function SearchResultEntry({closeSearch, onReturnFocus, feature}) {
+function SearchResultEntry({
+	closeSearch,
+	onReturnFocus,
+	onResultSelected,
+	feature,
+}) {
 	const dispatch = useDispatch();
 
 	const name = getFeatureProperty(feature, "name");
@@ -29,6 +35,8 @@ function SearchResultEntry({closeSearch, onReturnFocus, feature}) {
 				),
 			);
 
+			onResultSelected?.(feature);
+
 			if (closeSearch) {
 				closeSearch();
 			}
@@ -39,6 +47,7 @@ function SearchResultEntry({closeSearch, onReturnFocus, feature}) {
 		isIncompleteSuggest,
 		name,
 		onReturnFocus,
+		onResultSelected,
 		closeSearch,
 	]);
 

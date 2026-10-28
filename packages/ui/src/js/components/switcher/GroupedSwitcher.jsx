@@ -7,6 +7,7 @@ function GroupedSwitcher(props) {
 		as: T = "div",
 		className = "ms3-grouped-switcher",
 		renderEntry,
+		headlineAs = "h3",
 		renderHeader = undefined,
 		ungroupedIds = [],
 		groupedIds = {},
@@ -21,6 +22,7 @@ function GroupedSwitcher(props) {
 			as={Fragment}
 			renderEntry={renderEntry}
 			renderHeader={renderHeader}
+			headlineAs={headlineAs}
 		/>
 	));
 
@@ -32,6 +34,7 @@ function GroupedSwitcher(props) {
 					as={Fragment}
 					renderEntry={renderEntry}
 					renderHeader={renderHeader}
+					headlineAs={headlineAs}
 				/>
 			)}
 			{children}

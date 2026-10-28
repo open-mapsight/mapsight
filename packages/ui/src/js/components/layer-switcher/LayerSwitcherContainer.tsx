@@ -24,6 +24,10 @@ export type LayerSwitcherContainerProps = {
 	onClose?: () => void;
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
+	/** Group/section title element (default h3); use "div" for non-structural labels. */
+	headlineAs?: ElementType;
+	/** Split-mode overlay group title element (default h4). */
+	groupHeadlineAs?: ElementType;
 	splitBaseLayers?: boolean;
 	/** Opt-in: overlay groups collapse and show visible/total counts. Only with `splitBaseLayers`. */
 	collapsibleGroups?: boolean;
@@ -42,6 +46,8 @@ function LayerSwitcherContainer({
 	collapsibleGroups = false,
 	setFeatureSourceIdPath,
 	renderEntryEnd,
+	headlineAs = "h3",
+	groupHeadlineAs = "h4",
 	...attributes
 }: LayerSwitcherContainerProps) {
 	const createLayerEntry = useCallback(
@@ -96,16 +102,20 @@ function LayerSwitcherContainer({
 					renderBaseLayerEntry={renderBaseLayerEntry}
 					renderEntry={renderLayerEntry}
 					collapsibleGroups={collapsibleGroups}
+					headlineAs={headlineAs}
+					groupHeadlineAs={groupHeadlineAs}
 					{...attributes}
 				/>
 			) : grouped ? (
 				<GroupedLayerSwitcher
+					headlineAs={headlineAs}
 					layerIdsSelector={layerIdsSelector}
 					renderEntry={renderLayerEntry}
 					{...attributes}
 				/>
 			) : (
 				<LayerSwitcher
+					headlineAs={headlineAs}
 					layerIdsSelector={layerIdsSelector}
 					renderEntry={renderLayerEntry}
 					{...attributes}
