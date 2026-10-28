@@ -40,6 +40,17 @@
 		padding: 0 6px;
 	}
 
+	// Labelled tool output (e.g. the measured distance), like the share link.
+	&__output {
+		margin: 6px;
+	}
+
+	&__output-label {
+		display: block;
+		margin-bottom: 4px;
+		font-weight: bold;
+	}
+
 	// Focus target of the "back to tool" skip link after the map.
 	&:focus-visible {
 		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);

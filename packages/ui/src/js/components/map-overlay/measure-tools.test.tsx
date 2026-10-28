@@ -52,7 +52,7 @@ function setup(keyboardDrawing?: boolean) {
 }
 
 describe("keyboard tool controls", () => {
-	it("finishes the measurement from the Done button only after two points", () => {
+	it("shows Done only while measuring, enabled from two points, with a live labelled length", () => {
 		const {store, map} = setup(true);
 		render(
 			<Provider store={store}>
@@ -61,13 +61,26 @@ describe("keyboard tool controls", () => {
 		);
 		const draw = getKeyboardDraw(map, "measureDistance")!;
 		const finish = vi.spyOn(draw, "finishDrawing");
-		const done = screen.getByRole("button", {name: "Fertig"});
-		draw.appendCoordinates([[100, 200]]);
-		fireEvent.click(done);
+		const done = () => screen.queryByRole("button", {name: "Fertig"});
+		expect(done()).toBeNull();
+		act(() => draw.appendCoordinates([[0, 0]]));
+		expect(done()!.getAttribute("aria-disabled")).toBe("true");
+		fireEvent.click(done()!);
 		expect(finish).not.toHaveBeenCalled();
-		draw.appendCoordinates([[300, 400]]);
-		fireEvent.click(done);
+		expect(screen.queryByText("Streckenlänge")).toBeNull();
+		act(() => draw.appendCoordinates([[1000, 0]]));
+		expect(done()!.hasAttribute("aria-disabled")).toBe(false);
+		const output = screen.getByText("Streckenlänge").parentElement!;
+		expect(output.textContent).toMatch(/Streckenlänge\s+998,88\sm/);
+		// The output and Done come before the keyboard help.
+		const help = screen.getByRole("button", {name: "Tastaturbedienung"});
+		expect(
+			output.compareDocumentPosition(help) &
+				Node.DOCUMENT_POSITION_FOLLOWING,
+		).toBeTruthy();
+		fireEvent.click(done()!);
 		expect(finish).toHaveBeenCalledTimes(1);
+		expect(done()).toBeNull();
 	});
 
 	it("shares the map centre right away, then a marked place without selecting it", () => {

@@ -92,8 +92,9 @@ const SharePositionLinkButton = ({
 		null,
 	);
 	useEffect(() => {
+		if (!isOpened) return;
 		const map = (store.getController(MAP) as MapController).getMap();
-		if (!isOpened || !map) return;
+		if (!map) return;
 		const update = () => {
 			const viewCenter = map.getView().getCenter();
 			setCenter(viewCenter ? lonLatFromMapCoordinate(viewCenter) : null);

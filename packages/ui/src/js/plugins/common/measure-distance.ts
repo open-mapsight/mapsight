@@ -1,7 +1,9 @@
 import type OlMap from "ol/Map";
+import type {Coordinate} from "ol/coordinate";
 import LineString from "ol/geom/LineString";
 import Draw from "ol/interaction/Draw";
 import type VectorSource from "ol/source/Vector";
+import {getLength} from "ol/sphere";
 
 import {createSelector} from "@reduxjs/toolkit";
 
@@ -56,14 +58,69 @@ export function getKeyboardDraw(map: OlMap, name: string): Draw | undefined {
 		);
 }
 
-function vertexCount(draw: Draw): number {
-	const source = draw.getOverlay().getSource() as VectorSource | null;
+/** Fixed sketch vertices; the last sketch coordinate follows the pointer. */
+function sketchVertices(draw: Draw | undefined): Coordinate[] {
+	const source = draw?.getOverlay().getSource() as VectorSource | null;
 	const line = source
 		?.getFeatures()
 		.find((feature) => feature.getGeometry() instanceof LineString)
 		?.getGeometry();
-	// The last sketch coordinate follows the pointer and is not a fixed vertex.
-	return line instanceof LineString ? line.getCoordinates().length - 1 : 0;
+	return line instanceof LineString ? line.getCoordinates().slice(0, -1) : [];
+}
+
+function vertexCount(draw: Draw): number {
+	return sketchVertices(draw).length;
+}
+
+export type KeyboardMeasurementSketch = {
+	/** Fixed points of the line being drawn; 0 when no measurement is in progress. */
+	vertices: number;
+	/** Geodesic length of those points in metres, from two points on. */
+	length: number | null;
+};
+
+/**
+ * Follow the sketch of a keyboard measurement tool (pointer clicks included),
+ * e.g. to enable "Done" only when there is a line to finish.
+ */
+export function observeKeyboardMeasurement(
+	map: OlMap,
+	name: string,
+	listener: (sketch: KeyboardMeasurementSketch) => void,
+): () => void {
+	let draw: Draw | undefined;
+	let source: VectorSource | null = null;
+	const emit = () => {
+		const vertices = draw?.getActive() ? sketchVertices(draw) : [];
+		listener({
+			vertices: vertices.length,
+			length:
+				vertices.length >= 2
+					? getLength(new LineString(vertices), {
+							projection: map.getView().getProjection(),
+						})
+					: null,
+		});
+	};
+	const watch = () => {
+		source?.un("change", emit);
+		draw?.un("change:active", emit);
+		draw = getKeyboardDraw(map, name);
+		source =
+			(draw?.getOverlay().getSource() as VectorSource | null) ?? null;
+		source?.on("change", emit);
+		draw?.on("change:active", emit);
+		emit();
+	};
+	map.getInteractions().on("add", watch);
+	map.getInteractions().on("remove", watch);
+	watch();
+	return () => {
+		map.getInteractions().un("add", watch);
+		map.getInteractions().un("remove", watch);
+		source?.un("change", emit);
+		draw?.un("change:active", emit);
+	};
 }
 
 export function finishKeyboardMeasurement(map: OlMap, name: string): void {

@@ -315,6 +315,12 @@
 		outline-offset: 2px;
 	}
 
+	// Kept focusable (aria-disabled) so users learn when it becomes available.
+	&[aria-disabled="true"] {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
 	// Alternative to clicking the map (keyboard, voice and switch users):
 	// still recognisably a button, but compact and unfilled so the map click
 	// stays the obvious main path for pointer users.
