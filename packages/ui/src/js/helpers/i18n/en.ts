@@ -239,15 +239,18 @@ const en: Record<string, string> = {
 	"ui.map-point.copied": "Coordinates copied",
 
 	"ui.share-position-link.title": "Share position",
+	"ui.share-position-link.shareTitle": "Place on the map",
+	"ui.share-position-link.shareButtonLabel": "Share link",
 	"ui.share-position-link.instructions":
-		"Click on the map to share a position.",
-	"ui.share-position-link.shareTitle": "Share marked position",
-	"ui.share-position-link.shareButtonLabel": "Share marked position",
-	"ui.share-position-link.share-center": "Share map centre",
-	"ui.share-position-link.keyboard-instructions":
-		"Click the map or choose “Share map centre”.",
-	"ui.share-position-link.keyboard.select": "Choose the map centre",
-	"ui.share-position-link.keyboard.remove": "Remove the point",
+		"Share the map centre or click the map to choose a place.",
+	"ui.share-position-link.instructions-marked":
+		"Click the map again to change the place.",
+	"ui.share-position-link.link-center": "Link to the map centre",
+	"ui.share-position-link.link-marked": "Link to the marked place",
+	"ui.share-position-link.remove-marker": "Remove marker",
+	"ui.share-position-link.keyboard.select":
+		"Mark the place at the map centre",
+	"ui.share-position-link.keyboard.remove": "Remove the marker",
 
 	"ui.tool-overlay.keyboard-help": "Keyboard controls",
 	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",

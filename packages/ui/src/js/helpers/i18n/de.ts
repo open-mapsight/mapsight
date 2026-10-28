@@ -246,15 +246,18 @@ const de: Record<string, string> = {
 	"ui.map-point.copied": "Koordinaten kopiert",
 
 	"ui.share-position-link.title": "Ort teilen",
+	"ui.share-position-link.shareTitle": "Ort auf der Karte",
+	"ui.share-position-link.shareButtonLabel": "Link teilen",
 	"ui.share-position-link.instructions":
-		"Klicken Sie auf die Karte um einen Ort zu teilen.",
-	"ui.share-position-link.shareTitle": "Markierten Ort teilen",
-	"ui.share-position-link.shareButtonLabel": "Markierten Ort teilen",
-	"ui.share-position-link.share-center": "Kartenmitte teilen",
-	"ui.share-position-link.keyboard-instructions":
-		"Klicken Sie auf die Karte oder wählen Sie „Kartenmitte teilen“.",
-	"ui.share-position-link.keyboard.select": "Kartenmitte wählen",
-	"ui.share-position-link.keyboard.remove": "Punkt entfernen",
+		"Teilen Sie die Kartenmitte oder klicken Sie auf die Karte, um einen Ort festzulegen.",
+	"ui.share-position-link.instructions-marked":
+		"Klicken Sie erneut auf die Karte, um den Ort zu ändern.",
+	"ui.share-position-link.link-center": "Link zur Kartenmitte",
+	"ui.share-position-link.link-marked": "Link zum markierten Ort",
+	"ui.share-position-link.remove-marker": "Markierung entfernen",
+	"ui.share-position-link.keyboard.select":
+		"Ort in der Kartenmitte festlegen",
+	"ui.share-position-link.keyboard.remove": "Markierung entfernen",
 
 	"ui.tool-overlay.keyboard-help": "Tastaturbedienung",
 	"ui.tool-overlay.keyboard-help.focus": "Bei fokussierter Karte:",

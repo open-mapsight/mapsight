@@ -1,5 +1,5 @@
-import type {MouseEvent} from "react";
-import {useCallback} from "react";
+import type {MouseEvent, ReactNode} from "react";
+import {useCallback, useId} from "react";
 
 import {translate} from "../helpers/i18n";
 import useHydrated from "../hooks/useHydrated";
@@ -8,6 +8,8 @@ export type LinkShareProps = {
 	buttonLabel?: string;
 	title?: string;
 	inputLabel?: string;
+	/** Visible label above the link; the input is then labelled by it. */
+	label?: ReactNode;
 	url: string | null;
 	onFinished?: () => void;
 	onError?: () => void;
@@ -20,11 +22,13 @@ function LinkShare({
 	buttonLabel = translate("shareLink"),
 	title = translate("shareLink"),
 	inputLabel = translate("ui.link-share.input"),
+	label,
 	url,
 	onFinished,
 	onError,
 }: LinkShareProps) {
 	const hydrated = useHydrated();
+	const inputId = useId();
 	const canShare = hydrated && typeof navigator?.share === "function";
 	const share = useCallback(
 		function () {
@@ -51,7 +55,18 @@ function LinkShare({
 	);
 
 	return (
-		<div className="ms3-link-share">
+		<div
+			className={
+				label
+					? "ms3-link-share ms3-link-share--labelled"
+					: "ms3-link-share"
+			}
+		>
+			{label ? (
+				<label className="ms3-link-share__label" htmlFor={inputId}>
+					{label}
+				</label>
+			) : null}
 			{canShare ? (
 				<button
 					className="ms3-link-share__button"
@@ -79,8 +94,9 @@ function LinkShare({
 				</button>
 			) : null}
 			<input
+				id={label ? inputId : undefined}
 				className="ms3-link-share__input"
-				aria-label={inputLabel}
+				aria-label={label ? undefined : inputLabel}
 				value={url ?? undefined}
 				onClick={selectInputContent}
 				readOnly={true}

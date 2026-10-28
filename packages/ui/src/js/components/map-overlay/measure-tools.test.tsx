@@ -1,8 +1,11 @@
 import {Provider} from "react-redux";
 
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {fromLonLat} from "ol/proj";
+
+import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {setData} from "@mapsight/core/lib/feature-sources/actions";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 
 import {setDocumentLanguage} from "../../helpers/i18n";
@@ -67,7 +70,7 @@ describe("keyboard tool controls", () => {
 		expect(finish).toHaveBeenCalledTimes(1);
 	});
 
-	it("shares the current centre from the visible button", async () => {
+	it("shares the map centre right away, then a marked place without selecting it", () => {
 		const {store, map} = setup(true);
 		map.getView().setCenter([0, 0]);
 		render(
@@ -75,16 +78,51 @@ describe("keyboard tool controls", () => {
 				<SharePositionLinkButton opened />
 			</Provider>,
 		);
+		const centre = screen.getByRole<HTMLInputElement>("textbox", {
+			name: "Link zur Kartenmitte",
+		});
+		expect(centre.value).toMatch(/#lm=0\/0$/);
+		act(() => {
+			map.getView().setCenter(fromLonLat([10.5, 52.2]));
+			map.dispatchEvent("moveend");
+		});
+		expect(centre.value).toMatch(/#lm=52\.2\/10\.5$/);
+		// A pointer click writes a plain point; the plugin turns it into the marker.
+		act(() => {
+			store.dispatch(
+				setData("featureSources", "sharePositionLink_featureSource", {
+					type: "FeatureCollection",
+					features: [
+						{
+							type: "Feature",
+							geometry: {type: "Point", coordinates: [9, 51]},
+							properties: {},
+						},
+					],
+				}),
+			);
+		});
+		const marked = screen.getByRole<HTMLInputElement>("textbox", {
+			name: "Link zum markierten Ort",
+		});
+		expect(marked.value).toMatch(/#lm=51\/9$/);
+		const selections = store.getState() as unknown as {
+			featureSelections?: Record<string, {features?: unknown[]}>;
+		};
+		expect(selections.featureSelections?.select?.features ?? []).toEqual(
+			[],
+		);
+		expect(getKeyboardDraw(map, "sharePositionLink")?.getActive()).toBe(
+			true,
+		);
 		fireEvent.click(
-			screen.getByRole("button", {name: "Kartenmitte teilen"}),
+			screen.getByRole("button", {name: "Markierung entfernen"}),
 		);
 		expect(
-			(
-				await screen.findByRole<HTMLInputElement>("textbox", {
-					name: "Link zum Teilen",
-				})
-			).value,
-		).toMatch(/#lm=0\/0$/);
+			screen.getByRole<HTMLInputElement>("textbox", {
+				name: "Link zur Kartenmitte",
+			}).value,
+		).toMatch(/#lm=52\.2\/10\.5$/);
 	});
 
 	it("keeps the overlay text to one sentence and the key list collapsed", () => {
@@ -118,9 +156,14 @@ describe("keyboard tool controls", () => {
 			expect(trigger.getAttribute("aria-expanded")).toBe("true");
 			expect(panel.hidden).toBe(false);
 		}
+		// The link output comes before the keyboard help, which stays last.
+		const link = screen.getByRole("textbox", {
+			name: "Link zur Kartenmitte",
+		});
 		expect(
-			screen.getByRole("button", {name: "Kartenmitte teilen"}).className,
-		).toContain("ms3-map-tool-action--secondary");
+			link.compareDocumentPosition(triggers[1]!) &
+				Node.DOCUMENT_POSITION_FOLLOWING,
+		).toBeTruthy();
 	});
 
 	it("links the open keyboard tool and the map in both directions without trapping focus", () => {
