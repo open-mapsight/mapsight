@@ -469,7 +469,7 @@ describe("PlaceActions", () => {
 		).toBeTruthy();
 	});
 
-	it("keeps a permalink anchor in the document for share", () => {
+	it("exposes only the share button until its dialog opens", () => {
 		render(
 			<PlaceActions.Root
 				feature={feature()}
@@ -482,14 +482,14 @@ describe("PlaceActions", () => {
 			</PlaceActions.Root>,
 		);
 
-		const permalink = screen.getByRole("link", {
-			name: "Permalink",
-			hidden: true,
-		});
-		expect(permalink.getAttribute("href")).toBe(
-			"https://example.de/plan?feature=schlosspark",
-		);
-		expect(permalink.tabIndex).toBe(-1);
+		expect(
+			screen.getByRole("button", {name: "Diesen Ort teilen"}),
+		).toBeTruthy();
+		expect(
+			screen
+				.getByRole("navigation")
+				.querySelector(".ms3-place-actions__share > a"),
+		).toBeNull();
 	});
 
 	it("announces coordinate copy failure and success", async () => {

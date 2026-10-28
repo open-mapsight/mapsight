@@ -51,7 +51,6 @@ const de: Record<string, string> = {
 	"ui.place-actions.share.copy": "Link kopieren",
 	"ui.place-actions.share.copied": "Kopiert",
 	"ui.place-actions.share.close": "Teilen-Dialog schließen",
-	"ui.place-actions.share.permalink": "Permalink",
 	"ui.place-actions.share.copy-success": "Link kopiert",
 	"ui.place-actions.navigate": "Route",
 	"ui.place-actions.navigate.tooltip":

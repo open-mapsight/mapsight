@@ -31,7 +31,15 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 	const hasSelection = useSelector(hasSelectSelectionSelector);
 
 	return useMemo(() => {
-		const expandInList = selectionBehavior?.[view] === "expandInList";
+		const behavior = selectionBehavior?.[view];
+		const expandInList = behavior === "expandInList";
+		const detailsInline = !!(detailsInList || expandInList);
+		// Rendering details in the list does not make a map-navigation action
+		// a disclosure (e.g. mobile round tours also set detailsInList).
+		const detailsDisclosure =
+			detailsInline &&
+			behavior !== "showInMapOnlyView" &&
+			(behavior !== "scrollToMap" || !!showSelectedOnly);
 
 		return {
 			selectOnClick: selectOnClick,
@@ -44,9 +52,9 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 			isSelected: isSelected,
 			isHighlighted: isHighlighted,
 			isPreselected: isPreselected,
-			// Inline details only for expandInList / detailsInList — not when
-			// selection opens mapOnly (showInMapOnlyView) or scrolls to map.
-			detailsInline: !!(detailsInList || expandInList),
+			// Keep explicit detailsInList rendering independent of the action.
+			detailsInline,
+			detailsDisclosure,
 			showDetails: !!(isSelected && (detailsInList || expandInList)),
 			scrollOnSelection: !!(expandInList && !showSelectedOnly),
 		};

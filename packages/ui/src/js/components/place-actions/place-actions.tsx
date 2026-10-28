@@ -201,7 +201,6 @@ function Share({
 		translate("ui.place-actions.share.tooltip"),
 		label,
 	);
-	const permalinkLabel = translate("ui.place-actions.share.permalink");
 
 	return (
 		<span className={classNames("ms3-place-actions__share", className)}>
@@ -220,13 +219,6 @@ function Share({
 					{chrome.visible}
 				</T>
 			</PlaceActionTooltip>
-			<a
-				className="ms3-place-actions__permalink ms3-visuallyhidden"
-				tabIndex={-1}
-				href={share.href}
-			>
-				{permalinkLabel}
-			</a>
 			<NativeDialog
 				isOpen={dialogOpen}
 				onClose={closeDialog}
