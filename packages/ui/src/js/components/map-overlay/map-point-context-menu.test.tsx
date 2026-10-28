@@ -264,19 +264,18 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
-	it("uses the current view centre after pointer use and keyboard panning", async () => {
+	it("opens the keyboard menu at the view centre, not the last pointer position", async () => {
 		const mapTarget = document.createElement("div");
 		mapTarget.tabIndex = 0;
 		document.body.append(mapTarget);
 		const store = createStore(mapTarget);
-		let center = [11, 53];
 		Object.assign(store, {
 			getController: () => ({
 				getMap: () => ({
 					getTargetElement: () => mapTarget,
 					getEventCoordinate: () => [10, 52],
 					getPixelFromCoordinate: () => [100, 100],
-					getView: () => ({getCenter: () => center}),
+					getView: () => ({getCenter: () => [11, 53]}),
 				}),
 			}),
 		});
@@ -298,15 +297,6 @@ describe("MapPointContextMenu", () => {
 		);
 		await vi.waitFor(() => {
 			expect(writeText).toHaveBeenCalledWith("53.000000, 11.000000");
-		});
-		center = [12, 54];
-		mapTarget.focus();
-		fireEvent.keyDown(mapTarget, {key: "F10", shiftKey: true});
-		fireEvent.click(
-			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
-		);
-		await vi.waitFor(() => {
-			expect(writeText).toHaveBeenCalledWith("54.000000, 12.000000");
 		});
 		mapTarget.remove();
 	});

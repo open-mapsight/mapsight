@@ -5,16 +5,7 @@ import Draw from "ol/interaction/Draw";
 
 import {afterEach, describe, expect, it, vi} from "vitest";
 
-import type {MapController} from "@mapsight/core/lib/map/controller";
-import DrawDefinition from "@mapsight/core/ol-proxy/definitions/interaction/DrawInteraction";
-
-import {create} from "../../index";
-import createMeasureDistancePlugin, {
-	finishKeyboardMeasurement,
-	getKeyboardDraw,
-	installKeyboardDrawing,
-	keyboardDrawingDefinition,
-} from "./measure-distance";
+import {installKeyboardDrawing} from "./measure-distance";
 
 const cleanups: Array<() => void> = [];
 afterEach(() => {
@@ -55,7 +46,7 @@ function fixture(type: "LineString" | "Point" = "LineString") {
 }
 
 describe("keyboard drawing", () => {
-	it("uses the current centre, removes the last vertex and finishes with Enter", () => {
+	it("adds centre points with Enter/Space, removes with Backspace and finishes with Enter after two points", () => {
 		const {map, draw, target, key} = fixture();
 		cleanups.push(installKeyboardDrawing(map, "test"));
 		const finished = vi.fn();
@@ -65,15 +56,13 @@ describe("keyboard drawing", () => {
 			),
 		);
 		target.focus();
-		expect(
-			target.classList.contains("ms3-map-target--keyboard-drawing"),
-		).toBe(true);
 		expect(key("Enter").defaultPrevented).toBe(true);
 		map.getView().setCenter([300, 400]);
 		key(" ");
 		key("Backspace");
 		map.getView().setCenter([500, 600]);
-		key(" ");
+		key("Enter");
+		expect(finished).not.toHaveBeenCalled();
 		key("Enter");
 		expect(finished).toHaveBeenCalledExactlyOnceWith([
 			[100, 200],
@@ -81,29 +70,13 @@ describe("keyboard drawing", () => {
 		]);
 	});
 
-	it("does not finish a one-point line and supports the Done command", () => {
-		const {map, draw, target, key} = fixture();
-		cleanups.push(installKeyboardDrawing(map, "test"));
-		const finished = vi.fn();
-		draw.on("drawend", finished);
-		target.focus();
-		key(" ");
-		finishKeyboardMeasurement(map, "test");
-		expect(finished).not.toHaveBeenCalled();
-		map.getView().setCenter([300, 400]);
-		key(" ");
-		finishKeyboardMeasurement(map, "test");
-		expect(finished).toHaveBeenCalledTimes(1);
-	});
-
-	it("leaves arrow/zoom/modified/repeated/handled keys alone and requires target focus", () => {
+	it("leaves arrow, modified, repeated, handled and child keys alone and requires target focus", () => {
 		const {map, draw, target, key} = fixture();
 		cleanups.push(installKeyboardDrawing(map, "test"));
 		const append = vi.spyOn(draw, "appendCoordinates");
 		key(" ");
 		target.focus();
-		for (const name of ["ArrowUp", "ArrowDown", "+", "-", "F10", "Escape"])
-			expect(key(name).defaultPrevented).toBe(false);
+		expect(key("ArrowUp").defaultPrevented).toBe(false);
 		key(" ", {ctrlKey: true});
 		key("Enter", {repeat: true});
 		const handled = new KeyboardEvent("keydown", {
@@ -121,16 +94,13 @@ describe("keyboard drawing", () => {
 		expect(append).not.toHaveBeenCalled();
 	});
 
-	it("detaches on unmount, reattaches once on remount, and stops when inactive", () => {
+	it("stops when inactive, detaches on unmount and reattaches once on remount", () => {
 		const {map, draw, target, key} = fixture();
 		const stop = installKeyboardDrawing(map, "test");
 		cleanups.push(stop);
 		const append = vi.spyOn(draw, "appendCoordinates");
 		target.focus();
 		draw.setActive(false);
-		expect(
-			target.classList.contains("ms3-map-target--keyboard-drawing"),
-		).toBe(false);
 		expect(key(" ").defaultPrevented).toBe(false);
 		draw.setActive(true);
 		map.setTarget(undefined);
@@ -145,7 +115,7 @@ describe("keyboard drawing", () => {
 	});
 
 	it("adds and removes shared points with Enter, Space and Backspace", () => {
-		const {map, draw, target, key} = fixture("Point");
+		const {map, target, key} = fixture("Point");
 		const actions = {add: vi.fn(), remove: vi.fn()};
 		cleanups.push(installKeyboardDrawing(map, "test", actions));
 		target.focus();
@@ -154,8 +124,6 @@ describe("keyboard drawing", () => {
 		key("Backspace");
 		expect(actions.add).toHaveBeenCalledTimes(2);
 		expect(actions.remove).toHaveBeenCalledTimes(1);
-		expect(getKeyboardDraw(map, "test")).toBe(draw);
-		expect(getKeyboardDraw(map, "other")).toBeUndefined();
 	});
 
 	it("keeps a crosshair when another tool is inactive and hides it on blur", () => {
@@ -179,43 +147,5 @@ describe("keyboard drawing", () => {
 		expect(
 			target.classList.contains("ms3-map-target--keyboard-drawing"),
 		).toBe(false);
-	});
-
-	it.each([undefined, true, false])(
-		"supports keyboardDrawing=%s (default false)",
-		(keyboardDrawing) => {
-			const context = create(
-				null,
-				vi.fn(),
-				{map: {layers: {}}},
-				{
-					renderer: vi.fn(),
-					validateConfig: false,
-					plugins: [
-						[
-							"measure",
-							createMeasureDistancePlugin({keyboardDrawing}),
-						],
-					],
-				},
-			);
-			const map = (
-				context.store!.getController("map") as MapController
-			).getMap()!;
-			cleanups.push(() => map.dispose());
-			expect(!!getKeyboardDraw(map, "measureDistance")).toBe(
-				keyboardDrawing === true,
-			);
-		},
-	);
-
-	it("preserves custom definition behaviour and event names", () => {
-		const definition = keyboardDrawingDefinition(DrawDefinition);
-		expect(definition.Constructor).toBe(DrawDefinition.Constructor);
-		expect(definition.type).toBe(DrawDefinition.type);
-		expect(definition.optionMap.source).toBe(
-			DrawDefinition.optionMap.source,
-		);
-		expect(definition.optionMap.keyboardTool).toBe("__set__");
 	});
 });

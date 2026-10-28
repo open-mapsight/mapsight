@@ -21,7 +21,7 @@ afterEach(() => {
 	setDocumentLanguage("de");
 });
 
-function setup(keyboardDrawing = true) {
+function setup(keyboardDrawing?: boolean) {
 	const context = create(
 		null,
 		vi.fn(),
@@ -49,8 +49,8 @@ function setup(keyboardDrawing = true) {
 }
 
 describe("keyboard tool controls", () => {
-	it("finishes the current measurement from the visible Done button", () => {
-		const {store, map} = setup();
+	it("finishes the measurement from the Done button only after two points", () => {
+		const {store, map} = setup(true);
 		render(
 			<Provider store={store}>
 				<MeasureDistanceButton opened />
@@ -58,16 +58,17 @@ describe("keyboard tool controls", () => {
 		);
 		const draw = getKeyboardDraw(map, "measureDistance")!;
 		const finish = vi.spyOn(draw, "finishDrawing");
-		draw.appendCoordinates([
-			[100, 200],
-			[300, 400],
-		]);
-		fireEvent.click(screen.getByRole("button", {name: "Fertig"}));
+		const done = screen.getByRole("button", {name: "Fertig"});
+		draw.appendCoordinates([[100, 200]]);
+		fireEvent.click(done);
+		expect(finish).not.toHaveBeenCalled();
+		draw.appendCoordinates([[300, 400]]);
+		fireEvent.click(done);
 		expect(finish).toHaveBeenCalledTimes(1);
 	});
 
 	it("shares the current centre from the visible button", async () => {
-		const {store, map} = setup();
+		const {store, map} = setup(true);
 		map.getView().setCenter([0, 0]);
 		render(
 			<Provider store={store}>
@@ -86,14 +87,16 @@ describe("keyboard tool controls", () => {
 		).toMatch(/#lm=0\/0$/);
 	});
 
-	it("keeps pointer instructions and hides keyboard controls when disabled", () => {
-		const {store} = setup(false);
+	it("keeps keyboard drawing off by default on both plugins", () => {
+		const {store, map} = setup();
 		render(
 			<Provider store={store}>
 				<MeasureDistanceButton opened />
 				<SharePositionLinkButton opened />
 			</Provider>,
 		);
+		expect(getKeyboardDraw(map, "measureDistance")).toBeUndefined();
+		expect(getKeyboardDraw(map, "sharePositionLink")).toBeUndefined();
 		expect(screen.queryByRole("button", {name: "Fertig"})).toBeNull();
 		expect(
 			screen.queryByRole("button", {name: "Kartenmitte teilen"}),

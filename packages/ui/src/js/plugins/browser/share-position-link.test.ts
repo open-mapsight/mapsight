@@ -102,40 +102,6 @@ describe("lonLatFromDrawnGeometry", () => {
 });
 
 describe("share position keyboard drawing", () => {
-	it.each([undefined, true, false])(
-		"supports keyboardDrawing=%s (default false)",
-		(keyboardDrawing) => {
-			const context = create(
-				null,
-				vi.fn(),
-				{map: {layers: {}}},
-				{
-					renderer: vi.fn(),
-					validateConfig: false,
-					plugins: [
-						[
-							"share",
-							createSharePositionPlugin({
-								keyboardDrawing,
-								showMarker: false,
-							}),
-						],
-					],
-				},
-			);
-			const map = (
-				context.store!.getController("map") as MapController
-			).getMap()!;
-			try {
-				expect(!!getKeyboardDraw(map, "sharePositionLink")).toBe(
-					keyboardDrawing === true,
-				);
-			} finally {
-				map.dispose();
-			}
-		},
-	);
-
 	it("shares the current centre with custom source, name and marker configuration", () => {
 		const context = create(
 			null,
