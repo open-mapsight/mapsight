@@ -26,6 +26,7 @@ import type {LayerDefinition} from "@mapsight/core/lib/map/lib/WithLayers";
 import {DEFAULT_OPTIONS as FIT_FEATURE_DEFAULT_OPTIONS} from "@mapsight/lib-ol/map/fitToFeature";
 
 import createNativeFullscreenPlugin from "../features/native-fullscreen/plugin.ts";
+import {osmTileUrl} from "../osm-tile-url.ts";
 import {demoGeoJsonUrl} from "./demo-geojson.ts";
 
 export {default as styleFunction} from "../generated/mapsight-vector-styles/demo";
@@ -60,7 +61,7 @@ export const baseMapsightConfig = {
 	...config.map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",
