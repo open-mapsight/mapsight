@@ -65,3 +65,24 @@ test("narrow navigation wraps and the skip link focuses the content", async ({
 		await page.locator("html").evaluate((element) => element.scrollWidth),
 	).toBe(360);
 });
+
+test.describe("with the OS in dark mode", () => {
+	test.use({colorScheme: "dark"});
+
+	test("the brand frame starts dark and the toggle still wins", async ({
+		page,
+	}) => {
+		await page.goto("/");
+		const toggle = page.getByRole("button", {name: "Dark mode"});
+		await expect(toggle).toHaveAttribute("aria-pressed", "true");
+		await expect(page.locator(".msb-shell")).toHaveAttribute(
+			"data-theme",
+			"dark",
+		);
+		await toggle.click();
+		await expect(page.locator(".msb-shell")).toHaveAttribute(
+			"data-theme",
+			"light",
+		);
+	});
+});

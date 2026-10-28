@@ -18,7 +18,13 @@ const navItems = [
 
 export function ShowcaseLayout() {
 	const location = useLocation();
-	const [darkFrame, setDarkFrame] = useState(false);
+	// Like the project website: start from the OS preference, then the toggle wins.
+	const [darkFrame, setDarkFrame] = useState(
+		() =>
+			typeof window !== "undefined" &&
+			window.matchMedia?.("(prefers-color-scheme: dark)").matches ===
+				true,
+	);
 	const showDemoNav = location.pathname.startsWith("/ui");
 	const showIconsNav = location.pathname.startsWith("/icons");
 	const isIconEditor = location.pathname === "/icons";
