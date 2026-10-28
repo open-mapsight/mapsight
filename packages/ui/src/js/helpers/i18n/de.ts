@@ -261,6 +261,9 @@ const de: Record<string, string> = {
 
 	"ui.tool-overlay.keyboard-help": "Tastaturbedienung",
 	"ui.tool-overlay.keyboard-help.focus": "Bei fokussierter Karte:",
+	"ui.skip-links.map": "Zur Karte springen",
+	"ui.skip-links.list": "Zur Liste springen",
+	"ui.skip-links.search": "Zur Suche springen",
 	"ui.tool-overlay.to-map": "Zur Karte springen",
 	"ui.tool-overlay.back-to-tool": "Zurück zu „{name}“",
 	"ui.tool-overlay.keyboard.pan": "Karte verschieben",

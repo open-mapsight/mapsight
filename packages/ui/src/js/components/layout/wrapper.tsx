@@ -19,6 +19,7 @@ import {
 	viewSelector,
 } from "../../store/selectors";
 import ErrorBoundary from "../error-boundary";
+import SkipLinks from "./skip-links";
 
 import "./host-slots";
 
@@ -126,6 +127,7 @@ function AppWrapper({
 					aria-describedby={isOverlayView ? descriptionId : undefined}
 					tabIndex={isOverlayView ? -1 : undefined}
 				>
+					<SkipLinks rootRef={wrapperRef} />
 					{isOverlayView ? (
 						<p id={descriptionId} className="ms3-visuallyhidden">
 							{escapeHint}

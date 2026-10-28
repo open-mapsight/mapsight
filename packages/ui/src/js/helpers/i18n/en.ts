@@ -254,6 +254,9 @@ const en: Record<string, string> = {
 
 	"ui.tool-overlay.keyboard-help": "Keyboard controls",
 	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",
+	"ui.skip-links.map": "Skip to the map",
+	"ui.skip-links.list": "Skip to the list",
+	"ui.skip-links.search": "Skip to the search",
 	"ui.tool-overlay.to-map": "Skip to the map",
 	"ui.tool-overlay.back-to-tool": "Back to “{name}”",
 	"ui.tool-overlay.keyboard.pan": "Pan the map",

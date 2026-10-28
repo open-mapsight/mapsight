@@ -229,6 +229,11 @@ export type FullUiState = {
 	searchInMap: boolean;
 	/** Set false for SSR-safe search embedding inside a host form. Defaults to true. */
 	searchRenderForm?: boolean;
+	/**
+	 * Opt in to skip links ("Skip to the map / list / search") at the start of
+	 * the instance, shown on keyboard focus. Default false; planned default in v8.
+	 */
+	skipLinks?: boolean;
 	searchQuery: string;
 	searchResult: FeatureSourceState & {
 		status: "error" | "loading" | "success" | null;
