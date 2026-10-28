@@ -39,6 +39,7 @@
 		"chokidar": "^6.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"sass": "1.105.1",
 		"svgo": "^4.1.0",
 		"vitest": "catalog:"
 	},

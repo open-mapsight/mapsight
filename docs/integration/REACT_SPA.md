@@ -47,7 +47,9 @@ development.
    `package.json` scripts).
 4. **Assets** — copy `@mapsight/traffic-style` image dirs to `public/img/` for map icons (`mapsight-icons*`). UI chrome
    icons (`mapsight-ui/*`) resolve from `@mapsight/ui` through SCSS (`$ms3-iconPath: "~@mapsight/ui/dist/img/"`) and are
-   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss).
+   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss). Set
+   `$ms3-future-v8-themedIcons: true` to colour them from the `--ms3-*` tokens
+   ([themed chrome icons](../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons)).
 
 The vite-spa starter mounts the map only on `/`. Navigating to `/about` unmounts `Instance` and tears down its store. If
 you keep `Instance` at a layout level across routes, call `resetMapsightCore` when leaving map modules — see the starter
