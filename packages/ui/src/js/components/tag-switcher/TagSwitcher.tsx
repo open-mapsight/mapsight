@@ -1,4 +1,5 @@
-import {type ElementType, memo, useMemo} from "react";
+import type {ElementType} from "react";
+import {memo, useMemo} from "react";
 
 import {getDocumentLanguage} from "../../helpers/i18n";
 import GroupedSwitcher from "../switcher/GroupedSwitcher";

@@ -4,7 +4,7 @@ import {useEffect} from "react";
 import {isEventWithNoModKeys} from "../helpers/events";
 
 export default function useHandleEscapeKeyDown(
-	ref: RefObject<HTMLElement>,
+	ref: RefObject<HTMLElement | null>,
 	onEscape: () => void,
 ): void {
 	useEffect(() => {

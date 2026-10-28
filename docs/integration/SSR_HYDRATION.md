@@ -145,7 +145,7 @@ Monorepo entry points today:
   `render()` / `renderAsync()` return the HTML shell; `getDehydratedState()` /
   `emitFragment({ id })` build the container fragment with `data-dehydrated-state`
 - Optional Express-style middleware: [
-  `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js) —
+  `packages/ui/src/js/server-handler.ts`](../../packages/ui/src/js/server-handler.ts) —
   POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
   `text/html` fragment
 
@@ -214,7 +214,7 @@ Same snippet imports `browserEmbed` — it reads `data-dehydrated-state` automat
 | Fallback   | On timeout/error, emit standard client-only snippet ([graceful degradation](#graceful-degradation-required)) |
 
 Monorepo server entry points: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts), [
-`packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js).
+`packages/ui/src/js/server-handler.ts`](../../packages/ui/src/js/server-handler.ts).
 
 ### PHP → Node smoke (generic CMS)
 
