@@ -24,10 +24,10 @@
 		"canvas": "catalog:",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
-		"ol-mapbox-style": "^13.5.1",
+		"ol-mapbox-style": "^13.8.0",
 		"playwright": "catalog:",
 		"proj4": "catalog:",
-		"tsc-alias": "^1.9.7",
+		"tsc-alias": "^1.9.8",
 		"typescript": "catalog:",
 		"vite": "^8.3.3",
 		"vitest": "catalog:"
@@ -103,7 +103,7 @@
 		"@redux-devtools/extension": "^4.0.0",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
-		"ol-mapbox-style": "^13.5.1",
+		"ol-mapbox-style": "^13.8.0",
 		"proj4": "catalog:"
 	},
 	"peerDependenciesMeta": {
