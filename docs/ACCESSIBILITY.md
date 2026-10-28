@@ -55,6 +55,13 @@ against `pnpm --filter @mapsight/showcase start` to check fixes without a host.
 
 ---
 
+## Heading hierarchy
+
+Heading ranks can follow the host page through the opt-in `future.v8_automaticHeadings` resolver and permanent
+`headings.baseLevel` configuration. Historical 7.x elements remain without the flag. See the
+[heading integration guide](../packages/ui/docs/HEADINGS.md), including explicit list grouping, modal scopes,
+non-modal regions, and full-page audit requirements.
+
 ## Roadmap
 
 1. Public accessibility status

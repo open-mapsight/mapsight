@@ -1,4 +1,4 @@
-import type {FormEvent, MouseEvent} from "react";
+import type {ElementType, FormEvent, MouseEvent} from "react";
 import {memo, useCallback, useEffect, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
@@ -15,6 +15,7 @@ import {mergeFilterOptions} from "@mapsight/core/lib/filter/actions";
 import {trackEvent} from "@mapsight/lib-js/misc/piwik";
 
 import {TIME_FILTER} from "../config/constants/controllers";
+import {Heading, useHeadingElement} from "../headings";
 import {translate} from "../helpers/i18n";
 
 type TimeFilterRootState = {
@@ -70,7 +71,8 @@ function toDateSelector(state: TimeFilterRootState) {
 	return state[TIME_FILTER] && state[TIME_FILTER].toDate;
 }
 
-function TimeFilter() {
+function TimeFilter({headlineAs}: {headlineAs?: ElementType} = {}) {
+	const Headline = useHeadingElement("timeFilter", "h2", headlineAs);
 	// FIXME: stop using hardcoded ids
 	// TODO: use react input fields
 
@@ -150,7 +152,7 @@ function TimeFilter() {
 
 	return (
 		<form onSubmit={onSubmit} className="ms3-timefilter">
-			<h2>{translate("ui.time-filter.span")}</h2>
+			<Heading as={Headline}>{translate("ui.time-filter.span")}</Heading>
 			<p>
 				<label htmlFor={ID_FROM}>
 					<span className="ms3-visuallyhidden">

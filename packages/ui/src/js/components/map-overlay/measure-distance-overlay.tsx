@@ -1,10 +1,11 @@
-import {useMemo} from "react";
+import {useEffect, useMemo} from "react";
 
 import GeoJSON from "ol/format/GeoJSON";
 import {getLength} from "ol/sphere";
 
 import type {Feature} from "geojson";
 
+import {announceStatus} from "../../helpers/announce-status";
 import {getDocumentLanguage, translate} from "../../helpers/i18n";
 
 const geoJsonFormat = new GeoJSON();
@@ -31,12 +32,18 @@ function MeasureDistanceInfo({feature}: {feature?: Partial<Feature> | null}) {
 		});
 	}, [fGeo]);
 
+	const formattedValue = geometry ? formatLength(getLength(geometry)) : null;
+	useEffect(() => {
+		if (formattedValue) {
+			announceStatus(
+				`${translate("ui.measure-distance.measurement")}: ${formattedValue}`,
+			);
+		}
+	}, [formattedValue, fGeo]);
+
 	if (!geometry) {
 		return null;
 	}
-
-	const length = getLength(geometry);
-	const formattedValue = formatLength(length);
 
 	return (
 		<div className="ms3-measure-distance">

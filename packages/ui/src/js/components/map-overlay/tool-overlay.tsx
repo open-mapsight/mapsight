@@ -1,6 +1,7 @@
-import type {PropsWithChildren, ReactNode} from "react";
+import type {ElementType, PropsWithChildren, ReactNode} from "react";
 import {useEffect, useId, useRef} from "react";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import CloseOverlayButton from "../close-overlay-button";
 
@@ -9,6 +10,7 @@ type Props = {
 	text: ReactNode;
 	label: ReactNode;
 	onClose: () => void;
+	headlineAs?: ElementType;
 };
 
 const ToolOverlay = ({
@@ -17,12 +19,15 @@ const ToolOverlay = ({
 	children,
 	label,
 	onClose,
+	headlineAs,
 }: PropsWithChildren<Props>) => {
+	const Headline = useHeadingElement("toolTitle", "h3", headlineAs);
 	const headingId = useId();
 	const overlayRef = useRef<HTMLDivElement>(null);
 
 	// Keyboard users operate the tool on the map and reach it from its toggle,
-	// so Escape there closes it too (bubble phase, handled events excluded).
+	// so Escape there closes it too. Listen after React's bubble handlers but
+	// before document-level focus traps, which may otherwise exit fullscreen.
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			const overlay = overlayRef.current;
@@ -52,8 +57,9 @@ const ToolOverlay = ({
 			event.preventDefault();
 			onClose();
 		};
-		document.addEventListener("keydown", onKeyDown);
-		return () => document.removeEventListener("keydown", onKeyDown);
+		const root = document.body;
+		root.addEventListener("keydown", onKeyDown);
+		return () => root.removeEventListener("keydown", onKeyDown);
 	}, [id, onClose]);
 
 	return (
@@ -74,11 +80,17 @@ const ToolOverlay = ({
 			}}
 		>
 			<CloseOverlayButton onClose={onClose} />
-			<h3 className="ms3-tool-overlay__header" id={headingId}>
+			<Heading
+				as={Headline}
+				className="ms3-tool-overlay__header"
+				id={headingId}
+			>
 				{label}
-			</h3>
-			{text && <p className="ms3-tool-overlay__text">{text}</p>}
-			{children}
+			</Heading>
+			<HeadingContent headingAs={Headline}>
+				{text && <p className="ms3-tool-overlay__text">{text}</p>}
+				{children}
+			</HeadingContent>
 		</div>
 	);
 };

@@ -1,7 +1,8 @@
-import type {MouseEvent} from "react";
+import type {ElementType, MouseEvent} from "react";
 import {memo} from "react";
 import ReactModal from "react-modal";
 
+import {Heading, useHeadingElement} from "../../headings";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
@@ -14,11 +15,16 @@ function ShareFeatureLinkModal({
 	isOpen,
 	onRequestClose,
 	feature,
+	headlineAs,
 }: {
 	isOpen: boolean;
 	onRequestClose?: ReactModal.Props["onRequestClose"];
 	feature: MapsightUiFeature;
+	headlineAs?: ElementType;
 }) {
+	const Headline = useHeadingElement("dialogTitle", "h3", headlineAs, {
+		level: 2,
+	});
 	return (
 		<ReactModal
 			isOpen={isOpen}
@@ -30,9 +36,9 @@ function ShareFeatureLinkModal({
 		>
 			<div className="ms3-modal__inner">
 				<div className="ms3-share-link">
-					<h3 className="ms3-share-link__head">
+					<Heading as={Headline} className="ms3-share-link__head">
 						{translate("ui.feature-details.share-link.head")}
-					</h3>
+					</Heading>
 
 					<label className="ms3-share-link__label">
 						{translate("ui.feature-details.share-link.place")}

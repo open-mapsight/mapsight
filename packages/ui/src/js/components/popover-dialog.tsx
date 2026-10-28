@@ -1,5 +1,6 @@
 import {
 	type CSSProperties,
+	type ElementType,
 	type ReactElement,
 	type ReactNode,
 	type RefObject,
@@ -8,6 +9,7 @@ import {
 } from "react";
 import {DismissButton, FocusScope, OverlayContainer} from "react-aria";
 
+import {Heading, HeadingContent, useHeadingElement} from "../headings";
 import usePopoverDialog, {
 	type PopoverDialogPlacement,
 } from "../hooks/usePopoverDialog";
@@ -18,6 +20,7 @@ export type PopoverDialogProps = {
 	onClose: () => void;
 	triggerRef: RefObject<Element | null>;
 	title?: ReactNode;
+	headlineAs?: ElementType;
 	/** Explicit `aria-labelledby` id. Defaults to a generated id on the title heading. */
 	labelledBy?: string;
 	/** Accessible name when there is no visible title (`aria-label`). */
@@ -52,6 +55,7 @@ export default function PopoverDialog({
 	onClose,
 	triggerRef,
 	title,
+	headlineAs,
 	labelledBy,
 	"aria-label": ariaLabel,
 	id: idProp,
@@ -67,6 +71,7 @@ export default function PopoverDialog({
 	children,
 	portal = true,
 }: PopoverDialogProps): ReactElement | null {
+	const Headline = useHeadingElement("dialogTitle", "h3", headlineAs);
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const generatedId = useId();
 	const popoverId = idProp ?? generatedId;
@@ -102,13 +107,14 @@ export default function PopoverDialog({
 				{title != null || !hideCloseButton ? (
 					<header className="ms3-popover-dialog__header">
 						{title != null ? (
-							<h3
+							<Heading
+								as={Headline}
 								{...titleProps}
 								id={labelledBy ?? titleProps.id}
 								className="ms3-popover-dialog__title"
 							>
 								{title}
-							</h3>
+							</Heading>
 						) : null}
 						{hideCloseButton ? null : (
 							<CloseOverlayButton
@@ -118,7 +124,11 @@ export default function PopoverDialog({
 						)}
 					</header>
 				) : null}
-				{children}
+				<HeadingContent
+					headingAs={title != null ? Headline : undefined}
+				>
+					{children}
+				</HeadingContent>
 				<DismissButton onDismiss={onClose} />
 			</div>
 		</FocusScope>

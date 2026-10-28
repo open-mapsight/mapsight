@@ -1,6 +1,7 @@
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
+import {Heading, HeadingsProvider} from "../headings";
 import NativeDialog from "./native-dialog";
 
 vi.mock("./close-overlay-button", () => ({
@@ -61,6 +62,33 @@ describe("NativeDialog", () => {
 		expect(screen.getByRole("heading", {name: "Layers"})).toBeTruthy();
 		expect(screen.getByText("switcher")).toBeTruthy();
 		expect(screen.getByRole("dialog").hasAttribute("open")).toBe(true);
+	});
+
+	it("starts a modal scope independently of the page and advances only after a title", () => {
+		const {rerender} = render(
+			<HeadingsProvider enabled options={{baseLevel: 5}}>
+				<NativeDialog isOpen title="Layers" onClose={vi.fn()}>
+					<Heading>Group</Heading>
+				</NativeDialog>
+			</HeadingsProvider>,
+		);
+		expect(
+			screen.getByRole("heading", {name: "Layers", level: 2}),
+		).toBeTruthy();
+		expect(
+			screen.getByRole("heading", {name: "Group", level: 3}),
+		).toBeTruthy();
+		expect(screen.getByRole("dialog", {name: "Layers"})).toBeTruthy();
+		rerender(
+			<HeadingsProvider enabled options={{baseLevel: 5}}>
+				<NativeDialog isOpen aria-label="Layers" onClose={vi.fn()}>
+					<Heading>Group</Heading>
+				</NativeDialog>
+			</HeadingsProvider>,
+		);
+		expect(
+			screen.getByRole("heading", {name: "Group", level: 2}),
+		).toBeTruthy();
 	});
 
 	it("portals to document.body when portal is true", () => {

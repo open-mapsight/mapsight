@@ -1,6 +1,7 @@
 import type {ElementType, ReactNode} from "react";
 import {Fragment, memo} from "react";
 
+import {HeadingContent, useHeadingElement} from "../../headings";
 import type {PolymorphicProps} from "../polymorphic-props";
 import type {SwitcherHeaderProps} from "./SwitcherHeader";
 import SwitcherHeader from "./SwitcherHeader";
@@ -29,7 +30,7 @@ const defaultRenderHeader = (
 function Switcher(props: SwitcherProps) {
 	const {
 		as: T = "div",
-		headlineAs = "h3",
+		headlineAs,
 		entriesAs: V = "ul",
 		baseClass = "ms3-layer-switcher", // TODO: Move to generic class name
 		renderEntry,
@@ -40,6 +41,7 @@ function Switcher(props: SwitcherProps) {
 		entriesAttributes: entriesAttributes_ = {},
 		...attributes
 	} = props;
+	const Headline = useHeadingElement("switcher", "h3", headlineAs);
 
 	const headerAttributes = {...headerAttributes_};
 	const entriesAttributes = {...entriesAttributes_};
@@ -61,12 +63,14 @@ function Switcher(props: SwitcherProps) {
 	return (
 		<T {...(T === Fragment ? {} : attributes)}>
 			{group
-				? renderHeader(group, {as: headlineAs, ...headerAttributes})
+				? renderHeader(group, {as: Headline, ...headerAttributes})
 				: null}
 
-			<V {...entriesAttributes}>
-				{ids.map((id) => renderEntry(id, group))}
-			</V>
+			<HeadingContent headingAs={group ? Headline : undefined}>
+				<V {...entriesAttributes}>
+					{ids.map((id) => renderEntry(id, group))}
+				</V>
+			</HeadingContent>
 		</T>
 	);
 }

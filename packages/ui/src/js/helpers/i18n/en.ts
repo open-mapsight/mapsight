@@ -52,6 +52,7 @@ const en: Record<string, string> = {
 	"ui.place-actions.share.copied": "Copied",
 	"ui.place-actions.share.close": "Close share dialog",
 	"ui.place-actions.share.permalink": "Permalink",
+	"ui.place-actions.share.copy-success": "Link copied",
 	"ui.place-actions.navigate": "Directions",
 	"ui.place-actions.navigate.tooltip":
 		"Navigate to this place with another app",
@@ -64,10 +65,13 @@ const en: Record<string, string> = {
 	"ui.place-actions.copy-coords": "Copy coordinates",
 	"ui.place-actions.copy-coords.tooltip": "Copy these coordinates",
 	"ui.place-actions.copy-coords.copied": "Copied",
+	"ui.place-actions.copy-coords.copy-success": "Coordinates copied",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Open this place’s website",
 	"ui.place-actions.call": "Call",
 	"ui.place-actions.call.tooltip": "Call this place",
+	"ui.place-actions.copy-failed":
+		"Copy failed. Please copy the text manually.",
 
 	"ui.feature-details.content-inner.error": "error at loading details",
 	"ui.feature-details.content-inner.gotoPage": "jump to page",
@@ -158,14 +162,17 @@ const en: Record<string, string> = {
 	"ui.map.usage.heading": "Keyboard shortcuts for map usage",
 	"ui.map.usage.html":
 		'<dl class="ms3-map-usage">' +
-		'<dt><kbd aria-label="Arrow right">→</kbd></dt><dd>move right</dd>' +
-		'<dt><kbd aria-label="Arrow left">←</kbd></dt><dd>move left</dd>' +
-		'<dt><kbd aria-label="Arrow down">↓</kbd></dt><dd>move down</dd>' +
-		'<dt><kbd aria-label="Arrow up">↑</kbd></dt><dd>move up</dd>' +
+		'<dt><kbd><span aria-hidden="true">→</span><span class="ms3-visuallyhidden">Arrow right</span></kbd></dt><dd>move right</dd>' +
+		'<dt><kbd><span aria-hidden="true">←</span><span class="ms3-visuallyhidden">Arrow left</span></kbd></dt><dd>move left</dd>' +
+		'<dt><kbd><span aria-hidden="true">↓</span><span class="ms3-visuallyhidden">Arrow down</span></kbd></dt><dd>move down</dd>' +
+		'<dt><kbd><span aria-hidden="true">↑</span><span class="ms3-visuallyhidden">Arrow up</span></kbd></dt><dd>move up</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>zoom in</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>zoom out</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Open the menu at the map centre</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
+	"ui.map.label": "Interactive map",
+	"ui.map.roledescription": "Map",
 
 	"ui.wrapper.overlay.fullscreen": "Fullscreen map",
 	"ui.wrapper.overlay.mapOnly": "Map",
@@ -195,6 +202,9 @@ const en: Record<string, string> = {
 
 	"ui.user-geo-location-button.label": "jump to your location",
 	"ui.user-geo-location-button.ariaLabel": "jump to your location",
+	"ui.user-geo-location-button.requesting": "Requesting your location …",
+	"ui.user-geo-location-button.error":
+		"Your location could not be determined.",
 
 	// List chrome accessibility.
 	"ui.pagination.label": "Page navigation",
@@ -227,8 +237,13 @@ const en: Record<string, string> = {
 		"Click on the map to share a position.",
 	"ui.share-position-link.shareTitle": "Share marked position",
 	"ui.share-position-link.shareButtonLabel": "Share marked position",
+	"ui.share-position-link.share-center": "Share map centre",
+	"ui.share-position-link.keyboard-instructions":
+		"Click the map or choose “Share map centre”. With the map focused: arrow keys pan, Enter or Space selects the centre, and Backspace removes the point.",
 
 	"ui.link-share.input": "Link to share",
+
+	"ui.measure-distance.finish": "Done",
 };
 
 export default en;

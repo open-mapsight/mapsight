@@ -61,6 +61,7 @@
 
 	&__button {
 		display: block;
+		min-width: 24px;
 		@if (variables.$ms3-option-mapOverlayButtonsShowLabel) {
 			width: 80px;
 			min-height: 50px;
@@ -223,4 +224,17 @@
 			background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
 		}
 	}
+}
+
+.ms3-map-tool-action {
+	display: block;
+	min-width: 24px;
+	min-height: 32px;
+	max-width: calc(100% - 12px);
+	margin: 6px;
+	padding: 4px 8px;
+	border: 1px solid var(--ms3-border-color);
+	border-radius: var(--ms3-border-radius);
+	background: var(--ms3-background-color);
+	color: var(--ms3-foreground-color);
 }

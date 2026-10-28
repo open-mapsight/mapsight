@@ -7,6 +7,7 @@ import {load} from "@mapsight/core/lib/feature-sources/actions";
 import type {State} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES} from "../../config/constants/controllers";
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import {translate} from "../../helpers/i18n";
 import {
 	featureSourceToView,
@@ -23,7 +24,7 @@ import useFeatureListItemGroups from "./hooks/useFeatureListItemGroups";
 import useKeyboardNavigation from "./hooks/useKeyboardNavigation";
 
 export type FeatureListGroupedContentProps = FeatureListContentProps & {
-	groupAs?: ElementType | null;
+	groupAs?: ElementType | "auto" | null;
 	itemAs?: ElementType;
 };
 
@@ -48,6 +49,11 @@ function FeatureListGroupedContent(
 	}: FeatureListGroupedContentProps,
 	forwardedRef: ForwardedRef<HTMLElement>,
 ) {
+	const GroupNameT = useHeadingElement(
+		"featureListGroup",
+		"h3",
+		groupAs === "auto" ? undefined : (groupAs ?? undefined),
+	);
 	const ownRef = useRef<HTMLElement>(null);
 	const ref = forwardedRef || ownRef;
 	const dispatch = useDispatch<MapsightUiStore["dispatch"]>();
@@ -120,26 +126,33 @@ function FeatureListGroupedContent(
 
 	if (features.length) {
 		if (itemGroups.groups) {
-			const GroupNameT = groupAs!;
-
 			listContent = (
 				<T className="ms3-list-groups ms3-scroll-target" {...rootProps}>
 					{itemGroups.groups.map(function composeGroup(group, index) {
 						return (
 							<Fragment key={group.name}>
 								{group.name ? (
-									<GroupNameT className="ms3-list__group ms3-list__group--name">
+									<Heading
+										as={GroupNameT}
+										className="ms3-list__group ms3-list__group--name"
+									>
 										{group.name}
-									</GroupNameT>
+									</Heading>
 								) : null}
 
-								<FeatureListContent
-									data-ms3-group-name={group.name}
-									status={listStatus}
-									{...listProps}
+								<HeadingContent
+									headingAs={
+										group.name ? GroupNameT : undefined
+									}
 								>
-									{itemGroups.items[index]}
-								</FeatureListContent>
+									<FeatureListContent
+										data-ms3-group-name={group.name}
+										status={listStatus}
+										{...listProps}
+									>
+										{itemGroups.items[index]}
+									</FeatureListContent>
+								</HeadingContent>
 							</Fragment>
 						);
 					})}

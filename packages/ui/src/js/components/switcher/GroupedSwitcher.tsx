@@ -13,7 +13,7 @@ function GroupedSwitcher(props: GroupedSwitcherProps) {
 		as: T = "div",
 		className = "ms3-grouped-switcher",
 		renderEntry,
-		headlineAs = "h3",
+		headlineAs,
 		renderHeader = undefined,
 		ungroupedIds = [],
 		groupedIds = {},

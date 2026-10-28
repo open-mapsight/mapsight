@@ -31,7 +31,11 @@ const RegionSelectorEntry = memo(function RegionSelectorEntry({
 					: ""
 			}`}
 		>
-			<button type="button" onClick={onClick}>
+			<button
+				type="button"
+				onClick={onClick}
+				aria-pressed={regionId === selectedRegionId}
+			>
 				{region.label}
 			</button>
 		</li>

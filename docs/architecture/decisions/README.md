@@ -24,6 +24,7 @@ Routine bug fixes, dependency bumps, and internal refactors without an external 
 | [011](011-license-and-brand-strategy.md)          | License and brand strategy                       | Documented                               |
 | [012](012-future-flags-for-next-major-ui.md)      | Future flags for next-major UI behavior          | Documented                               |
 | [013](013-ui-renderer-commit-lifecycle.md)        | UI renderer commit lifecycle                     | Documented                               |
+| [014](014-automatic-ui-headings.md)               | Automatic UI heading hierarchy                   | Documented                               |
 
 ---
 

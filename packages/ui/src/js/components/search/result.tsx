@@ -2,6 +2,7 @@ import type {ElementType, ReactNode} from "react";
 import {memo, useMemo} from "react";
 import {useSelector} from "react-redux";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
 import {useAsyncStatusDisplay} from "../../lib/async-status";
@@ -19,12 +20,25 @@ import SearchResultEntry from "./result-entry";
 
 const defaultGroup = "__default__";
 
+/**
+ * @param {{
+ *   closeSearch?: () => void,
+ *   onReturnFocus?: () => void,
+ *   onResultSelected?: (feature: import("../../types").MapsightUiFeature) => void,
+ *   groupHeadlineAs?: import("react").ElementType,
+ * }} props props
+ */
 function SearchResult({
 	closeSearch,
 	onReturnFocus,
 	onResultSelected,
-	groupHeadlineAs: GroupHeadline = "h4",
+	groupHeadlineAs,
 }: Omit<SearchResultEntryProps, "feature"> & {groupHeadlineAs?: ElementType}) {
+	const GroupHeadline = useHeadingElement(
+		"searchGroup",
+		"h4",
+		groupHeadlineAs,
+	);
 	const status = useSelector(searchStatusSelector);
 	const features = useSelector(searchResultFeaturesSelector);
 
@@ -67,14 +81,25 @@ function SearchResult({
 		return Object.keys(groupedEntries).map((group) => (
 			<div className="ms3-search-result__group" key={group}>
 				{group && group !== defaultGroup ? (
-					<GroupHeadline className="ms3-search-result__group-head">
+					<Heading
+						as={GroupHeadline}
+						className="ms3-search-result__group-head"
+					>
 						{group}
-					</GroupHeadline>
+					</Heading>
 				) : null}
 
-				<ul className="ms3-search-result__list">
-					{groupedEntries[group]}
-				</ul>
+				<HeadingContent
+					headingAs={
+						group && group !== defaultGroup
+							? GroupHeadline
+							: undefined
+					}
+				>
+					<ul className="ms3-search-result__list">
+						{groupedEntries[group]}
+					</ul>
+				</HeadingContent>
 			</div>
 		));
 	}, [features, groupedEntries, GroupHeadline]);

@@ -35,7 +35,7 @@ function Search({
 	autoFocus,
 	announceResults = true,
 	onResultSelected,
-	groupHeadlineAs = "h4",
+	groupHeadlineAs = undefined,
 }: SearchProps) {
 	const dispatch = useDispatch<MapsightUiStore["dispatch"]>();
 	const query = useSelector(searchQuerySelector) ?? "";

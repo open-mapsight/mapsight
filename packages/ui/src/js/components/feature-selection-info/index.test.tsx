@@ -11,11 +11,17 @@ import {
 } from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {Heading, type HeadingOptions, HeadingsProvider} from "../../headings";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import FeatureSelectionInfo from "./index";
 
 vi.mock("../feature-details-content", () => ({
-	default: () => <a href="#details">More</a>,
+	default: () => (
+		<>
+			<a href="#details">More</a>
+			<Heading>Information</Heading>
+		</>
+	),
 }));
 
 const feature = {
@@ -30,6 +36,7 @@ function setup({
 	trapFocus = false,
 	enableKeyboardControl = true,
 	retain = false,
+	headings = undefined as HeadingOptions | undefined,
 } = {}) {
 	const store = configureStore({
 		reducer: (
@@ -81,7 +88,12 @@ function setup({
 	}
 	const result = render(
 		<Provider store={store}>
-			<Contents />
+			<HeadingsProvider
+				enabled={headings !== undefined}
+				options={headings}
+			>
+				<Contents />
+			</HeadingsProvider>
 		</Provider>,
 	);
 	const origin = screen.getByRole("button", {name: "origin row"});
@@ -96,6 +108,19 @@ afterEach(() => {
 });
 
 describe("selection details focus", () => {
+	it("scopes selection content and keeps one accessible title in the sticky header", () => {
+		setup({stickyHeader: true, headings: {baseLevel: 2}});
+		const title = screen.getByRole("heading", {name: "Place", level: 2});
+		expect(
+			screen.getByRole("heading", {name: "Information", level: 3}),
+		).toBeTruthy();
+		expect(
+			screen
+				.getByRole("region", {name: "Place"})
+				.getAttribute("aria-labelledby"),
+		).toBe(title.id);
+		expect(document.querySelectorAll(`[id="${title.id}"]`)).toHaveLength(1);
+	});
 	it("focuses a named region with a sticky header and keeps heading ids unique", () => {
 		setup({stickyHeader: true});
 		const region = screen.getByRole("region", {name: "Place"});

@@ -1,5 +1,9 @@
 # CMS and PHP snippet embed
 
+Choose the embed's heading placement in the host template: with `future.v8_automaticHeadings: true`, use
+`headings.baseLevel: 2` directly below the page `h1`, or 3 within an existing `h2` section. Pass the same options
+to server and browser embeds. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md#cms-embeds).
+
 Generic pattern for embedding Mapsight in **PHP-backed CMS pages** or static Apache/nginx hosts. Applies to TYPO3 and
 similar PHP CMS workflows; Java-based Infosite adds a module layer — see [CMS_INFOSITE.md](CMS_INFOSITE.md).
 

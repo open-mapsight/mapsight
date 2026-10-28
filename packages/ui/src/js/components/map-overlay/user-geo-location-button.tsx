@@ -10,6 +10,7 @@ import {getGeolocation} from "@mapsight/core/lib/user-geolocation/actions";
 import {createUserGeolocationSelector} from "@mapsight/core/lib/user-geolocation/selectors";
 
 import * as c from "../../config/constants/controllers";
+import {announceStatus} from "../../helpers/announce-status";
 import {translate} from "../../helpers/i18n";
 import modClasses from "../../helpers/mod-classes";
 import type {MapsightUiStore} from "../../types";
@@ -43,6 +44,14 @@ const UserGeoLocationButton = memo(function UserGeoLocationButton({
 			);
 		}
 	}, [dispatch, longitude, latitude, moveToGeoLoc]);
+
+	useEffect(() => {
+		if (isRequesting) {
+			announceStatus(translate("ui.user-geo-location-button.requesting"));
+		} else if (error) {
+			announceStatus(translate("ui.user-geo-location-button.error"));
+		}
+	}, [isRequesting, error]);
 
 	const onClick = useCallback(
 		function onClick(e: MouseEvent<HTMLButtonElement>) {
