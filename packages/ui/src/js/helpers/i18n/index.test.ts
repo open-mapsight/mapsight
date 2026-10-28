@@ -1,7 +1,7 @@
 import {globSync, readFileSync} from "node:fs";
 import {resolve} from "node:path";
 
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, expect, it, vi} from "vitest";
 
 import {
 	getDictionary,
@@ -27,26 +27,18 @@ it("keeps the default locale independent of browser document language", async ()
 	expect(getDocumentLanguage()).toBe("en");
 });
 
-describe("locale fallback", () => {
-	it.each(["en-GB", "en-US", "EN-gb", "en_GB"])(
-		"uses English for %s",
-		(locale) => {
-			setDocumentLanguage(locale);
-			expect(translate("shareLink")).toBe("Share link");
-			expect(translate("marker", locale)).toBe("Marker");
-		},
-	);
-	it("retains region-specific host translations before falling back to the base language", () => {
-		registerTranslations({"en-GB": {shareLink: "Share this link"}});
-		expect(translate("shareLink", "en-GB")).toBe("Share this link");
-		expect(translate("marker", "en-GB")).toBe("Marker");
-	});
-	it("keeps the German and raw-key fallbacks", () => {
-		expect(translate("shareLink", "fr-FR")).toBe("Link teilen");
-		expect(translate("unknown.translation", "fr")).toBe(
-			"unknown.translation",
-		);
-	});
+it("falls back from regional locales to the base language", () => {
+	setDocumentLanguage("en-GB");
+	expect(translate("shareLink")).toBe("Share link");
+	expect(translate("marker", "EN_us")).toBe("Marker");
+});
+
+it("prefers exact host translations, then the base language, German and the raw key", () => {
+	registerTranslations({"en-GB": {shareLink: "Share this link"}});
+	expect(translate("shareLink", "en-GB")).toBe("Share this link");
+	expect(translate("marker", "en-GB")).toBe("Marker");
+	expect(translate("shareLink", "fr-FR")).toBe("Link teilen");
+	expect(translate("unknown.translation", "fr")).toBe("unknown.translation");
 });
 
 it("provides German and English for every translate literal in the UI package", () => {

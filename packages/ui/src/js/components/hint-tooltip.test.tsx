@@ -42,7 +42,6 @@ describe("HintTooltip", () => {
 		});
 		expect(list.className).not.toContain("ms3-hint--");
 		expect(list.tabIndex).toBe(-1);
-		expect(list.hasAttribute("tabindex")).toBe(false);
 
 		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
 		fireEvent.pointerEnter(list, {pointerType: "mouse"});

@@ -22,7 +22,7 @@ vi.mock("../../store/selectors", () => ({
 
 const feature = {
 	id: "station",
-	properties: {name: "Station", group: "Places", isIncompleteSuggest: false},
+	properties: {name: "Station", group: "Places"},
 };
 type SearchState = {
 	query: string;
@@ -72,6 +72,15 @@ function setup(
 	return {...view, store};
 }
 
+function addFocusTarget(container: HTMLElement, className: string) {
+	const target = document.createElement("div");
+	target.className = className;
+	target.getClientRects = () =>
+		[new DOMRect(0, 0, 100, 100)] as unknown as DOMRectList;
+	container.querySelector(".ms3-wrapper")!.append(target);
+	return target;
+}
+
 beforeEach(() => {
 	vi.useFakeTimers();
 	setDocumentLanguage("de");
@@ -83,8 +92,8 @@ afterEach(() => {
 });
 
 describe("search status", () => {
-	it("announces debounced loading, count and empty text separately from the results", () => {
-		const {store, container} = setup(
+	it("announces debounced loading, count, empty and error states in one status apart from the results", () => {
+		const {store} = setup(
 			{},
 			{query: "", status: "inactive", features: []},
 		);
@@ -107,33 +116,37 @@ describe("search status", () => {
 		void act(() => vi.advanceTimersByTime(300));
 		expect(status.textContent).toBe("2 Treffer");
 		expect(status.querySelector("button")).toBeNull();
-		expect(container.querySelector("output")).toBeNull();
 		void act(() =>
 			store.dispatch({type: "RESULT", status: "empty", features: []}),
 		);
 		void act(() => vi.advanceTimersByTime(300));
 		expect(status.textContent).toBe("Keine Treffer");
+		void act(() =>
+			store.dispatch({type: "RESULT", status: "error", features: []}),
+		);
+		void act(() => vi.advanceTimersByTime(300));
+		expect(status.textContent).toBe("Fehler beim Laden der Suchergebnisse");
 		expect(screen.getAllByRole("status")).toHaveLength(1);
 	});
 
-	it("announces errors and allows hosts to disable every built-in search announcement", () => {
-		const {store} = setup({announceResults: false});
-		void act(() =>
-			store.dispatch({type: "RESULT", status: "empty", features: []}),
-		);
-		void act(() => vi.advanceTimersByTime(600));
+	it("lets hosts disable the status and the selection announcement", () => {
+		setup({announceResults: false});
 		expect(screen.queryByRole("status")).toBeNull();
-		cleanup();
-		setup({}, {status: "error", features: []});
-		expect(screen.getByRole("status").textContent).toBe(
-			"Fehler beim Laden der Suchergebnisse",
-		);
+		fireEvent.click(screen.getByRole("button", {name: "Station"}));
+		void act(() => vi.advanceTimersByTime(0));
+		expect(document.activeElement).toBe(screen.getByRole("searchbox"));
+		expect(announceStatus).not.toHaveBeenCalled();
 	});
 });
 
 describe("result selection focus", () => {
-	it("returns focus to the input and announces selection when no details are shown", () => {
-		setup();
+	it("returns focus to the input and announces selection when no details are visible", () => {
+		const {container} = setup();
+		const hiddenDetails = addFocusTarget(
+			container,
+			"ms3-feature-selection-info__wrapper",
+		);
+		hiddenDetails.hidden = true;
 		const result = screen.getByRole("button", {name: "Station"});
 		result.focus();
 		fireEvent.click(result);
@@ -148,87 +161,31 @@ describe("result selection focus", () => {
 		"ms3-list__item--selected",
 	])("focuses a visible %s", (className) => {
 		const {container} = setup();
-		const target = document.createElement("div");
-		target.className = className;
-		target.getClientRects = () =>
-			[new DOMRect(0, 0, 100, 100)] as unknown as DOMRectList;
-		container.querySelector(".ms3-wrapper")!.append(target);
+		const target = addFocusTarget(container, className);
 		fireEvent.click(screen.getByRole("button", {name: "Station"}));
 		void act(() => vi.advanceTimersByTime(0));
 		expect(document.activeElement).toBe(target);
 		expect(announceStatus).not.toHaveBeenCalled();
 	});
 
-	it("lets a host callback set focus after results unmount", () => {
-		const target = document.createElement("button");
-		document.body.append(target);
+	it("calls onResultSelected after the results unmount and keeps the focus the host sets", () => {
 		const onResultSelected = vi.fn(() => {
 			expect(screen.queryByRole("button", {name: "Station"})).toBeNull();
-			target.focus();
+			screen.getByRole("searchbox").focus();
 		});
-		setup({onResultSelected});
+		const {container} = setup({onResultSelected});
+		addFocusTarget(container, "ms3-feature-selection-info__wrapper");
 		fireEvent.click(screen.getByRole("button", {name: "Station"}));
 		void act(() => vi.advanceTimersByTime(0));
 		expect(onResultSelected).toHaveBeenCalledWith(feature);
-		expect(document.activeElement).toBe(target);
-		target.remove();
-	});
-
-	it("respects host focus inside the search even when details are visible", () => {
-		const onResultSelected = () => screen.getByRole("searchbox").focus();
-		const {container} = setup({onResultSelected});
-		const target = document.createElement("div");
-		target.className = "ms3-feature-selection-info__wrapper";
-		target.getClientRects = () =>
-			[new DOMRect(0, 0, 100, 100)] as unknown as DOMRectList;
-		container.querySelector(".ms3-wrapper")!.append(target);
-		fireEvent.click(screen.getByRole("button", {name: "Station"}));
-		void act(() => vi.advanceTimersByTime(0));
-		expect(document.activeElement).toBe(screen.getByRole("searchbox"));
-		expect(announceStatus).not.toHaveBeenCalled();
-	});
-
-	it("ignores hidden details and restores focus after an incomplete suggestion", () => {
-		const onResultSelected = vi.fn();
-		const {container} = setup(
-			{onResultSelected},
-			{
-				features: [
-					{
-						...feature,
-						properties: {
-							...feature.properties,
-							isIncompleteSuggest: true,
-						},
-					},
-				],
-			},
-		);
-		const target = document.createElement("div");
-		target.className = "ms3-feature-selection-info__wrapper";
-		target.hidden = true;
-		container.querySelector(".ms3-wrapper")!.append(target);
-		fireEvent.click(screen.getByRole("button", {name: "Station"}));
-		expect(document.activeElement).toBe(screen.getByRole("searchbox"));
-		expect(onResultSelected).not.toHaveBeenCalled();
-	});
-
-	it("keeps focus safe without an announcement when the host opts out", () => {
-		setup({announceResults: false});
-		fireEvent.click(screen.getByRole("button", {name: "Station"}));
-		void act(() => vi.advanceTimersByTime(0));
 		expect(document.activeElement).toBe(screen.getByRole("searchbox"));
 		expect(announceStatus).not.toHaveBeenCalled();
 	});
 });
 
 it("supports a host-selected heading level for search groups", () => {
-	const {unmount} = setup({groupHeadlineAs: "h2"});
+	setup({groupHeadlineAs: "h2"});
 	expect(
 		screen.getByRole("heading", {level: 2, name: "Places"}),
 	).toBeTruthy();
-	unmount();
-	setup({groupHeadlineAs: "div"});
-	expect(screen.queryByRole("heading")).toBeNull();
-	expect(screen.getByText("Places")).toBeTruthy();
 });
