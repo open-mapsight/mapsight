@@ -1,6 +1,7 @@
 import type {RefObject} from "react";
 import {useEffect} from "react";
 
+import scrollBehavior from "../../../helpers/scroll-behavior";
 import usePrevious from "../../../hooks/usePrevious";
 
 type FeatureListItemScrollAndFocusOptions = {
@@ -50,7 +51,10 @@ export default function useFeatureListItemScrollAndFocus(
 		}
 
 		if (shouldScroll) {
-			ref.current.scrollIntoView({block: "start", behavior: "smooth"});
+			ref.current.scrollIntoView({
+				block: "start",
+				behavior: scrollBehavior(),
+			});
 
 			if (enableKeyboardControl) {
 				ref.current

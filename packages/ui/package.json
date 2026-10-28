@@ -169,6 +169,10 @@
 			"types": "./dist/components/tag-switcher/index.d.ts",
 			"default": "./dist/components/tag-switcher/index.js"
 		},
+		"./components/point-input": {
+			"types": "./dist/components/point-input/index.d.ts",
+			"default": "./dist/components/point-input/index.js"
+		},
 		"./components/contexts": {
 			"types": "./dist/components/contexts.d.ts",
 			"default": "./dist/components/contexts.js"

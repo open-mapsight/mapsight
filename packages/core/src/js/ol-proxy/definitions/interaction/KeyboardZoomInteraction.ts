@@ -1,14 +1,30 @@
 import KeyboardZoom from "ol/interaction/KeyboardZoom";
 
+import {getMotionPreference} from "@/lib/map/lib/runWithMotionPreference";
 import type {Definition} from "@/ol-proxy";
 
 import base from "./_base";
+
+// Keep OL's public keyboard semantics and caller options; select the duration
+// per key event because OL exposes no public duration setter.
+class MotionAwareKeyboardZoom extends KeyboardZoom {
+	private readonly instant: KeyboardZoom;
+	constructor(options?: ConstructorParameters<typeof KeyboardZoom>[0]) {
+		super(options);
+		this.instant = new KeyboardZoom({...options, duration: 0});
+	}
+	override handleEvent(...args: Parameters<KeyboardZoom["handleEvent"]>) {
+		return getMotionPreference()?.matches
+			? this.instant.handleEvent(...args)
+			: super.handleEvent(...args);
+	}
+}
 
 type Ctor = typeof KeyboardZoom;
 
 export default {
 	type: "KeyboardZoomInteraction",
-	Constructor: KeyboardZoom,
+	Constructor: MotionAwareKeyboardZoom,
 	optionMap: {
 		...base.optionMap,
 	},
