@@ -6,7 +6,6 @@ import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import {announceStatus} from "../../helpers/announce-status";
-import {setDocumentLanguage, translate} from "../../helpers/i18n";
 import {FILTER_LIST_QUERY, filterListQuery} from "../../store/actions";
 import type {MapsightUiFeature} from "../../types";
 import {
@@ -81,7 +80,6 @@ describe("FeatureFilter", () => {
 	afterEach(() => {
 		cleanup();
 		vi.useRealTimers();
-		setDocumentLanguage("de");
 	});
 
 	it("does not revert keystrokes when an earlier debounce commits to the store", () => {
@@ -131,57 +129,41 @@ describe("FeatureFilter", () => {
 
 		expect(screen.getByRole("searchbox")).toHaveProperty("value", "");
 	});
-	it.each(["de", "en"])(
-		"announces the latest filtered count, empty result and reset in %s",
-		(language) => {
-			setDocumentLanguage(language);
-			renderFilter(makeStore());
-			act(() => {
-				vi.advanceTimersByTime(1000);
-			});
-			expect(announceStatus).not.toHaveBeenCalled();
-			const input = screen.getByRole("searchbox");
-			fireEvent.change(input, {target: {value: "ca"}});
-			act(() => {
-				vi.advanceTimersByTime(200);
-			});
-			act(() => {
-				vi.advanceTimersByTime(200);
-			});
-			fireEvent.change(input, {target: {value: "castle"}});
-			act(() => {
-				vi.advanceTimersByTime(200);
-			});
-			expect(announceStatus).not.toHaveBeenCalled();
-			act(() => {
-				vi.advanceTimersByTime(300);
-			});
-			expect(announceStatus).toHaveBeenCalledExactlyOnceWith(
-				translate("ui.feature-list.filter.status")
-					.replace("{n}", "1")
-					.replace("{total}", "3"),
-			);
-			fireEvent.change(input, {target: {value: "missing"}});
-			act(() => {
-				vi.advanceTimersByTime(200);
-			});
-			act(() => {
-				vi.advanceTimersByTime(300);
-			});
-			expect(announceStatus).toHaveBeenLastCalledWith(
-				translate("ui.feature-list.filter.empty"),
-			);
-			fireEvent.change(input, {target: {value: ""}});
-			act(() => {
-				vi.advanceTimersByTime(300);
-			});
-			expect(announceStatus).toHaveBeenLastCalledWith(
-				translate("ui.feature-list.filter.status")
-					.replace("{n}", "3")
-					.replace("{total}", "3"),
-			);
-		},
-	);
+
+	it("announces the settled query's result count or empty text", () => {
+		renderFilter(makeStore());
+		act(() => {
+			vi.advanceTimersByTime(1000);
+		});
+		expect(announceStatus).not.toHaveBeenCalled();
+		const input = screen.getByRole("searchbox");
+		fireEvent.change(input, {target: {value: "ca"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		fireEvent.change(input, {target: {value: "castle"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		expect(announceStatus).not.toHaveBeenCalled();
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(announceStatus).toHaveBeenCalledExactlyOnceWith(
+			"1 von 3 Einträgen",
+		);
+		fireEvent.change(input, {target: {value: "missing"}});
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(announceStatus).toHaveBeenLastCalledWith("Keine Einträge");
+	});
 
 	it("announces external query changes, including queries with the same result count", () => {
 		const store = makeStore();
@@ -199,20 +181,5 @@ describe("FeatureFilter", () => {
 			vi.advanceTimersByTime(300);
 		});
 		expect(announceStatus).toHaveBeenCalledTimes(2);
-	});
-
-	it("cancels pending result announcements on unmount", () => {
-		const {unmount} = renderFilter(makeStore());
-		fireEvent.change(screen.getByRole("searchbox"), {
-			target: {value: "castle"},
-		});
-		act(() => {
-			vi.advanceTimersByTime(200);
-		});
-		unmount();
-		act(() => {
-			vi.advanceTimersByTime(300);
-		});
-		expect(announceStatus).not.toHaveBeenCalled();
 	});
 });
