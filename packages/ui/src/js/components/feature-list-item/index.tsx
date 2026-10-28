@@ -9,6 +9,7 @@ import {Fragment, memo, useId, useRef} from "react";
 
 import {rememberDocumentScrollForSelection} from "../../helpers/document-scroll";
 import getFeatureProperty from "../../helpers/get-feature-property";
+import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
 import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
@@ -202,6 +203,7 @@ function FeatureListItemStandard({
 		isPreselected,
 		isHighlighted,
 		detailsInline,
+		detailsDisclosure,
 		showDetails,
 		scrollOnSelection,
 	} = useFeatureListItemState(feature);
@@ -301,7 +303,27 @@ function FeatureListItemStandard({
 	}
 
 	return (
-		<T {...wrapperProps}>
+		<T
+			{...wrapperProps}
+			onKeyDown={(event: ReactKeyboardEvent) => {
+				if (
+					!detailsDisclosure ||
+					!ContentT ||
+					!showDetails ||
+					!deselectFeatures ||
+					!shouldDismissOnEscape(event.nativeEvent, ref.current) ||
+					event.defaultPrevented
+				) {
+					return;
+				}
+				event.preventDefault();
+				event.stopPropagation();
+				deselectFeatures(feature.id, {keyboard: true});
+				ref.current
+					?.querySelector<HTMLElement>("[data-ms3-list-nav]")
+					?.focus({preventScroll: true});
+			}}
+		>
 			{HeadT && (
 				<HeadT
 					feature={feature}
@@ -309,15 +331,15 @@ function FeatureListItemStandard({
 					{...(selectOnClick || deselectOnClick
 						? {
 								"aria-pressed":
-									detailsInline && ContentT
+									detailsDisclosure && ContentT
 										? undefined
 										: isSelected,
 								"aria-expanded":
-									detailsInline && ContentT
+									detailsDisclosure && ContentT
 										? showDetails
 										: undefined,
 								"aria-controls":
-									detailsInline && ContentT
+									detailsDisclosure && ContentT
 										? detailsId
 										: undefined,
 							}

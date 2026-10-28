@@ -125,7 +125,7 @@ function CollapsibleOverlayGroup({
 					aria-label={`${group} ${countLabel} ${toggleLabel}`}
 					onClick={onToggle}
 				>
-					<span className="ms3-switcher-header__label">{group}</span>
+					<span className="ms3-switcher-header__label">{group}</span>{" "}
 					<span className="ms3-grouped-switcher__meta">
 						<span
 							className="ms3-grouped-switcher__count"
