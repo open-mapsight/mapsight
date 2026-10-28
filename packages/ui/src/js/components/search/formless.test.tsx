@@ -181,3 +181,19 @@ it("keeps form rendering as Search's default and supports direct opt-in", () => 
 		"DIV",
 	);
 });
+
+it("leaves formless searches to the debounced query, like form mode", async () => {
+	const store = runtime();
+	render(
+		<Provider store={store}>
+			<Search renderForm={false} />
+		</Provider>,
+	);
+	const input = screen.getByRole("searchbox");
+	fireEvent.change(input, {target: {value: "Teststraße"}});
+	expect(fireEvent.keyDown(input, {key: "Enter"})).toBe(false);
+	fireEvent.click(screen.getByRole("button", {name: "Suchen"}));
+	await screen.findByRole("button", {name: "Teststraße"});
+	await act(() => new Promise((resolve) => setTimeout(resolve, 300)));
+	expect(fetch).toHaveBeenCalledTimes(1);
+});

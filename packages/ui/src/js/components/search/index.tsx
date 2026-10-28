@@ -122,7 +122,8 @@ function Search({
 	const handleReturnFocus = useCallback(() => inputRef.current?.focus(), []);
 
 	const Container = renderForm ? "form" : "div";
-	const submitSearch = () => dispatch(search(query));
+	// Like the prevented form submit: keep Enter from submitting a host form.
+	// The debounced query already runs the search.
 	const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
 		if (
 			!renderForm &&
@@ -131,7 +132,6 @@ function Search({
 			!event.nativeEvent.isComposing
 		) {
 			event.preventDefault();
-			submitSearch();
 		}
 	};
 
@@ -153,7 +153,6 @@ function Search({
 				<button
 					className="ms3-search__send-button"
 					type={renderForm ? "submit" : "button"}
-					onClick={renderForm ? undefined : submitSearch}
 				>
 					<span className="ms3-visuallyhidden">
 						{translate("ui.search.send")}
