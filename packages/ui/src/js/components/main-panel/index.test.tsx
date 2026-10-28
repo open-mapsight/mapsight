@@ -47,6 +47,9 @@ describe("MainPanel collapse", () => {
 		rerender(<MainPanel />);
 		const inner = container.querySelector(".ms3-panel__inner")!;
 		expect(inner.hasAttribute("inert")).toBe(true);
+		expect(
+			container.querySelector(".ms3-panel")?.hasAttribute("inert"),
+		).toBe(true);
 		expect(screen.getByText("details").getAttribute("data-enabled")).toBe(
 			"false",
 		);

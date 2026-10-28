@@ -37,6 +37,11 @@ Existing (keep / migrate toward):
 ### BottomSheet notes
 
 - In-flow (not modal): no focus trap; Escape only if `onDismiss` is passed.
+- When composing `FeatureSelectionInfo` inside an already named sheet/region, pass
+  `landmark={false}` to the details. Its heading and focus behaviour remain; the
+  sheet supplies the landmark name. Keep `enableKeyboardControl={false}` when
+  the sheet owns initial focus through `initialFocus`. Standalone details retain
+  their named region by default.
 - Pass custom `snaps` when a floating viewport bar needs clearance.
 - Prefer a snaps **factory** (`() => number[]`) so resize refreshes heights without unstable array deps.
 

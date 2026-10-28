@@ -226,7 +226,10 @@ export async function keyboardWalk(context: CheckContext): Promise<TabStop[]> {
 		return [];
 	}
 	if (walk.modal) {
-		context.note("keyboard: a modal dialog is open; walked inside it");
+		context.note(
+			"keyboard: a modal dialog is open; walked inside it",
+			false,
+		);
 	}
 	const stops: TabStop[] = [];
 	const visited = new Set<string>();

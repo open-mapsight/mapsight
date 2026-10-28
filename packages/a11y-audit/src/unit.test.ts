@@ -369,3 +369,32 @@ describe("resolveConfig", () => {
 		).toThrow(/reserved/);
 	});
 });
+
+describe("navigation timeout", () => {
+	it("defaults to 60 s and accepts config and target overrides", () => {
+		const targets = [
+			{id: "slow", title: "Slow", url: "/", navigationTimeoutMs: 180_000},
+		];
+		expect(
+			resolveConfig({name: "audit", targets}).navigationTimeoutMs,
+		).toBe(60_000);
+		const resolved = resolveConfig({
+			name: "audit",
+			targets,
+			navigationTimeoutMs: 120_000,
+		});
+		expect(resolved.navigationTimeoutMs).toBe(120_000);
+		expect(resolved.targets[0]?.navigationTimeoutMs).toBe(180_000);
+		for (const navigationTimeoutMs of [0, -1, NaN, Infinity]) {
+			expect(() =>
+				resolveConfig({name: "audit", targets, navigationTimeoutMs}),
+			).toThrow("navigationTimeoutMs");
+			expect(() =>
+				resolveConfig({
+					name: "audit",
+					targets: [{...targets[0]!, navigationTimeoutMs}],
+				}),
+			).toThrow("navigationTimeoutMs");
+		}
+	});
+});

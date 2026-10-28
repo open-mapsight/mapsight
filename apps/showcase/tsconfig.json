@@ -8,7 +8,9 @@
 		"vite.config.ts",
 		"vite.count-aggregator-mock.ts",
 		"count-aggregator-mock/**/*.ts",
-		"../../configs/vite-workspace-dev.mts"
+		"../../configs/vite-workspace-dev.mts",
+		"a11y.playwright.config.ts",
+		"a11y.spec.ts"
 	],
 	"compilerOptions": {
 		"noEmit": true,

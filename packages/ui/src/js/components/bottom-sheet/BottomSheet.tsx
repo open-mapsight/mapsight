@@ -383,7 +383,7 @@ export default function BottomSheet({
 					}
 				}}
 			>
-				<header className="ms3-bottom-sheet__header">
+				<div className="ms3-bottom-sheet__header">
 					{/*
 				  Focusable separator (window splitter). jsx-a11y treats separator
 				  as non-interactive; tabindex + handlers are required by APG.
@@ -431,7 +431,7 @@ export default function BottomSheet({
 							onClose={onDismiss}
 						/>
 					)}
-				</header>
+				</div>
 				<div
 					id={bodyId}
 					ref={bodyRef}

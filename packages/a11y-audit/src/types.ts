@@ -79,6 +79,8 @@ export interface TargetConfig {
 	readySelector?: string;
 	/** Extra wait after ready, for tiles, fonts and lazy lists (ms). */
 	settleMs?: number;
+	/** Navigation timeout in ms; overrides the config default. */
+	navigationTimeoutMs?: number;
 	/** Viewport ids (from the config's `viewports`). */
 	viewports?: string[];
 	scenarios?: Scenario[];
@@ -121,6 +123,8 @@ export interface AuditConfig {
 	/** Name shown in the report title. */
 	name: string;
 	baseUrl?: string;
+	/** Navigation timeout in ms (default 60_000). */
+	navigationTimeoutMs?: number;
 	/** BCP 47 locale for the browser context (default `de-DE`). */
 	locale?: string;
 	/** Apply Mapsight defaults (owners, map selectors, English UI lexicon). */
@@ -222,6 +226,8 @@ export interface StateReport {
 	announcements: string[];
 	tabOrder?: TabStop[];
 	checks: CheckId[];
+	/** Informational notes that do not indicate an incomplete check. */
+	notes?: string[];
 	errors: string[];
 }
 
