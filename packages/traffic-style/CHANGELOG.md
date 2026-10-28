@@ -1,5 +1,16 @@
 # @mapsight/traffic-style
 
+## 5.5.4
+
+### Patch Changes
+
+- f96b0e4: Bump dependencies from Dependabot ([#398](https://github.com/open-mapsight/mapsight/pull/398)):
+
+    - `chokidar` `^5.0.0` → `^6.0.0` (major)
+
+- Updated dependencies [`7a399a1`]:
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+
 ## 5.5.3
 
 ### Patch Changes

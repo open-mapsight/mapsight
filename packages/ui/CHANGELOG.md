@@ -1,5 +1,35 @@
 # @mapsight/ui
 
+## 7.9.0
+
+### Minor Changes
+
+- c823f15: Respect reduced motion in core map transitions, feature fits, keyboard pan/zoom, and UI scrolling. Add opt-in PointInputControls with a focused-map keyboard path and explicit confirmation through the editor's point source.
+
+    Preserve point source CRS and collection metadata, retain original fit destinations and exactly-once OL callbacks across motion changes, and finish concurrent/keyboard transitions without cancelling unrelated work. Allow SSR-safe address search inside host forms with `uiState.searchRenderForm: false`.
+
+- 8ce5ee0: Allow feature details to omit their landmark inside a named sheet via `landmark={false}`, remove nested banner semantics, avoid empty page headings, keep collapsed scroll regions out of the tab order, and preserve layer-switcher hover/focus contrast. Give station and date inputs accessible names and a visible keyboard focus indicator on station selection.
+
+    Support config/target navigation timeouts in accessibility audits, correct fixed-position visibility checks, and return a nonzero exit code for incomplete runs or invalid baseline gates.
+
+### Patch Changes
+
+- 4e0a815: Add the Mapsight brand header to the package README so it shows on the npm package page.
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `@tanstack/react-query` `^5.104.2` → `^5.104.5` (patch)
+
+- f96b0e4: Bump dependencies from Dependabot ([#398](https://github.com/open-mapsight/mapsight/pull/398)):
+
+    - `chokidar` `^5.0.0` → `^6.0.0` (major)
+
+- 926e08f: Keep feature-list selection buttons from advertising inline disclosures when their action navigates to the map, including mobile round tours with `detailsInList`. Close actual inline details on scoped Escape and return focus to the row button, respecting nested dialogs and handled events.
+- 017e11c: Give the list sorting select a minimum 24 px height, remove the unused hidden place-action permalink, and separate collapsible layer group labels from their counts so visible text matches accessible names.
+- Updated dependencies [`4e0a815`, `7a399a1`, `f96b0e4`, `c823f15`]:
+    - `@mapsight/core@14.6.4 → 14.6.5` (patch)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
 ## 7.8.0
 
 ### Minor Changes
