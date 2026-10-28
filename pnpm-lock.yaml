@@ -195,6 +195,9 @@ importers:
 
   apps/showcase:
     dependencies:
+      '@kern-ux/native':
+        specifier: 2.8.2
+        version: 2.8.2
       '@mapsight/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -253,6 +256,9 @@ importers:
         specifier: 'catalog:'
         version: 4.3.3
     devDependencies:
+      '@mapsight/a11y-audit':
+        specifier: workspace:^
+        version: link:../../packages/a11y-audit
       '@mapsight/vector-style-compiler':
         specifier: workspace:*
         version: link:../../packages/vector-style-compiler
@@ -1689,6 +1695,9 @@ packages:
 
   '@jsdevtools/ono@7.1.3':
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
+
+  '@kern-ux/native@2.8.2':
+    resolution: {integrity: sha512-2AT25YD95iByLDUqY/fBou6Vt09tI1/RgpLy0lqUbLmV5aoeuUuz/BZ4zDJbbblyo96T3bywIlbwGbRUw0s+Og==}
 
   '@keyv/bigmap@1.3.1':
     resolution: {integrity: sha512-WbzE9sdmQtKy8vrNPa9BRnwZh5UF4s1KTmSK0KUVLo3eff5BlQNNWDnFOouNpKfPKDnms9xynJjsMYjMaT/aFQ==}
@@ -6156,6 +6165,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@jsdevtools/ono@7.1.3': {}
+
+  '@kern-ux/native@2.8.2': {}
 
   '@keyv/bigmap@1.3.1(keyv@5.6.0)':
     dependencies:

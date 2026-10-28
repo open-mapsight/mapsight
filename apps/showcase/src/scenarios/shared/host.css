@@ -1,0 +1,63 @@
+:root {
+	/* KERN 2.8 follows the OS media query; let native controls follow too. */
+	color-scheme: light dark;
+}
+body {
+	margin: 0;
+	font-family: "Fira Sans", sans-serif;
+	color: var(--kern-color-layout-text-default);
+	background: var(--kern-color-layout-background-default);
+}
+* {
+	box-sizing: border-box;
+}
+a {
+	color: var(--kern-color-action-default);
+	text-underline-offset: 0.2em;
+}
+:focus-visible {
+	outline: 3px solid var(--kern-color-action-default);
+	outline-offset: 4px;
+}
+.host {
+	max-width: 76rem;
+	margin-inline: auto;
+	padding: clamp(1rem, 4vw, 3rem);
+}
+.host-header {
+	padding-block: 1.5rem;
+	border-bottom: 2px solid var(--kern-color-layout-border);
+}
+.wordmark {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+.demo-notice {
+	padding: 1rem;
+	background: var(--kern-color-layout-background-hued);
+	border-bottom: 1px solid var(--kern-color-layout-border);
+	line-height: 1.6;
+}
+.demo-about {
+	margin-top: 3rem;
+	padding-top: 2rem;
+	border-top: 2px solid var(--kern-color-layout-border);
+}
+p {
+	max-width: 75ch;
+	line-height: 1.6;
+}
+.breadcrumb {
+	margin-block: 1.5rem;
+}
+.service-intro {
+	margin-block: 2.5rem;
+}
+.scenario-card {
+	padding: 2rem;
+	border: 1px solid var(--kern-color-layout-border);
+	margin-top: 2rem;
+}
+footer {
+	margin-top: 3rem;
+}
