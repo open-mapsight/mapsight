@@ -4,6 +4,7 @@ import debounce from "lodash/debounce";
 
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {translate} from "../../helpers/i18n";
+import scrollBehavior from "../../helpers/scroll-behavior";
 import type {MapsightUiFeature, MapsightUiFeatureId} from "../../types";
 import FeatureListCyclingButton from "./button";
 import FeatureListCyclingDot from "./dot";
@@ -101,7 +102,7 @@ function FeatureListCycling({
 				scroller.scrollTo({
 					top: 0,
 					left: scrollLeft,
-					behavior: "smooth",
+					behavior: scrollBehavior(),
 				});
 			} else {
 				scrollLeft = scroller.scrollLeft;

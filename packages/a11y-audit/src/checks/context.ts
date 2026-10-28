@@ -20,8 +20,8 @@ export interface CheckContext {
 	/** Reloads the target and waits until it is ready again. */
 	reload(): Promise<void>;
 	report(finding: RawFinding): void;
-	/** Non-fatal problem while checking; shown in the report. */
-	note(message: string): void;
+	/** Problem while checking; pass false for purely informational notes. */
+	note(message: string, isError?: boolean): void;
 }
 
 export function reportRule(

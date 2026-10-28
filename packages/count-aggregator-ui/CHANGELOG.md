@@ -1,5 +1,25 @@
 # @mapsight/count-aggregator-ui
 
+## 3.2.0
+
+### Minor Changes
+
+- 3ea8162: Allow hosts to configure wizard and chart section headings with `sectionHeadingAs` so embedded sections fit the page outline.
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `@tanstack/react-query` `^5.104.2` → `^5.104.5` (patch)
+
+- 8ce5ee0: Allow feature details to omit their landmark inside a named sheet via `landmark={false}`, remove nested banner semantics, avoid empty page headings, keep collapsed scroll regions out of the tab order, and preserve layer-switcher hover/focus contrast. Give station and date inputs accessible names and a visible keyboard focus indicator on station selection.
+
+    Support config/target navigation timeouts in accessibility audits, correct fixed-position visibility checks, and return a nonzero exit code for incomplete runs or invalid baseline gates.
+
+- Updated dependencies [`4e0a815`, `133cf96`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
 ## 3.1.4
 
 ### Patch Changes

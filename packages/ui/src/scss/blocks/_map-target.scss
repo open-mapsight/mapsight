@@ -5,14 +5,29 @@
 	position: relative;
 	background: var(--ms3-map-background-color);
 
+	// The OL canvas layers (positioned, z-index 0) paint over an inset outline
+	// on the target itself, so draw the keyboard focus ring on a pseudo-element
+	// above them. The white inner ring keeps it visible on dark or blue tiles;
+	// the outline (not the shadow) survives forced-colors mode.
 	&:focus-visible {
+		outline: none;
+	}
+
+	&:focus-visible::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
 		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
 		outline-offset: -3px;
+		box-shadow: inset 0 0 0 5px #fff;
 	}
 }
 
 // Crosshair at the map centre while a keyboard drawing tool is active.
-.ms3-map-target--keyboard-drawing::after {
+.ms3-map-target--keyboard-drawing::after,
+.ms3-map-target--point-input::after {
 	content: "";
 	position: absolute;
 	left: 50%;
@@ -26,4 +41,41 @@
 	background:
 		linear-gradient(#222, #222) center / 2px 100% no-repeat,
 		linear-gradient(#222, #222) center / 100% 2px no-repeat;
+}
+
+.ms3-point-input-controls {
+	pointer-events: auto;
+	max-width: 22rem;
+	padding: 0.5rem;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	background: var(--ms3-background-color);
+	color: var(--ms3-foreground-color);
+
+	p {
+		margin: 0;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 0.25rem;
+		align-items: flex-start;
+	}
+
+	button {
+		min-height: 32px;
+		min-width: 32px;
+		margin-block: 0.25rem;
+		font: inherit;
+		padding: 4px 8px;
+		&:focus-visible {
+			outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+			outline-offset: 2px;
+		}
+	}
+}
+
+.ms3-map-target--point-input::after {
+ left: var(--ms3-point-input-x, 50%);
+ top: var(--ms3-point-input-y, 50%);
 }

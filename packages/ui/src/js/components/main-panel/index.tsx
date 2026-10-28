@@ -20,6 +20,7 @@ function MainPanel() {
 
 	return (
 		<div
+			inert={collapsed}
 			className={`ms3-panel ms3-panel--docked-${panelPosition} ${
 				collapsed ? "ms3-panel--empty" : ""
 			} ${isShowingSelectionInfo ? "ms3-panel--hide-list" : ""}`}

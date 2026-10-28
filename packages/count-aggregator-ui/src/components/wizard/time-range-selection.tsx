@@ -210,22 +210,22 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 	return (
 		<>
 			<div className="msca:flex msca:flex-wrap msca:items-center msca:gap-x-4 msca:gap-y-2">
-				<div className="msca:flex msca:items-center msca:gap-2">
+				<label className="msca:flex msca:items-center msca:gap-2">
 					<span>{t("dateRange.from")}</span>
 					<DateInput
 						value={startDate}
 						onChange={setStartDate}
 						maxDate={endDate}
 					/>
-				</div>
-				<div className="msca:flex msca:items-center msca:gap-2">
+				</label>
+				<label className="msca:flex msca:items-center msca:gap-2">
 					<span>{t("dateRange.toInclusive")}</span>
 					<DateInput
 						value={endDate}
 						onChange={setEndDate}
 						minDate={startDate}
 					/>
-				</div>
+				</label>
 			</div>
 
 			<div className="msca:mt-3 msca:text-sm msca:text-gray-700">

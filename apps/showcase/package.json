@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/showcase",
 	"description": "Mapsight ecosystem showcase — UI demo, icon catalog, and package overview",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"private": true,
 	"type": "module",
 	"dependencies": {
@@ -87,6 +87,7 @@
 		"dev:packages": "turbo watch watch --filter=@mapsight/core --filter=@mapsight/ui --filter=@mapsight/lib-js --filter=@mapsight/lib-ol --filter=@mapsight/lib-redux --filter=@mapsight/count-aggregator-api --filter=@mapsight/count-aggregator-ui",
 		"lint": "eslint",
 		"start": "vite preview",
+		"test:a11y": "playwright test --config a11y.playwright.config.ts",
 		"test:e2e": "playwright test",
 		"typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
 	}

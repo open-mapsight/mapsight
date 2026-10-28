@@ -189,3 +189,17 @@ it("supports a host-selected heading level for search groups", () => {
 		screen.getByRole("heading", {level: 2, name: "Places"}),
 	).toBeTruthy();
 });
+
+it("keeps focus outside its own search scope even inside the same host form", () => {
+	const {container} = setup({renderForm: false});
+	const form = document.createElement("form");
+	document.body.append(form);
+	form.append(container);
+	const hostField = document.createElement("input");
+	form.append(hostField);
+	hostField.focus();
+	fireEvent.click(screen.getByRole("button", {name: "Station"}));
+	void act(() => vi.advanceTimersByTime(0));
+	expect(document.activeElement).toBe(hostField);
+	form.remove();
+});

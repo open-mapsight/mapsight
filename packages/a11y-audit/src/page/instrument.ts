@@ -308,12 +308,32 @@ export function installInPage(config: InPageConfig): void {
 			let top = Math.max(rect.top, 0);
 			let right = Math.min(rect.right, window.innerWidth);
 			let bottom = Math.min(rect.bottom, window.innerHeight);
+			// Viewport-fixed chrome escapes overflow clips above it. A transformed
+			// containing block captures fixed descendants and restores those clips.
+			let escapesOverflow =
+				getComputedStyle(element).position === "fixed";
 			let ancestor = element.parentElement;
 			while (ancestor && ancestor !== document.body) {
 				const style = getComputedStyle(ancestor);
+				if (
+					escapesOverflow &&
+					(style.transform !== "none" ||
+						style.translate !== "none" ||
+						style.scale !== "none" ||
+						style.rotate !== "none" ||
+						style.perspective !== "none" ||
+						style.filter !== "none" ||
+						style.backdropFilter !== "none" ||
+						/layout|paint|strict|content/.test(style.contain) ||
+						/transform|translate|scale|rotate|perspective|filter/.test(
+							style.willChange,
+						) ||
+						style.contentVisibility === "auto")
+				)
+					escapesOverflow = false;
 				const clipsX = /hidden|clip|auto|scroll/.test(style.overflowX);
 				const clipsY = /hidden|clip|auto|scroll/.test(style.overflowY);
-				if (clipsX || clipsY) {
+				if (!escapesOverflow && (clipsX || clipsY)) {
 					const box = ancestor.getBoundingClientRect();
 					if (clipsX) {
 						left = Math.max(left, box.left);
@@ -324,6 +344,7 @@ export function installInPage(config: InPageConfig): void {
 						bottom = Math.min(bottom, box.bottom);
 					}
 				}
+				if (style.position === "fixed") escapesOverflow = true;
 				ancestor = ancestor.parentElement;
 			}
 			if (right - left < 1 || bottom - top < 1) {

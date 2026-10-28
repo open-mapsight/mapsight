@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ui",
 	"description": "Mapsight UI for map based web applications using React and Redux",
-	"version": "7.8.0",
+	"version": "7.9.1",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
@@ -168,6 +168,10 @@
 		"./components/tag-switcher": {
 			"types": "./dist/components/tag-switcher/index.d.ts",
 			"default": "./dist/components/tag-switcher/index.js"
+		},
+		"./components/point-input": {
+			"types": "./dist/components/point-input/index.d.ts",
+			"default": "./dist/components/point-input/index.js"
 		},
 		"./components/contexts": {
 			"types": "./dist/components/contexts.d.ts",

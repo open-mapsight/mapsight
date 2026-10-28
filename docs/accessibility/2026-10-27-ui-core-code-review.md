@@ -1,5 +1,10 @@
 # Code-level accessibility review — `@mapsight/ui` + `@mapsight/core`
 
+> Historical review of the 27 October source. Most UI findings were addressed in UI 7.8.0
+> and follow-ups #400/#401. See [current accessibility status](../ACCESSIBILITY.md) for
+> implemented fixes and outstanding host/manual acceptance; the evidence below is preserved
+> as originally reviewed.
+
 Repo: `open-mapsight/mapsight` @ `2384a410`.
 Scope: `packages/ui/src` (components, hooks, SCSS) and the map/keyboard setup in `packages/core`.
 Method: source reading only (no dependencies installed in the worktree, nothing run in a browser).

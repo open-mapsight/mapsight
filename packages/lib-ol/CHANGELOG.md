@@ -1,5 +1,13 @@
 # @mapsight/lib-ol
 
+## 4.3.1
+
+### Patch Changes
+
+- 7a399a1: Bump dependencies from Dependabot ([#397](https://github.com/open-mapsight/mapsight/pull/397)):
+
+    - `tsc-alias` `^1.9.7` → `^1.9.8` (patch)
+
 ## 4.3.0
 
 ### Minor Changes

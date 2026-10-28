@@ -80,8 +80,12 @@ export function PrivacyPage() {
 					This showcase does not set tracking cookies and does not use
 					analytics or advertising tools. The demo pages are designed
 					to run with static assets and mock data from this website.
-					They should not load map tiles, fonts, scripts, or analytics
-					from third-party services for normal operation.
+					On the public showcase and PR previews, basemap tiles are
+					served from this website’s /tiles/ endpoint. Our server
+					fetches and caches OpenStreetMap tiles; OpenStreetMap
+					receives the server’s IP address, not your browser’s IP
+					address. Local development defaults to direct OpenStreetMap
+					requests. Fonts and scripts are served from this website.
 				</p>
 			</section>
 

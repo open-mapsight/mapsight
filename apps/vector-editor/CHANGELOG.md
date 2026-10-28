@@ -1,5 +1,22 @@
 # @mapsight/vector-editor
 
+## 1.2.9
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `react-tooltip` `^6.0.8` → `^6.0.9` (patch)
+
+- 2e0f362: Bump dependencies from Dependabot ([#399](https://github.com/open-mapsight/mapsight/pull/399)):
+
+    - `postcss-nested` `^8.0.1` → `^9.0.0` (major)
+
+- Updated dependencies [`4e0a815`, `7a399a1`, `f96b0e4`, `c823f15`]:
+    - `@mapsight/core@14.6.4 → 14.6.5` (patch)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
 ## 1.2.8
 
 ### Patch Changes

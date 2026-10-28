@@ -1,4 +1,4 @@
-import type {ElementType, FormEvent} from "react";
+import type {ElementType, FormEvent, KeyboardEvent} from "react";
 import {memo, useCallback, useEffect, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
@@ -20,9 +20,11 @@ export type SearchProps = {
 	announceResults?: boolean;
 	onResultSelected?: (feature: MapsightUiFeature) => void;
 	groupHeadlineAs?: ElementType;
+	/** Render a div when embedded inside a host form; use the same value during SSR. */
+	renderForm?: boolean;
 };
 
-const preventDefault = (e: FormEvent<HTMLFormElement>) => e.preventDefault();
+const preventDefault = (e: FormEvent<HTMLElement>) => e.preventDefault();
 
 /**
  * announceResults=false lets hosts provide their own search status.
@@ -36,6 +38,7 @@ function Search({
 	announceResults = true,
 	onResultSelected,
 	groupHeadlineAs = undefined,
+	renderForm = true,
 }: SearchProps) {
 	const dispatch = useDispatch<MapsightUiStore["dispatch"]>();
 	const query = useSelector(searchQuerySelector) ?? "";
@@ -71,7 +74,7 @@ function Search({
 	const handleResultSelected = useCallback(
 		(feature: MapsightUiFeature) => {
 			const input = inputRef.current;
-			const form = input?.closest("form");
+			const scope = input?.closest(".ms3-search");
 			const root = input?.closest(".ms3-wrapper");
 			// Redux clears the query and removes the result button in this commit.
 			setTimeout(() => {
@@ -82,7 +85,7 @@ function Search({
 					focused &&
 					focused !== document.body &&
 					focused.isConnected &&
-					(focused !== previousFocus || !form?.contains(focused))
+					(focused !== previousFocus || !scope?.contains(focused))
 				) {
 					return;
 				}
@@ -118,8 +121,26 @@ function Search({
 
 	const handleReturnFocus = useCallback(() => inputRef.current?.focus(), []);
 
+	const Container = renderForm ? "form" : "div";
+	// Like the prevented form submit: keep Enter from submitting a host form.
+	// The debounced query already runs the search.
+	const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+		if (
+			!renderForm &&
+			event.key === "Enter" &&
+			event.target === inputRef.current &&
+			!event.nativeEvent.isComposing
+		) {
+			event.preventDefault();
+		}
+	};
+
 	return (
-		<form className="ms3-search" onSubmit={preventDefault}>
+		<Container
+			className="ms3-search"
+			onSubmit={preventDefault}
+			onKeyDown={onKeyDown}
+		>
 			<div className="ms3-search__query-input">
 				<SearchQueryInput
 					ref={inputRef}
@@ -129,7 +150,10 @@ function Search({
 					autoFocus={autoFocus}
 				/>
 
-				<button className="ms3-search__send-button" type="submit">
+				<button
+					className="ms3-search__send-button"
+					type={renderForm ? "submit" : "button"}
+				>
 					<span className="ms3-visuallyhidden">
 						{translate("ui.search.send")}
 					</span>
@@ -148,7 +172,7 @@ function Search({
 					/>
 				</div>
 			)}
-		</form>
+		</Container>
 	);
 }
 

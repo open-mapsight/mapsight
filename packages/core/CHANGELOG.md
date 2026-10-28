@@ -1,5 +1,28 @@
 # @mapsight/core
 
+## 14.6.6
+
+### Patch Changes
+
+- 86c0fe8: Read feature collections without a `crs` in the vector source's configured `projection`, the projection its own writes use, and fall back to EPSG:4326 only when none is configured. Previously the configured projection was ignored when reading, so an editor with a non-geographic `projection` misplaced the features it had just written. A named `crs` still takes precedence.
+
+## 14.6.5
+
+### Patch Changes
+
+- 4e0a815: Add the Mapsight brand header to the package README so it shows on the npm package page.
+- 7a399a1: Bump dependencies from Dependabot ([#397](https://github.com/open-mapsight/mapsight/pull/397)):
+
+    - `ol-mapbox-style` `^13.5.1` → `^13.8.0` (minor)
+    - `tsc-alias` `^1.9.7` → `^1.9.8` (patch)
+
+- c823f15: Respect reduced motion in core map transitions, feature fits, keyboard pan/zoom, and UI scrolling. Add opt-in PointInputControls with a focused-map keyboard path and explicit confirmation through the editor's point source.
+
+    Preserve point source CRS and collection metadata, retain original fit destinations and exactly-once OL callbacks across motion changes, and finish concurrent/keyboard transitions without cancelling unrelated work. Allow SSR-safe address search inside host forms with `uiState.searchRenderForm: false`.
+
+- Updated dependencies [`7a399a1`]:
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+
 ## 14.6.4
 
 ### Patch Changes

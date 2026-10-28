@@ -3,11 +3,13 @@ import {metaData, osm} from "@mapsight/ui/config/map/layers";
 import createDefaultPlugins from "@mapsight/ui/plugins/browser-defaults";
 import type {CreateOptions} from "@mapsight/ui/types";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
+
 export const baseMapsightConfig = {
 	...map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",

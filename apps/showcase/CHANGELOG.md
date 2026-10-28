@@ -1,5 +1,21 @@
 # @mapsight/showcase
 
+## 0.1.9
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `@tanstack/react-query` `^5.104.2` → `^5.104.5` (patch)
+
+- 73abd42: Serve deployed basemap tiles through the same-origin tile proxy. Main and PR preview builds set `VITE_SHOWCASE_OSM_TILE_URL` to `/tiles/osm/{z}/{x}/{y}.png`, so visitors' browsers no longer request tiles from tile.openstreetmap.org. Local development keeps direct OSM tiles.
+- Updated dependencies [`4e0a815`, `3ea8162`, `133cf96`, `7a399a1`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/core@14.6.4 → 14.6.5` (patch)
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/count-aggregator-ui@3.1.4 → 3.2.0` (minor)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
 ## 0.1.8
 
 ### Patch Changes

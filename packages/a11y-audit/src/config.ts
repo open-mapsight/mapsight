@@ -56,6 +56,19 @@ export function resolveConfig(config: AuditConfig): ResolvedConfig {
 	if (!config.targets?.length) {
 		throw new Error("Audit config needs at least one target.");
 	}
+	for (const timeout of [
+		config.navigationTimeoutMs,
+		...config.targets.map((target) => target.navigationTimeoutMs),
+	]) {
+		if (
+			timeout !== undefined &&
+			(!Number.isFinite(timeout) || timeout <= 0)
+		) {
+			throw new Error(
+				"navigationTimeoutMs must be a positive finite number.",
+			);
+		}
+	}
 	const preset = config.preset ?? "mapsight";
 	const mapsight = preset === "mapsight";
 	const viewports = config.viewports ?? DEFAULT_VIEWPORTS;
@@ -86,6 +99,7 @@ export function resolveConfig(config: AuditConfig): ResolvedConfig {
 	return {
 		name: config.name,
 		baseUrl: config.baseUrl,
+		navigationTimeoutMs: config.navigationTimeoutMs ?? 60_000,
 		locale: config.locale ?? "de-DE",
 		preset,
 		owners: [

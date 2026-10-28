@@ -1,5 +1,20 @@
 # mapsight-host-starter
 
+## 0.1.8
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `react` `^19.3.0` → `^19.3.1` (patch)
+    - `react-dom` `^19.3.0` → `^19.3.1` (patch)
+    - `sass` `^1.105.0` → `1.105.1` (patch)
+
+- Updated dependencies [`4e0a815`, `133cf96`, `7a399a1`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
 ## 0.1.7
 
 ### Patch Changes

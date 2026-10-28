@@ -64,6 +64,10 @@ pnpm exec mapsight-a11y-audit run --config a11y/audit.config.mts --out a11y/repo
   --baseline a11y/reports/2026-10-27/report.json --fail-on serious --fail-on-new
 ```
 
+A run exits with code 2 when a page, scenario or check fails to execute; an incomplete run cannot pass a CI gate. `--fail-on-new` requires `--baseline`. Exit code 1 indicates findings at the configured impact threshold.
+
+Unknown or empty target, viewport and scenario filters are rejected before Chromium starts. Each selected target needs an applicable viewport, and requested scenarios must apply to the selected targets/viewports. Use `--scenario initial` to run only the initial states. Concurrency must be a positive integer.
+
 Useful options: `--target stadtplan,tk-map-list`, `--viewport desktop`,
 `--scenario search-street`, `--base-url http://localhost:5173` (audit a dev
 server or a test system with the same config), `--concurrency 3`, `--headed`,
@@ -92,6 +96,7 @@ export default {
 	name: "Mapsight on example.org",
 	baseUrl: "https://www.example.org",
 	locale: "de-DE",
+	navigationTimeoutMs: 120_000, // default 60_000; targets can override this
 	preset: "mapsight", // owners, map selectors and English lexicon for Mapsight
 	hostOwner: "host page (CMS template)",
 	owners: [{id: "my-host-app", selector: '[class^="my-"], [class*=" my-"]'}],

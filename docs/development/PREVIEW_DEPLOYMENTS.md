@@ -153,3 +153,15 @@ fallback and run `SHOWCASE_TEST_URL=http://localhost:PORT pnpm --filter
 @mapsight/showcase test:e2e`. This exercises JSON results and CSV exports without
 Vite's mock middleware. The deployment job also checks the served revision over
 HTTPS at `/__preview.json`.
+
+## Same-origin basemap tiles
+
+The unprivileged build sets public `VITE_SHOWCASE_OSM_TILE_URL` to
+`/tiles/osm/{z}/{x}/{y}.png` for main and PR artifacts. Turbo includes it in the
+showcase build cache key. Without the variable, local builds use direct OSM.
+No secret or deployment permission is added to fork builds. Each preview host
+serves `/tiles/*` through the shared, restricted PHP tile cache; PR artifacts
+cannot configure that service. Install and verify the infra proxy and Caddy route
+before enabling this build setting. To roll back, remove the build variable and
+rebuild/redeploy affected artifacts (cached browser bundles need a page reload).
+New demo areas/zooms require a reviewed infra allowlist change.

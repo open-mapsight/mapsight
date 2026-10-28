@@ -15,6 +15,7 @@ import createDefaultPlugins from "@mapsight/ui/plugins/browser-defaults";
 import createShareLinkPlugin from "@mapsight/ui/plugins/browser/share-position-link";
 import type {CreateOptions} from "@mapsight/ui/types";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
 import {demoGeoJsonUrl} from "./demo-geojson.ts";
 
 export {default as styleFunction} from "../generated/mapsight-vector-styles/demo";
@@ -23,7 +24,7 @@ export const baseMapsightConfig = {
 	...config.map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",

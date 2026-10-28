@@ -124,6 +124,19 @@ async function main(argv: string[]): Promise<number> {
 	if (!values.config) {
 		throw new Error("--config is required");
 	}
+	if (values["fail-on-new"] && !baseline) {
+		throw new Error("--fail-on-new requires --baseline.");
+	}
+	if (
+		values["fail-on"] &&
+		!["critical", "serious", "moderate", "minor"].includes(
+			values["fail-on"],
+		)
+	) {
+		throw new Error(
+			"--fail-on must be critical, serious, moderate or minor.",
+		);
+	}
 	const outDir = values.out ?? "a11y-report";
 	const report = await runAudit({
 		config: await loadConfig(values.config),
@@ -148,6 +161,15 @@ async function main(argv: string[]): Promise<number> {
 	process.stderr.write(
 		`${fails.length} failures, ${report.findings.length - fails.length} to review → ${path.join(outDir, "report.md")}\n`,
 	);
+	const errors = report.targets.flatMap((target) =>
+		target.states.flatMap((state) => state.errors),
+	);
+	if (errors.length > 0) {
+		process.stderr.write(
+			`${errors.length} audit execution errors; see the scenario log.\n`,
+		);
+		return 2;
+	}
 	const threshold = values["fail-on"] as Impact | undefined;
 	if (threshold) {
 		const added = new Set(report.baseline?.added ?? []);
