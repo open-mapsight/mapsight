@@ -226,6 +226,7 @@ export default function PointInputControls({
 			</div>
 			<Modal
 				isOpen={showHelp}
+				contentLabel={translate("ui.point-input.help")}
 				onRequestClose={() => setShowHelp(false)}
 				headline={translate("ui.point-input.help")}
 				closeLabel={translate("ui.point-input.close-help")}
