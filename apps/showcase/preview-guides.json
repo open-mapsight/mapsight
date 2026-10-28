@@ -31,6 +31,11 @@
 			"check": "Open the share-position and distance tools; switch between them and close them again.",
 			"scenarios": ["featureList", "layers", "mapTools", "overlays"]
 		},
+		"PointInputPage": {
+			"label": "Keyboard point input",
+			"check": "Tab to the map, pan with the arrow keys, press Enter or Space and check the stored value; then click the map and check the point is replaced.",
+			"scenarios": ["pointInput"]
+		},
 		"RouterPage": {
 			"label": "Router integration",
 			"check": "Switch between Home, Example 1 and Example 2, then use browser Back and Forward.",
@@ -90,6 +95,10 @@
 				"@mapsight/ui/components/map-overlay/share-position-link-button"
 			],
 			"check": "Open the distance and share-position tools, interact with the map, and switch tools. Check keyboard controls where enabled in this demo's configuration."
+		},
+		"pointInput": {
+			"modules": ["@mapsight/ui/components/point-input"],
+			"check": "Set a point with the keyboard (Enter or Space after panning) and with the pointer; check the status message, the crosshair and the keyboard help dialog."
 		},
 		"overlays": {
 			"modules": [

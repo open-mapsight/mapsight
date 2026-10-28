@@ -9,7 +9,7 @@ import {announceStatus} from "../../helpers/announce-status";
 import {getDocumentLanguage, translate} from "../../helpers/i18n";
 
 const geoJsonFormat = new GeoJSON();
-function formatLength(length: number) {
+export function formatLength(length: number) {
 	const isKilometer = length > 1000;
 	const format = new Intl.NumberFormat(getDocumentLanguage(), {
 		style: "unit",
@@ -45,12 +45,18 @@ function MeasureDistanceInfo({feature}: {feature?: Partial<Feature> | null}) {
 		return null;
 	}
 
+	return <MeasurementOutput value={formattedValue} />;
+}
+
+/** Labelled distance output, laid out like the share tool's labelled link. */
+export function MeasurementOutput({value}: {value: string | null}) {
 	return (
-		<div className="ms3-measure-distance">
-			{translate("ui.measure-distance.measurement")}
-			{": "}
-			{formattedValue}
-		</div>
+		<p className="ms3-measure-distance ms3-tool-overlay__output">
+			<span className="ms3-tool-overlay__output-label">
+				{translate("ui.measure-distance.measurement")}
+			</span>{" "}
+			<span className="ms3-tool-overlay__output-value">{value}</span>
+		</p>
 	);
 }
 

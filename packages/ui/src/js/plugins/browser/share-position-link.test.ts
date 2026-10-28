@@ -144,6 +144,11 @@ describe("share position keyboard drawing", () => {
 				properties: {name: "Host marker"},
 			});
 			expect(getKeyboardDraw(map, "hostShare")?.getActive()).toBe(true);
+			// Marking a place to share must not open its feature details.
+			const state = store.getState() as unknown as {
+				featureSelections?: Record<string, {features?: unknown[]}>;
+			};
+			expect(state.featureSelections?.select?.features ?? []).toEqual([]);
 		} finally {
 			map.dispose();
 		}

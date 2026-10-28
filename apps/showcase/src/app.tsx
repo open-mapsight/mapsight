@@ -11,6 +11,7 @@ import {PrivacyPage} from "./pages/legal/privacy-page.tsx";
 import {CombinedListPage} from "./pages/ui-demos/combined-list-page.tsx";
 import {CustomPage} from "./pages/ui-demos/custom-page.tsx";
 import {FullPage} from "./pages/ui-demos/full-page.tsx";
+import {PointInputPage} from "./pages/ui-demos/point-input-page.tsx";
 import {RouterPage} from "./pages/ui-demos/router-page.tsx";
 import {SimpleMapPage} from "./pages/ui-demos/simple-map-page.tsx";
 import {VectorWebglComparisonPage} from "./pages/ui-demos/vector-webgl-comparison-page.tsx";
@@ -36,6 +37,7 @@ export function App() {
 					/>
 					<Route path="ui/full" element={<FullPage />} />
 					<Route path="ui/custom" element={<CustomPage />} />
+					<Route path="ui/point-input" element={<PointInputPage />} />
 					<Route path="ui/router/*" element={<RouterPage />} />
 					<Route path="icons" element={<EditorPage />} />
 					<Route path="icons/catalog" element={<CatalogPage />} />

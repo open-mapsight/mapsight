@@ -1,0 +1,40 @@
+@use "../mixins/visually-hidden";
+
+// Skip link: hidden until it receives keyboard focus, then shown as a button.
+.ms3-skip-link {
+	@include visually-hidden.visually-hidden();
+
+	&:focus {
+		clip: auto;
+		width: auto;
+		height: auto;
+		min-height: 24px;
+		margin: 6px;
+		overflow: visible;
+		position: static;
+		display: block;
+		padding: 4px 8px;
+		border: 1px solid var(--ms3-border-color);
+		border-radius: var(--ms3-border-radius);
+		background: var(--ms3-background-color);
+		color: var(--ms3-foreground-color);
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
+}
+
+// Return link mounted right after the map target while a keyboard tool is open:
+// show it over the top of the map instead of below it.
+.ms3-map-return .ms3-skip-link:focus {
+	position: absolute;
+	z-index: 3;
+	top: 6px;
+	left: 50%;
+	margin: 0;
+	transform: translateX(-50%);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.ms3-wrapper--mobile .ms3-map-return {
+	display: none;
+}

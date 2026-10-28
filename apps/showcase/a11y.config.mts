@@ -94,6 +94,39 @@ const config: AuditConfig = {
 			features: ["map", "list", "details"],
 		},
 		{
+			id: "ui-point-input",
+			title: "Keyboard point input",
+			url: "/ui/point-input",
+			root: MAPSIGHT_ROOT,
+			readySelector: `${MAPSIGHT_ROOT} .ms3-point-input-controls button:enabled`,
+			features: ["map"],
+			scenarios: [
+				{
+					id: "confirm-with-keyboard",
+					title: "Focus the map, pan and confirm the centre with Enter",
+					viewports: ["desktop", "mobile"],
+					run: async ({root, step}) => {
+						const map = root.locator(".ms3-map-target");
+						step("focus the map, press ArrowRight, then Enter");
+						await map.focus();
+						await map.press("ArrowRight");
+						await map.press("Enter");
+						await root
+							.getByRole("status")
+							.filter({
+								hasText:
+									/Position übernommen|Position confirmed/,
+							})
+							.waitFor({timeout: 5000});
+					},
+					expectAnnouncement:
+						/Position übernommen|Position confirmed/,
+					expectFocusWithin: ".ms3-map-target",
+					checks: ["axe", "keyboard"],
+				},
+			],
+		},
+		{
 			id: "count-aggregator",
 			title: "Count aggregator dashboard",
 			url: "/count-aggregator",

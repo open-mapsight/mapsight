@@ -1,31 +1,50 @@
-import {useCallback, useEffect, useId, useState} from "react";
-import {useStore} from "react-redux";
+import {useCallback, useEffect, useId, useRef, useState} from "react";
+import {useSelector, useStore} from "react-redux";
 
 import type OlMap from "ol/Map";
-import {get as getProjection, getUserProjection, transform} from "ol/proj";
+import GeoJSON from "ol/format/GeoJSON";
+import {
+	equivalent,
+	get as getProjection,
+	getUserProjection,
+	transform,
+} from "ol/proj";
 import type {ProjectionLike} from "ol/proj";
 
 import {setData} from "@mapsight/core/lib/feature-sources/actions";
-import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
+import type {
+	FeatureSourceData,
+	FeatureSourcesState,
+} from "@mapsight/core/lib/feature-sources/types";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {EnhancedStore} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES, MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
+import {
+	bindMapTargetKeyboard,
+	whenViewSettled,
+} from "../../helpers/map-target-keyboard";
 import Modal from "../modal";
 
 export type PointInputControlsProps = {
 	featureSourceId: string;
 	mapControllerName?: string;
 	featureSourcesControllerName?: string;
-	/** Projection of the editor's GeoJSON source, not the map view. */
+	/**
+	 * Projection of the editor's GeoJSON source. Defaults to the projection of
+	 * the VectorFeatureSource bound to `featureSourceId` in map state.
+	 */
 	featureProjection?: ProjectionLike;
 	featureId?: string;
 	/** Render only for point input, or disable when another editor mode is active. */
 	enabled?: boolean;
 };
 
-function centerInProjection(map: OlMap | null, projection: ProjectionLike) {
+const GEOGRAPHIC = "EPSG:4326";
+const geoJson = new GeoJSON();
+
+function centerIn(map: OlMap | null, projection: ProjectionLike) {
 	const view = map?.getView();
 	const center = view?.getCenter();
 	if (!view || !center) return undefined;
@@ -39,12 +58,63 @@ function centerInProjection(map: OlMap | null, projection: ProjectionLike) {
 		: undefined;
 }
 
+const latLon = (point: number[]) =>
+	`${point[1]!.toFixed(5)}, ${point[0]!.toFixed(5)}`;
+
+/** Lat/lon of the single stored point: a named `crs`, else the source projection. */
+function storedLatLon(
+	data: FeatureSourceData | null | undefined,
+	projection: ProjectionLike,
+) {
+	const geometry =
+		data?.features?.length === 1 ? data.features[0]?.geometry : undefined;
+	if (geometry?.type !== "Point") return undefined;
+	try {
+		const dataProjection =
+			data!.crs !== undefined ? geoJson.readProjection(data) : projection;
+		return latLon(
+			transform(geometry.coordinates, dataProjection, GEOGRAPHIC),
+		);
+	} catch {
+		return undefined;
+	}
+}
+
+type Described = {
+	options?: {
+		source?: {
+			type?: string;
+			options?: {featureSourceId?: string; projection?: ProjectionLike};
+		};
+	} | null;
+} | null;
+
+/** Projection of the VectorFeatureSource that map state binds to the source id. */
+function sourceProjection(mapState: unknown, featureSourceId: string) {
+	const {layers, interactions} = (mapState ?? {}) as {
+		layers?: Record<string, Described>;
+		interactions?: Record<string, Described>;
+	};
+	for (const entry of [
+		...Object.values(layers ?? {}),
+		...Object.values(interactions ?? {}),
+	]) {
+		const source = entry?.options?.source;
+		if (
+			source?.type === "VectorFeatureSource" &&
+			source.options?.featureSourceId === featureSourceId
+		)
+			return source.options.projection;
+	}
+	return undefined;
+}
+
 /** Opt-in point editor controls. Pointer drawing can keep using the same source. */
 export default function PointInputControls({
 	featureSourceId,
 	mapControllerName = MAP,
 	featureSourcesControllerName = FEATURE_SOURCES,
-	featureProjection = "EPSG:4326",
+	featureProjection,
 	featureId = `${featureSourceId}-point`,
 	enabled = true,
 }: PointInputControlsProps) {
@@ -54,149 +124,102 @@ export default function PointInputControls({
 	).getMap();
 	const usageId = useId();
 	const [position, setPosition] = useState("");
-	const [confirmed, setConfirmed] = useState(false);
 	const [available, setAvailable] = useState(false);
 	const [showHelp, setShowHelp] = useState(false);
-	const confirm = useCallback(() => {
-		if (!enabled) return;
-		const coordinates = centerInProjection(map, featureProjection);
-		if (!coordinates) return;
-		const source = (
+	const projection = useSelector(
+		(state: Record<string, unknown>) =>
+			featureProjection ??
+			sourceProjection(state[mapControllerName], featureSourceId) ??
+			GEOGRAPHIC,
+	);
+	const stored = useSelector((state: Record<string, unknown>) =>
+		storedLatLon(
+			(
+				state[featureSourcesControllerName] as
+					FeatureSourcesState | undefined
+			)?.[featureSourceId]?.data,
+			projection,
+		),
+	);
+	const pending = useRef<(() => void) | undefined>(undefined);
+
+	const commit = useCallback(() => {
+		pending.current = undefined;
+		const target = getProjection(projection);
+		const coordinates = target && centerIn(map, target);
+		if (!target || !coordinates) return;
+		const previous = (
 			store.getState()[featureSourcesControllerName] as
 				FeatureSourcesState | undefined
-		)?.[featureSourceId];
-		const projection = getProjection(featureProjection);
-		if (!projection) return;
+		)?.[featureSourceId]?.data;
 		// OL Draw.appendCoordinates supports lines/polygons only. Commit a Point
 		// through the same Redux source used by the pointer editor instead.
+		const data: FeatureSourceData = {
+			...previous,
+			type: "FeatureCollection",
+			features: [
+				{
+					type: "Feature",
+					id: featureId,
+					geometry: {type: "Point", coordinates},
+					properties: {},
+				},
+			],
+		};
+		// A named `crs` must describe the coordinates written here. Older core
+		// readers also assume EPSG:4326 without one, so name other projections.
+		if (
+			previous?.crs !== undefined ||
+			!equivalent(target, getProjection(GEOGRAPHIC)!)
+		)
+			data.crs = {type: "name", properties: {name: target.getCode()}};
 		store.dispatch(
-			setData(featureSourcesControllerName, featureSourceId, {
-				...source?.data,
-				type: "FeatureCollection",
-				// The reader uses collection CRS before its fallback projection. Keep
-				// metadata, but always describe the coordinates actually written.
-				crs: {type: "name", properties: {name: projection.getCode()}},
-				features: [
-					{
-						type: "Feature",
-						id: featureId,
-						geometry: {type: "Point", coordinates},
-						properties: {},
-					},
-				],
-			}),
+			setData(featureSourcesControllerName, featureSourceId, data),
 		);
-		setConfirmed(true);
+		const point = centerIn(map, GEOGRAPHIC);
+		if (point) setPosition(latLon(point));
 	}, [
-		enabled,
 		map,
-		featureProjection,
+		projection,
 		featureSourcesControllerName,
 		featureSourceId,
 		featureId,
 		store,
 	]);
 
+	// Commit where the crosshair comes to rest, not mid-animation.
+	const confirm = useCallback(() => {
+		if (!enabled || !map) return;
+		pending.current?.();
+		pending.current = whenViewSettled(map.getView(), commit);
+	}, [enabled, map, commit]);
+
 	useEffect(() => {
 		if (!map || !enabled) return;
-		let target: HTMLElement | undefined;
-		let view = map.getView();
+		// Announce on moveend only; the live region must not change per frame.
 		const updatePosition = () => {
-			const point = centerInProjection(map, "EPSG:4326");
+			const point = centerIn(map, GEOGRAPHIC);
 			setAvailable(Boolean(point));
-			setPosition(
-				point ? `${point[1]!.toFixed(6)}, ${point[0]!.toFixed(6)}` : "",
-			);
-			setConfirmed(false);
+			setPosition(point ? latLon(point) : "");
 		};
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (
-				event.target !== target ||
-				target?.ownerDocument.activeElement !== target ||
-				event.defaultPrevented ||
-				event.repeat ||
-				event.isComposing ||
-				event.altKey ||
-				event.ctrlKey ||
-				event.metaKey ||
-				event.shiftKey ||
-				event.key !== "Enter"
-			)
-				return;
-			event.preventDefault();
-			confirm();
-		};
-		const updateCrosshair = () => {
-			if (!target) return;
-			target.classList.toggle(
-				"ms3-map-target--point-input",
-				target.ownerDocument.activeElement === target,
-			);
-			const center = map.getView().getCenter();
-			const pixel = center && map.getPixelFromCoordinate(center);
-			// View padding can move its centre away from the viewport's 50%/50%.
-			if (pixel) {
-				target.style.setProperty(
-					"--ms3-point-input-x",
-					`${pixel[0]}px`,
-				);
-				target.style.setProperty(
-					"--ms3-point-input-y",
-					`${pixel[1]}px`,
-				);
-			}
-		};
-		const detach = () => {
-			if (!target) return;
-			target.removeEventListener("keydown", onKeyDown);
-			target.removeEventListener("focus", updateCrosshair);
-			target.removeEventListener("blur", updateCrosshair);
-			target.classList.remove("ms3-map-target--point-input");
-			target.style.removeProperty("--ms3-point-input-x");
-			target.style.removeProperty("--ms3-point-input-y");
-			const ids = (target.getAttribute("aria-describedby") ?? "")
-				.split(/\s+/)
-				.filter((id) => id && id !== usageId);
-			if (ids.length)
-				target.setAttribute("aria-describedby", ids.join(" "));
-			else target.removeAttribute("aria-describedby");
-		};
-		const attach = () => {
-			detach();
-			target = map.getTargetElement() ?? undefined;
-			if (!target) return;
-			target.addEventListener("keydown", onKeyDown);
-			target.addEventListener("focus", updateCrosshair);
-			target.addEventListener("blur", updateCrosshair);
-			target.setAttribute(
-				"aria-describedby",
-				[target.getAttribute("aria-describedby"), usageId]
-					.filter(Boolean)
-					.join(" "),
-			);
-			updateCrosshair();
-		};
-		const watchView = () => {
-			view.un("change:center", updatePosition);
-			view = map.getView();
-			view.on("change:center", updatePosition);
-			updatePosition();
-		};
-		map.on("postrender", updateCrosshair);
-		map.on("change:target", attach);
-		map.on("change:view", watchView);
-		watchView();
-		attach();
+		const keyboard = bindMapTargetKeyboard(map, {
+			crosshairClass: "ms3-map-target--point-input",
+			describedBy: usageId,
+			onKey: ({key}) =>
+				key === "Enter" || key === " " ? commit : undefined,
+		});
+		map.on("moveend", updatePosition);
+		updatePosition();
 		return () => {
-			detach();
-			view.un("change:center", updatePosition);
-			map.un("postrender", updateCrosshair);
-			map.un("change:target", attach);
-			map.un("change:view", watchView);
+			pending.current?.();
+			pending.current = undefined;
+			keyboard.dispose();
+			map.un("moveend", updatePosition);
 		};
-	}, [map, enabled, usageId, confirm]);
+	}, [map, enabled, usageId, commit]);
 
 	if (!enabled) return null;
+	const confirmed = position !== "" && position === stored;
 	return (
 		<>
 			<div className="ms3-point-input-controls">

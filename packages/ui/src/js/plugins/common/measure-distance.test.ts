@@ -126,6 +126,49 @@ describe("keyboard drawing", () => {
 		expect(actions.remove).toHaveBeenCalledTimes(1);
 	});
 
+	it("waits for a running pan, then applies queued keys in order at the settled centre", () => {
+		const {map, draw, target, key} = fixture();
+		cleanups.push(installKeyboardDrawing(map, "test"));
+		const append = vi.spyOn(draw, "appendCoordinates");
+		const removeLast = vi.spyOn(draw, "removeLastPoint");
+		const view = map.getView();
+		const start = Date.now();
+		const now = vi.spyOn(Date, "now").mockReturnValue(start);
+		cleanups.push(() => now.mockRestore());
+		target.focus();
+		view.animate({center: [500, 600], duration: 1000});
+		expect(key(" ").defaultPrevented).toBe(true);
+		key("Backspace");
+		key(" ");
+		expect(append).not.toHaveBeenCalled();
+		now.mockReturnValue(start + 1000);
+		view.updateAnimations_();
+		expect(append.mock.calls).toEqual([[[[500, 600]]], [[[500, 600]]]]);
+		expect(removeLast).toHaveBeenCalledTimes(1);
+		expect(removeLast.mock.invocationCallOrder[0]).toBeGreaterThan(
+			append.mock.invocationCallOrder[0]!,
+		);
+	});
+
+	it("drops keys queued during a pan when the tool closes or unbinds", () => {
+		const {map, draw, target, key} = fixture("Point");
+		const actions = {add: vi.fn(), remove: vi.fn()};
+		const stop = installKeyboardDrawing(map, "test", actions);
+		const view = map.getView();
+		target.focus();
+		view.animate({center: [500, 600], duration: 1000});
+		key("Enter");
+		draw.setActive(false);
+		view.cancelAnimations();
+		expect(actions.add).not.toHaveBeenCalled();
+		draw.setActive(true);
+		view.animate({center: [700, 800], duration: 1000});
+		key("Enter");
+		stop();
+		view.cancelAnimations();
+		expect(actions.add).not.toHaveBeenCalled();
+	});
+
 	it("keeps a crosshair when another tool is inactive and hides it on blur", () => {
 		const {map, draw, target} = fixture();
 		const other = new Draw({type: "Point"});

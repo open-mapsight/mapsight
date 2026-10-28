@@ -309,4 +309,26 @@
 	border-radius: var(--ms3-border-radius);
 	background: var(--ms3-background-color);
 	color: var(--ms3-foreground-color);
+
+	&:focus-visible {
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
+
+	// Kept focusable (aria-disabled) so users learn when it becomes available.
+	&[aria-disabled="true"] {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	// Alternative to clicking the map (keyboard, voice and switch users):
+	// still recognisably a button, but compact and unfilled so the map click
+	// stays the obvious main path for pointer users.
+	&--secondary {
+		display: inline-block;
+		min-height: 24px;
+		padding: 2px 8px;
+		background: transparent;
+		font-size: 0.875em;
+	}
 }
