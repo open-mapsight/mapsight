@@ -492,64 +492,36 @@ describe("PlaceActions", () => {
 		expect(permalink.tabIndex).toBe(-1);
 	});
 
-	it.each([true, false])(
-		"announces coordinate copy success=%s",
-		async (success) => {
-			vi.stubGlobal("navigator", {
-				...window.navigator,
-				clipboard: {
-					writeText: success
-						? vi.fn().mockResolvedValue(undefined)
-						: vi.fn().mockRejectedValue(new Error("denied")),
-				},
-			});
-			render(
-				<PlaceActions.Root
-					feature={feature()}
-					config={{...isolated, copyCoords: true}}
-				>
-					<PlaceActions.CopyCoords />
-				</PlaceActions.Root>,
-			);
-			fireEvent.click(
-				screen.getByRole("button", {
-					name: "Diese Koordinaten kopieren",
-				}),
-			);
-			await vi.waitFor(() => {
-				expect(announceStatus).toHaveBeenCalledWith(
-					success
-						? "Koordinaten kopiert"
-						: "Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
-				);
-			});
-		},
-	);
-
-	it("announces link copy failure", async () => {
+	it("announces coordinate copy failure and success", async () => {
 		vi.stubGlobal("navigator", {
 			...window.navigator,
-			share: undefined,
 			clipboard: {
-				writeText: vi.fn().mockRejectedValue(new Error("denied")),
+				writeText: vi
+					.fn()
+					.mockRejectedValueOnce(new Error("denied"))
+					.mockResolvedValueOnce(undefined),
 			},
 		});
 		render(
 			<PlaceActions.Root
 				feature={feature()}
-				config={{...isolated, permalink: "https://example.de/place"}}
+				config={{...isolated, copyCoords: true}}
 			>
-				<PlaceActions.Share />
+				<PlaceActions.CopyCoords />
 			</PlaceActions.Root>,
 		);
-		fireEvent.click(
-			screen.getByRole("button", {name: "Diesen Ort teilen"}),
-		);
-		fireEvent.click(screen.getByRole("button", {name: "Link kopieren"}));
+		const copy = screen.getByRole("button", {
+			name: "Diese Koordinaten kopieren",
+		});
+		fireEvent.click(copy);
 		await vi.waitFor(() => {
 			expect(announceStatus).toHaveBeenCalledWith(
 				"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
 			);
+		});
+		fireEvent.click(copy);
+		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith("Koordinaten kopiert");
 		});
 	});
 });

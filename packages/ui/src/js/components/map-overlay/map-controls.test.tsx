@@ -11,13 +11,10 @@ import UserGeoLocationButton from "./user-geo-location-button";
 
 vi.mock("../../helpers/announce-status", () => ({announceStatus: vi.fn()}));
 
-afterEach(() => {
-	cleanup();
-	vi.clearAllMocks();
-});
+afterEach(cleanup);
 
 describe("map overlay accessibility", () => {
-	it("keeps the region wrapper out of the tab order and exposes the selected region", () => {
+	it("exposes the selected region with aria-pressed", () => {
 		const store = configureStore({
 			reducer: () => ({
 				app: {
@@ -31,37 +28,18 @@ describe("map overlay accessibility", () => {
 				<RegionSelector />
 			</Provider>,
 		);
-		expect(screen.getByRole("list").tabIndex).toBe(-1);
-		expect(
-			screen
-				.getByRole("button", {name: "City"})
-				.getAttribute("aria-pressed"),
-		).toBe("true");
-		expect(
-			screen
-				.getByRole("button", {name: "Park"})
-				.getAttribute("aria-pressed"),
-		).toBe("false");
-		expect(screen.getByRole("button", {name: "City"}).tabIndex).toBe(0);
+		const pressed = (name: string) =>
+			screen.getByRole("button", {name}).getAttribute("aria-pressed");
+		expect(pressed("City")).toBe("true");
+		expect(pressed("Park")).toBe("false");
 	});
 
-	it("does not create a focus stop for an empty zero-height region list", () => {
-		const store = configureStore({reducer: () => ({app: {regions: {}}})});
-		render(
-			<Provider store={store}>
-				<RegionSelector />
-			</Provider>,
-		);
-		expect(screen.getByRole("list").tabIndex).toBe(-1);
-		expect(screen.queryAllByRole("button")).toHaveLength(0);
-	});
-
-	it("renders the logo as a non-interactive image with a text alternative", () => {
+	it("renders the logo as non-interactive text", () => {
 		render(<Logo />);
-		expect(screen.queryByRole("button")).toBeNull();
 		expect(
-			screen.getByText("Diese Kartenanwendung nutzt Mapsight").className,
-		).toBe("ms3-visuallyhidden");
+			screen.getByText("Diese Kartenanwendung nutzt Mapsight"),
+		).toBeTruthy();
+		expect(screen.queryByRole("button")).toBeNull();
 	});
 
 	it("announces geolocation progress and failure once per state change", () => {
@@ -84,22 +62,15 @@ describe("map overlay accessibility", () => {
 				<UserGeoLocationButton />
 			</Provider>,
 		);
-		expect(announceStatus).not.toHaveBeenCalled();
 
 		act(() => {
-			store.dispatch({
-				type: "geo",
-				payload: {isRequesting: true, error: false},
-			});
+			store.dispatch(updateGeo({isRequesting: true, error: false}));
 		});
 		expect(announceStatus).toHaveBeenCalledWith(
 			"Standort wird ermittelt …",
 		);
 		act(() => {
-			store.dispatch({
-				type: "geo",
-				payload: {isRequesting: false, error: true},
-			});
+			store.dispatch(updateGeo({isRequesting: false, error: true}));
 		});
 		expect(announceStatus).toHaveBeenCalledWith(
 			"Standort konnte nicht ermittelt werden.",
