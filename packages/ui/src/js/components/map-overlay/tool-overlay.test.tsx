@@ -4,7 +4,10 @@ import {configureStore} from "@reduxjs/toolkit";
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {VIEW_DESKTOP, VIEW_FULLSCREEN} from "../../config/constants/app";
 import {registerTranslations, setDocumentLanguage} from "../../helpers/i18n";
+import {SET_VIEW} from "../../store/actions";
+import AppWrapper from "../layout/wrapper";
 import MeasureDistanceButton from "./measure-distance-button";
 import ToolOverlay from "./tool-overlay";
 
@@ -94,27 +97,48 @@ describe("ToolOverlay Escape", () => {
 		expect(onKeyDown.mock.calls[1]![0].defaultPrevented).toBe(true);
 	});
 
-	it("also closes for Escape on the map target and on its toggle", () => {
+	it("dismisses from the map or toggle before fullscreen handles Escape", () => {
 		const onClose = vi.fn();
-		render(
-			<>
-				<div className="ms3-map-target" data-testid="map" />
-				<button type="button" aria-controls="tool">
-					toggle
-				</button>
-				<input aria-label="search" />
-				<ToolOverlay id="tool" label="Tool" text="" onClose={onClose} />
-			</>,
-		);
-		fireEvent.keyDown(screen.getByRole("textbox", {name: "search"}), {
-			key: "Escape",
+		const store = configureStore({
+			reducer: {
+				app: (
+					state = {view: VIEW_FULLSCREEN, map: {show: true}},
+					action,
+				) =>
+					action.type === SET_VIEW
+						? {...state, view: (action as {value: string}).value}
+						: state,
+			},
 		});
-		expect(onClose).not.toHaveBeenCalled();
+		render(
+			<Provider store={store}>
+				<AppWrapper>
+					<div className="ms3-map-target" data-testid="map" />
+					<button type="button" aria-controls="tool">
+						toggle
+					</button>
+					<input aria-label="search" />
+					<ToolOverlay
+						id="tool"
+						label="Tool"
+						text=""
+						onClose={onClose}
+					/>
+				</AppWrapper>
+			</Provider>,
+		);
 		fireEvent.keyDown(screen.getByTestId("map"), {key: "Escape"});
 		expect(onClose).toHaveBeenCalledOnce();
+		expect(store.getState().app.view).toBe(VIEW_FULLSCREEN);
 		fireEvent.keyDown(screen.getByRole("button", {name: "toggle"}), {
 			key: "Escape",
 		});
 		expect(onClose).toHaveBeenCalledTimes(2);
+		expect(store.getState().app.view).toBe(VIEW_FULLSCREEN);
+		fireEvent.keyDown(screen.getByRole("textbox", {name: "search"}), {
+			key: "Escape",
+		});
+		expect(onClose).toHaveBeenCalledTimes(2);
+		expect(store.getState().app.view).toBe(VIEW_DESKTOP);
 	});
 });
