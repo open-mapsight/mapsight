@@ -91,11 +91,20 @@ permission.
 
 ## Logos and visual identity
 
-Official logos and brand assets are distributed only with maintainer approval. Until brand guidelines are published:
+`@mapsight/ui` ships the **Built with Mapsight** / **Erstellt mit Mapsight** attribution mark as its default map
+attribution, linked to [open-mapsight.org](https://open-mapsight.org/). It is optional:
 
-- Do not copy the project banner or logo from GitHub/npm for your own product identity
-- Default UI **watermarks** shipped in `@mapsight/ui` may be disabled or replaced by host configuration where the
-  software license allows; that does not grant logo rights for external marketing
+- Hosts may **disable or replace** it, as the software license allows (see the
+  [package README](../packages/ui/README.md#attribution-mark))
+- You may use the shipped mark **unmodified** to credit Mapsight: no recoloring, cropping, shadows, filters, or
+  opacity; on maps, place it beside rather than over data credits
+- Shipping the mark grants **no other logo rights**: do not use it, the project banner, or the logo for your own
+  product identity, or to suggest endorsement, partnership, or certification
+
+For any other use of Mapsight logos, email [contact@open-mapsight.org](mailto:contact@open-mapsight.org) with your
+organization, purpose, audience, medium, duration, the file you want to use, and the surrounding layout. Permission is
+given only in writing; downloading a file or sending a request is not approval. Brand guidelines will be linked here
+once they are published.
 
 ---
 

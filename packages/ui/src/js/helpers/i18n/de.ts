@@ -136,7 +136,7 @@ const de: Record<string, string> = {
 	"ui.map-overlay.search.modal.label": "Suchfunktion",
 	"ui.map-overlay.search.modal.headline": "Suche",
 
-	"ui.map-overlay.logo.copyright": "Diese Kartenanwendung nutzt Mapsight",
+	"ui.map-overlay.logo.copyright": "Erstellt mit Mapsight",
 
 	"ui.region-selector.label": "Gebiet auf Karte zentrieren …",
 

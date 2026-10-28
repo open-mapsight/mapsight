@@ -39,7 +39,7 @@ the showcase. Highest impact first:
 | Feature list         | Rows are `tabindex=-1`; link rows unreachable; ArrowDown throws on link-only lists; container has no role or name | 2.1.1, 4.1.2 | CR-UI-001            |
 | Feature list         | `<li>` rendered inside a `div`; selected row exposes no state                                                     | 1.3.1, 4.1.2 | CR-UI-002            |
 | Selection info       | After closing, focus stays in the collapsed panel and Tab walks invisible controls                                | 2.4.3, 2.4.7 | CR-UI-003            |
-| Map overlay          | Region selector `ul` is focusable while 0 px high; Mapsight logo is a clickable `div`                             | 2.4.7, 2.1.1 | audit                |
+| Map overlay          | Region selector `ul` is focusable while 0 px high                                                                 | 2.4.7, 2.1.1 | audit                |
 | Place actions        | Visually hidden permalink is an invisible tab stop                                                                | 2.4.7        | CR-UI-013            |
 | List header, cycling | Sort `<select>` unnamed; list-options popover dialog unnamed; cycling dots unnamed                                | 4.1.2        | CR-UI-016            |
 | Map                  | Focus target has no role, name or keyboard instructions                                                           | 4.1.2, 3.3.2 | CR-UI-014            |

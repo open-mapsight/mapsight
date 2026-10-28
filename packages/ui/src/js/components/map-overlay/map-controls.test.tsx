@@ -5,7 +5,6 @@ import {act, cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {announceStatus} from "../../helpers/announce-status";
-import Logo from "./logo";
 import RegionSelector from "./region-selector";
 import UserGeoLocationButton from "./user-geo-location-button";
 
@@ -32,14 +31,6 @@ describe("map overlay accessibility", () => {
 			screen.getByRole("button", {name}).getAttribute("aria-pressed");
 		expect(pressed("City")).toBe("true");
 		expect(pressed("Park")).toBe("false");
-	});
-
-	it("renders the logo as non-interactive text", () => {
-		render(<Logo />);
-		expect(
-			screen.getByText("Diese Kartenanwendung nutzt Mapsight"),
-		).toBeTruthy();
-		expect(screen.queryByRole("button")).toBeNull();
 	});
 
 	it("announces geolocation progress and failure once per state change", () => {
