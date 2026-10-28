@@ -29,6 +29,64 @@ it("rejects --fail-on-new without a baseline before starting a browser", async (
 	});
 });
 
+it("rejects unknown and empty filters instead of succeeding with missing states", async () => {
+	const dir = await mkdtemp(path.join(tmpdir(), "a11y-filters-"));
+	try {
+		const config = path.join(dir, "audit.mjs");
+		const baseline = path.join(dir, "baseline.json");
+		await writeFile(
+			config,
+			`export default {
+			name: "filters", preset: "none",
+			viewports: [{id: "desktop", width: 1024, height: 900, checks: []}],
+			targets: [{id: "fixture", title: "Fixture", url: "about:blank",
+				scenarios: [{id: "broken", title: "Broken", checks: [], run: async () => {throw new Error("scenario sentinel");}}]}]
+		};`,
+		);
+		await writeFile(
+			baseline,
+			JSON.stringify({startedAt: "2026-10-01T00:00:00Z", findings: []}),
+		);
+		for (const [flag, value, error] of [
+			["--target", "fixtur", "Unknown target selection"],
+			["--target", "fixture,fixtur", "Unknown target selection"],
+			["--viewport", "desktpo", "Unknown viewport selection"],
+			["--viewport", ",", "No viewports selected"],
+			["--scenario", "brokn", "Unknown scenario selection"],
+			["--scenario", ",", "No scenarios selected"],
+			[
+				"--concurrency",
+				"invalid",
+				"concurrency must be a positive integer",
+			],
+			["--concurrency", "0", "concurrency must be a positive integer"],
+		]) {
+			await expect(
+				exec(process.execPath, [
+					cli,
+					"run",
+					"--config",
+					config,
+					flag!,
+					value!,
+					"--baseline",
+					baseline,
+					"--fail-on",
+					"serious",
+					"--fail-on-new",
+					"--browser",
+					"/browser-must-not-start",
+				]),
+			).rejects.toMatchObject({
+				code: 2,
+				stderr: expect.stringContaining(error!) as unknown,
+			});
+		}
+	} finally {
+		await rm(dir, {recursive: true, force: true});
+	}
+});
+
 it("writes the report but exits 2 when a scenario cannot execute", async () => {
 	const dir = await mkdtemp(path.join(tmpdir(), "a11y-cli-"));
 	try {
@@ -53,6 +111,8 @@ it("writes the report but exits 2 when a scenario cannot execute", async () => {
 				config,
 				"--out",
 				dir,
+				"--scenario",
+				"broken",
 			]),
 		).rejects.toMatchObject({
 			code: 2,

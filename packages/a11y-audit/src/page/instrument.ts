@@ -318,11 +318,16 @@ export function installInPage(config: InPageConfig): void {
 				if (
 					escapesOverflow &&
 					(style.transform !== "none" ||
+						style.translate !== "none" ||
+						style.scale !== "none" ||
+						style.rotate !== "none" ||
 						style.perspective !== "none" ||
 						style.filter !== "none" ||
 						style.backdropFilter !== "none" ||
 						/layout|paint|strict|content/.test(style.contain) ||
-						/transform|perspective|filter/.test(style.willChange) ||
+						/transform|translate|scale|rotate|perspective|filter/.test(
+							style.willChange,
+						) ||
 						style.contentVisibility === "auto")
 				)
 					escapesOverflow = false;

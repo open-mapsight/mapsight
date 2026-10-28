@@ -371,6 +371,33 @@ async function auditViewport(
 
 export async function runAudit(options: RunOptions): Promise<AuditReport> {
 	const config = resolveConfig(options.config);
+	if (
+		options.concurrency !== undefined &&
+		(!Number.isInteger(options.concurrency) || options.concurrency < 1)
+	) {
+		throw new Error("concurrency must be a positive integer.");
+	}
+	const validateSelection = (
+		kind: string,
+		selected: string[] | undefined,
+		available: string[],
+	) => {
+		if (selected === undefined) return;
+		if (selected.length === 0) {
+			throw new Error(`No ${kind}s selected.`);
+		}
+		const unknown = selected.filter((id) => !available.includes(id));
+		if (unknown.length > 0) {
+			throw new Error(
+				`Unknown ${kind} selection: ${unknown.join(", ")}.`,
+			);
+		}
+	};
+	validateSelection(
+		"target",
+		options.targets,
+		config.targets.map(({id}) => id),
+	);
 	const startedAt = new Date().toISOString();
 	const targets = config.targets.filter((target) =>
 		options.targets ? options.targets.includes(target.id) : !target.skip,
@@ -391,6 +418,40 @@ export async function runAudit(options: RunOptions): Promise<AuditReport> {
 	if (targets.length === 0) {
 		throw new Error("No targets selected.");
 	}
+	const selectedViewports = new Map(
+		targets.map((target) => [
+			target.id,
+			(target.viewports ?? config.viewports.map(({id}) => id)).filter(
+				(id) => !options.viewports || options.viewports.includes(id),
+			),
+		]),
+	);
+	validateSelection(
+		"viewport",
+		options.viewports,
+		config.viewports.map(({id}) => id),
+	);
+	for (const target of targets) {
+		if (selectedViewports.get(target.id)!.length === 0) {
+			throw new Error(`No viewports selected for target "${target.id}".`);
+		}
+	}
+	validateSelection("scenario", options.scenarios, [
+		"initial",
+		...targets.flatMap((target) =>
+			(target.scenarios ?? [])
+				.filter((scenario) =>
+					selectedViewports
+						.get(target.id)!
+						.some(
+							(id) =>
+								!scenario.viewports ||
+								scenario.viewports.includes(id),
+						),
+				)
+				.map(({id}) => id),
+		),
+	]);
 	const browser = await chromium.launch({
 		headless: !options.headed,
 		executablePath: options.browserPath,
@@ -403,13 +464,7 @@ export async function runAudit(options: RunOptions): Promise<AuditReport> {
 		const queue = [...targets];
 		const worker = async () => {
 			for (let target = queue.shift(); target; target = queue.shift()) {
-				const viewportIds = (
-					target.viewports ??
-					config.viewports.map((viewport) => viewport.id)
-				).filter(
-					(id) =>
-						!options.viewports || options.viewports.includes(id),
-				);
+				const viewportIds = selectedViewports.get(target.id)!;
 				const report: TargetReport = {
 					id: target.id,
 					title: target.title,

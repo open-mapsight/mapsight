@@ -171,12 +171,23 @@ it("clips normal and captured fixed content, but not viewport-fixed chrome", asy
 			}));
 		expect((await visibility()).fixed).not.toBeNull();
 		expect((await visibility()).normal).toBeNull();
-		await page.locator("#clip").evaluate((el: HTMLElement) => {
-			el.style.transform = "translateZ(0)";
-			el.style.position = "relative";
-			el.style.top = "-240px";
+		await page.locator("#fixed").evaluate((el: HTMLElement) => {
+			el.style.top = "100px";
 		});
-		expect((await visibility()).fixed).toBeNull();
+		for (const capture of [
+			"transform:translateZ(0)",
+			"translate:0px",
+			"scale:1",
+			"rotate:0deg",
+			"will-change:translate",
+			"will-change:scale",
+			"will-change:rotate",
+		]) {
+			await page.locator("#clip").evaluate((el: HTMLElement, capture) => {
+				el.style.cssText = `margin-top:200px;height:40px;overflow:hidden;${capture}`;
+			}, capture);
+			expect((await visibility()).fixed, capture).toBeNull();
+		}
 	} finally {
 		await browser.close();
 	}
