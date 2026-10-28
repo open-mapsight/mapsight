@@ -37,6 +37,11 @@ $ms3-option-queryInputWithLabelSearchIcon: false !default;
 $ms3-option-showFeatureCountsInTagSwitcherGroups: never !default; // available options: never, always, moreThanOne
 $ms3-option-showFeatureCountsInTagSwitcherEntries: never !default; // available options: never, always, moreThanOne
 
+// future flags: `true` opts into the next major's behavior now (see decision 012)
+// - themedIcons: chrome icons are CSS masks filled from `--ms3-icon-color*` (falling back to
+//   `--ms3-theme-color-a`/`-b`) instead of the fixed colours baked into the SVG files
+$ms3-future-v8-themedIcons: false !default;
+
 // transitions/animations
 $ms3-easing-default: ease-in-out;
 $ms3-transition-fast: 200ms;

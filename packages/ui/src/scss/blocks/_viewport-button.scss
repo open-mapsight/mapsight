@@ -1,5 +1,6 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../mixins/visually-hidden";
+@use "../mixins/icon";
 @use "../variables";
 
 .ms3-viewport-button {
@@ -21,8 +22,13 @@
 		content: "";
 		width: 100%;
 		height: 40px;
-		background-repeat: no-repeat;
-		background-position: center center;
+
+		@if icon.$themed {
+			@include icon.mask(null, $position: center center);
+		} @else {
+			background-repeat: no-repeat;
+			background-position: center center;
+		}
 	}
 
 	&--top-left {
@@ -49,13 +55,21 @@
 	&--mobile-view-toggle--mobile {
 		// FIXME use differnt icon if there is no list to close
 		&::before {
-			background-image: url(variables.$ms3-uiIconPath + "close-list.svg");
+			@if icon.$themed {
+				@include icon.shape("close-list.svg");
+			} @else {
+				background-image: url(variables.$ms3-uiIconPath + "close-list.svg");
+			}
 			margin-top: -10px;
 			margin-left: 3px;
 		}
 
 		&.ms3-viewport-button--mobile-view-toggle--map-out-of-view::before {
-			background-image: url(variables.$ms3-uiIconPath + "map.svg");
+			@if icon.$themed {
+				@include icon.shape("map.svg");
+			} @else {
+				background-image: url(variables.$ms3-uiIconPath + "map.svg");
+			}
 			margin-top: 0;
 			margin-left: 0;
 		}

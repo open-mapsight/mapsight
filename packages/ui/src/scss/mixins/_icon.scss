@@ -1,0 +1,93 @@
+@use "../variables";
+
+// Themed chrome icons (`$ms3-future-v8-themedIcons`).
+//
+// The SVG under `$ms3-uiIconPath` only provides the shape: it is used as a CSS mask and the
+// box's background colour fills it. Colours resolve on the icon's own element, so overriding
+// `--ms3-theme-color-a`/`-b` on `.ms3-wrapper` (or any ancestor) recolours the icons too.
+// `--ms3-icon-color*` are optional host overrides and are not emitted by `tokens`.
+//
+// A mask clips everything its box paints, including focus outlines. Call `mask` only on boxes
+// that paint nothing else (icon-only pseudo-elements and spans). Controls that have their own
+// background, border, or focus ring get a separate icon box from `layer`.
+
+$themed: variables.$ms3-future-v8-themedIcons;
+
+$color: var(--ms3-icon-color, var(--ms3-theme-color-a));
+$color-active: var(--ms3-icon-color-active, var(--ms3-theme-color-b));
+$color-error: var(--ms3-icon-color-error, var(--ms3-theme-color-b));
+$color-muted: var(--ms3-icon-color-muted, #a8a8a8);
+
+@function src($file) {
+	// `url($…)`: bundlers that rebase relative `url()`s in Sass partials (Vite) skip
+	// arguments that start with a variable
+	$path: variables.$ms3-uiIconPath + $file;
+	@return url($path);
+}
+
+/// Sets only the icon shape (for state modifiers of a box that already has `mask`).
+@mixin shape($file) {
+	-webkit-mask-image: src($file);
+	mask-image: src($file);
+}
+
+/// Sets only the mask position (counterpart of `background-position`).
+@mixin position($position) {
+	-webkit-mask-position: $position;
+	mask-position: $position;
+}
+
+/// Changes the fill of a box that already has `mask` (state modifiers). Pass `$forced-color`
+/// only when the state needs a different system colour than the base icon.
+@mixin fill($color, $forced-color: null) {
+	background: $color;
+
+	@if $forced-color {
+		@media (forced-colors: active) {
+			background: $forced-color;
+		}
+	}
+}
+
+/// Paints an icon on the current box. `$file: null` sets everything but the shape.
+/// `$forced-color` is the system colour used in forced-colors mode. It must be a system colour
+/// keyword: with `forced-color-adjust: none`, `currentcolor` would resolve to the unforced colour.
+@mixin mask(
+	$file,
+	$color: $color,
+	$position: center,
+	$size: auto,
+	$forced-color: ButtonText
+) {
+	@if $file {
+		@include shape($file);
+	}
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	@include position($position);
+	-webkit-mask-size: $size;
+	mask-size: $size;
+	background: $color;
+
+	@media (forced-colors: active) {
+		forced-color-adjust: none;
+		background: $forced-color;
+	}
+}
+
+/// Paints an icon on a `::before`/`::after` box that covers the current element's padding box,
+/// where a background icon used to sit. The element must be positioned; pass
+/// `$position-element: false` when it already is.
+@mixin layer($file, $pseudo: before, $position-element: true, $args...) {
+	@if $position-element {
+		position: relative;
+	}
+
+	&::#{$pseudo} {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		@include mask($file, $args...);
+	}
+}
