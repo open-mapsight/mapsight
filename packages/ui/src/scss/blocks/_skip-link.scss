@@ -38,3 +38,25 @@
 .ms3-wrapper--mobile .ms3-map-return {
 	display: none;
 }
+
+// App-level skip links (uiState.skipLinks): float over the top of the
+// instance instead of pushing its layout down while focused.
+.ms3-skip-links {
+	position: relative;
+	z-index: 50;
+	height: 0;
+
+	.ms3-skip-link:focus {
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		margin: 0;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+	}
+}
+
+// The list is focused as a whole (tabindex -1) by its skip link.
+.ms3-list-wrapper[tabindex="-1"]:focus-visible {
+	outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+	outline-offset: -3px;
+}
