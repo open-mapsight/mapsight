@@ -12,8 +12,8 @@
 		"@types/node": "catalog:",
 		"chokidar": "^5.0.0",
 		"lodash": "catalog:",
-		"postcss": "^8.5.30",
-		"sass": "^1.105.0"
+		"postcss": "^8.5.31",
+		"sass": "^1.106.0"
 	},
 	"devDependencies": {
 		"@mapsight/core": "workspace:^",
