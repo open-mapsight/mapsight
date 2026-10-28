@@ -103,14 +103,57 @@ describe("keyboard tool controls", () => {
 			expect(text).not.toMatch(/Rücktaste|Leertaste|Pfeiltasten/);
 			expect(text.length).toBeLessThan(100);
 		}
-		const helps = screen.getAllByText("Tastaturbedienung");
-		expect(helps).toHaveLength(2);
-		for (const summary of helps) {
-			const details = summary.closest("details")!;
-			expect(summary.tagName).toBe("SUMMARY");
-			expect(details.open).toBe(false);
-			expect(details.textContent).toContain("Rücktaste");
+		const triggers = screen.getAllByRole("button", {
+			name: "Tastaturbedienung",
+		});
+		expect(triggers).toHaveLength(2);
+		for (const trigger of triggers) {
+			expect(trigger.getAttribute("aria-expanded")).toBe("false");
+			const panel = document.getElementById(
+				trigger.getAttribute("aria-controls")!,
+			)!;
+			expect(panel.textContent).toContain("Rücktaste");
+			expect(panel.checkVisibility?.() ?? !panel.hidden).toBe(false);
+			fireEvent.click(trigger);
+			expect(trigger.getAttribute("aria-expanded")).toBe("true");
+			expect(panel.hidden).toBe(false);
 		}
+		expect(
+			screen.getByRole("button", {name: "Kartenmitte teilen"}).className,
+		).toContain("ms3-map-tool-action--secondary");
+	});
+
+	it("links the open keyboard tool and the map in both directions without trapping focus", () => {
+		const {store, map} = setup(true);
+		const target = document.createElement("div");
+		target.tabIndex = 0;
+		document.body.append(target);
+		disposers.push(() => target.remove());
+		map.setTarget(target);
+		const {rerender} = render(
+			<Provider store={store}>
+				<MeasureDistanceButton opened />
+			</Provider>,
+		);
+		fireEvent.click(
+			screen.getByRole("button", {name: "Zur Karte springen"}),
+		);
+		expect(document.activeElement).toBe(target);
+		const slot = target.nextElementSibling!;
+		expect(slot.className).toBe("ms3-map-return");
+		fireEvent.click(
+			screen.getByRole("button", {name: "Zurück zu „Strecke messen“"}),
+		);
+		expect(document.activeElement).toBe(
+			screen.getByRole("region", {name: "Strecke messen"}),
+		);
+		rerender(
+			<Provider store={store}>
+				<MeasureDistanceButton opened={false} />
+			</Provider>,
+		);
+		expect(slot.isConnected).toBe(false);
+		expect(document.querySelector(".ms3-map-return")).toBeNull();
 	});
 
 	it("keeps keyboard drawing off by default on both plugins", () => {
@@ -128,5 +171,8 @@ describe("keyboard tool controls", () => {
 			screen.queryByRole("button", {name: "Kartenmitte teilen"}),
 		).toBeNull();
 		expect(screen.queryByText(/Rücktaste/)).toBeNull();
+		expect(
+			screen.queryByRole("button", {name: "Zur Karte springen"}),
+		).toBeNull();
 	});
 });

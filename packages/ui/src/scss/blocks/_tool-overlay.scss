@@ -40,20 +40,53 @@
 		padding: 0 6px;
 	}
 
+	// Focus target of the "back to tool" skip link after the map.
+	&:focus-visible {
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
+
+	// react-aria-components Disclosure: style [data-expanded] and
+	// [data-focus-visible] like the UI's other RAC parts.
 	&__keyboard-help {
 		margin: 6px 0;
 		padding: 0 6px;
 		font-size: 0.875em;
-		user-select: text;
+	}
 
-		summary {
-			cursor: pointer;
+	&__keyboard-help-trigger {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		min-height: 24px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
 
-			&:focus-visible {
-				outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
-				outline-offset: 2px;
-			}
+		&::before {
+			content: "";
+			width: 0.45em;
+			height: 0.45em;
+			border-right: 2px solid currentColor;
+			border-bottom: 2px solid currentColor;
+			transform: rotate(-45deg);
 		}
+
+		[data-expanded] > &::before {
+			transform: rotate(45deg);
+		}
+
+		&[data-focus-visible] {
+			outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+			outline-offset: 2px;
+		}
+	}
+
+	&__keyboard-help-panel {
+		user-select: text;
 
 		p {
 			margin: 4px 0;

@@ -139,6 +139,7 @@ const SharePositionLinkButton = ({
 					id={overlayId}
 					label={translate("ui.share-position-link.title")}
 					onClose={closeAndReset}
+					mapJump={keyboardDrawing}
 					text={translate(
 						keyboardDrawing
 							? "ui.share-position-link.keyboard-instructions"
@@ -147,7 +148,7 @@ const SharePositionLinkButton = ({
 				>
 					{keyboardDrawing && (
 						<button
-							className="ms3-map-tool-action"
+							className="ms3-map-tool-action ms3-map-tool-action--secondary"
 							type="button"
 							onClick={() => shareMapCenter(store, pluginName)}
 						>

@@ -255,10 +255,6 @@ const translations = {
 			"Klicken Sie auf die Karte, um Punkte zu setzen. Doppelklick oder „Fertig“ beendet die Strecke.",
 		"ui.measure-distance.keyboard-instructions-done":
 			"Klicken Sie auf die Karte, um eine neue Strecke zu messen.",
-		"ui.measure-distance.keyboard.add": "Punkt in der Kartenmitte setzen",
-		"ui.measure-distance.keyboard.finish":
-			"Strecke beenden (ab zwei Punkten)",
-		"ui.measure-distance.keyboard.remove": "Letzten Punkt entfernen",
 		"ui.measure-distance.measurement": "Streckenlänge",
 	},
 	en: {
@@ -271,10 +267,6 @@ const translations = {
 			"Click the map to add points. Double-click or “Done” finishes the line.",
 		"ui.measure-distance.keyboard-instructions-done":
 			"Click the map to measure a new line.",
-		"ui.measure-distance.keyboard.add": "Add a point at the map centre",
-		"ui.measure-distance.keyboard.finish":
-			"Finish the line (from two points)",
-		"ui.measure-distance.keyboard.remove": "Remove the last point",
 		"ui.measure-distance.measurement": "Distance",
 	},
 } as const;

@@ -251,6 +251,8 @@ const en: Record<string, string> = {
 
 	"ui.tool-overlay.keyboard-help": "Keyboard controls",
 	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",
+	"ui.tool-overlay.to-map": "Skip to the map",
+	"ui.tool-overlay.back-to-tool": "Back to “{name}”",
 	"ui.tool-overlay.keyboard.pan": "Pan the map",
 	"ui.keys.space": "Space",
 	"ui.keys.enter": "Enter",
@@ -260,6 +262,9 @@ const en: Record<string, string> = {
 	"ui.link-share.input": "Link to share",
 
 	"ui.measure-distance.finish": "Done",
+	"ui.measure-distance.keyboard.add": "Add a point at the map centre",
+	"ui.measure-distance.keyboard.finish": "Finish the line (from two points)",
+	"ui.measure-distance.keyboard.remove": "Remove the last point",
 };
 
 export default en;

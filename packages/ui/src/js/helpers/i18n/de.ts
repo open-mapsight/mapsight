@@ -258,6 +258,8 @@ const de: Record<string, string> = {
 
 	"ui.tool-overlay.keyboard-help": "Tastaturbedienung",
 	"ui.tool-overlay.keyboard-help.focus": "Bei fokussierter Karte:",
+	"ui.tool-overlay.to-map": "Zur Karte springen",
+	"ui.tool-overlay.back-to-tool": "Zurück zu „{name}“",
 	"ui.tool-overlay.keyboard.pan": "Karte verschieben",
 	"ui.keys.space": "Leertaste",
 	"ui.keys.enter": "Eingabe",
@@ -267,6 +269,9 @@ const de: Record<string, string> = {
 	"ui.link-share.input": "Link zum Teilen",
 
 	"ui.measure-distance.finish": "Fertig",
+	"ui.measure-distance.keyboard.add": "Punkt in der Kartenmitte setzen",
+	"ui.measure-distance.keyboard.finish": "Strecke beenden (ab zwei Punkten)",
+	"ui.measure-distance.keyboard.remove": "Letzten Punkt entfernen",
 };
 
 export default de;

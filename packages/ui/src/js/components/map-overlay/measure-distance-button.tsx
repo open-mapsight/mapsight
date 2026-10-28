@@ -122,6 +122,7 @@ const MeasureDistanceButton = ({
 					id={overlayId}
 					label={translate("ui.measure-distance.title")}
 					onClose={closeAndReset}
+					mapJump={keyboardDrawing}
 					text={translate(
 						keyboardDrawing
 							? feature
