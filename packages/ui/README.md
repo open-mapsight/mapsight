@@ -148,6 +148,23 @@ Copy-out templates: [
 `starters/mapsight-next-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-next-starter), [
 `starters/mapsight-vite-spa-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-vite-spa-starter).
 
+## Attribution mark
+
+The map overlay shows an optional **Erstellt mit Mapsight** / **Built with Mapsight** mark (`.ms3-logo`). It is a link
+to `https://open-mapsight.org/` whose accessible name is the visible text (`ui.map-overlay.logo.copyright`). German and
+English follow the UI language; other languages use the German mark. Desktop views show 120×40 CSS px, mobile and
+map-only views 90×30. The SVGs ship in `dist/img/mapsight-ui/` and load through `$ms3-iconPath` like the other UI
+icons, without external requests.
+
+Hosts may disable or replace it:
+
+- CSS: `.ms3-logo { display: none; }`, or your own `background` on `.ms3-logo` (keeps the link and its name).
+- Create option `components: {MapOverlayLogo: () => null}`, or your own component instead of `() => null`.
+- The `MapOverlayBottomLeft` and `MapOverlayModal` component slots still replace the areas that contain it.
+
+When shown, use the artwork unmodified (no opacity, filters or cropping). See the
+[trademark policy](https://github.com/open-mapsight/mapsight/blob/main/docs/TRADEMARK.md#logos-and-visual-identity).
+
 ## Documentation
 
 | Guide                                                                                                                          | Package                   | Description                                           |

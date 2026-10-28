@@ -205,7 +205,7 @@
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup --parallel build:images build:modules",
-		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/",
+		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/ && cp ./src/img/attribution/*.svg ./dist/img/mapsight-ui/",
 		"build:modules": "tsc",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",

@@ -1,15 +1,22 @@
 @use "../variables";
 
+// Optional "Built with Mapsight" attribution mark, linked to open-mapsight.org.
+// Hosts may hide or replace it (see docs/TRADEMARK.md). Use the approved
+// artwork as is: 120×40 or 90×30 CSS px, no opacity, filters or shadows.
 .ms3-logo {
 	pointer-events: auto;
 	display: block;
 	margin: 7px;
-	opacity: 0.7;
 	width: 120px;
 	height: 40px;
 
-	background: transparent url(variables.$ms3-uiIconPath + "watermark.svg") no-repeat 0 0;
+	background: transparent url(variables.$ms3-uiIconPath + "built-with-mapsight-de-120x40-light.svg") no-repeat 0 0;
 	background-size: 120px 40px;
+
+	&:focus-visible {
+		outline: 2px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
 
 	.ms3-wrapper--mobile &,
 	.ms3-wrapper--mapOnly & {
@@ -17,4 +24,18 @@
 		height: 30px;
 		background-size: 90px 30px;
 	}
+}
+
+// Language and size variants keep single-class specificity, so a host rule on
+// `.ms3-logo` that sets its own background still wins.
+.ms3-logo--en {
+	background-image: url(variables.$ms3-uiIconPath + "built-with-mapsight-en-120x40-light.svg");
+}
+
+:where(.ms3-wrapper--mobile, .ms3-wrapper--mapOnly) .ms3-logo {
+	background-image: url(variables.$ms3-uiIconPath + "built-with-mapsight-de-90x30-light.svg");
+}
+
+:where(.ms3-wrapper--mobile, .ms3-wrapper--mapOnly) .ms3-logo--en {
+	background-image: url(variables.$ms3-uiIconPath + "built-with-mapsight-en-90x30-light.svg");
 }

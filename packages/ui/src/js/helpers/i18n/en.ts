@@ -134,7 +134,7 @@ const en: Record<string, string> = {
 	"ui.map-overlay.search.modal.label": "Search function",
 	"ui.map-overlay.search.modal.headline": "Search",
 
-	"ui.map-overlay.logo.copyright": "The map is based on Mapsight",
+	"ui.map-overlay.logo.copyright": "Built with Mapsight",
 
 	"ui.region-selector.label": "Center map on a region",
 
