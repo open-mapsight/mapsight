@@ -180,6 +180,8 @@ const de: Record<string, string> = {
 	"ui.point-input.instructions":
 		"Mit Tab die Karte fokussieren. Pfeiltasten verschieben die Karte, + und − ändern den Maßstab. Das Fadenkreuz zeigt die Kartenmitte. Eingabe oder die Taste Kartenmitte übernehmen bestätigt die Position. Erneutes Bestätigen ersetzt den Punkt.",
 	"ui.point-input.confirm": "Kartenmitte übernehmen",
+	"ui.point-input.help": "Tastaturhilfe",
+	"ui.point-input.close-help": "Tastaturhilfe schließen",
 	"ui.point-input.position": "Kartenmitte (Breitengrad, Längengrad):",
 	"ui.point-input.confirmed":
 		"Position übernommen (Breitengrad, Längengrad):",

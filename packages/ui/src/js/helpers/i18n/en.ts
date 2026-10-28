@@ -173,6 +173,8 @@ const en: Record<string, string> = {
 	"ui.point-input.instructions":
 		"Focus the map with Tab. Arrow keys pan the map; + and − change the zoom. The crosshair marks the map centre. Press Enter or Use map centre to confirm the position. Confirming again replaces the point.",
 	"ui.point-input.confirm": "Use map centre",
+	"ui.point-input.help": "Keyboard help",
+	"ui.point-input.close-help": "Close keyboard help",
 	"ui.point-input.position": "Map centre (latitude, longitude):",
 	"ui.point-input.confirmed": "Position confirmed (latitude, longitude):",
 	"ui.map.label": "Interactive map",

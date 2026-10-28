@@ -12,6 +12,7 @@ import type {EnhancedStore} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES, MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
+import Modal from "../modal";
 
 export type PointInputControlsProps = {
 	featureSourceId: string;
@@ -55,6 +56,7 @@ export default function PointInputControls({
 	const [position, setPosition] = useState("");
 	const [confirmed, setConfirmed] = useState(false);
 	const [available, setAvailable] = useState(false);
+	const [showHelp, setShowHelp] = useState(false);
 	const confirm = useCallback(() => {
 		if (!enabled) return;
 		const coordinates = centerInProjection(map, featureProjection);
@@ -196,15 +198,40 @@ export default function PointInputControls({
 
 	if (!enabled) return null;
 	return (
-		<div className="ms3-point-input-controls">
-			<p id={usageId}>{translate("ui.point-input.instructions")}</p>
-			<button type="button" disabled={!available} onClick={confirm}>
-				{translate("ui.point-input.confirm")}
-			</button>
-			<p role="status">
-				{position &&
-					`${translate(confirmed ? "ui.point-input.confirmed" : "ui.point-input.position")} ${position}`}
-			</p>
-		</div>
+		<>
+			<div className="ms3-point-input-controls">
+				<p id={usageId} className="ms3-visuallyhidden">
+					{translate("ui.point-input.instructions")}
+				</p>
+				<div className="ms3-point-input-controls__actions">
+					<button
+						type="button"
+						disabled={!available}
+						onClick={confirm}
+					>
+						{translate("ui.point-input.confirm")}
+					</button>
+					<button
+						type="button"
+						aria-label={translate("ui.point-input.help")}
+						onClick={() => setShowHelp(true)}
+					>
+						?
+					</button>
+				</div>
+				<p role="status">
+					{position &&
+						`${translate(confirmed ? "ui.point-input.confirmed" : "ui.point-input.position")} ${position}`}
+				</p>
+			</div>
+			<Modal
+				isOpen={showHelp}
+				onRequestClose={() => setShowHelp(false)}
+				headline={translate("ui.point-input.help")}
+				closeLabel={translate("ui.point-input.close-help")}
+			>
+				<p>{translate("ui.point-input.instructions")}</p>
+			</Modal>
+		</>
 	);
 }

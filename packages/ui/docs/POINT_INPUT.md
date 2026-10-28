@@ -15,6 +15,10 @@ KeyboardPan/KeyboardZoom interactions (the UI defaults). Tab to the map, pan wit
 the arrows and zoom with +/−. The crosshair marks the view centre. Enter on the
 focused map, or the visible **Use map centre** button, confirms it. Tab can leave
 the map normally. The status reports latitude/longitude and confirmation.
+The **Keyboard help** button opens the full instructions in a dialog, keeping
+the controls usable on small map cards. Configure the modal app element in the
+host with `configureReactModalAppElement` from `@mapsight/ui/react-modal-app-element`.
+The instructions also remain attached to the focused map's accessible description.
 
 Confirmation replaces the source's FeatureCollection with a single Point,
 projected from the actual OL view/user projection into `featureProjection`
