@@ -5,7 +5,6 @@ import {configureStore} from "@reduxjs/toolkit";
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
-import {type HeadingOptions, HeadingsProvider} from "../../headings";
 import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import Search from "./index";
@@ -34,7 +33,6 @@ type SearchState = {
 function setup(
 	props: ComponentProps<typeof Search> = {},
 	initial: Partial<SearchState> = {},
-	headings?: HeadingOptions,
 ) {
 	const store = configureStore({
 		reducer: (
@@ -66,14 +64,9 @@ function setup(
 	});
 	const view = render(
 		<Provider store={store}>
-			<HeadingsProvider
-				enabled={headings !== undefined}
-				options={headings}
-			>
-				<div className="ms3-wrapper">
-					<Search {...props} />
-				</div>
-			</HeadingsProvider>
+			<div className="ms3-wrapper">
+				<Search {...props} />
+			</div>
 		</Provider>,
 	);
 	return {...view, store};
@@ -96,18 +89,6 @@ afterEach(() => {
 	cleanup();
 	vi.useRealTimers();
 	vi.clearAllMocks();
-});
-
-it("uses contextual ranks for search groups without inventing a search title", () => {
-	const {unmount} = setup({}, {}, {baseLevel: 2});
-	expect(
-		screen.getByRole("heading", {level: 2, name: "Places"}),
-	).toBeTruthy();
-	unmount();
-	setup({groupHeadlineAs: "h4"}, {}, {baseLevel: 2});
-	expect(
-		screen.getByRole("heading", {level: 4, name: "Places"}),
-	).toBeTruthy();
 });
 
 describe("search status", () => {

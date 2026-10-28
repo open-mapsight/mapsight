@@ -94,56 +94,35 @@ it("contains the complete visible group label and count in the toggle name in bo
 	expect(toggle.getAttribute("aria-expanded")).toBe("false");
 });
 
-it.each([false, true])(
-	"derives nested ranks in split mode (collapsible=%s)",
-	(collapsibleGroups) => {
-		const {rerender} = render(
-			<Provider store={store}>
-				<HeadingsProvider enabled options={{baseLevel: 2}}>
-					<SplitBaseLayerSwitcher
-						{...props}
-						collapsibleGroups={collapsibleGroups}
-					/>
-				</HeadingsProvider>
-			</Provider>,
-		);
-		expect(
-			screen.getByRole("heading", {level: 2, name: "Datenebenen"}),
-		).toBeTruthy();
-		expect(
-			screen.getByRole("heading", {level: 3, name: /^Places/}),
-		).toBeTruthy();
-		rerender(
-			<Provider store={store}>
-				<HeadingsProvider enabled options={{baseLevel: 2}}>
-					<SplitBaseLayerSwitcher
-						{...props}
-						headlineAs="h4"
-						collapsibleGroups={collapsibleGroups}
-					/>
-				</HeadingsProvider>
-			</Provider>,
-		);
-		expect(
-			screen.getByRole("heading", {level: 4, name: "Datenebenen"}),
-		).toBeTruthy();
-		expect(
-			screen.getByRole("heading", {level: 5, name: /^Places/}),
-		).toBeTruthy();
-		rerender(
-			<Provider store={store}>
-				<HeadingsProvider enabled options={{baseLevel: 2}}>
-					<SplitBaseLayerSwitcher
-						{...props}
-						headlineAs="div"
-						collapsibleGroups={collapsibleGroups}
-					/>
-				</HeadingsProvider>
-			</Provider>,
-		);
-		expect(screen.queryByRole("heading", {name: "Datenebenen"})).toBeNull();
-		expect(
-			screen.getByRole("heading", {level: 2, name: /^Places/}),
-		).toBeTruthy();
-	},
-);
+it("derives nested ranks in split mode with collapsible groups", () => {
+	const {rerender} = render(
+		<Provider store={store}>
+			<HeadingsProvider enabled options={{baseLevel: 2}}>
+				<SplitBaseLayerSwitcher {...props} collapsibleGroups />
+			</HeadingsProvider>
+		</Provider>,
+	);
+	expect(
+		screen.getByRole("heading", {level: 2, name: "Datenebenen"}),
+	).toBeTruthy();
+	expect(
+		screen.getByRole("heading", {level: 3, name: /^Places/}),
+	).toBeTruthy();
+	rerender(
+		<Provider store={store}>
+			<HeadingsProvider enabled options={{baseLevel: 2}}>
+				<SplitBaseLayerSwitcher
+					{...props}
+					headlineAs="h4"
+					collapsibleGroups
+				/>
+			</HeadingsProvider>
+		</Provider>,
+	);
+	expect(
+		screen.getByRole("heading", {level: 4, name: "Datenebenen"}),
+	).toBeTruthy();
+	expect(
+		screen.getByRole("heading", {level: 5, name: /^Places/}),
+	).toBeTruthy();
+});

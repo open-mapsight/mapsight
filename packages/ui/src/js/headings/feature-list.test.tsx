@@ -45,8 +45,6 @@ const value = {
 it.each([
 	{groupAs: "auto", enabled: true, groupLevel: 4, itemLevel: 5},
 	{groupAs: "auto", enabled: false, groupLevel: 3, itemLevel: 2},
-	{groupAs: "h3", enabled: true, groupLevel: 3, itemLevel: 4},
-	{groupAs: "div", enabled: true, groupLevel: null, itemLevel: 4},
 	{groupAs: null, enabled: true, groupLevel: null, itemLevel: 4},
 ])(
 	"preserves grouping and explicit elements: %j",

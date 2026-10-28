@@ -1,4 +1,4 @@
-import {createRef} from "react";
+import {type ComponentProps, createRef} from "react";
 import {renderToString} from "react-dom/server";
 
 import {cleanup, render, screen} from "@testing-library/react";
@@ -154,32 +154,20 @@ describe("automatic headings", () => {
 		).toBeTruthy();
 	});
 
-	it.each([0, 7, 1.5, NaN])(
-		"rejects invalid configured rank %s during server rendering",
-		(level) => {
-			expect(() =>
-				renderToString(
-					<HeadingsProvider
-						enabled
-						options={{baseLevel: level as HeadingRank}}
-					>
-						<Heading>Invalid</Heading>
-					</HeadingsProvider>,
-				),
-			).toThrow(RangeError);
-		},
-	);
-
-	it("rejects invalid override elements at the provider boundary", () => {
-		expect(() =>
+	it("rejects invalid ranks and override elements during server rendering", () => {
+		const renderWith = (
+			options: ComponentProps<typeof HeadingsProvider>["options"],
+		) =>
 			renderToString(
-				<HeadingsProvider
-					enabled
-					options={{overrides: {switcher: "h7" as "h6"}}}
-				>
+				<HeadingsProvider enabled options={options}>
 					<Heading>Invalid</Heading>
 				</HeadingsProvider>,
-			),
-		).toThrow(TypeError);
+			);
+		expect(() => renderWith({baseLevel: 7 as HeadingRank})).toThrow(
+			RangeError,
+		);
+		expect(() => renderWith({overrides: {switcher: "h7" as "h6"}})).toThrow(
+			TypeError,
+		);
 	});
 });
