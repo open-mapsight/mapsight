@@ -1,5 +1,45 @@
 # @mapsight/ui
 
+## 7.8.0
+
+### Minor Changes
+
+- 0143205: Add an opt-in renderer commit callback so asynchronous host renderers can defer afterRender plugins until React commits. Use the contract in the default browser renderer and Instance, and pin React-Redux hydration to the initial serverState snapshot.
+
+    Keep initial UI markup deterministic across browser capabilities, dialog portals, bottom-sheet sizing, icon caches, locale defaults and serialized dates. Hosts using asynchronous custom renderers should call props.deferCommit() before scheduling React and pass its callback to AppContext.onCommit; implicit UI language now defaults to de on both server and client.
+
+- 2081daa: Name and describe the map surface for assistive technology. `.ms3-map-target` is a region with a translated role description and an accessible name (`mapTitle` prop, default "Interaktive Karte"; hosts may also pass `aria-label` or `aria-labelledby`). With keyboard control enabled, the map references its keyboard help (`ui.map.usage.html`, now including Shift+F10) via `aria-describedby`; the help renders as a visually hidden sibling of `.ms3-map-target`. The map target gets a visible `:focus-visible` ring.
+- 6dfb922: Improve accessibility of search, switchers, translations and control tooltips.
+
+    Search now announces debounced loading, result counts and errors in a separate polite status. Pass `announceResults={false}` to `Search` when the host supplies announcements. After selecting a result, focus moves to visible details or the selected list row, falling back to the search input with a selection announcement. `onResultSelected(feature)` runs after rendering so hosts can move focus themselves. The shared `QueryInput` now exposes its input ref on initial mount.
+
+    Base-map radio groups keep the checked radio enabled, use one Tab stop, and move focus and selection with arrow keys. Re-selecting the checked map does nothing. Radio names contain only the layer title. Collapsible group toggle names include their complete visible label and count.
+
+    Layer and tag switchers accept `headlineAs` (default `h3`); split layer switchers also accept `groupHeadlineAs` (default `h4`). Search accepts `groupHeadlineAs` (default `h4`). Hosts can choose a suitable heading level or `div` for non-structural control labels. Existing heading defaults are retained.
+
+    Regional locales such as `en-GB` fall back to their base language while exact host translations still take precedence. Add missing shared labels and search messages, and verify literal translation-key coverage in German and English.
+
+    The ARIA control tooltip (opt-in via `future.v8_ariaControlTooltip`) no longer makes group containers such as the region list an extra Tab stop.
+
+- fc68480: Make collapsed selection details inert, name the details region, and restore focus to the originating list row on close. Keep non-modal details focus trapping opt-in with `featureSelectionInfo.trapFocus` or the component prop.
+
+    Scope tool and sheet Escape handling and respect nested dialogs and handled events. BottomSheet adds `dismissOnEscape` (default `"within"`), opt-in `initialFocus` and `restoreFocus`, translated resize and snap labels, and a heading outside the separator that names the region. Hosts should review title/handle styling and opt into focus movement after user actions.
+
+- a02ab12: Add opt-in automatic native heading hierarchy with `future.v8_automaticHeadings`, instance-scoped
+  `headings.baseLevel` and slot overrides, and public heading helpers for composed hosts. Preserve historical
+  7.x heading elements without the flag. Support contextual feature-list groups via `renderGroupAs: "auto"`,
+  local modal heading scopes, and page-relative non-modal panels and sheets.
+- cd3cdf9: Add opt-in keyboard drawing for distance measurement and position sharing. Pass `keyboardDrawing: true` to the measure-distance and share-position-link plugins (default `false`, so existing hosts keep pointer-only drawing). While a tool is active and the map has focus, Enter or Space adds a point at the map centre (marked with a crosshair), arrow keys pan, Backspace removes the last point, and Enter finishes a measurement after two points. The tool overlays then offer "Done" (measurement) and "Share map centre" (position sharing).
+
+    Independently of the option, the measured distance is announced, and a keyboard-opened point menu (Shift+F10) opens at the current map centre instead of the last pointer position.
+
+### Patch Changes
+
+- 8f88cd5: Make feature-list rows reachable by keyboard in every configuration with a single Tab stop and ArrowUp/Down and Home/End navigation, including link-only and highlight-only rows. Render semantic lists, expose selection and inline expansion states to assistive technology, and allow Enter and Space to toggle selection consistently.
+- 65abc99: Label list sorting and options dialogs, provide translated semantic pagination, and announce filtering, page changes, and cycling positions accessibly. The `react-paginate` dependency is dropped.
+- 743286d: Improve accessibility of map overlay controls. Region buttons expose the selected region with `aria-pressed`. The visually hidden place-actions permalink leaves the Tab order. Geolocation progress and errors and copy results (link, coordinates, failures) are announced. The Mapsight logo no longer looks interactive (no pointer cursor or hover change). The mobile view toggle is 44×44 px and overlay buttons keep a 24 px minimum width. Attribution text keeps an opaque backing and explicit text colour when hosts supply a translucent background token.
+- 23fd018: Migrate the remaining UI JavaScript modules and JSX components to TypeScript, with explicit component props, refs, events, Redux state, and middleware types. Keep existing package import paths and runtime behavior, and disable JavaScript compilation in the UI TypeScript project.
+
 ## 7.7.0
 
 ### Minor Changes
