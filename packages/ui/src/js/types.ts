@@ -249,6 +249,8 @@ export type FullUiState = {
 	lastListScrollPosition: number;
 
 	featureSelectionInfo: {
+		/** Opt in to trapping Tab focus in the non-modal details region. Default false. */
+		trapFocus?: boolean;
 		stuckHeaderHeight: number;
 		stickyHeader: boolean;
 	};

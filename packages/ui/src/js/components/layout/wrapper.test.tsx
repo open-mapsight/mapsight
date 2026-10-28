@@ -22,6 +22,7 @@ import {
 import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import {SET_VIEW} from "../../store/actions";
+import BottomSheet from "../bottom-sheet/BottomSheet";
 import AppWrapper from "./wrapper";
 
 vi.mock("../../helpers/announce-status", () => ({
@@ -259,5 +260,19 @@ describe("AppWrapper overlay chrome", () => {
 		expect(
 			screen.getByRole("dialog").contains(document.activeElement),
 		).toBe(true);
+	});
+	it("does not exit fullscreen when Escape dismisses an inner sheet", () => {
+		const dismiss = vi.fn();
+		const {store} = renderWrapper(
+			VIEW_FULLSCREEN,
+			<BottomSheet label="Details" onDismiss={dismiss}>
+				<button type="button">inner</button>
+			</BottomSheet>,
+		);
+		fireEvent.keyDown(screen.getByRole("button", {name: "inner"}), {
+			key: "Escape",
+		});
+		expect(dismiss).toHaveBeenCalledOnce();
+		expect(store.getState().app.view).toBe(VIEW_FULLSCREEN);
 	});
 });

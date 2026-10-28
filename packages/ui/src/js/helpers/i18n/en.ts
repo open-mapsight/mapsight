@@ -19,6 +19,10 @@ import {
 /*  eslint quote-props: 0 */
 
 const en: Record<string, string> = {
+	// BottomSheet accessibility defaults.
+	"ui.bottom-sheet.resize": "Resize",
+	"ui.bottom-sheet.snap-value": "Position {position} of {count}",
+
 	open: "open",
 	close: "close",
 	reset: "reset",

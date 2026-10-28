@@ -29,29 +29,6 @@ describe("ToolOverlay", () => {
 		expect(region.textContent).toContain("Click the map");
 		expect(region.textContent).toContain("result");
 	});
-
-	it("closes on Escape without letting the key reach outer handlers", () => {
-		const onClose = vi.fn();
-		const outerKeyDown = vi.fn();
-		document.addEventListener("keydown", outerKeyDown);
-
-		render(
-			<ToolOverlay
-				label="Measure distance"
-				text={null}
-				onClose={onClose}
-			/>,
-		);
-
-		fireEvent.keyDown(screen.getByRole("button"), {key: "Escape"});
-		expect(onClose).toHaveBeenCalledTimes(1);
-		expect(outerKeyDown).not.toHaveBeenCalled();
-
-		fireEvent.keyDown(screen.getByRole("button"), {key: "Enter"});
-		expect(onClose).toHaveBeenCalledTimes(1);
-
-		document.removeEventListener("keydown", outerKeyDown);
-	});
 });
 
 describe("MeasureDistanceButton", () => {
@@ -90,5 +67,54 @@ describe("MeasureDistanceButton", () => {
 		expect(screen.queryByRole("region")).toBeNull();
 		expect(toggle.getAttribute("aria-expanded")).toBe("false");
 		expect(document.activeElement).toBe(toggle);
+	});
+});
+
+describe("ToolOverlay Escape", () => {
+	it("closes only for Escape inside the tool and lets the event bubble", () => {
+		const onClose = vi.fn();
+		const onKeyDown = vi.fn();
+		render(
+			<div onKeyDown={onKeyDown} role="presentation">
+				<button type="button">outside</button>
+				<ToolOverlay label="Tool" text="Instructions" onClose={onClose}>
+					<button type="button">inside</button>
+				</ToolOverlay>
+			</div>,
+		);
+		fireEvent.keyDown(screen.getByRole("button", {name: "outside"}), {
+			key: "Escape",
+		});
+		expect(onClose).not.toHaveBeenCalled();
+		fireEvent.keyDown(screen.getByRole("button", {name: "inside"}), {
+			key: "Escape",
+		});
+		expect(onClose).toHaveBeenCalledOnce();
+		expect(onKeyDown).toHaveBeenCalledTimes(2);
+		expect(onKeyDown.mock.calls[1]![0].defaultPrevented).toBe(true);
+	});
+
+	it("also closes for Escape on the map target and on its toggle", () => {
+		const onClose = vi.fn();
+		render(
+			<>
+				<div className="ms3-map-target" data-testid="map" />
+				<button type="button" aria-controls="tool">
+					toggle
+				</button>
+				<input aria-label="search" />
+				<ToolOverlay id="tool" label="Tool" text="" onClose={onClose} />
+			</>,
+		);
+		fireEvent.keyDown(screen.getByRole("textbox", {name: "search"}), {
+			key: "Escape",
+		});
+		expect(onClose).not.toHaveBeenCalled();
+		fireEvent.keyDown(screen.getByTestId("map"), {key: "Escape"});
+		expect(onClose).toHaveBeenCalledOnce();
+		fireEvent.keyDown(screen.getByRole("button", {name: "toggle"}), {
+			key: "Escape",
+		});
+		expect(onClose).toHaveBeenCalledTimes(2);
 	});
 });
