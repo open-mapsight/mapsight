@@ -36,14 +36,9 @@ This uses the same Redux source as pointer input, so host form observers receive
 the result. It deliberately does not synthesize pointer events or `drawend`:
 OL's public `Draw.appendCoordinates()` supports lines/polygons, not Points.
 Hosts depending on `drawend` need to observe the point source for both paths.
-The component itself does not modify host form fields. For embedding inside a CMS
-`<form>`, set `createOptions.uiState.searchRenderForm: false` on both server and
-client. SearchOverlay then renders its search as a `div`, including in its mobile
-dialog, preventing invalid nested forms and hydration replacement. Direct Search
-embeddings can use `renderForm={false}`; SearchOverlay also accepts that prop.
-Enter in the search input and the search button perform the address/place search
-without submitting the host form. The host's explicit submit button remains usable.
-The default remains a search form for existing integrations.
+The component itself does not modify host form fields. When the map, including
+its search, sits inside a CMS `<form>`, see
+[Search inside a host form](SEARCH_IN_HOST_FORMS.md).
 Restore the initial point as usual before mounting; panning alone never changes that value.
 
 The component reads DOM only in effects, binds Enter to the current map target,
@@ -71,9 +66,7 @@ execution, plus callback counts, original fit destinations, concurrent/serial
 requests and preservation of unrelated animations. UI tests use an actual OL map
 and EditorMixin source to pan, confirm,
 replace a pointer-created point, validate projections, isolate focus and remount,
-and render without a DOM. Search tests parse a complete outer CMS form,
-hydrate the real SearchOverlay without replacing its SSR nodes, select a street
-result and check Enter suppression, hidden field ownership and explicit submission.
+and render without a DOM.
 These are programmatic checks, not manual browser or
 screen-reader acceptance. Host form/CMS integration, overlay placement on small
 maps and manual assistive-technology checks remain host release gates.
