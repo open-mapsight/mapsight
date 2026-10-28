@@ -36,6 +36,7 @@ import VectorFeatureSourceDefinition from "@mapsight/core/ol-proxy/definitions/s
 
 import {setDocumentLanguage} from "../../helpers/i18n";
 import {create} from "../../index";
+import {configureReactModalAppElement} from "../../react-modal-app-element";
 import PointInputControls from "./index";
 
 const disposers: Array<() => void> = [];
@@ -113,6 +114,27 @@ function setup(projection = "EPSG:4326") {
 }
 
 describe("PointInputControls", () => {
+	it("names the keyboard-help dialog and restores focus when it closes", async () => {
+		const {tree} = setup();
+		const {container} = render(tree());
+		configureReactModalAppElement(container);
+		const help = screen.getByRole("button", {name: "Tastaturhilfe"});
+		help.focus();
+		fireEvent.click(help);
+		expect(
+			screen.getByRole("dialog", {name: "Tastaturhilfe"}),
+		).toBeTruthy();
+		fireEvent.click(
+			screen.getByRole("button", {name: "Tastaturhilfe schließen"}),
+		);
+		await waitFor(() => {
+			expect(
+				screen.queryByRole("dialog", {name: "Tastaturhilfe"}),
+			).toBeNull();
+			expect(document.activeElement).toBe(help);
+		});
+	});
+
 	it("pans the focused OL map, then confirms a projected point through the editor source", () => {
 		const {map, target, tree, features} = setup();
 		render(tree());
