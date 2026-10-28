@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ui",
 	"description": "Mapsight UI for map based web applications using React and Redux",
-	"version": "7.9.1",
+	"version": "7.9.2",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
@@ -39,6 +39,7 @@
 		"chokidar": "^6.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"sass": "1.105.1",
 		"svgo": "^4.1.0",
 		"vitest": "catalog:"
 	},
@@ -205,7 +206,7 @@
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup --parallel build:images build:modules",
-		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/",
+		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/ && cp ./src/img/attribution/*.svg ./dist/img/mapsight-ui/",
 		"build:modules": "tsc",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",

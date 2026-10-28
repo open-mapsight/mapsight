@@ -133,6 +133,63 @@ per stylesheet, but you can attach that set (or pure CSS overrides) to different
 You can also keep auto-emit on `.ms3-wrapper` and only add modifier overrides — no need for `null`
 unless you want a selector that is not `$ms3-tokens-selector`.
 
+### Themed chrome icons (`$ms3-future-v8-themedIcons`)
+
+By default the UI chrome icons (`mapsight-ui/*.svg`: map controls, list filter buttons, layer switcher checkboxes,
+search, close buttons, feature links, place actions, loading/error status) are CSS background images, so they keep the
+colours baked into the SVG files (theme blue `#0e78ad`, red `#cc100c`) whatever the `--ms3-*` tokens say. Opt in to
+paint them in the theme colours instead:
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-future-v8-themedIcons: true
+);
+@use "@mapsight/ui/src/scss/default";
+```
+
+The SVG then only provides the shape (CSS `mask-image`); the colour comes from these properties, resolved on each
+icon so that overrides on `.ms3-wrapper` or any ancestor apply:
+
+| Icons                                                  | Colour                                                   |
+| ------------------------------------------------------ | -------------------------------------------------------- |
+| Controls and statuses (was blue)                       | `var(--ms3-icon-color, var(--ms3-theme-color-a))`        |
+| Hover and active states: sort, filter, reset (was red) | `var(--ms3-icon-color-active, var(--ms3-theme-color-b))` |
+| Error status (was red)                                 | `var(--ms3-icon-color-error, var(--ms3-theme-color-b))`  |
+| Inactive or unavailable geolocation (was grey)         | `var(--ms3-icon-color-muted, #a8a8a8)`                   |
+
+```css
+.ms3-wrapper {
+	--ms3-theme-color-a: #1e5631; /* recolours buttons, links and icons */
+	--ms3-icon-color-muted: #6b6b6b; /* optional: icons only */
+}
+```
+
+`--ms3-icon-color*` are optional overrides and are not emitted by `tokens`. In the default theme the result matches the
+background icons except for two colour corrections: the red icons use `--ms3-theme-color-b` (`#cc0000` instead of
+`#cc100c`), and the feature-details print icon uses the theme blue (`#0e78ad` instead of `#207ab6`). The Mapsight
+watermark (`.ms3-logo`) stays as it is.
+
+**Compatibility.** Without the flag, the compiled CSS is unchanged. With the flag:
+
+- Icon files from your own `$ms3-iconPath` still work, but only their shape is used. Multi-colour icons become
+  single-colour. Keep the flag off if you rely on coloured icon files.
+- Icons must load from the page's origin, as `data:` URIs (Vite inlines small assets by default), or with an
+  `Access-Control-Allow-Origin` header: browsers fetch mask images in CORS mode and drop a cross-origin icon without it.
+- Host CSS that replaces an icon with `background-image` must set `mask-image` (and `-webkit-mask-image`) instead.
+  Map control and status icons stay on `::before`, place-action icons on their `__icon` span. Controls with their own border, hover background or focus ring (list filter
+  buttons, feature links, dialog close, search buttons) now draw the icon on a `::before` box covering the control
+  (`::after` for the layer switcher checkbox and the search reset icon), so `background-image` on the control itself
+  no longer shows the icon.
+- A mask makes its box stack like a positioned element. Host panels that should cover Mapsight controls need
+  `position` and `z-index: 1` or more; the layer switcher and tool overlays already set this.
+- In forced-colors (high contrast) mode the icons use system colours (`ButtonText`, `CanvasText`, `LinkText`,
+  `GrayText`; `Highlight` for active states) instead of the theme colours. Browsers print icons like other
+  backgrounds: only when the user enables background graphics.
+
+In v8 this becomes the only behaviour and the flag is removed (see
+[Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
+
 Scroll utilities (also from `default`): `.ms3-minimal-scrollbar`, `.ms3-scroll-container`, plus mixins under
 `src/scss/mixins/minimal-scrollbar`.
 
@@ -147,6 +204,23 @@ Copy-out templates: [
 `starters/mapsight-host-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-host-starter), [
 `starters/mapsight-next-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-next-starter), [
 `starters/mapsight-vite-spa-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-vite-spa-starter).
+
+## Attribution mark
+
+The map overlay shows an optional **Erstellt mit Mapsight** / **Built with Mapsight** mark (`.ms3-logo`). It is a link
+to `https://open-mapsight.org/` whose accessible name is the visible text (`ui.map-overlay.logo.copyright`). German and
+English follow the UI language; other languages use the German mark. Desktop views show 120×40 CSS px, mobile and
+map-only views 90×30. The SVGs ship in `dist/img/mapsight-ui/` and load through `$ms3-iconPath` like the other UI
+icons, without external requests.
+
+Hosts may disable or replace it:
+
+- CSS: `.ms3-logo { display: none; }`, or your own `background` on `.ms3-logo` (keeps the link and its name).
+- Create option `components: {MapOverlayLogo: () => null}`, or your own component instead of `() => null`.
+- The `MapOverlayBottomLeft` and `MapOverlayModal` component slots still replace the areas that contain it.
+
+When shown, use the artwork unmodified (no opacity, filters or cropping). See the
+[trademark policy](https://github.com/open-mapsight/mapsight/blob/main/docs/TRADEMARK.md#logos-and-visual-identity).
 
 ## Documentation
 

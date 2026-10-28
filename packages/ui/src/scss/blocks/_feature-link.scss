@@ -1,3 +1,4 @@
+@use "../mixins/icon";
 @use "../variables";
 @use "../mixins/reduced-motion";
 
@@ -14,6 +15,11 @@
 	transition: background 300ms ease-in-out;
 	@include reduced-motion.respect-reduced-motion;
 
+	@if icon.$themed {
+		// host HTML usually renders these as links
+		@include icon.layer(null, $position: center center, $forced-color: LinkText);
+	}
+
 	&:hover,
 	&:focus {
 		background-color: var(--ms3-page-background-color);
@@ -21,7 +27,13 @@
 
 	&--map {
 		display: none;
-		background-image: url(variables.$ms3-uiIconPath + "map.svg");
+		@if icon.$themed {
+			&::before {
+				@include icon.shape("map.svg");
+			}
+		} @else {
+			background-image: url(variables.$ms3-uiIconPath + "map.svg");
+		}
 
 		.ms3-wrapper--mobile & {
 			display: block;
@@ -33,11 +45,23 @@
 	}
 
 	&--share {
-		background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
+		@if icon.$themed {
+			&::before {
+				@include icon.shape("sharing.svg");
+			}
+		} @else {
+			background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
+		}
 	}
 
 	&--print {
-		background-image: url(variables.$ms3-uiIconPath + "print.svg");
+		@if icon.$themed {
+			&::before {
+				@include icon.shape("print.svg");
+			}
+		} @else {
+			background-image: url(variables.$ms3-uiIconPath + "print.svg");
+		}
 	}
 
 	@media print {

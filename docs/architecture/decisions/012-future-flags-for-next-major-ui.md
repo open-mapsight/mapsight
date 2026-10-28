@@ -52,6 +52,13 @@ Current flags:
 - `v8_listSearchButton`: list text search keeps a visible label + input by default (7.x host CSS); hosts set
   the flag to expand from a labeled button. That chrome becomes the only path in v8.
 
+Behavior that lives only in the SCSS uses a Sass variable with the same contract, configured with the other
+`@mapsight/ui` variables: `$ms3-future-v8-{behavior}: false !default`.
+
+- `$ms3-future-v8-themedIcons`: UI chrome icons keep the colours baked into their SVG files by default; hosts set
+  the flag to paint them as CSS masks filled from `--ms3-icon-color*` / `--ms3-theme-color-*`. See the
+  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons).
+
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 
 ## Consequences
