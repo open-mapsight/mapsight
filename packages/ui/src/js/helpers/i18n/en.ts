@@ -51,7 +51,6 @@ const en: Record<string, string> = {
 	"ui.place-actions.share.copy": "Copy link",
 	"ui.place-actions.share.copied": "Copied",
 	"ui.place-actions.share.close": "Close share dialog",
-	"ui.place-actions.share.permalink": "Permalink",
 	"ui.place-actions.share.copy-success": "Link copied",
 	"ui.place-actions.navigate": "Directions",
 	"ui.place-actions.navigate.tooltip":
