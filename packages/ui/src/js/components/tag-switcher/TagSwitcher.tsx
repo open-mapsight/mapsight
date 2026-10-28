@@ -1,3 +1,4 @@
+import type {ElementType} from "react";
 import {memo, useMemo} from "react";
 
 import {getDocumentLanguage} from "../../helpers/i18n";
@@ -10,7 +11,7 @@ function TagSwitcher({
 	featureSourceId,
 	toggleableGroups = false,
 	sortTags = true,
-	headlineAs = "h3",
+	headlineAs = "h3" as ElementType,
 }) {
 	function renderEntry(id, group) {
 		const E = createTagSwitcherEntry(featureSourceId, group, id);

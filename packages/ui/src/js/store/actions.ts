@@ -26,7 +26,7 @@ import {validateMapsightConfig} from "../config/schema/validate";
 import type {
 	FetchTextState,
 	FullUiState,
-	MapsightUiFeatureId,
+	MapsightUiFeature,
 	UiState,
 } from "../types";
 import type {RootStateSlice} from "./selectors";
@@ -564,7 +564,7 @@ export const search = (query: string | null): ActionOrThunk =>
 
 export const SELECT_SEARCH_RESULT = "SELECT_SEARCH_RESULT";
 
-export const selectSearchResult = (feature: MapsightUiFeatureId) => ({
+export const selectSearchResult = (feature: MapsightUiFeature) => ({
 	type: SELECT_SEARCH_RESULT,
 	feature: feature,
 });

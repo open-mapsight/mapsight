@@ -139,7 +139,7 @@ function calcAndRenderGroupedFeatureItems(
 }
 
 export default function useFeatureListItemGroups(
-	groupAs: ElementType,
+	groupAs: ElementType | null,
 	features: MapsightUiFeature[],
 	itemAs: ElementType,
 	itemProps: Record<string, unknown>,

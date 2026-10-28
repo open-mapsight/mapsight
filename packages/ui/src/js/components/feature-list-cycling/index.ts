@@ -1,0 +1,81 @@
+import {connect} from "react-redux";
+
+import {createSelector} from "@reduxjs/toolkit";
+import {batchActions} from "redux-batched-actions";
+
+import {
+	deselectAll,
+	selectExclusively,
+} from "@mapsight/core/lib/feature-selections/actions";
+import {
+	createFeatureSelectionSelector,
+	getFilteredFeatures,
+} from "@mapsight/core/lib/feature-selections/selectors";
+
+import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
+import {
+	FEATURE_SELECTION_HIGHLIGHT,
+	FEATURE_SELECTION_SELECT,
+} from "../../config/feature/selections";
+import type {MapsightUiFeatureId} from "../../types";
+import FeatureListCycling from "./feature-list-cycling";
+
+export default connect(
+	// stateProps selector
+	createSelector(
+		[
+			createFeatureSelectionSelector(
+				FEATURE_SELECTIONS,
+				FEATURE_SELECTION_SELECT,
+			),
+			createFeatureSelectionSelector(
+				FEATURE_SELECTIONS,
+				FEATURE_SELECTION_HIGHLIGHT,
+			),
+		],
+
+		(selectSelection, highlightSelection) => {
+			const selectSelectionFeatures =
+				getFilteredFeatures(selectSelection);
+			const highlightSelectionFeatures =
+				getFilteredFeatures(highlightSelection);
+
+			return {
+				selectedFeatureId:
+					selectSelectionFeatures && selectSelectionFeatures[0],
+				highlightedFeatureId:
+					highlightSelectionFeatures && highlightSelectionFeatures[0],
+			};
+		},
+	),
+
+	// dispatchProps
+	(dispatch) => ({
+		onFeatureSelection: (id: MapsightUiFeatureId) => {
+			const actions = [
+				deselectAll(FEATURE_SELECTIONS, FEATURE_SELECTION_HIGHLIGHT),
+				selectExclusively(
+					FEATURE_SELECTIONS,
+					FEATURE_SELECTION_SELECT,
+					id as string,
+				),
+			];
+
+			dispatch(batchActions(actions));
+		},
+		onFeatureUnSelection: () =>
+			dispatch(deselectAll(FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT)),
+		onFeatureHighlight: (id: MapsightUiFeatureId) =>
+			dispatch(
+				selectExclusively(
+					FEATURE_SELECTIONS,
+					FEATURE_SELECTION_HIGHLIGHT,
+					id as string,
+				),
+			),
+		onFeatureUnHighlight: () =>
+			dispatch(
+				deselectAll(FEATURE_SELECTIONS, FEATURE_SELECTION_HIGHLIGHT),
+			),
+	}),
+)(FeatureListCycling);
