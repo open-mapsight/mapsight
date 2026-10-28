@@ -86,6 +86,9 @@ it("contains the complete visible group label and count in the toggle name in bo
 	const toggle = screen.getByRole("button", {
 		name: "Places 1/1 Collapse group",
 	});
+	// CSS gaps do not separate the adjacent spans for label-in-name checks.
+	expect(toggle.textContent).toBe("Places 1/1");
+	expect(toggle.getAttribute("aria-label")).toContain(toggle.textContent);
 	expect(toggle.getAttribute("aria-expanded")).toBe("true");
 	fireEvent.click(toggle);
 	expect(screen.getByRole("button", {name: "Places 1/1 Expand group"})).toBe(
