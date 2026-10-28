@@ -39,6 +39,8 @@ catalog:
 minimumReleaseAgeExclude:
   - postcss@8.5.10
 overrides:
+  # Sass 1.106.0 crashes when serializing valid empty attribute selectors.
+  sass: 1.105.1
   axios@<1.18.0: ^1.18.0
   brace-expansion@<1.1.21: ^1.1.21
   brace-expansion@>=2.0.0 <2.1.7: ^2.1.7
