@@ -36,6 +36,7 @@ function CountAggregatorDemoBootstrap(): ReactElement {
 		const next = createStationTypeAppsConfig(stationTypesQuery.data, {
 			apiBaseUrl: COUNT_AGGREGATOR_MOCK_API_BASE,
 		});
+		next.sectionHeadingAs = "h2";
 
 		if (next.apps.bicycleSensorTotal !== undefined) {
 			next.apps.bicycleSensorTotal = {

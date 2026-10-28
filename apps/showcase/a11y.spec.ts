@@ -6,7 +6,7 @@ import {test} from "@playwright/test";
 
 const exec = promisify(execFile);
 
-test("showcase has no new serious accessibility failures or audit execution errors", async ({
+test("showcase has no new moderate or higher accessibility failures or audit execution errors", async ({
 	baseURL,
 }) => {
 	const repoRoot = path.resolve(import.meta.dirname, "../..");
@@ -24,7 +24,7 @@ test("showcase has no new serious accessibility failures or audit execution erro
 			"--out",
 			"apps/showcase/a11y-report",
 			"--fail-on",
-			"serious",
+			"moderate",
 			"--fail-on-new",
 		],
 		{cwd: repoRoot, timeout: 570_000},

@@ -144,6 +144,8 @@ export interface CountAggregatorConfig {
 	links: CountAggregatorLinkBuilders;
 	locale?: CountAggregatorLocale;
 	translations?: Partial<Record<CountAggregatorTranslationKey, string>>;
+	/** Heading used for wizard and chart sections; choose it for the host outline. */
+	sectionHeadingAs?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
 export interface TimeSeriesChartProps {

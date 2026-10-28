@@ -1,30 +1,4 @@
 {
-	"startedAt": "2026-10-28T20:50:12.881Z",
-	"findings": [
-		{
-			"fingerprint": "5d03668c91b7",
-			"rule": "axe/heading-order",
-			"source": "axe",
-			"title": "Heading levels should only increase by one",
-			"description": "Fix any of the following: Heading order invalid",
-			"wcag": [],
-			"level": "best-practice",
-			"impact": "moderate",
-			"status": "fail",
-			"owner": "@mapsight/count-aggregator-ui",
-			"target": "count-aggregator",
-			"scenarios": ["initial"],
-			"viewports": ["desktop", "reflow"],
-			"selector": "div > form > div > h4",
-			"count": 1,
-			"examples": [
-				{
-					"selector": "div > form > div > h4",
-					"html": "<h4 class=\"msca:mb-2 msca:text-base msca:font-bold\">",
-					"owner": "@mapsight/count-aggregator-ui"
-				}
-			],
-			"helpUrl": "https://dequeuniversity.com/rules/axe/4.14/heading-order?application=axeAPI"
-		}
-	]
+	"startedAt": "2026-10-28T21:37:16.049Z",
+	"findings": []
 }
