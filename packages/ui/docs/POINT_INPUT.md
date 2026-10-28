@@ -12,21 +12,25 @@ import PointInputControls from "@mapsight/ui/components/point-input";
 Use the source ID created by `EditorMixin`, with `draw.type: "Point"` and
 `draw.replacePrevious: true`. The map must be keyboard-focusable with OL
 KeyboardPan/KeyboardZoom interactions (the UI defaults). Tab to the map, pan with
-the arrows and zoom with +/−. The crosshair marks the view centre. Enter on the
-focused map, or the visible **Use map centre** button, confirms it. Tab can leave
-the map normally. The status reports latitude/longitude and confirmation.
+the arrows and zoom with +/−. The crosshair marks the view centre. Enter or Space
+on the focused map, or the visible **Use map centre** button, confirms it. While
+the map is still moving (e.g. a keyboard pan), confirmation waits until it stops,
+so the point lands under the crosshair. Tab can leave the map normally. The status
+reports latitude/longitude once the map stops moving, and says the position is
+confirmed while the stored point is at the centre.
 The **Keyboard help** button opens the full instructions in a dialog, keeping
 the controls usable on small map cards. Configure the modal app element in the
 host with `configureReactModalAppElement` from `@mapsight/ui/react-modal-app-element`.
 The instructions also remain attached to the focused map's accessible description.
 
 Confirmation replaces the source's FeatureCollection with a single Point,
-projected from the actual OL view/user projection into `featureProjection`
-(default EPSG:4326). Set this to the editor source projection, including for
-non-geographic sources. Confirmation preserves collection metadata and writes a
-named GeoJSON `crs` for the coordinates actually committed, so the source reader
-can project them back into the map. The source must be dedicated to this
-one-point input.
+projected from the actual OL view/user projection into the editor source's
+projection. That projection is read from the VectorFeatureSource bound to
+`featureSourceId` in map state (EditorMixin's `projection`, default EPSG:4326);
+`featureProjection` overrides it for sources not described there. Collection
+metadata is preserved. A named `crs` is written only for non-geographic sources
+(older core readers assume EPSG:4326 without one) or to keep an existing `crs`
+accurate; geographic sources keep the pointer path's plain GeoJSON. The source must be dedicated to this one-point input.
 `mapControllerName`, `featureSourcesControllerName` and `featureId` can be set for
 custom controllers and IDs. Disable/unmount these controls outside point-input
 mode; multiple simultaneously enabled editors on the same target are unsupported.
@@ -41,7 +45,8 @@ its search, sits inside a CMS `<form>`, see
 [Search inside a host form](SEARCH_IN_HOST_FORMS.md).
 Restore the initial point as usual before mounting; panning alone never changes that value.
 
-The component reads DOM only in effects, binds Enter to the current map target,
+The component reads DOM only in effects, binds Enter/Space to the current map target
+(shared with the keyboard drawing tools),
 ignores nested controls/modifiers/repeat, and removes listeners/descriptions on
 unmount, disable and target replacement. SSR renders the instructions and a disabled
 confirmation button without dispatching; hydration enables it after mount. The
@@ -52,13 +57,16 @@ execution time. Enabling reduced motion completes the actual pending OL animatio
 steps with zero duration, retaining the original destination and native callback.
 Parallel/serial requests finish in completion order; unrelated direct OL work is
 not cancelled. The small adapter for OL's internal animation queue is covered by
-real View/Map regression tests and must be checked when upgrading OL.
+real View/Map regression tests and must be checked when upgrading OL; if those
+internals disappear it falls back to applying the preference at execution time
+only. Native keyboard handlers only consult the preference for key events.
 Idle/detached/replaced views release the preference listener. Native OL keyboard pan/zoom choose a zero-duration OL
 handler per key event while preserving configured conditions, deltas and normal
 durations otherwise. UI scroll requests use `instant` under reduced motion
 (`auto` could inherit CSS smooth scrolling). No preference is serialized into SSR
-state. Custom OL interactions, kinetic pointer movement and external direct
-`view.animate()` calls remain the integrator's responsibility.
+state. Custom OL interactions, kinetic pointer movement, mouse-wheel and
+double-click zoom (OL's 250 ms defaults) and external direct `view.animate()`
+calls remain the integrator's responsibility.
 
 Automated evidence: core tests exercise queued/in-flight preference changes,
 actions, geometry/feature fits, centering, native keyboard duration and no-DOM

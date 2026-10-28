@@ -1,4 +1,5 @@
 import Feature from "ol/Feature";
+import MapBrowserEvent from "ol/MapBrowserEvent";
 import View from "ol/View";
 import Point from "ol/geom/Point";
 
@@ -131,7 +132,52 @@ describe("map motion preferences", () => {
 		expect(action).toHaveBeenCalledWith(false);
 		expect(() => dispose()).not.toThrow();
 	});
+
+	it("falls back to execution-time preference if OL's animation queue internals change", () => {
+		const {map, media} = runtime();
+		const add = vi.spyOn(media, "addEventListener");
+		const view = map.getView();
+		// Simulate an OL release without the private queue on this view.
+		const changed = Object.create(view, {
+			animations_: {value: undefined},
+		}) as View;
+		const legacyMap = {getView: () => changed} as unknown as typeof map;
+		const action = vi.fn(() => view.animate({zoom: 11, duration: 1000}));
+		expect(() => runWithMotionPreference(legacyMap, action)).not.toThrow();
+		expect(action).toHaveBeenCalledWith(false);
+		expect(add).not.toHaveBeenCalled();
+		media.matches = true;
+		const reduced = vi.fn();
+		expect(() => runWithMotionPreference(legacyMap, reduced)).not.toThrow();
+		expect(reduced).toHaveBeenCalledWith(true);
+	});
 });
+
+it.each(["pan", "zoom"])(
+	"does not read the preference for non-key map events (%s)",
+	async (kind) => {
+		const {map} = runtime();
+		const definition =
+			kind === "pan"
+				? (
+						await import("@/ol-proxy/definitions/interaction/KeyboardPanInteraction")
+					).default
+				: (
+						await import("@/ol-proxy/definitions/interaction/KeyboardZoomInteraction")
+					).default;
+		const interaction = new definition.Constructor();
+		map.addInteraction(interaction);
+		const matchMedia = vi.mocked(window.matchMedia);
+		matchMedia.mockClear();
+		const event = new MapBrowserEvent(
+			"pointermove",
+			map,
+			new window.MouseEvent("pointermove") as PointerEvent,
+		);
+		expect(interaction.handleEvent(event)).toBe(true);
+		expect(matchMedia).not.toHaveBeenCalled();
+	},
+);
 
 it.each(["pan", "zoom"])(
 	"updates native keyboard %s duration per event without changing caller options",

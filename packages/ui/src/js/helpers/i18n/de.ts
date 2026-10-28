@@ -178,7 +178,7 @@ const de: Record<string, string> = {
 	"ui.map.visuallyhidden":
 		"Dieser Bereich der Webseite zeigt eine Landkarte.",
 	"ui.point-input.instructions":
-		"Mit Tab die Karte fokussieren. Pfeiltasten verschieben die Karte, + und − ändern den Maßstab. Das Fadenkreuz zeigt die Kartenmitte. Eingabe oder die Taste Kartenmitte übernehmen bestätigt die Position. Erneutes Bestätigen ersetzt den Punkt.",
+		"In der fokussierten Karte verschieben die Pfeiltasten die Karte, + und − ändern den Maßstab. Das Fadenkreuz zeigt die Kartenmitte. Eingabe- oder Leertaste oder die Schaltfläche „Kartenmitte übernehmen“ setzen den Punkt dorthin. Erneutes Bestätigen ersetzt ihn.",
 	"ui.point-input.confirm": "Kartenmitte übernehmen",
 	"ui.point-input.help": "Tastaturhilfe",
 	"ui.point-input.close-help": "Tastaturhilfe schließen",

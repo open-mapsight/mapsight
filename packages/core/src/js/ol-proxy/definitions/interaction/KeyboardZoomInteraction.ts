@@ -14,6 +14,10 @@ class MotionAwareKeyboardZoom extends KeyboardZoom {
 		this.instant = new KeyboardZoom({...options, duration: 0});
 	}
 	override handleEvent(...args: Parameters<KeyboardZoom["handleEvent"]>) {
+		// Every map browser event passes through here; only keys can animate.
+		const {type} = args[0];
+		if (type !== "keydown" && type !== "keypress")
+			return super.handleEvent(...args);
 		let propagate = true;
 		runWithMotionPreference(args[0].map, (reduced) => {
 			propagate = reduced

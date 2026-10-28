@@ -171,7 +171,7 @@ const en: Record<string, string> = {
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
 	"ui.point-input.instructions":
-		"Focus the map with Tab. Arrow keys pan the map; + and − change the zoom. The crosshair marks the map centre. Press Enter or Use map centre to confirm the position. Confirming again replaces the point.",
+		"On the focused map, arrow keys pan and + and − zoom. The crosshair marks the map centre. Press Enter or Space, or the “Use map centre” button, to set the point there. Confirming again replaces it.",
 	"ui.point-input.confirm": "Use map centre",
 	"ui.point-input.help": "Keyboard help",
 	"ui.point-input.close-help": "Close keyboard help",

@@ -13,10 +13,17 @@ export function getMotionPreference(): MediaQueryList | undefined {
 // access here and cover it with real View/Map regressions. Retiming the actual
 // steps keeps OL's computed fit targets, anchors, constraints and callbacks;
 // cancel-and-retry would lose them and cancel unrelated work on the same view.
-function animationSeries(view: View) {
-	return (
-		view as unknown as {animations_: Array<Animation[] | null>}
-	).animations_.filter((series): series is Animation[] => series !== null);
+// Returns undefined if an OL upgrade changed these internals; callers then only
+// apply the preference at execution time instead of breaking navigation.
+function animationSeries(view: View): Animation[][] | undefined {
+	const {animations_: queue, updateAnimations_: update} = view as unknown as {
+		animations_?: unknown;
+		updateAnimations_?: unknown;
+	};
+	if (!Array.isArray(queue) || typeof update !== "function") return undefined;
+	return queue.filter((series): series is Animation[] =>
+		Array.isArray(series),
+	);
 }
 
 type Pending = {
@@ -42,7 +49,7 @@ function watch(map: OlMap, media: MediaQueryList): Pending {
 		series.clear();
 	};
 	const settle = () => {
-		const current = new Set(animationSeries(view));
+		const current = new Set(animationSeries(view) ?? []);
 		const active = [...series].filter((entry) => current.has(entry));
 		// Finish in native completion order, retaining OL's newest-first update
 		// order for ties. Already completed serial steps must not run again.
@@ -94,18 +101,20 @@ export default function runWithMotionPreference(
 	const view = map.getView();
 	const reduced = media?.matches ?? false;
 	if (reduced) pending.get(view)?.settle();
+	const before = animationSeries(view);
 	if (
 		!media ||
 		reduced ||
+		!before ||
 		typeof media.addEventListener !== "function" ||
 		typeof media.removeEventListener !== "function"
 	) {
 		animate(reduced);
 		return () => {};
 	}
-	const previous = new Set(animationSeries(view));
+	const previous = new Set(before);
 	animate(false);
-	const entries = animationSeries(view).filter(
+	const entries = (animationSeries(view) ?? []).filter(
 		(entry) => !previous.has(entry),
 	);
 	if (!entries.length) return () => {};

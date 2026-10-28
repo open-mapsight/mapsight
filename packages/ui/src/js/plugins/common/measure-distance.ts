@@ -29,6 +29,7 @@ import {
 	MAP,
 } from "../../config/constants/controllers";
 import {getDictionary} from "../../helpers/i18n";
+import {bindMapTargetKeyboard} from "../../helpers/map-target-keyboard";
 import type {PluginInstance} from "../../types";
 
 export const createActivateAction = (mapController: string, name: string) =>
@@ -79,82 +80,54 @@ export function installKeyboardDrawing(
 	pointActions?: {add: () => void; remove: () => void},
 ): () => void {
 	if (typeof document === "undefined") return () => {};
-	let target: HTMLElement | null = null;
-	const updateCrosshair = () => {
-		const active = map
-			.getInteractions()
-			.getArray()
-			.some(
-				(interaction) =>
-					interaction instanceof Draw &&
-					interaction.get("keyboardTool") &&
-					interaction.getActive(),
-			);
-		target?.classList.toggle(
-			"ms3-map-target--keyboard-drawing",
-			active && document.activeElement === target,
-		);
-	};
-	const onKeyDown = (event: KeyboardEvent) => {
-		const draw = getKeyboardDraw(map, name);
-		if (
-			!draw?.getActive() ||
-			event.defaultPrevented ||
-			event.target !== target ||
-			document.activeElement !== target ||
-			event.altKey ||
-			event.ctrlKey ||
-			event.metaKey ||
-			event.shiftKey ||
-			event.repeat
-		)
-			return;
-		if (!["Enter", " ", "Backspace"].includes(event.key)) return;
-		event.preventDefault();
-		if (event.key === "Backspace") {
-			if (pointActions) pointActions.remove();
-			else draw.removeLastPoint();
-		} else if (pointActions) {
-			pointActions.add();
-		} else if (event.key === "Enter" && vertexCount(draw) >= 2) {
-			draw.finishDrawing();
-		} else {
-			const center = map.getView().getCenter();
-			if (center) draw.appendCoordinates([center.slice()]);
-		}
-	};
-	const detach = () => {
-		target?.removeEventListener("keydown", onKeyDown);
-		target?.removeEventListener("focus", updateCrosshair);
-		target?.removeEventListener("blur", updateCrosshair);
-		target?.classList.remove("ms3-map-target--keyboard-drawing");
-	};
-	const attach = () => {
-		detach();
-		target = map.getTargetElement() ?? null;
-		target?.addEventListener("keydown", onKeyDown);
-		target?.addEventListener("focus", updateCrosshair);
-		target?.addEventListener("blur", updateCrosshair);
-		updateCrosshair();
-	};
+	const keyboard = bindMapTargetKeyboard(map, {
+		crosshairClass: "ms3-map-target--keyboard-drawing",
+		showCrosshair: () =>
+			map
+				.getInteractions()
+				.getArray()
+				.some(
+					(interaction) =>
+						interaction instanceof Draw &&
+						interaction.get("keyboardTool") &&
+						interaction.getActive(),
+				),
+		isActive: () => Boolean(getKeyboardDraw(map, name)?.getActive()),
+		onKey({key}) {
+			if (!["Enter", " ", "Backspace"].includes(key)) return undefined;
+			// Runs once a keyboard pan ends; the tool may have closed meanwhile.
+			return () => {
+				const draw = getKeyboardDraw(map, name);
+				if (!draw?.getActive()) return;
+				if (key === "Backspace") {
+					if (pointActions) pointActions.remove();
+					else draw.removeLastPoint();
+				} else if (pointActions) {
+					pointActions.add();
+				} else if (key === "Enter" && vertexCount(draw) >= 2) {
+					draw.finishDrawing();
+				} else {
+					const center = map.getView().getCenter();
+					if (center) draw.appendCoordinates([center.slice()]);
+				}
+			};
+		},
+	});
 	let observedDraw: Draw | undefined;
 	const watchDraw = () => {
-		observedDraw?.un("change:active", updateCrosshair);
+		observedDraw?.un("change:active", keyboard.update);
 		observedDraw = getKeyboardDraw(map, name);
-		observedDraw?.on("change:active", updateCrosshair);
-		updateCrosshair();
+		observedDraw?.on("change:active", keyboard.update);
+		keyboard.update();
 	};
-	map.on("change:target", attach);
 	map.getInteractions().on("add", watchDraw);
 	map.getInteractions().on("remove", watchDraw);
 	watchDraw();
-	attach();
 	return () => {
-		detach();
-		map.un("change:target", attach);
+		keyboard.dispose();
 		map.getInteractions().un("add", watchDraw);
 		map.getInteractions().un("remove", watchDraw);
-		observedDraw?.un("change:active", updateCrosshair);
+		observedDraw?.un("change:active", keyboard.update);
 	};
 }
 

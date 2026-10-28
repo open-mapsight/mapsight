@@ -98,7 +98,6 @@ function setup(projection = "EPSG:4326") {
 		<Provider store={store}>
 			<PointInputControls
 				featureSourceId="pointInput_featureSource"
-				featureProjection={projection}
 				enabled={enabled}
 			/>
 		</Provider>
@@ -240,12 +239,102 @@ describe("PointInputControls", () => {
 		render(tree());
 		target.focus();
 		const pixel = map.getPixelFromCoordinate(map.getView().getCenter()!);
-		expect(target.style.getPropertyValue("--ms3-point-input-x")).toBe(
+		expect(target.style.getPropertyValue("--ms3-view-center-x")).toBe(
 			`${pixel[0]}px`,
 		);
 		expect(pixel[0]).not.toBe(200);
 		fireEvent.keyDown(target, {key: "Enter"});
 		expect(features()![0]!.geometry.coordinates).toEqual([9, 51]);
+	});
+
+	it("waits for a running pan to end and commits where the crosshair stops", () => {
+		const {map, target, tree, features} = setup();
+		render(tree());
+		target.focus();
+		const view = map.getView();
+		const destination = fromLonLat([10.6, 52.3]);
+		const start = Date.now();
+		const now = vi.spyOn(Date, "now").mockReturnValue(start);
+		disposers.push(() => now.mockRestore());
+		act(() => view.animate({center: destination, duration: 1000}));
+		now.mockReturnValue(start + 400);
+		act(() => view.updateAnimations_());
+		fireEvent.keyDown(target, {key: "Enter"});
+		expect(features() ?? []).toHaveLength(0);
+		now.mockReturnValue(start + 1000);
+		act(() => view.updateAnimations_());
+		const point = features()![0]!.geometry.coordinates;
+		expect(point[0]).toBeCloseTo(10.6, 6);
+		expect(point[1]).toBeCloseTo(52.3, 6);
+		expect(screen.getByRole("status").textContent).toContain(
+			"Position übernommen",
+		);
+	});
+
+	it("cancels a pending confirmation on unmount", () => {
+		const {map, target, tree, features} = setup();
+		const {unmount} = render(tree());
+		target.focus();
+		const view = map.getView();
+		act(() =>
+			view.animate({center: fromLonLat([10.6, 52.3]), duration: 1000}),
+		);
+		fireEvent.keyDown(target, {key: " "});
+		unmount();
+		act(() => view.cancelAnimations());
+		expect(features() ?? []).toHaveLength(0);
+	});
+
+	it("announces the centre when the map stops moving, not on every view change", () => {
+		const {map, tree} = setup();
+		render(tree());
+		const status = screen.getByRole("status");
+		const before = status.textContent;
+		act(() => map.getView().setCenter(fromLonLat([11, 53])));
+		expect(status.textContent).toBe(before);
+		act(() => map.renderSync());
+		expect(status.textContent).toContain("53.00000, 11.00000");
+	});
+
+	it("confirms with Space and reports confirmation only while the stored point is at the centre", () => {
+		const {store, target, tree, features} = setup();
+		render(tree());
+		target.focus();
+		fireEvent.keyDown(target, {key: " "});
+		expect(features()).toHaveLength(1);
+		const status = screen.getByRole("status");
+		expect(status.textContent).toContain("Position übernommen");
+		// A pointer edit elsewhere replaces the point; the centre is no longer it.
+		act(() => {
+			store.dispatch(
+				setData("featureSources", "pointInput_featureSource", {
+					type: "FeatureCollection",
+					features: [
+						{
+							type: "Feature",
+							id: "pointer",
+							geometry: {type: "Point", coordinates: [10, 52]},
+							properties: {},
+						},
+					],
+				}),
+			);
+		});
+		expect(status.textContent).toContain("Kartenmitte (");
+	});
+
+	it("writes no CRS member for a geographic source without one", () => {
+		const {store, tree} = setup();
+		render(tree());
+		fireEvent.click(
+			screen.getByRole("button", {name: "Kartenmitte übernehmen"}),
+		);
+		const data = (
+			store.getState() as unknown as {
+				featureSources: Record<string, FeatureSourceState>;
+			}
+		).featureSources.pointInput_featureSource!.data!;
+		expect(data).not.toHaveProperty("crs");
 	});
 
 	it("uses the actual view projection and respects OL's user projection", () => {
