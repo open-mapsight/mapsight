@@ -1,11 +1,13 @@
 import {
 	type ElementType,
 	type ReactNode,
+	memo,
 	useCallback,
 	useId,
+	useMemo,
 	useState,
 } from "react";
-import {connect, shallowEqual} from "react-redux";
+import {useSelector} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
@@ -77,7 +79,7 @@ function getSplitLayerIds(ids: string[], layers: MapState["layers"]) {
 	};
 }
 
-function CollapsibleOverlayGroup({
+const CollapsibleOverlayGroup = memo(function CollapsibleOverlayGroup({
 	group,
 	layerIds,
 	visibleCount,
@@ -91,7 +93,7 @@ function CollapsibleOverlayGroup({
 	layerIds: string[];
 	visibleCount: number;
 	collapsed: boolean;
-	onToggle: () => void;
+	onToggle: (group: string, collapsed: boolean) => void;
 	renderEntry: (id: string, group?: string | null) => ReactNode;
 }) {
 	const panelId = useId();
@@ -123,7 +125,7 @@ function CollapsibleOverlayGroup({
 					aria-expanded={!collapsed}
 					aria-controls={panelId}
 					aria-label={`${group} ${countLabel} ${toggleLabel}`}
-					onClick={onToggle}
+					onClick={() => onToggle(group, collapsed)}
 				>
 					<span className="ms3-switcher-header__label">{group}</span>{" "}
 					<span className="ms3-grouped-switcher__meta">
@@ -153,18 +155,34 @@ function CollapsibleOverlayGroup({
 			</HeadingContent>
 		</section>
 	);
-}
+});
 
 function SplitBaseLayerSwitcher({
-	baseLayerIds,
-	groups,
-	ungroupedLayerIds,
+	layerIdsSelector,
 	renderBaseLayerEntry,
 	renderEntry,
 	collapsibleGroups = false,
 	headlineAs,
 	groupHeadlineAs,
-}: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
+}: SplitBaseLayerSwitcherOwnProps) {
+	// Memoize per instance while the selector inputs are stable. `sameSplit`
+	// also skips renders when a custom layerIdsSelector returns fresh arrays
+	// with the same ids, or when layer changes leave the split unchanged.
+	const selectSplit = useMemo(
+		() =>
+			createSelector(
+				[
+					(state: State) => layerIdsSelector(state[MAP] as MapState),
+					(state: State) => (state[MAP] as MapState).layers,
+				],
+				getSplitLayerIds,
+			),
+		[layerIdsSelector],
+	);
+	const {baseLayerIds, groups, ungroupedLayerIds} = useSelector(
+		selectSplit,
+		sameSplit,
+	);
 	const Headline = useHeadingElement("switcher", "h3", headlineAs);
 	const GroupHeadline = useHeadingElement(
 		"switcherGroup",
@@ -256,9 +274,7 @@ function SplitBaseLayerSwitcher({
 										layerIds={layerIds}
 										visibleCount={visibleCount}
 										collapsed={collapsed}
-										onToggle={() =>
-											toggleGroup(group, collapsed)
-										}
+										onToggle={toggleGroup}
 										renderEntry={renderEntry}
 									/>
 								) : (
@@ -313,25 +329,27 @@ function SplitBaseLayerSwitcher({
 	);
 }
 
-export default connect(
-	createSelector(
-		(state: State, {layerIdsSelector}: SplitBaseLayerSwitcherOwnProps) => {
-			const mapState = state[MAP] as MapState;
-			return {
-				layerIds: layerIdsSelector(mapState),
-				layers: mapState.layers,
-			};
-		},
-		({layerIds, layers}) => getSplitLayerIds(layerIds, layers),
-	),
-	null,
-	(
-		stateProps,
-		_dispatchProps,
-		{layerIdsSelector: _layerIdsSelector, ...ownProps},
-	) => ({
-		...ownProps,
-		...stateProps,
-	}),
-	{areStatesEqual: shallowEqual},
-)(SplitBaseLayerSwitcher);
+function sameIds(a: string[], b: string[]): boolean {
+	return a.length === b.length && a.every((id, index) => id === b[index]);
+}
+
+function sameSplit(
+	a: SplitBaseLayerSwitcherStateProps,
+	b: SplitBaseLayerSwitcherStateProps,
+): boolean {
+	return (
+		sameIds(a.baseLayerIds, b.baseLayerIds) &&
+		sameIds(a.ungroupedLayerIds, b.ungroupedLayerIds) &&
+		a.groups.length === b.groups.length &&
+		a.groups.every((group, index) => {
+			const other = b.groups[index]!;
+			return (
+				group.group === other.group &&
+				group.visibleCount === other.visibleCount &&
+				sameIds(group.layerIds, other.layerIds)
+			);
+		})
+	);
+}
+
+export default memo(SplitBaseLayerSwitcher);
