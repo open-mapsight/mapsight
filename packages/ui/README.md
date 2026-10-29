@@ -14,6 +14,11 @@ build), a declarative config object, and `create()` mounts the Redux-backed GIS 
 See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for architecture,
 integration patterns, and licensing.
 
+## Upgrading from v7
+
+Follow the [UI v8 upgrade guide](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/UPGRADE_TO_UI_V8.md)
+for host migration steps and before/after examples. The v8 release is still being prepared; the guide tracks the draft scope.
+
 ## Quick start
 
 ```ts
@@ -56,8 +61,7 @@ Loading/error presentation architecture:
 
 ## Heading hierarchy
 
-For headings that fit the host page, set `future.v8_automaticHeadings: true` and `headings.baseLevel` on create
-options (`2` beneath the host's `h1`). Without the flag, existing 7.x heading elements remain. See
+Headings follow the host page through `headings.baseLevel` on create options (`2` beneath the host's `h1`, the default). See
 [Heading hierarchy](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/HEADINGS.md) for composed
 hosts, explicit overrides, list grouping, and SSR configuration.
 
@@ -133,20 +137,10 @@ per stylesheet, but you can attach that set (or pure CSS overrides) to different
 You can also keep auto-emit on `.ms3-wrapper` and only add modifier overrides — no need for `null`
 unless you want a selector that is not `$ms3-tokens-selector`.
 
-### Themed chrome icons (`$ms3-future-v8-themedIcons`)
+### Themed chrome icons
 
-By default the UI chrome icons (`mapsight-ui/*.svg`: map controls, list filter buttons, layer switcher checkboxes,
-search, close buttons, feature links, place actions, loading/error status) are CSS background images, so they keep the
-colours baked into the SVG files (theme blue `#0e78ad`, red `#cc100c`) whatever the `--ms3-*` tokens say. Opt in to
-paint them in the theme colours instead:
-
-```scss
-@use "@mapsight/ui/src/scss/variables" with (
-	$ms3-iconPath: "~@mapsight/ui/dist/img/",
-	$ms3-future-v8-themedIcons: true
-);
-@use "@mapsight/ui/src/scss/default";
-```
+UI chrome icons (`mapsight-ui/*.svg`) use CSS masks filled from theme tokens by default.
+The v7 Sass flag `$ms3-future-v8-themedIcons` is removed; omit it from `with` blocks.
 
 The SVG then only provides the shape (CSS `mask-image`); the colour comes from these properties, resolved on each
 icon so that overrides on `.ms3-wrapper` or any ancestor apply:
@@ -170,10 +164,10 @@ background icons except for two colour corrections: the red icons use `--ms3-the
 `#cc100c`), and the feature-details print icon uses the theme blue (`#0e78ad` instead of `#207ab6`). The Mapsight
 watermark (`.ms3-logo`) stays as it is.
 
-**Compatibility.** Without the flag, the compiled CSS is unchanged. With the flag:
+**Migrating custom icons and CSS:**
 
 - Icon files from your own `$ms3-iconPath` still work, but only their shape is used. Multi-colour icons become
-  single-colour. Keep the flag off if you rely on coloured icon files.
+  single-colour. Render multi-colour artwork separately when needed.
 - Icons must load from the page's origin, as `data:` URIs (Vite inlines small assets by default), or with an
   `Access-Control-Allow-Origin` header: browsers fetch mask images in CORS mode and drop a cross-origin icon without it.
 - Host CSS that replaces an icon with `background-image` must set `mask-image` (and `-webkit-mask-image`) instead.
@@ -187,8 +181,8 @@ watermark (`.ms3-logo`) stays as it is.
   `GrayText`; `Highlight` for active states) instead of the theme colours. Browsers print icons like other
   backgrounds: only when the user enables background graphics.
 
-In v8 this becomes the only behaviour and the flag is removed (see
-[Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
+See the [v8 migration inventory](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/UI_V8_MIGRATION.md)
+for the complete removal list and open scope decisions.
 
 Scroll utilities (also from `default`): `.ms3-minimal-scrollbar`, `.ms3-scroll-container`, plus mixins under
 `src/scss/mixins/minimal-scrollbar`.

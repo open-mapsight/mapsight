@@ -7,20 +7,12 @@ import {toggleUserPreferenceListVisible} from "../../store/actions";
 import {userPreferenceListVisibleSelector} from "../../store/selectors";
 import {useMainPanelContext} from "./context";
 
-export type ListToggleButtonProps = {
+type ListToggleButtonProps = {
 	active?: boolean;
 	onClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
-/**
- * Presentational list/fullscreen toggle for host overlays that pass
- * `active` + `onClick` explicitly.
- *
- * @deprecated Prefer {@link MainPanelListToggleButton} inside the main panel,
- *   or a host-owned control. Scheduled for removal in the next major of
- *   `@mapsight/ui`.
- */
-export const ListToggleButton = memo(function ListToggleButton({
+const ListToggleButton = memo(function ListToggleButton({
 	active,
 	onClick,
 }: ListToggleButtonProps) {
@@ -62,10 +54,3 @@ export function MainPanelListToggleButton() {
 
 	return null;
 }
-
-/**
- * @deprecated Use named {@link MainPanelListToggleButton} (or
- *   {@link ListToggleButton} only while migrating). Default export removed in
- *   the next major of `@mapsight/ui`.
- */
-export default ListToggleButton;

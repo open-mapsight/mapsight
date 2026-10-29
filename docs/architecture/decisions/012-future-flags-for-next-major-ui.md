@@ -4,6 +4,14 @@
 
 **Date:** 2026-09-02
 
+## v8 preparation
+
+The [v8 draft](../../integration/UI_V8_MIGRATION.md) makes all three JS flags
+(`v8_ariaControlTooltip`, `v8_listSearchButton`, `v8_automaticHeadings`) and the
+Sass `$ms3-future-v8-themedIcons` behavior unconditional, then deletes the keys.
+The record below describes the 7.x migration contract. Future majors can reuse
+the pattern when another behavior needs a transition period.
+
 ## Context
 
 `@mapsight/ui` sometimes has to ship **both** an old and a new behavior in the same major: hosts cannot all migrate on
@@ -57,7 +65,7 @@ Behavior that lives only in the SCSS uses a Sass variable with the same contract
 
 - `$ms3-future-v8-themedIcons`: UI chrome icons keep the colours baked into their SVG files by default; hosts set
   the flag to paint them as CSS masks filled from `--ms3-icon-color*` / `--ms3-theme-color-*`. See the
-  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons).
+  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-chrome-icons).
 
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 

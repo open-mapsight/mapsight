@@ -32,7 +32,7 @@ feature sources are loaded on the client. Otherwise the client would see
 
 Large GeoJSON payloads may **lazy-load after shell hydrate** — keep dehydrated state size-bounded.
 
-Heading placement is also part of the render contract. Supply identical `future.v8_automaticHeadings` and
+Heading placement is also part of the render contract. Supply identical
 `headings` create options on both sides; `data-dehydrated-state` does not serialize them. Each instance resolves
 native tags from its own context without inspecting the host DOM or viewport. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md).
 

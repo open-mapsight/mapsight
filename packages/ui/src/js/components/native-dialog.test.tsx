@@ -66,7 +66,7 @@ describe("NativeDialog", () => {
 
 	it("starts a modal scope independently of the page and advances only after a title", () => {
 		const {rerender} = render(
-			<HeadingsProvider enabled options={{baseLevel: 5}}>
+			<HeadingsProvider options={{baseLevel: 5}}>
 				<NativeDialog isOpen title="Layers" onClose={vi.fn()}>
 					<Heading>Group</Heading>
 				</NativeDialog>
@@ -80,7 +80,7 @@ describe("NativeDialog", () => {
 		).toBeTruthy();
 		expect(screen.getByRole("dialog", {name: "Layers"})).toBeTruthy();
 		rerender(
-			<HeadingsProvider enabled options={{baseLevel: 5}}>
+			<HeadingsProvider options={{baseLevel: 5}}>
 				<NativeDialog isOpen aria-label="Layers" onClose={vi.fn()}>
 					<Heading>Group</Heading>
 				</NativeDialog>

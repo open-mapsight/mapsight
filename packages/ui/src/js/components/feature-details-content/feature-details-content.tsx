@@ -11,6 +11,10 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
 
+import {
+	APP_EVENT_PARTIAL_CONTENT_CHANGED,
+	useAppChannelDispatchEvent,
+} from "../../app-channel";
 import {VIEW_MAP_ONLY, VIEW_MOBILE} from "../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
@@ -19,10 +23,6 @@ import {setView} from "../../store/actions";
 import {viewSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
 import ErrorBoundary from "../error-boundary";
-import {
-	APP_EVENT_PARTIAL_CONTENT_CHANGED,
-	useAppChannelDispatchEvent,
-} from "../helping/app-channel";
 import FeatureDetailsContentInner from "./feature-details-content-inner";
 import ShareFeatureLinkModal from "./share-feature-link-modal";
 

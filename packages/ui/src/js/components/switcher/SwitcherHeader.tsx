@@ -23,7 +23,7 @@ function SwitcherHeader(props: SwitcherHeaderProps) {
 		count = null,
 		...attributes
 	} = props;
-	const T = useHeadingElement("switcher", "h3", as);
+	const T = useHeadingElement("switcher", as);
 
 	const activeClassModified = active ? "active" : "inactive";
 	if (T !== Fragment) {

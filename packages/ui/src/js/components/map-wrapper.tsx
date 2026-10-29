@@ -3,6 +3,10 @@ import {useCallback, useContext, useRef} from "react";
 import {useInView} from "react-intersection-observer";
 import {useDispatch, useSelector, useStore} from "react-redux";
 
+import {
+	APP_EVENT_SCROLL_TO_MAP,
+	useAppChannelEventListener,
+} from "../app-channel";
 import {ComponentsContext} from "../helpers/components";
 import scrollBehavior from "../helpers/scroll-behavior";
 import useUpdateMapSizeOnRender from "../hooks/useUpdateMapSizeOnRender";
@@ -10,10 +14,6 @@ import useUpdateMapSizeOnTransitionEnd from "../hooks/useUpdateMapSizeOnTransiti
 import useUpdateMapSizeOnViewChange from "../hooks/useUpdateMapSizeOnViewChange";
 import {setMapIsOutOfViewport} from "../store/actions";
 import {viewSelector} from "../store/selectors";
-import {
-	APP_EVENT_SCROLL_TO_MAP,
-	useAppChannelEventListener,
-} from "./helping/app-channel";
 
 type MapWrapperProps = PropsWithChildren<{anchor?: "right" | "bottom"}>;
 

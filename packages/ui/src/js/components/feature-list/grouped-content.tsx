@@ -51,7 +51,6 @@ function FeatureListGroupedContent(
 ) {
 	const GroupNameT = useHeadingElement(
 		"featureListGroup",
-		"h3",
 		groupAs === "auto" ? undefined : (groupAs ?? undefined),
 	);
 	const ownRef = useRef<HTMLElement>(null);

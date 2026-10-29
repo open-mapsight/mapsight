@@ -121,7 +121,6 @@ export type InternalMapsightUiRendererProps = {
 	deferCommit?: () => () => void;
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
-	future?: FutureFlags;
 	headings?: HeadingOptions;
 };
 
@@ -230,8 +229,8 @@ export type FullUiState = {
 	/** Set false for SSR-safe search embedding inside a host form. Defaults to true. */
 	searchRenderForm?: boolean;
 	/**
-	 * Opt in to skip links ("Skip to the map / list / search") at the start of
-	 * the instance, shown on keyboard focus. Default false; planned default in v8.
+	 * Skip links ("Skip to the map / list / search") at the start of the
+	 * instance, shown on keyboard focus. Default true; set false to disable.
 	 */
 	skipLinks?: boolean;
 	searchQuery: string;
@@ -290,7 +289,7 @@ export type FullUiState = {
 		detailsInList: boolean;
 		integratedList: boolean;
 		renderAs: string;
-		/** Falsy disables grouping; "auto" uses contextual headings (h3 without the flag). */
+		/** Falsy disables grouping; "auto" uses contextual headings. */
 		renderGroupAs: string;
 	};
 	viewToggle: {
@@ -349,56 +348,19 @@ export type MapsightCoreAction = AnyAction &
 	ThunkAction<any, any, any, any> &
 	BatchAction;
 
-/**
- * @deprecated Use `State` from `@mapsight/core/types` or `MapsightConfig` from
- * `@mapsight/ui/schema` for config ingress. Kept for legacy app reducer typing.
- */
-export type MapsightCoreState =
-	string | number | Array<MapsightCoreState | null | undefined> | object;
-/** @deprecated Prefer `Reducer<T, MapsightCoreAction>` with a concrete slice type. */
-export type MapsightCoreReducer<
-	T extends MapsightCoreState = MapsightCoreState,
-	U extends MapsightCoreAction = MapsightCoreAction,
-> = Reducer<T, U>;
-
-export type MapsightUiAppReducer = MapsightCoreReducer<UiState>;
-
-/**
- * Opt-in switches for the next major of `@mapsight/ui`.
- * `true` is next-major behavior now; omitted/`false` is today’s default.
- * Keys are added only when a leftover behavior must stay dual-path in this major.
- * Flags are removed when that major ships. See Decision 012.
- */
-export type FutureFlags = {
-	/**
-	 * Use the ARIA `Tooltip` for leftover hint.css call sites (RegionSelector).
-	 * Default `false` (hint.css). This will be the only behavior in v8.
-	 */
-	v8_ariaControlTooltip?: boolean;
-	/**
-	 * Expand list text search from a labeled button. Default `false` keeps the
-	 * visible label + input (7.x host CSS). This will be the only behavior in v8.
-	 */
-	v8_listSearchButton?: boolean;
-	/** Derive native heading ranks from headings.baseLevel (default 2). Default false in 7.x. */
-	v8_automaticHeadings?: boolean;
-};
+export type MapsightUiAppReducer = Reducer<UiState, MapsightCoreAction>;
 
 export type CreateOptions = {
 	/** Validate Mapsight config ingress in development (default: true in dev). */
 	validateConfig?: boolean;
 
-	/**
-	 * Opt into next-major behavior. See Decision 012.
-	 */
-	future?: FutureFlags;
-	/** Page-outline placement and exceptions. Read when future.v8_automaticHeadings is true. */
+	/** Page-outline placement and exceptions. */
 	headings?: HeadingOptions;
 
 	// store
 	storeEnhancer?: StoreEnhancer;
 	reducers?: {
-		[x: string]: undefined | MapsightCoreReducer;
+		[x: string]: undefined | Reducer<any, MapsightCoreAction>;
 		app?: MapsightUiAppReducer;
 	};
 	uiState?: UiState;
@@ -411,13 +373,6 @@ export type CreateOptions = {
 	 * `createDefaultPlugins`. Prefer an explicit `plugins` list for new hosts.
 	 */
 	useDefaultPlugins?: boolean | Record<string, unknown>;
-	/** @deprecated Prefer `useDefaultPlugins` */
-	defaultPluginsOptions?: Record<string, unknown>;
-	/**
-	 * Historic sugar: invoked as an `afterCreate` plugin with the UI context.
-	 * Prefer a named plugin in `plugins` for new hosts.
-	 */
-	hook?: (context: MapsightUiContext) => void;
 
 	// rendering
 	components?: MapsightUiComponents;
@@ -452,17 +407,6 @@ export type MapsightUiFeatureProperty =
 	| "tooltip"
 	| "tagGroups"
 	| "permanentLink"
-	/**
-	 * @deprecated Raw HTML for the entire list row (`dangerouslySetInnerHTML` +
-	 *   wrapper `role="button"`). Prefer typed `itemAs` / default list content.
-	 *   Removed in the next major of `@mapsight/ui`.
-	 */
-	| "overrideListHtml"
-	/**
-	 * @deprecated Optional rename of the `overrideListHtml` feature property.
-	 *   Removed in the next major of `@mapsight/ui`.
-	 */
-	| "__overrideListHtmlProp"
 	| "isIncompleteSuggest";
 
 export type MapsightUiFeatureId = string | number;

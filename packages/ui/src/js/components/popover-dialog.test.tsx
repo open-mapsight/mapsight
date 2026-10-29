@@ -94,7 +94,7 @@ describe("PopoverDialog", () => {
 
 	it("inherits the page rank for a non-modal popover and scopes its body", () => {
 		render(
-			<HeadingsProvider enabled options={{baseLevel: 4}}>
+			<HeadingsProvider options={{baseLevel: 4}}>
 				<PopoverDialog
 					isOpen
 					title="Options"

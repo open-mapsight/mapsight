@@ -34,7 +34,7 @@ function findTarget(root: HTMLElement | null, selector: string) {
 }
 
 /**
- * Opt-in skip links at the start of the instance (`uiState.skipLinks`), shown
+ * Skip links at the start of the instance (`uiState.skipLinks`, default true), shown
  * only on keyboard focus. They list the map, list and search when present and
  * render after hydration, so server markup is unchanged.
  */

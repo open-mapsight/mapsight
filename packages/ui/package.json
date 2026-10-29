@@ -15,7 +15,6 @@
 		"breakpoint-sass": "^3.0.0",
 		"flatpickr": "^4.6.13",
 		"focus-trap-react": "^12.0.3",
-		"hint.css": "^3.0.0",
 		"jsdom": "catalog:",
 		"lodash": "catalog:",
 		"ol": "catalog:",
@@ -173,14 +172,6 @@
 		"./components/point-input": {
 			"types": "./dist/components/point-input/index.d.ts",
 			"default": "./dist/components/point-input/index.js"
-		},
-		"./components/contexts": {
-			"types": "./dist/components/contexts.d.ts",
-			"default": "./dist/components/contexts.js"
-		},
-		"./helpers/global-event-hub": {
-			"types": "./dist/helpers/global-event-hub.d.ts",
-			"default": "./dist/helpers/global-event-hub.js"
 		}
 	},
 	"files": [

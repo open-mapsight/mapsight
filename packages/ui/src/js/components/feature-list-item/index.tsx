@@ -2,12 +2,10 @@ import type {
 	ComponentType,
 	ElementType,
 	KeyboardEvent as ReactKeyboardEvent,
-	MouseEvent as ReactMouseEvent,
 	ReactNode,
 } from "react";
 import {Fragment, memo, useId, useRef} from "react";
 
-import {rememberDocumentScrollForSelection} from "../../helpers/document-scroll";
 import getFeatureProperty from "../../helpers/get-feature-property";
 import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import type {MapsightUiFeature} from "../../types";
@@ -17,20 +15,10 @@ import useFeatureListItemScrollAndFocus from "./hooks/useFeatureListItemScrollAn
 import useFeatureListItemState from "./hooks/useFeatureListItemState";
 import FeatureListIcon from "./icon";
 import FeatureListInfoHtml from "./info-html";
-import getLegacyOverrideListHtml from "./legacy-override-list-html";
 import type {
 	FeatureListItemDistanceLabelProps,
 	FeatureListItemInteractionProps,
 } from "./types";
-
-function eventFromInteractiveDescendant(target: EventTarget | null): boolean {
-	if (!(target instanceof Element)) {
-		return false;
-	}
-	return !!target.closest(
-		"a, button, input, select, textarea, label, summary",
-	);
-}
 
 function getMainContentForFeature(feature: MapsightUiFeature): ReactNode {
 	const listName = getFeatureProperty(feature, "listName");
@@ -49,140 +37,7 @@ export type FeatureListItemProps = FeatureListItemInteractionProps & {
 	enableKeyboardControl?: boolean;
 };
 
-/**
- * Hook-free shell: branch before hooks so the legacy HTML-row path is isolated.
- *
- * New hosts should stay on the standard path (typed content +
- * `FeatureSelectButton`). Do not add features that only work on the legacy
- * branch.
- */
-function FeatureListItem(props: FeatureListItemProps) {
-	const legacyHtml = getLegacyOverrideListHtml(props.feature);
-	if (legacyHtml) {
-		return <FeatureListItemLegacyHtmlRow {...props} html={legacyHtml} />;
-	}
-	return <FeatureListItemStandard {...props} />;
-}
-
-type FeatureListItemLegacyHtmlRowProps = FeatureListItemProps & {
-	html: string;
-};
-
-/**
- * @deprecated Pre-OSS list rows that inject CMS/GeoJSON HTML into a
- *   button-like container (`role="button"` + `onClick`). Prefer typed
- *   list content and FeatureSelectButton. Kept only for host migration; removed
- *   in the next major of `@mapsight/ui`.
- */
-function FeatureListItemLegacyHtmlRow({
-	as: T = "div",
-	showFeatureListInfo,
-	feature,
-	selectFeature,
-	deselectFeatures,
-	enableKeyboardControl,
-	html,
-}: FeatureListItemLegacyHtmlRowProps) {
-	const {
-		selectOnClick,
-		deselectOnClick,
-		hidden,
-		isSelected,
-		isPreselected,
-		isHighlighted,
-		showDetails,
-		scrollOnSelection,
-	} = useFeatureListItemState(feature);
-
-	const ref = useRef<HTMLElement | null>(null);
-
-	useFeatureListItemScrollAndFocus(
-		ref,
-		showDetails,
-		isPreselected && !isSelected,
-		{
-			scrollOnSelection: scrollOnSelection,
-			scrollOnPreselection: undefined,
-			enableKeyboardControl: enableKeyboardControl,
-		},
-	);
-
-	if (hidden) {
-		return null;
-	}
-
-	const isWrapperComponent = typeof T !== "string";
-	const interactive = selectOnClick === true || deselectOnClick;
-	const selectable =
-		selectOnClick === true || (isSelected && deselectOnClick);
-
-	const activate = (keyboard: boolean) => {
-		if (isSelected && deselectOnClick) {
-			deselectFeatures?.(feature.id);
-		} else if (selectOnClick === true) {
-			selectFeature?.(feature.id, {keyboard});
-		}
-	};
-
-	// Legacy: selection on the HTML container (no FeatureSelectButton). Middle /
-	// modified clicks still allow links in the injected HTML.
-	const onClick = (event: ReactMouseEvent) => {
-		if (event.button === 1 || event.metaKey || event.ctrlKey) {
-			return;
-		}
-		if (eventFromInteractiveDescendant(event.target)) {
-			return;
-		}
-		event.preventDefault();
-		activate(false);
-	};
-
-	const onKeyDown = (event: ReactKeyboardEvent) => {
-		if (event.key !== "Enter" && event.key !== " ") {
-			return;
-		}
-		if (eventFromInteractiveDescendant(event.target)) {
-			return;
-		}
-		event.preventDefault();
-		activate(true);
-	};
-
-	return (
-		<T
-			{...(isWrapperComponent ? {feature} : null)}
-			ref={ref}
-			className={
-				"ms3-list__item " +
-				(isSelected ? " ms3-list__item--selected" : "") +
-				(isPreselected ? " ms3-list__item--preselected" : "") +
-				(isHighlighted ? " ms3-list__item--highlight" : "") +
-				(showDetails ? " ms3-list__item--has-details" : "") +
-				(showFeatureListInfo ? " ms3-list__item--has-info" : "") +
-				(interactive ? " ms3-list__item--selectable" : "") +
-				(ref.current?.className.includes("focus-visible")
-					? " focus-visible"
-					: "")
-			}
-		>
-			<div
-				className="ms3-list__item__head ms3-list__button"
-				data-ms3-list-nav={interactive ? "" : undefined}
-				tabIndex={interactive ? 0 : undefined}
-				role={interactive ? "button" : undefined}
-				aria-pressed={interactive ? isSelected : undefined}
-				onPointerDown={
-					selectable ? rememberDocumentScrollForSelection : undefined
-				}
-				onClick={selectable ? onClick : undefined}
-				onKeyDown={selectable ? onKeyDown : undefined}
-				dangerouslySetInnerHTML={{__html: html}}
-			/>
-		</T>
-	);
-}
-
-function FeatureListItemStandard({
+function FeatureListItem({
 	as: T = "div",
 	partAs: PartT = "span",
 	headAs: HeadT = FeatureListItemHead,

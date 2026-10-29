@@ -47,9 +47,8 @@ development.
    `package.json` scripts).
 4. **Assets** — copy `@mapsight/traffic-style` image dirs to `public/img/` for map icons (`mapsight-icons*`). UI chrome
    icons (`mapsight-ui/*`) resolve from `@mapsight/ui` through SCSS (`$ms3-iconPath: "~@mapsight/ui/dist/img/"`) and are
-   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss). Set
-   `$ms3-future-v8-themedIcons: true` to colour them from the `--ms3-*` tokens
-   ([themed chrome icons](../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons)).
+   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss). They use CSS masks coloured from the `--ms3-*` tokens by default
+   ([themed chrome icons](../../packages/ui/README.md#themed-chrome-icons)).
 
 The vite-spa starter mounts the map only on `/`. Navigating to `/about` unmounts `Instance` and tears down its store. If
 you keep `Instance` at a layout level across routes, call `resetMapsightCore` when leaving map modules — see the starter
@@ -59,8 +58,7 @@ README.
 
 ## Heading hierarchy
 
-For host-owned heading sections, enable `future.v8_automaticHeadings` on the instance and use `HeadingLevel` inside
-it to establish the first rank beneath each host heading. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md#composed-react-hosts).
+For host-owned heading sections, use `HeadingLevel` inside the instance to establish the first rank beneath each host heading. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md#composed-react-hosts).
 
 ## Count Aggregator demo
 

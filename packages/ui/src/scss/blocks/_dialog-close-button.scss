@@ -9,12 +9,7 @@
 	width: 42px;
 	height: 34px;
 	border-radius: 0 4px 0 4px;
-	@if icon.$themed {
-		background: transparent;
-	} @else {
-		background: transparent url(variables.$ms3-uiIconPath + "reset.svg") no-repeat
-			13px 10px;
-	}
+	background: transparent;
 	border-top-width: 0;
 	border-right-width: 0;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.01);
@@ -24,14 +19,12 @@
 		border 200ms ease-in-out;
 	@include reduced-motion.respect-reduced-motion;
 
-	@if icon.$themed {
-		// already `position: absolute` (or `relative` in modal headers)
-		@include icon.layer(
-			"reset.svg",
-			$position-element: false,
-			$position: 13px 10px
-		);
-	}
+	// already `position: absolute` (or `relative` in modal headers)
+	@include icon.layer(
+		"reset.svg",
+		$position-element: false,
+		$position: 13px 10px
+	);
 
 	&:hover,
 	&:focus {

@@ -3,11 +3,7 @@ import {useSelector} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
-import {
-	HeadingContent,
-	useAutomaticHeadings,
-	useHeadingElement,
-} from "../headings";
+import {HeadingContent, useHeadingElement} from "../headings";
 import {useContextComponentWithFallback} from "../helpers/components";
 import {
 	isViewFullscreen,
@@ -83,9 +79,8 @@ function App() {
 	const showAdditional = !isFullscreen && !isMapOnly;
 	const showTitle = useSelector(pageTitleShowSelector);
 	const title = useSelector(titleSelector);
-	const automatic = useAutomaticHeadings();
-	const hasTitle = showTitle && (!automatic || Boolean(title));
-	const titleHeadingAs = useHeadingElement("appTitle", "h2");
+	const hasTitle = showTitle && Boolean(title);
+	const titleHeadingAs = useHeadingElement("appTitle");
 	const showDetailsInList = useSelector(listUiOptionDetailsSelector);
 	const showListInMapRow =
 		useSelector(listVisible) && !showDetailsInList && isFullscreen;
@@ -107,14 +102,10 @@ function App() {
 	return (
 		<AppWrapper>
 			<MainContainer>
-				{(!automatic || Boolean(title)) && (
+				{Boolean(title) && (
 					<VisibilityWrapper visibleSelector={pageTitleShowSelector}>
 						<ErrorBoundary variant="region">
-							<TitleBar
-								{...(automatic
-									? {headlineAs: titleHeadingAs}
-									: {})}
-							/>
+							<TitleBar headlineAs={titleHeadingAs} />
 						</ErrorBoundary>
 					</VisibilityWrapper>
 				)}

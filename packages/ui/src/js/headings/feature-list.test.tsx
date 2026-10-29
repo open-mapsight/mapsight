@@ -43,15 +43,14 @@ const value = {
 } as unknown as FeatureListContextValue;
 
 it.each([
-	{groupAs: "auto", enabled: true, groupLevel: 4, itemLevel: 5},
-	{groupAs: "auto", enabled: false, groupLevel: 3, itemLevel: 2},
-	{groupAs: null, enabled: true, groupLevel: null, itemLevel: 4},
+	{groupAs: "auto", groupLevel: 4, itemLevel: 5},
+	{groupAs: null, groupLevel: null, itemLevel: 4},
 ])(
 	"preserves grouping and explicit elements: %j",
-	({groupAs, enabled, groupLevel, itemLevel}) => {
+	({groupAs, groupLevel, itemLevel}) => {
 		render(
 			<Provider store={store}>
-				<HeadingsProvider enabled={enabled} options={{baseLevel: 4}}>
+				<HeadingsProvider options={{baseLevel: 4}}>
 					<FeatureListContextProvider value={value}>
 						<FeatureListGroupedContent groupAs={groupAs} />
 					</FeatureListContextProvider>

@@ -48,12 +48,7 @@
 	&--icon-sort-active {
 		height: 33px;
 		width: 40px;
-		@if icon.$themed {
-			background: transparent;
-		} @else {
-			background: transparent url(variables.$ms3-uiIconPath + "sort.svg")
-				no-repeat center;
-		}
+		background: transparent;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -61,34 +56,22 @@
 
 		&:hover,
 		&:focus-visible {
-			@if icon.$themed {
-				background: transparent;
-			} @else {
-				background: transparent
-					url(variables.$ms3-uiIconPath + "sort-active.svg") no-repeat
-					center;
-			}
+			background: transparent;
 		}
 
-		@if icon.$themed {
-			@include icon.layer("sort.svg");
+		@include icon.layer("sort.svg");
 
-			&:hover::before,
-			&:focus-visible::before {
-				@include icon.shape("sort-active.svg");
-				@include icon.fill(icon.$color-active, Highlight);
-			}
+		&:hover::before,
+		&:focus-visible::before {
+			@include icon.shape("sort-active.svg");
+			@include icon.fill(icon.$color-active, Highlight);
 		}
 	}
 
 	&--icon-sort-active {
-		@if icon.$themed {
-			&::before {
-				@include icon.shape("sort-active.svg");
-				@include icon.fill(icon.$color-active, Highlight);
-			}
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "sort-active.svg");
+		&::before {
+			@include icon.shape("sort-active.svg");
+			@include icon.fill(icon.$color-active, Highlight);
 		}
 	}
 
@@ -96,12 +79,7 @@
 	&--icon-sort-filter-active {
 		height: 33px;
 		width: 40px;
-		@if icon.$themed {
-			background: transparent;
-		} @else {
-			background: transparent
-				url(variables.$ms3-uiIconPath + "sort-filter.svg") no-repeat center;
-		}
+		background: transparent;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -109,34 +87,22 @@
 
 		&:hover,
 		&:focus-visible {
-			@if icon.$themed {
-				background: transparent;
-			} @else {
-				background: transparent
-					url(variables.$ms3-uiIconPath + "sort-filter-active.svg")
-					no-repeat center;
-			}
+			background: transparent;
 		}
 
-		@if icon.$themed {
-			@include icon.layer("sort-filter.svg");
+		@include icon.layer("sort-filter.svg");
 
-			&:hover::before,
-			&:focus-visible::before {
-				@include icon.shape("sort-filter-active.svg");
-				@include icon.fill(icon.$color-active, Highlight);
-			}
+		&:hover::before,
+		&:focus-visible::before {
+			@include icon.shape("sort-filter-active.svg");
+			@include icon.fill(icon.$color-active, Highlight);
 		}
 	}
 
 	&--icon-sort-filter-active {
-		@if icon.$themed {
-			&::before {
-				@include icon.shape("sort-filter-active.svg");
-				@include icon.fill(icon.$color-active, Highlight);
-			}
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "sort-filter-active.svg");
+		&::before {
+			@include icon.shape("sort-filter-active.svg");
+			@include icon.fill(icon.$color-active, Highlight);
 		}
 	}
 
@@ -146,12 +112,7 @@
 	&--icon-layers-active {
 		height: 33px;
 		width: 40px;
-		@if icon.$themed {
-			background: transparent;
-		} @else {
-			background: transparent url(variables.$ms3-uiIconPath + "layers.svg")
-				no-repeat center;
-		}
+		background: transparent;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -159,18 +120,11 @@
 
 		&:hover,
 		&:focus-visible {
-			@if icon.$themed {
-				background: transparent;
-			} @else {
-				background: transparent
-					url(variables.$ms3-uiIconPath + "layers.svg") no-repeat center;
-			}
+			background: transparent;
 			filter: brightness(0.85);
 		}
 
-		@if icon.$themed {
-			@include icon.layer("layers.svg");
-		}
+		@include icon.layer("layers.svg");
 	}
 
 	&--icon-tags-active {
@@ -184,12 +138,7 @@
 	&--icon-reset {
 		height: 33px;
 		width: 40px;
-		@if icon.$themed {
-			background: transparent;
-		} @else {
-			background: transparent url(variables.$ms3-uiIconPath + "reset.svg")
-				no-repeat center;
-		}
+		background: transparent;
 
 		i {
 			@include visually-hidden.visually-hidden;
@@ -197,23 +146,15 @@
 
 		&:hover,
 		&:focus-visible {
-			@if icon.$themed {
-				background: transparent;
-			} @else {
-				background: transparent
-					url(variables.$ms3-uiIconPath + "reset-active.svg") no-repeat
-					center;
-			}
+			background: transparent;
 		}
 
-		@if icon.$themed {
-			@include icon.layer("reset.svg");
+		@include icon.layer("reset.svg");
 
-			&:hover::before,
-			&:focus-visible::before {
-				@include icon.shape("reset-active.svg");
-				@include icon.fill(icon.$color-active, Highlight);
-			}
+		&:hover::before,
+		&:focus-visible::before {
+			@include icon.shape("reset-active.svg");
+			@include icon.fill(icon.$color-active, Highlight);
 		}
 	}
 }

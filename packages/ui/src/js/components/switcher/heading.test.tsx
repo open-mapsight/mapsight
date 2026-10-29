@@ -8,7 +8,7 @@ import TagSwitcher from "../tag-switcher/TagSwitcher";
 
 afterEach(cleanup);
 
-it("passes the tag-switcher heading option through grouped switchers and retains h3 by default", () => {
+it("passes the tag-switcher heading option through grouped switchers and uses contextual h2 by default", () => {
 	const store = configureStore({reducer: () => ({})});
 	const props = {
 		featureSourceId: "places",
@@ -20,14 +20,14 @@ it("passes the tag-switcher heading option through grouped switchers and retains
 		</Provider>,
 	);
 	expect(
-		screen.getByRole("heading", {level: 3, name: "Places"}),
+		screen.getByRole("heading", {level: 2, name: "Places"}),
 	).toBeTruthy();
 	rerender(
 		<Provider store={store}>
-			<TagSwitcher {...props} headlineAs="h2" />
+			<TagSwitcher {...props} headlineAs="h4" />
 		</Provider>,
 	);
 	expect(
-		screen.getByRole("heading", {level: 2, name: "Places"}),
+		screen.getByRole("heading", {level: 4, name: "Places"}),
 	).toBeTruthy();
 });

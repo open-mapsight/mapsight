@@ -6,13 +6,10 @@ import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import {ANIMATE} from "@mapsight/core/lib/map/actions";
 
+import {APP_EVENT_SCROLL_TO_MAP, AppChannelProvider} from "../../app-channel";
 import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
-import {
-	APP_EVENT_SCROLL_TO_MAP,
-	AppChannelProvider,
-} from "../helping/app-channel";
 import FeaturePlaceActions from "./feature-place-actions";
 import PlaceActions from "./place-actions";
 import type {PlaceActionsConfig} from "./types";

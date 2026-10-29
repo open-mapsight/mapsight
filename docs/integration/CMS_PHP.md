@@ -1,6 +1,6 @@
 # CMS and PHP snippet embed
 
-Choose the embed's heading placement in the host template: with `future.v8_automaticHeadings: true`, use
+Choose the embed's heading placement in the host template: use
 `headings.baseLevel: 2` directly below the page `h1`, or 3 within an existing `h2` section. Pass the same options
 to server and browser embeds. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md#cms-embeds).
 
@@ -192,9 +192,8 @@ Styles are **not** auto-injected in Vite lib mode:
 1. Snippet includes `<link rel="stylesheet" href="/mapsight-assets/assets/mapsight.css">`.
 2. Host may add page-specific `<style>` for min-height, CMS layout, or icon overrides.
 3. For host-native theming, load host theme CSS before or after Mapsight CSS and use CSS variables / scoped wrappers.
-   See [Principles](../architecture/PRINCIPLES.md). UI chrome icons follow the `--ms3-*` colours only when the embed
-   build sets `$ms3-future-v8-themedIcons: true`; the icons must then be served from the page's origin or with CORS
-   headers. See [themed chrome icons](../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons).
+   See [Principles](../architecture/PRINCIPLES.md). UI chrome icons follow the `--ms3-*` colours through CSS masks; the icons must be served from the page's origin or with CORS
+   headers. See [themed chrome icons](../../packages/ui/README.md#themed-chrome-icons).
 
 ---
 

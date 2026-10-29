@@ -1,11 +1,11 @@
 import type {RefObject} from "react";
 import {useLayoutEffect} from "react";
 
+import {useAppChannelDispatchEvent} from "../../../app-channel";
 import {siteConfig} from "../../../config";
 import type {View} from "../../../config/constants/app";
 import {VIEW_MOBILE} from "../../../config/constants/app";
 import makeSticky from "../../../helpers/sticky";
-import {useAppChannelDispatchEvent} from "../../helping/app-channel";
 
 export function useMakeHeaderSticky(
 	enabled: boolean,

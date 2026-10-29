@@ -1,22 +1,19 @@
 # Heading hierarchy
 
 `@mapsight/ui` can derive native `h1`–`h6` elements from the position of an instance in its host page.
-In 7.x this is opt-in:
+Contextual headings are the default in v8:
 
 ```ts
 createOptions: {
-	future: {v8_automaticHeadings: true},
 	headings: {baseLevel: 2},
 }
 ```
 
-`baseLevel` is the **first heading rank inside Mapsight**, not the surrounding heading's rank. It defaults to `2`
-when the flag is enabled. Use `2` directly beneath the host's `h1`, or `3` within an existing `h2` section.
+`baseLevel` is the **first heading rank inside Mapsight**, not the surrounding heading's rank. It defaults to `2`. Use `2` directly beneath the host's `h1`, or `3` within an existing `h2` section.
 Choose the level from the document structure, rather than the last heading elsewhere on the page.
 
-Omitting the flag or setting it to `false` retains every historical heading element, including when `headings`
-options are supplied. In v8 the automatic resolver becomes standard and the flag is removed. The `headings`
-configuration remains. See [Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md).
+Automatic heading resolution is standard in v8; `createOptions.future` is removed.
+Keep `headings` configuration for page placement and exceptional elements.
 
 ## CMS embeds
 
@@ -24,7 +21,6 @@ For a map directly below the host page's `h1`, with the CMS supplying the title:
 
 ```ts
 const createOptions = {
-	future: {v8_automaticHeadings: true},
 	headings: {baseLevel: 2},
 	uiState: {
 		pageTitle: {show: false},
@@ -37,7 +33,7 @@ Layer/tag switcher sections, search result groups, list groups, and independent 
 Split-mode overlay groups are children of their section heading and use `h3`.
 
 When `pageTitle.show` is true and the title is nonempty, the Mapsight title takes the base rank and the rest of
-`App` starts one rank deeper. In automatic mode the default title remains available to screen readers at desktop
+`App` starts one rank deeper. The default title remains available to screen readers at desktop
 sizes where legacy styles visually hide it. An absent or empty title introduces no extra depth.
 
 ## Composed React hosts
@@ -70,15 +66,15 @@ import {HeadingLevel} from "@mapsight/ui/headings";
 </Instance>;
 ```
 
-`HeadingLevel` renders no HTML and changes the first rank in its subtree; it does not enable the future flag.
+`HeadingLevel` renders no HTML and changes the first rank in its subtree; it applies to every contextual heading below it.
 Each new instance resets both the rank and overrides. Several embeds, including nested instances, can use
 different configurations without sharing mutable state. React portals retain the originating scope.
 
 ## Explicit elements and exceptions
 
 Resolution order is an explicit component element (`headlineAs`, `groupHeadlineAs`, or list `groupAs`), then the
-configured slot override, then the contextual rank, then the historical element when automatic headings are off.
-Explicit native heading elements also determine the depth of their child content in automatic mode.
+configured slot override, then the contextual rank.
+Explicit native heading elements also determine the depth of their child content.
 
 ```ts
 headings: {
@@ -113,16 +109,16 @@ heading rank is opaque; supply a `HeadingLevel` scope explicitly for their conte
 
 `uiState.list.renderGroupAs` also controls whether grouping is enabled. Keep those choices explicit:
 
-- `"auto"` enables grouping with contextual headings (`h3` without the flag).
+- `"auto"` enables grouping with contextual headings.
 - An existing tag such as `"h3"` or `"div"` remains an explicit element override.
-- Falsy values continue to disable grouping, including when the future flag is enabled.
+- Falsy values continue to disable grouping.
 
 Hosts currently using `"h3"` must change that value to `"auto"` to adopt relative list-group headings. The low-level
 `FeatureListGroupedContent` component supports the same values through `groupAs`.
 
 ## Dialogs, regions, and replacement components
 
-Actual modal shells (`Modal`, `NativeDialog`, and the share-link modal) use a local `h2` title in automatic mode.
+Actual modal shells (`Modal`, `NativeDialog`, and the share-link modal) use a local `h2` title.
 Titled modal content starts at `h3`; a titleless native dialog starts its content at `h2`. Dialog names and heading
 IDs retain their existing associations. Non-modal `PopoverDialog`, list-options popovers, tools, selection panels,
 and `BottomSheet` remain relative to the page scope. A portal or `role="region"` does not reset a document outline.
@@ -134,22 +130,16 @@ import {Heading} from "@mapsight/ui/headings";
 
 function CustomTitle({id, headlineAs}) {
 	return (
-		<Heading
-			id={id}
-			as={headlineAs}
-			headingSlot="featureDetailsTitle"
-			fallbackAs="h3"
-		>
+		<Heading id={id} as={headlineAs} headingSlot="featureDetailsTitle">
 			Place details
 		</Heading>
 	);
 }
 ```
 
-`Heading` forwards native attributes and refs. `useHeadingLevel(3)` returns the contextual rank, or the supplied
-legacy fallback when automatic headings are disabled. `useHeadingElement(slot, fallbackAs, explicitAs)` resolves
+`Heading` forwards native attributes and refs. `useHeadingLevel()` returns the contextual rank. `useHeadingElement(slot, explicitAs)` resolves
 an element with the same precedence as built-in headings. `HeadingContent headingAs="h3"` advances its children
-to `h4` only in automatic mode; a label or an opaque custom element introduces no depth.
+to `h4`; a label or an opaque custom element introduces no depth.
 
 Replacement `TitleBar` and `FeatureSelectionInfoHeader` components must honor the supplied `headlineAs` and `id`
 contracts, or configure the corresponding slot as a non-heading and establish their own child scopes. When a sheet
@@ -158,7 +148,7 @@ Arbitrary host HTML, feature descriptions, and hard-coded headings inside replac
 
 ## SSR and limits
 
-Pass identical `future` and `headings` options on the server and client. `data-dehydrated-state` contains Redux state;
+Pass identical `headings` options on the server and client. `data-dehydrated-state` contains Redux state;
 it does **not** serialize these create options. A custom renderer should spread its renderer props onto `AppContext`
 on both sides. Heading selection never reads the surrounding DOM, viewport dimensions, or computed styles.
 

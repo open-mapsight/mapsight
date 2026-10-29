@@ -88,10 +88,11 @@ Preset factories (e.g. `simpleMap()`) return the `options` object for `browserEm
 `{ styleFunction, baseMapsightConfig, createOptions }`. The CMS `embed.js` lib entry re-exports `browserEmbed` and
 imports stylesheet side effects.
 
-Pre-OSS hosts that still build a mutable config bag (`baseMapsightCoreConfig` /
-`embedOptions` / `hook` / `defaultPluginsOptions`) can keep that shape:
-`createEmbedBag` from `@mapsight/ui/embed`, and `browserEmbed` normalizes the bag.
-See [Upgrade from legacy embed](UPGRADE_FROM_LEGACY_EMBED.md).
+For existing hosts, follow the [UI v8 upgrade guide](UPGRADE_TO_UI_V8.md).
+The v8 draft removes mutable legacy bags (`baseMapsightCoreConfig` /
+`embedOptions` / `hook` / `defaultPluginsOptions`); migrate those to the flat
+options above. The [legacy embed guide](UPGRADE_FROM_LEGACY_EMBED.md) remains a
+7.x reference.
 
 Details: [Config reference](CONFIG_REFERENCE.md).
 

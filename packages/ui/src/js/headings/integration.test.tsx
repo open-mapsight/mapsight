@@ -23,7 +23,6 @@ const config = {
 	},
 };
 const roots: Root[] = [];
-const automatic = {v8_automaticHeadings: true};
 
 function app(options: CreateOptions = {}) {
 	const context = create(null, styleFunction, config, {
@@ -62,17 +61,14 @@ afterEach(async () => {
 
 describe("heading integration", () => {
 	it.each([
-		{future: undefined, showTitle: false, expected: 3},
-		{future: {v8_automaticHeadings: false}, showTitle: true, expected: 3},
-		{future: automatic, showTitle: false, expected: 2},
-		{future: automatic, showTitle: true, expected: 3},
+		{showTitle: false, expected: 2},
+		{showTitle: true, expected: 3},
 	])(
 		"configures App switchers through create options: %j",
-		({future, showTitle, expected}) => {
+		({showTitle, expected}) => {
 			const host = document.createElement("div");
 			host.innerHTML = renderToString(
 				app({
-					future,
 					headings: {baseLevel: 2},
 					uiState: {pageTitle: {show: showTitle}},
 				}),
@@ -91,7 +87,6 @@ describe("heading integration", () => {
 		const tree = () => (
 			<StrictMode>
 				{app({
-					future: automatic,
 					headings: {baseLevel: 3},
 					uiState: {pageTitle: {show: true}},
 				})}

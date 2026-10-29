@@ -89,7 +89,7 @@ export default function NativeDialog({
 	hideCloseButton = false,
 	headlineAs,
 }: NativeDialogProps): ReactElement | null {
-	const Headline = useHeadingElement("dialogTitle", "h2", headlineAs, {
+	const Headline = useHeadingElement("dialogTitle", headlineAs, {
 		level: 2,
 	});
 	const hydrated = useHydrated();

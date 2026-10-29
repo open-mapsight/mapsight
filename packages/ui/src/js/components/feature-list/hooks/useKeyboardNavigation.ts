@@ -5,7 +5,7 @@ import {mergeRefs} from "react-aria";
 import {
 	APP_EVENT_FOCUS_FEATURE_LIST,
 	useAppChannelEventListener,
-} from "../../helping/app-channel";
+} from "../../../app-channel";
 
 const ROW_SELECTOR = "[data-ms3-list-nav]:not(:disabled)";
 

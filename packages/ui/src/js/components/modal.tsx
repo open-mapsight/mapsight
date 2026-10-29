@@ -23,7 +23,7 @@ const Modal = ({
 	headlineAs,
 	...props
 }: Props) => {
-	const Headline = useHeadingElement("dialogTitle", "h3", headlineAs, {
+	const Headline = useHeadingElement("dialogTitle", headlineAs, {
 		level: 2,
 	});
 	const handleClose = (event: MouseEvent | KeyboardEvent) =>

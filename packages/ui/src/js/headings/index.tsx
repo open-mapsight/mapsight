@@ -28,19 +28,17 @@ export type HeadingSlot =
 export type HeadingOptions = {
 	/** First Mapsight heading rank, not the surrounding heading's rank. Default 2. */
 	baseLevel?: HeadingRank;
-	/** Explicit elements for exceptional compositions. Requires v8_automaticHeadings. */
+	/** Explicit elements for exceptional compositions. */
 	overrides?: Partial<Record<HeadingSlot, HeadingElement>>;
 };
 
 type HeadingContextValue = {
-	enabled: boolean;
 	level: HeadingRank;
 	overrides: NonNullable<HeadingOptions["overrides"]>;
 };
 
 const EMPTY_OVERRIDES = {};
 const HeadingsContext = createContext<HeadingContextValue>({
-	enabled: false,
 	level: 2,
 	overrides: EMPTY_OVERRIDES,
 });
@@ -56,20 +54,16 @@ function assertHeadingRank(level: number): asserts level is HeadingRank {
 
 /** Instance boundary. Custom renderers normally receive this through AppContext. */
 export function HeadingsProvider({
-	enabled = false,
 	options,
 	children,
 }: {
-	enabled?: boolean;
 	options?: HeadingOptions;
 	children?: ReactNode;
 }) {
 	const value = useMemo((): HeadingContextValue => {
-		const level = enabled ? (options?.baseLevel ?? 2) : 2;
+		const level = options?.baseLevel ?? 2;
 		assertHeadingRank(level);
-		const overrides = enabled
-			? (options?.overrides ?? EMPTY_OVERRIDES)
-			: EMPTY_OVERRIDES;
+		const overrides = options?.overrides ?? EMPTY_OVERRIDES;
 		for (const element of Object.values(overrides)) {
 			if (
 				element !== undefined &&
@@ -81,8 +75,8 @@ export function HeadingsProvider({
 				);
 			}
 		}
-		return {enabled, level, overrides};
-	}, [enabled, options]);
+		return {level, overrides};
+	}, [options]);
 	return (
 		<HeadingsContext.Provider value={value}>
 			{children}
@@ -90,17 +84,13 @@ export function HeadingsProvider({
 	);
 }
 
-export function useAutomaticHeadings(): boolean {
-	return useContext(HeadingsContext).enabled;
-}
-
-/** The first heading rank in this scope; custom headings can supply a legacy fallback. */
-export function useHeadingLevel(fallback: HeadingRank = 2): HeadingRank {
+/** The first heading rank in this scope. */
+export function useHeadingLevel(): HeadingRank {
 	const context = useContext(HeadingsContext);
-	return context.enabled ? context.level : fallback;
+	return context.level;
 }
 
-/** Sets an absolute rank for a composed subtree. Does not enable the future flag. */
+/** Sets an absolute rank for a composed subtree. */
 export function HeadingLevel({
 	level,
 	children,
@@ -128,16 +118,14 @@ function childRank(level: HeadingRank): HeadingRank {
 	return Math.min(6, level + 1) as HeadingRank;
 }
 
-/** Resolve explicit props before slot overrides, contextual ranks, and legacy elements. */
+/** Resolve explicit props before slot overrides, contextual ranks. */
 export function useHeadingElement(
 	slot: HeadingSlot | undefined,
-	fallbackAs: ElementType,
 	as?: ElementType,
 	options?: {parentAs?: ElementType; level?: HeadingRank},
 ): ElementType {
 	const context = useContext(HeadingsContext);
 	if (as !== undefined) return as;
-	if (!context.enabled) return fallbackAs;
 	const override = slot === undefined ? undefined : context.overrides[slot];
 	if (override !== undefined) return override;
 	const parent = headingRank(options?.parentAs);
@@ -155,34 +143,26 @@ export function HeadingContent({
 	headingAs?: ElementType;
 	children?: ReactNode;
 }) {
-	const context = useContext(HeadingsContext);
 	const rank = headingRank(headingAs);
 	useEffect(() => {
-		if (context.enabled && rank === 6 && isDevelopment()) {
+		if (rank === 6 && isDevelopment()) {
 			console.warn(
 				"Mapsight heading depth exceeds h6; child headings stay at h6. Flatten this section structure.",
 			);
 		}
-	}, [context.enabled, rank]);
-	if (!context.enabled || rank === undefined) return children;
+	}, [rank]);
+	if (rank === undefined) return children;
 	return <HeadingLevel level={childRank(rank)}>{children}</HeadingLevel>;
 }
 
 export type HeadingProps = HTMLAttributes<HTMLElement> & {
 	as?: ElementType;
 	headingSlot?: HeadingSlot;
-	/** Element used without the flag. Default h2. */
-	fallbackAs?: ElementType;
 	ref?: Ref<HTMLElement>;
 };
 
 /** Native contextual heading for host components and replacements. */
-export function Heading({
-	as,
-	headingSlot,
-	fallbackAs = "h2",
-	...props
-}: HeadingProps) {
-	const element = useHeadingElement(headingSlot, fallbackAs, as);
+export function Heading({as, headingSlot, ...props}: HeadingProps) {
+	const element = useHeadingElement(headingSlot, as);
 	return createElement(element, props);
 }

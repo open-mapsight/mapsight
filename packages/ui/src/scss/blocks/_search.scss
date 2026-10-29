@@ -40,26 +40,19 @@
 			display: block;
 			width: 21px;
 			height: 21px;
-			@if icon.$themed {
-				background: #eee;
-			} @else {
-				background: #eee url(variables.$ms3-uiIconPath + "close.svg") no-repeat
-					center;
-			}
+			background: #eee;
 			border-radius: 50%;
 			margin-top: 3px;
 		}
 
-		@if icon.$themed {
-			// the icon sits on the grey circle drawn by `::before`
-			&::after {
-				content: "";
-				display: block;
-				width: 21px;
-				height: 21px;
-				margin-top: -21px;
-				@include icon.mask("close.svg");
-			}
+		// the icon sits on the grey circle drawn by `::before`
+		&::after {
+			content: "";
+			display: block;
+			width: 21px;
+			height: 21px;
+			margin-top: -21px;
+			@include icon.mask("close.svg");
 		}
 	}
 
@@ -67,13 +60,8 @@
 		border: 0;
 		width: 42px;
 		flex-shrink: 0;
-		@if icon.$themed {
-			background: transparent;
-			@include icon.layer("search.svg");
-		} @else {
-			background: transparent url(variables.$ms3-uiIconPath + "search.svg")
-				no-repeat center;
-		}
+		background: transparent;
+		@include icon.layer("search.svg");
 	}
 
 	.ms3-search-overlay & {

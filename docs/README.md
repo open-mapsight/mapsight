@@ -16,6 +16,9 @@ self-service integrators. See [Licensing](LICENSING.md).
 | **Pasting** snippets in a CMS (editor)    | [For CMS editors](integration/CMS_EDITORS.md)                                                                                                       |
 | **Contributing** to the monorepo          | [Contributing](development/CONTRIBUTING.md) → [Code of Conduct](../CODE_OF_CONDUCT.md) → [Standards](development/STANDARDS.md)                      |
 
+Upgrading an existing host? See [Upgrade @mapsight/ui from v7 to v8](integration/UPGRADE_TO_UI_V8.md)
+(draft release scope).
+
 ### Product and deployment maps
 
 - **Diagram A — Product channels** (_who needs what kind of map?_): [GIS stack choices](ecosystem/GIS_STACK_CHOICES.md)

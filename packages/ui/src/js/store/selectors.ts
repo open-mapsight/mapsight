@@ -249,7 +249,7 @@ export const searchRenderFormSelector = (state: RootStateSlice) =>
 	state.app.searchRenderForm !== false;
 
 export const skipLinksSelector = (state: RootStateSlice) =>
-	state.app.skipLinks === true;
+	state.app.skipLinks !== false;
 
 export const haveSearchInMapSelector = (state: RootStateSlice) =>
 	state.app.searchInMap;

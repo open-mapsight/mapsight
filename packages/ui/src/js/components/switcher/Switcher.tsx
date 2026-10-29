@@ -41,7 +41,7 @@ function Switcher(props: SwitcherProps) {
 		entriesAttributes: entriesAttributes_ = {},
 		...attributes
 	} = props;
-	const Headline = useHeadingElement("switcher", "h3", headlineAs);
+	const Headline = useHeadingElement("switcher", headlineAs);
 
 	const headerAttributes = {...headerAttributes_};
 	const entriesAttributes = {...entriesAttributes_};

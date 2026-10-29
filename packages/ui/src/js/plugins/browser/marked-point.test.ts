@@ -6,6 +6,10 @@ import {FEATURE_SOURCE_DATA} from "@mapsight/core/lib/feature-sources/actions";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import {
+	formatCoordinateSpellings,
+	formatLonLat,
+} from "../../helpers/coordinates";
+import {
 	DEFAULT_MARKED_POINT_FEATURE_ID,
 	createMarkedPointFeature,
 	ensureMarkedPointLayerAction,
@@ -13,8 +17,6 @@ import {
 	eventTargetIsInMap,
 	eventTargetIsInMapMenu,
 	eventTargetIsInteractiveOverlay,
-	formatCoordinateSpellings,
-	formatLonLat,
 	isMapContextMenuKeyboardEvent,
 	isMarkedPointFeature,
 	markedPointCollection,

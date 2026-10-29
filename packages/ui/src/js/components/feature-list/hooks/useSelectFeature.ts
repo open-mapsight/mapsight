@@ -8,6 +8,10 @@ import {
 	selectExclusively,
 } from "@mapsight/core/lib/feature-selections/actions";
 
+import {
+	APP_EVENT_SCROLL_TO_MAP,
+	useAppChannelDispatchEvent,
+} from "../../../app-channel";
 import {VIEW_MAP_ONLY} from "../../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../../config/constants/controllers";
 import {FEATURE_SELECTION_HIGHLIGHT} from "../../../config/feature/selections";
@@ -20,10 +24,6 @@ import {
 	viewSelector,
 } from "../../../store/selectors";
 import type {MapsightUiFeatureId} from "../../../types";
-import {
-	APP_EVENT_SCROLL_TO_MAP,
-	useAppChannelDispatchEvent,
-} from "../../helping/app-channel";
 
 export default function useSelectFeature() {
 	const appChannelDispatch = useAppChannelDispatchEvent();

@@ -18,30 +18,9 @@ afterEach(() => {
 });
 
 describe("automatic headings", () => {
-	it("keeps legacy elements when options and scopes are supplied without enabling the flag", () => {
-		render(
-			<HeadingsProvider
-				options={{baseLevel: 4, overrides: {switcher: "h1"}}}
-			>
-				<HeadingLevel level={5}>
-					<Heading headingSlot="switcher" fallbackAs="h3">
-						Layers
-					</Heading>
-					<Heading fallbackAs="h4">Search group</Heading>
-				</HeadingLevel>
-			</HeadingsProvider>,
-		);
-		expect(
-			screen.getByRole("heading", {name: "Layers", level: 3}),
-		).toBeTruthy();
-		expect(
-			screen.getByRole("heading", {name: "Search group", level: 4}),
-		).toBeTruthy();
-	});
-
 	it("defaults to h2 and advances within titled content without affecting siblings", () => {
 		render(
-			<HeadingsProvider enabled>
+			<HeadingsProvider>
 				<Heading>Section</Heading>
 				<HeadingContent headingAs="h2">
 					<Heading>Subsection</Heading>
@@ -72,7 +51,6 @@ describe("automatic headings", () => {
 	it("resolves explicit elements before slot overrides and contextual ranks", () => {
 		render(
 			<HeadingsProvider
-				enabled
 				options={{baseLevel: 3, overrides: {switcher: "h4"}}}
 			>
 				<Heading headingSlot="switcher">Configured</Heading>
@@ -109,7 +87,7 @@ describe("automatic headings", () => {
 	it("caps native ranks at h6 and forwards ids, refs and native HTML attributes", () => {
 		const ref = createRef<HTMLElement>();
 		render(
-			<HeadingsProvider enabled options={{baseLevel: 6}}>
+			<HeadingsProvider options={{baseLevel: 6}}>
 				<HeadingContent headingAs="h6">
 					<Heading ref={ref} id="last-heading" slot="native-slot">
 						Deep section
@@ -129,17 +107,11 @@ describe("automatic headings", () => {
 	it("resets both levels and overrides at each instance boundary", () => {
 		render(
 			<HeadingsProvider
-				enabled
 				options={{baseLevel: 4, overrides: {switcher: "div"}}}
 			>
 				<Heading>Outer</Heading>
-				<HeadingsProvider enabled>
-					<Heading headingSlot="switcher">Inner</Heading>
-				</HeadingsProvider>
 				<HeadingsProvider>
-					<Heading headingSlot="switcher" fallbackAs="h3">
-						Legacy
-					</Heading>
+					<Heading headingSlot="switcher">Inner</Heading>
 				</HeadingsProvider>
 			</HeadingsProvider>,
 		);
@@ -149,9 +121,6 @@ describe("automatic headings", () => {
 		expect(
 			screen.getByRole("heading", {name: "Inner", level: 2}),
 		).toBeTruthy();
-		expect(
-			screen.getByRole("heading", {name: "Legacy", level: 3}),
-		).toBeTruthy();
 	});
 
 	it("rejects invalid ranks and override elements during server rendering", () => {
@@ -159,7 +128,7 @@ describe("automatic headings", () => {
 			options: ComponentProps<typeof HeadingsProvider>["options"],
 		) =>
 			renderToString(
-				<HeadingsProvider enabled options={options}>
+				<HeadingsProvider options={options}>
 					<Heading>Invalid</Heading>
 				</HeadingsProvider>,
 			);

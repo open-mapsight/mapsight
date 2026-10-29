@@ -165,13 +165,10 @@ function SplitBaseLayerSwitcher({
 	headlineAs,
 	groupHeadlineAs,
 }: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
-	const Headline = useHeadingElement("switcher", "h3", headlineAs);
-	const GroupHeadline = useHeadingElement(
-		"switcherGroup",
-		"h4",
-		groupHeadlineAs,
-		{parentAs: Headline},
-	);
+	const Headline = useHeadingElement("switcher", headlineAs);
+	const GroupHeadline = useHeadingElement("switcherGroup", groupHeadlineAs, {
+		parentAs: Headline,
+	});
 	const baseLayersHeadingId = useId();
 	const hasOverlayLayers = groups.length > 0 || ungroupedLayerIds.length > 0;
 	/** Explicit user overrides; unset keys use the default (collapsed when none visible). */
