@@ -9,7 +9,7 @@ type PackageInfo = {
 	workspaceDir: "packages" | "apps";
 };
 
-export const PRETTIER_WRITE = "pnpx prettier --write";
+export const PRETTIER_WRITE = "pnpm exec prettier --write";
 
 const toRepoRelativePath = (filePath: string): string => {
 	const parts = path.normalize(filePath).split(path.sep).filter(Boolean);

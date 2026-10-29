@@ -56,6 +56,29 @@ that list when migrating it — the check fails on stale entries.
 
 Run from root: `pnpm test` (turbo). Package-specific: `pnpm --filter @mapsight/core test`, `test:e2e`.
 
+For a short feedback loop, run only the changed tests first, then use Turbo for
+package checks and their build prerequisites:
+
+```bash
+pnpm --filter @mapsight/ui exec vitest run src/js/components/hint-tooltip.test.tsx
+pnpm turbo run lint typecheck test --filter=@mapsight/ui
+pnpm turbo run lint typecheck --filter=@mapsight/showcase
+```
+
+Pass Vitest file filters directly through `exec vitest run`. An extra `--` passed
+through a package script can cause the full suite to run instead. Turbo prepares
+the showcase and vector editor's generated styles before lint/typecheck, and builds
+the vector-style compiler before checking its CLI import of `dist/cli.js`.
+Traffic-style checks also wait for its generated pictograms and compiled icon modules.
+
+In a fresh worktree, run `pnpm install --frozen-lockfile` rather than linking another
+checkout's `node_modules`. Turbo shares its local cache between worktrees; avoid
+`clean-build` during normal iteration. Shared TypeScript/ESLint configs are cache
+inputs. The showcase tile URL is excluded from automatic `VITE_*` inference in
+other tasks and included in the showcase build hash. Keep full
+CI coverage when adding local shortcuts; a file-only ESLint cache does not track
+changes to imported types.
+
 Run `pnpm test:starters:copy-out` after building packages to check their published surface. It packs the packages,
 installs them into standalone starters, and builds the starters, including their imports of the packaged UI Sass
 entrypoints. Source-file checks against `package.json` or Sass text cannot establish this integration contract.

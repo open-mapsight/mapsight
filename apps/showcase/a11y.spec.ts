@@ -26,6 +26,8 @@ test("showcase has no new moderate or higher accessibility failures or audit exe
 			"--fail-on",
 			"moderate",
 			"--fail-on-new",
+			"--concurrency",
+			"3",
 		],
 		{cwd: repoRoot, timeout: 570_000},
 	);

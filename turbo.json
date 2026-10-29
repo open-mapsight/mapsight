@@ -1,13 +1,20 @@
 {
 	"$schema": "https://v2-9-14.turborepo.dev/schema.json",
+	"globalDependencies": ["configs/tsconfig*.json"],
 	"tasks": {
 		"lint": {
 			"dependsOn": ["^build"],
-			"outputs": []
+			"outputs": [],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/configs/eslint-*.mts",
+				"$TURBO_ROOT$/eslint.config.mts",
+				"$TURBO_ROOT$/tsconfig.json"
+			],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
 		},
 		"clean": {},
 		"build": {
-			"env": ["VITE_SHOWCASE_OSM_TILE_URL"],
 			"dependsOn": ["^build"],
 			"outputs": [
 				"dist/**",
@@ -15,7 +22,8 @@
 				"!.next/cache/**",
 				"public/img/mapsight**",
 				"src/generated/**"
-			]
+			],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
 		},
 		"mapsight-host-starter#build": {
 			"dependsOn": [
@@ -72,11 +80,13 @@
 		},
 		"test": {
 			"dependsOn": ["^build"],
-			"outputs": []
+			"outputs": [],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
 		},
 		"typecheck": {
 			"dependsOn": ["^build"],
-			"outputs": []
+			"outputs": [],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
 		},
 		"mapsight-host-starter#typecheck": {
 			"dependsOn": [

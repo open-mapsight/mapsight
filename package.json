@@ -51,7 +51,7 @@
 		"format:check": "prettier --check \"**/*.{js,mjs,cjs,ts,mts,cts,tsx,json,md}\"",
 		"format:write": "prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,tsx,json,md}\"",
 		"lint": "turbo run lint //#lint:starters",
-		"lint-staged": "pnpx lint-staged --config configs/lint-staged.mts",
+		"lint-staged": "pnpm exec lint-staged --config configs/lint-staged.mts",
 		"lint:starters": "eslint -c starters/eslint.config.mts starters/mapsight-host-starter starters/mapsight-next-starter starters/mapsight-vite-spa-starter",
 		"lint:workspace": "turbo lint",
 		"prepare": "husky",
