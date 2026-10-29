@@ -610,9 +610,8 @@ body {
 	padding-block: 16px;
 }
 .msb-shell .showcase__brand {
-	display: flex;
-	align-items: center;
-	gap: 24px;
+	display: block;
+	white-space: nowrap;
 	padding: 12px;
 	margin-left: -12px;
 	color: var(--msb-text);
@@ -624,9 +623,12 @@ body {
 	line-height: 1.5;
 }
 .msb-shell .showcase__brand img {
-	display: block;
+	display: inline-block;
 	width: 186px;
 	height: 48px;
+	margin-inline-end: 24px;
+	/* The outlined wordmark baseline is y=46 in the 64-unit SVG. */
+	vertical-align: -13.5px;
 }
 .msb-shell .msb-theme {
 	margin-left: auto;
@@ -850,7 +852,7 @@ body {
 /* Showcase content stays inside the brand frame, separate from demo hosts. */
 .msb-shell .landing__actions {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	flex-wrap: wrap;
 	gap: 16px 28px;
 	margin-top: 28px;
@@ -863,7 +865,7 @@ body {
 }
 .msb-shell .landing__actions .msb-primary-link {
 	display: inline-flex;
-	align-items: center;
+	align-items: baseline;
 	gap: 20px;
 	min-height: 48px;
 	padding: 12px 20px;
