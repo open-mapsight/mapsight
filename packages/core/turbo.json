@@ -1,0 +1,13 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"!**/__tests__/**",
+				"!**/*.test.ts",
+				"!src/js/test/**"
+			]
+		}
+	}
+}

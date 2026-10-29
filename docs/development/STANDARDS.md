@@ -61,7 +61,8 @@ package checks and their build prerequisites:
 
 ```bash
 pnpm --filter @mapsight/ui exec vitest run src/js/components/hint-tooltip.test.tsx
-pnpm turbo run lint typecheck test --filter=@mapsight/ui
+pnpm verify --filter=@mapsight/ui
+pnpm verify '--filter=...[origin/main]'
 pnpm turbo run lint typecheck --filter=@mapsight/showcase
 ```
 
@@ -71,13 +72,44 @@ the showcase and vector editor's generated styles before lint/typecheck, and bui
 the vector-style compiler before checking its CLI import of `dist/cli.js`.
 Traffic-style checks also wait for its generated pictograms and compiled icon modules.
 
+`pnpm verify` runs package lint, typecheck and unit tests in one Turbo invocation
+with at most four concurrent tasks. Use a package filter while editing, then
+`--filter=...[origin/main]` to include changed packages and their consumers before
+pushing. Run `git fetch origin` first to refresh that comparison; it also includes
+local working-tree changes. Root configuration changes can select every package.
+Root starter lint, script typechecks, config tests, browser tests and repository
+guards remain available through their existing commands and in GitHub's required
+CI checks.
+Run `pnpm build` separately when checking production outputs; Next.js builds
+recreate `.next/types` and cannot safely run alongside a starter typecheck.
+
+Turbo replays only logs from tasks that actually run; use `--output-logs=full` when
+debugging a cached result. Core, UI, lib-js, lib-ol, lib-redux and the vector-style
+compiler exclude the tests omitted by their emitting TypeScript configs from the
+build hash. Test changes still invalidate the owning package's lint, test and
+typecheck tasks. Published documentation and generated inputs remain build inputs.
+
+Core and UI use TypeScript's [incremental checker](https://www.typescriptlang.org/tsconfig/incremental.html) for `typecheck`, keeping its
+state in each package's ignored `node_modules/.cache/typecheck.tsbuildinfo`.
+It rechecks changed source files and imported types. Emitting builds use a separate,
+non-incremental invocation so removing `dist` cannot leave missing build outputs
+hidden by checker state. A Turbo task-cache hit can skip the checker entirely;
+the TypeScript state speeds up checks after edits that miss that task cache.
+
 In a fresh worktree, run `pnpm install --frozen-lockfile` rather than linking another
-checkout's `node_modules`. Turbo shares its local cache between worktrees; avoid
+checkout's `node_modules`. Run `pnpm verify --filter=@mapsight/<package>` once to
+prepare prerequisites before starting individual test-file loops.
+Turbo shares its local cache between worktrees; avoid
 `clean-build` during normal iteration. Shared TypeScript/ESLint configs are cache
 inputs. The showcase tile URL is excluded from automatic `VITE_*` inference in
 other tasks and included in the showcase build hash. Keep full
 CI coverage when adding local shortcuts; a file-only ESLint cache does not track
 changes to imported types.
+
+For T3 Code, configure `pnpm install --frozen-lockfile` as a project script that
+runs when a worktree is created. Keep checks manual during editing; use the
+filtered `verify` command before pushing rather than rerunning the entire suite
+after every agent turn.
 
 Run `pnpm test:starters:copy-out` after building packages to check their published surface. It packs the packages,
 installs them into standalone starters, and builds the starters, including their imports of the packaged UI Sass
@@ -114,6 +146,8 @@ contracts so accidental changes are still detected.
 | `pnpm syncpack:lint`                 | Dependency version alignment |
 
 Pre-commit: Husky runs `lint-staged` on staged files.
+It fixes only staged source files and runs one filtered Turbo typecheck for their
+packages, reusing prior checks and preparing generated dependencies.
 
 ---
 
