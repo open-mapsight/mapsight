@@ -1,11 +1,12 @@
 import {
 	type ElementType,
 	type ReactNode,
+	memo,
 	useCallback,
 	useId,
 	useState,
 } from "react";
-import {connect, shallowEqual} from "react-redux";
+import {connect} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
@@ -77,7 +78,7 @@ function getSplitLayerIds(ids: string[], layers: MapState["layers"]) {
 	};
 }
 
-function CollapsibleOverlayGroup({
+const CollapsibleOverlayGroup = memo(function CollapsibleOverlayGroup({
 	group,
 	layerIds,
 	visibleCount,
@@ -91,7 +92,7 @@ function CollapsibleOverlayGroup({
 	layerIds: string[];
 	visibleCount: number;
 	collapsed: boolean;
-	onToggle: () => void;
+	onToggle: (group: string, collapsed: boolean) => void;
 	renderEntry: (id: string, group?: string | null) => ReactNode;
 }) {
 	const panelId = useId();
@@ -123,7 +124,7 @@ function CollapsibleOverlayGroup({
 					aria-expanded={!collapsed}
 					aria-controls={panelId}
 					aria-label={`${group} ${countLabel} ${toggleLabel}`}
-					onClick={onToggle}
+					onClick={() => onToggle(group, collapsed)}
 				>
 					<span className="ms3-switcher-header__label">{group}</span>{" "}
 					<span className="ms3-grouped-switcher__meta">
@@ -153,7 +154,7 @@ function CollapsibleOverlayGroup({
 			</HeadingContent>
 		</section>
 	);
-}
+});
 
 function SplitBaseLayerSwitcher({
 	baseLayerIds,
@@ -164,7 +165,7 @@ function SplitBaseLayerSwitcher({
 	collapsibleGroups = false,
 	headlineAs,
 	groupHeadlineAs,
-}: SplitBaseLayerSwitcherStateProps & SplitBaseLayerSwitcherOwnProps) {
+}: SplitBaseLayerSwitcherMergedProps) {
 	const Headline = useHeadingElement("switcher", "h3", headlineAs);
 	const GroupHeadline = useHeadingElement(
 		"switcherGroup",
@@ -256,9 +257,7 @@ function SplitBaseLayerSwitcher({
 										layerIds={layerIds}
 										visibleCount={visibleCount}
 										collapsed={collapsed}
-										onToggle={() =>
-											toggleGroup(group, collapsed)
-										}
+										onToggle={toggleGroup}
 										renderEntry={renderEntry}
 									/>
 								) : (
@@ -313,17 +312,71 @@ function SplitBaseLayerSwitcher({
 	);
 }
 
-export default connect(
-	createSelector(
-		(state: State, {layerIdsSelector}: SplitBaseLayerSwitcherOwnProps) => {
-			const mapState = state[MAP] as MapState;
-			return {
-				layerIds: layerIdsSelector(mapState),
-				layers: mapState.layers,
-			};
-		},
-		({layerIds, layers}) => getSplitLayerIds(layerIds, layers),
-	),
+function sameIds(a: string[], b: string[]): boolean {
+	return a.length === b.length && a.every((id, index) => id === b[index]);
+}
+
+function sameSplit(
+	a: SplitBaseLayerSwitcherStateProps,
+	b: SplitBaseLayerSwitcherStateProps,
+): boolean {
+	return (
+		sameIds(a.baseLayerIds, b.baseLayerIds) &&
+		sameIds(a.ungroupedLayerIds, b.ungroupedLayerIds) &&
+		a.groups.length === b.groups.length &&
+		a.groups.every((group, index) => {
+			const other = b.groups[index]!;
+			return (
+				group.group === other.group &&
+				group.visibleCount === other.visibleCount &&
+				sameIds(group.layerIds, other.layerIds)
+			);
+		})
+	);
+}
+
+/**
+ * Per instance: recompute only when the layer ids or the layer states change,
+ * and keep the previous result when the split is the same. Every new array
+ * would re-render all groups and entries, on every dispatch (map view updates
+ * while panning included).
+ */
+function makeMapStateToProps() {
+	const split = createSelector(
+		[
+			(
+				state: State,
+				{layerIdsSelector}: SplitBaseLayerSwitcherOwnProps,
+			) => layerIdsSelector(state[MAP] as MapState),
+			(state: State) => (state[MAP] as MapState).layers,
+		],
+		getSplitLayerIds,
+	);
+	let previous: SplitBaseLayerSwitcherStateProps | undefined;
+	return (state: State, ownProps: SplitBaseLayerSwitcherOwnProps) => {
+		const next = split(state, ownProps);
+		if (previous && sameSplit(previous, next)) {
+			return previous;
+		}
+		previous = next;
+		return next;
+	};
+}
+
+type SplitBaseLayerSwitcherMergedProps = Omit<
+	SplitBaseLayerSwitcherOwnProps,
+	"layerIdsSelector"
+> &
+	SplitBaseLayerSwitcherStateProps;
+
+export default connect<
+	SplitBaseLayerSwitcherStateProps,
+	object,
+	SplitBaseLayerSwitcherOwnProps,
+	SplitBaseLayerSwitcherMergedProps,
+	State
+>(
+	makeMapStateToProps,
 	null,
 	(
 		stateProps,
@@ -333,5 +386,4 @@ export default connect(
 		...ownProps,
 		...stateProps,
 	}),
-	{areStatesEqual: shallowEqual},
 )(SplitBaseLayerSwitcher);
