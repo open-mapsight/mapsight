@@ -1,5 +1,27 @@
 # @mapsight/showcase
 
+## 0.1.10
+
+### Patch Changes
+
+- d12ea02: Build the showcase with the Oxc minifier and run accessibility audit targets in parallel while preserving the full baseline checks. Generate vector styles before standalone lint and typecheck tasks.
+- 1ff68dd: Apply the Mapsight brand shell to showcase navigation, footer and landing/legal
+  pages while preserving product UI styling and keeping the frame theme separate.
+- e3dc402: Add a standalone fictional citizen-service scenario using KERN CSS, scoped Mapsight theming and static fixtures. Remove production-specific demo data and disable unavailable static-host place search.
+- a27f576: Add a keyboard point input demo at `/ui/point-input`, with its stored GeoJSON shown below the map and an accessibility-gate scenario that pans and confirms with Enter.
+- 4803ecf: UI surfaces can follow a dark host theme. Set `$ms3-future-v8-themedSurfaces: true` with the other `@mapsight/ui` Sass variables to take the colours that were fixed to light values from the `--ms3-*` tokens: the `.ms3-wrapper` background (`--ms3-page-background-color`), the attribution box, tool overlay, mini legend, link share field, button and icon, list search input, search reset circle, disabled pagination text, marked point coordinates, map point menu border, and the translucent map controls on narrow screens (new optional `--ms3-map-control-background-color`, default `--ms3-background-color` at 90 % opacity). `.ms3-wrapper` follows the page's `color-scheme` unless the host sets the new optional `--ms3-color-scheme`, and buttons, inputs and selects without their own colour inherit the text colour instead of the browser default. The default stays unchanged: without the flag the compiled CSS is identical to before.
+
+    When you opt in: hosts that already set `--ms3-background-color` or `--ms3-page-background-color` to a non-white value see it on these surfaces; form controls that Mapsight does not colour take the inherited text colour instead of `buttontext`/`fieldtext`; and in the default theme four near-duplicate greys change slightly (link share field `#444` on `#f5f5f5` to `#222` on `#f2f2f2`, disabled page and coordinates `#555`/`#5c5c5c` to `#636567`, search reset circle `#eee` to `#f2f2f2`). Dark themes also need a light text colour on the page, or on the wrapper and portaled surfaces, and should set `--ms3-place-actions-fg`, `--ms3-outbound-fg`, `--ms3-focus-ring-color` and `--ms3-attributions-background-color`. See [Themed surfaces and dark host themes](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces). The flag becomes the only behaviour in v8.
+
+    The KERN citizen-service scenario enables both themed surfaces and themed icons, replacing its temporary dark-mode overrides with the product flags.
+
+- Updated dependencies [`c1627bd`, `ff3adb5`, `2f975c0`, `a27f576`, `8f0f4b2`, `4803ecf`, `69fc674`]:
+    - `@mapsight/ui@7.9.2 → 7.10.0` (minor)
+    - `@mapsight/core@14.6.6 → 14.6.7` (patch)
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+    - `@mapsight/lib-ol@4.3.1 → 4.3.2` (patch)
+    - `@mapsight/lib-redux@2.2.4 → 2.2.5` (patch)
+
 ## 0.1.9
 
 ### Patch Changes

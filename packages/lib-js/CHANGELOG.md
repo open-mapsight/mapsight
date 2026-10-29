@@ -1,5 +1,11 @@
 # @mapsight/lib-js
 
+## 3.0.11
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+
 ## 3.0.10
 
 ### Patch Changes
