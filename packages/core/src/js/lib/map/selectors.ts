@@ -1,5 +1,6 @@
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
+import isEqual from "lodash/isEqual";
 import unique from "lodash/uniq";
 
 import {isNonNullable, mapNonNullable} from "@mapsight/lib-js/nonNullable";
@@ -30,29 +31,32 @@ export const makeLayerSelectionSelector =
 	(state: MapState) =>
 		state.layers[id]?.options?.selections?.[interactionName];
 
+// Select the layers reference so view updates do not rebuild the ids. Reuse
+// equal results when layer changes leave switcher membership and order intact.
 export const layerIdsIntegratedSwitcherSelector: Selector<MapState, string[]> =
 	createSelector(
-		(state: MapState) =>
-			state.layers
-				? Object.keys(state.layers).filter(
-						(id) =>
-							state.layers[id]?.metaData?.visibleInLayerSwitcher,
+		[layersSelector],
+		(layers) =>
+			layers
+				? Object.keys(layers).filter(
+						(id) => layers[id]?.metaData?.visibleInLayerSwitcher,
 					)
 				: [],
-		(_) => _, // cache result of above to deliver reference equality if array has the same contents
+		{memoizeOptions: {resultEqualityCheck: isEqual}},
 	);
 
 export const layerIdsExternalSwitcherSelector: Selector<MapState, string[]> =
 	createSelector(
-		(state: MapState) =>
-			state.layers
-				? Object.keys(state.layers).filter(
+		[layersSelector],
+		(layers) =>
+			layers
+				? Object.keys(layers).filter(
 						(id) =>
-							state.layers[id]?.metaData
+							layers[id]?.metaData
 								?.visibleInExternalLayerSwitcher,
 					)
 				: [],
-		(_) => _, // cache result of above to deliver reference equality if array has the same contents
+		{memoizeOptions: {resultEqualityCheck: isEqual}},
 	);
 
 export const makeLayerVisibleSelector =
