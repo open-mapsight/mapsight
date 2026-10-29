@@ -1,4 +1,5 @@
 // @vitest-environment node
+import {readFileSync} from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -196,30 +197,12 @@ function rootTokens(css: string) {
 	return Object.fromEntries(root.map((d) => [d.property, d.value]));
 }
 
-// A dark host theme, set at runtime like a host following `prefers-color-scheme: dark`.
-// Mirrored in the README example.
-const darkHost = {
-	"--ms3-primary-color": "#e8ecf1",
-	"--ms3-inverted-primary-color": "#111418",
-	"--ms3-secondary-color": "#aeb6c0",
-	"--ms3-tertiary-color": "#aeb6c0",
-	"--ms3-theme-color-a": "#7cc0ff",
-	"--ms3-theme-color-b": "#ff9b8a",
-	"--ms3-background-color": "#1a1e23",
-	"--ms3-background-color-offset": "#242a31",
-	"--ms3-background-color-offset-2": "#2e353e",
-	"--ms3-page-background-color": "#111418",
-	"--ms3-background-highlight-color": "#2b323a",
-	"--ms3-foreground-color": "#f3f5f8",
-	"--ms3-border-color": "#6b7682",
-	"--ms3-table-line-color": "#3c444e",
-	"--ms3-tooltip-background-color": "#242a31",
-	"--ms3-tooltip-border-color": "#aeb6c0",
-	"--ms3-attributions-background-color": "rgb(26 30 35 / 85%)",
-	"--ms3-focus-ring-color": "#3b82f6",
-};
-/** Host page text colour: Mapsight text inherits it. */
-const darkHostText = "#e8ecf1";
+// Exercise the published recipe itself, including its component-token overrides
+// and text rules for portals outside `.ms3-wrapper`.
+const readme = readFileSync(path.join(packageRoot, "README.md"), "utf8");
+const darkHostCss = readme.match(
+	/```css\n(@media \(prefers-color-scheme: dark\)[\s\S]*?)```/,
+)![1];
 
 describe("themed surfaces SCSS", () => {
 	const legacy = compile();
@@ -318,20 +301,23 @@ describe("themed surfaces SCSS", () => {
 	});
 
 	describe("with a dark host theme", () => {
-		const tokens = {...defaults, ...darkHost};
-		const all = declarations(both);
+		const tokens = {...defaults, ...rootTokens(darkHostCss)};
+		const all = [...declarations(both), ...declarations(darkHostCss)];
 		const value = (selector: string, property: string) => {
 			const found = all.filter(
-				(d) => d.selector === selector && d.property === property,
+				(d) =>
+					(d.selector === selector ||
+						d.selector.split(", ").includes(selector)) &&
+					d.property === property,
 			);
 			expect(found, `${selector} { ${property} }`).not.toHaveLength(0);
 			return found.at(-1)!.value;
 		};
 		const colour = (selector: string, property: string) =>
 			parseColor(resolve(value(selector, property), tokens));
-		const token = (name: keyof typeof darkHost) =>
-			parseColor(darkHost[name]);
-		const text = parseColor(darkHostText);
+		const token = (name: string) =>
+			parseColor(resolve(`var(${name})`, tokens));
+		const text = colour(".ms3-wrapper", "color");
 		const tiles = {light: parseColor("#f2efe9"), dark: parseColor("#000")};
 
 		it("paints the former light surfaces dark", () => {
@@ -388,6 +374,26 @@ describe("themed surfaces SCSS", () => {
 				],
 				["wrapper text", text, colour(".ms3-wrapper", "background")],
 				["panel text", text, token("--ms3-background-color")],
+				[
+					"place actions",
+					colour(".ms3-place-actions", "color"),
+					token("--ms3-background-color"),
+				],
+				[
+					"outbound links",
+					colour(".ms3-outbound-link", "color"),
+					token("--ms3-background-color"),
+				],
+				[
+					"portaled modal text",
+					colour(".ms3-modal__inner", "color"),
+					colour(".ms3-modal__inner", "background"),
+				],
+				[
+					"portaled list options text",
+					colour(".ms3-list-options__popover", "color"),
+					colour(".ms3-list-options__popover", "background"),
+				],
 				[
 					"text on offset",
 					text,

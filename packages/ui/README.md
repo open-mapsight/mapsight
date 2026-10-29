@@ -238,8 +238,11 @@ tokens: the link share field (`#444` on `#f5f5f5` becomes `#222` on `#f2f2f2`), 
 point coordinates (`#555` and `#5c5c5c` become `#636567`), and the search reset circle (`#eee` becomes `#f2f2f2`).
 
 Text that Mapsight does not colour itself inherits the host's text colour, as before. A dark theme therefore sets the
-colour tokens **and** a light text colour on the page or the wrapper. Load it after the Mapsight CSS, because `tokens`
-emits the defaults on the same `:root` selector:
+colour tokens **and** a light text colour on the page, or on the wrapper and portaled surfaces. Modals and the list
+options popover render under `document.body`, outside `.ms3-wrapper`, so a wrapper-only text colour does not reach
+them. Place actions and outbound links also need their own foreground tokens: the emitted defaults are fixed Sass
+colours, so changing `--ms3-foreground-color` alone does not update them. Load the theme after the Mapsight CSS,
+because `tokens` emits the defaults on the same `:root` selector:
 
 ```css
 @media (prefers-color-scheme: dark) {
@@ -257,6 +260,8 @@ emits the defaults on the same `:root` selector:
 		--ms3-page-background-color: #111418;
 		--ms3-background-highlight-color: #2b323a;
 		--ms3-foreground-color: #f3f5f8;
+		--ms3-place-actions-fg: var(--ms3-foreground-color);
+		--ms3-outbound-fg: var(--ms3-foreground-color);
 		--ms3-border-color: #6b7682;
 		--ms3-table-line-color: #3c444e;
 		--ms3-tooltip-background-color: #242a31;
@@ -268,8 +273,10 @@ emits the defaults on the same `:root` selector:
 		--ms3-scrollbar-thumb-hover: rgb(220 228 236 / 50%);
 	}
 
-	.ms3-wrapper {
-		color: #e8ecf1;
+	.ms3-wrapper,
+	.ms3-modal__inner,
+	.ms3-list-options__popover {
+		color: var(--ms3-primary-color);
 	}
 }
 ```
