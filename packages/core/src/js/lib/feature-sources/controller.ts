@@ -209,27 +209,31 @@ function shouldNormalizeFeatureSourceState(source: FeatureSourceState) {
 	);
 }
 
+// Redux source objects are immutable. Once validated, the same object needs
+// no further feature/index scans. Weak references also work across stores and
+// time-travel without retaining old feature collections.
+const normalizedFeatureSources = new WeakSet<FeatureSourceState>();
+
 function normalizeFeatureSourcesState(
 	state: FeatureSourcesState,
 ): FeatureSourcesState {
-	let hasMissingRuntimeFields = false;
-	for (const source of Object.values(state)) {
+	let next = state;
+	for (const [id, source] of Object.entries(state)) {
+		if (normalizedFeatureSources.has(source)) {
+			continue;
+		}
 		if (shouldNormalizeFeatureSourceState(source)) {
-			hasMissingRuntimeFields = true;
-			break;
+			if (next === state) {
+				next = {...state};
+			}
+			const normalized = normalizeFeatureSourceState(source);
+			normalizedFeatureSources.add(normalized);
+			next[id] = normalized;
+		} else {
+			normalizedFeatureSources.add(source);
 		}
 	}
-
-	if (!hasMissingRuntimeFields) {
-		return state;
-	}
-
-	return Object.fromEntries(
-		Object.entries(state).map(([id, source]) => [
-			id,
-			normalizeFeatureSourceState(source),
-		]),
-	);
+	return next;
 }
 
 function shouldClearXhrDataAfterConfigChange(
