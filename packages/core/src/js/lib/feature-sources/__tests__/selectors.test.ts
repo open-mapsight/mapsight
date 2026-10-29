@@ -204,6 +204,53 @@ describe("feature source selectors", () => {
 		expect(failed?.isLoading).toBe(false);
 	});
 
+	it("returns the same reference while the source and its filter values are unchanged", () => {
+		addFilterFunction("testVisibleOnly", (features) =>
+			features.filter((feature) => feature.properties.visible),
+		);
+		const selector = createFilteredFeatureSourceSelector(
+			"featureSources",
+			"places",
+		);
+		const places = {...featureSources.places, featuresKey: "same-features"};
+
+		const first = selector({
+			featureSources: {places},
+			testVisibleOnly: true,
+			unrelated: 1,
+		} satisfies State);
+		// Another slice changed (any dispatch elsewhere in the store).
+		const second = selector({
+			featureSources: {places},
+			testVisibleOnly: true,
+			unrelated: 2,
+		} satisfies State);
+
+		expect(second).toBe(first);
+	});
+
+	it("returns a new result when a filter value changes", () => {
+		addFilterFunction("testVisibleOnly", (features) =>
+			features.filter((feature) => feature.properties.visible),
+		);
+		const selector = createFilteredFeatureSourceSelector(
+			"featureSources",
+			"places",
+		);
+		const places = {...featureSources.places, featuresKey: "same-features"};
+
+		const first = selector({
+			featureSources: {places},
+			testVisibleOnly: true,
+		} satisfies State);
+		const second = selector({
+			featureSources: {places},
+			testVisibleOnly: "changed",
+		} satisfies State);
+
+		expect(second).not.toBe(first);
+	});
+
 	it("reapplies filters when their configured order changes", () => {
 		addFilterFunction("testTakeFirst", (features) => features.slice(0, 1));
 		addFilterFunction("testTakeLast", (features) => features.slice(-1));
