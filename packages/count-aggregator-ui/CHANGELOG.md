@@ -1,5 +1,15 @@
 # @mapsight/count-aggregator-ui
 
+## 3.2.1
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`6f5e113`, `374a3e4`, `b4d67eb`]:
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/count-aggregator-api@1.5.0 → 1.5.1` (patch)
+
 ## 3.2.0
 
 ### Minor Changes

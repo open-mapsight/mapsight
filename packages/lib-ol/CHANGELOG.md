@@ -1,5 +1,11 @@
 # @mapsight/lib-ol
 
+## 4.3.3
+
+### Patch Changes
+
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+
 ## 4.3.2
 
 ### Patch Changes

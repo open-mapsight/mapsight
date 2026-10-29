@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/a11y-audit",
 	"description": "Rerunnable accessibility audit for Mapsight integrations: axe-core plus keyboard, dialog, map, reflow and language checks, with ownership, baselines and a WCAG coverage matrix",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"type": "module",
 	"bin": {
 		"mapsight-a11y-audit": "./dist/cli.js"

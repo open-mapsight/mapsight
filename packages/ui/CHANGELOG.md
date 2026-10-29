@@ -1,5 +1,16 @@
 # @mapsight/ui
 
+## 7.10.1
+
+### Patch Changes
+
+- 6f5e113: Stop re-rendering the split base-layer switcher and all its entries on every Redux dispatch. Its state selector recomputed and returned new layer id arrays each time (map view updates while panning included); it now memoises per instance and keeps the previous result while the split is unchanged. Collapsible overlay groups are memoised and get a stable toggle handler.
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`ab13ef7`, `2270229`, `eed3ab3`, `374a3e4`, `2d13e3d`, `957ed95`, `b4d67eb`, `59c334d`]:
+    - `@mapsight/core@14.6.7 → 14.6.8` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
 ## 7.10.0
 
 ### Minor Changes

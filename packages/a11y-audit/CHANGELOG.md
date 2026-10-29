@@ -1,5 +1,11 @@
 # @mapsight/a11y-audit
 
+## 0.2.1
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+
 ## 0.2.0
 
 ### Minor Changes
