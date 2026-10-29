@@ -18,10 +18,13 @@ const OL_IMPORT_PATH_BY_NAME: Record<string, string> = {
 export default function createModulesMapFromDependencies(
 	declarationNames: Array<string>,
 ) {
-	// @TODO: Find a better way?:
-	// special case for circle. we cannot detect fill and stroke if they are used in circle (circle-stroke-color etc.)
-	// this assumes a circle uses fill and stroke (which it might not!)
-	if (declarationNames.indexOf("circle") > -1) {
+	// These constructors can contain nested fill/stroke declarations that are not
+	// listed separately in the compiler metadata (e.g. text-fill-color).
+	if (
+		declarationNames.some((name) =>
+			["circle", "regularShape", "text"].includes(name),
+		)
+	) {
 		declarationNames.push("stroke");
 		declarationNames.push("fill");
 	}
