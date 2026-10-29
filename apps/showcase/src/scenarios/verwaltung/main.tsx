@@ -108,12 +108,11 @@ createRoot(document.getElementById("root")!).render(
 				<AboutDemo
 					features={[
 						"Native Karte und Liste in einem gemeinsamen Hostlayout; Filter für Anliegen und Zugang",
+						"Bedienicons und Oberflächen folgen den KERN-Farben und dem hellen oder dunklen OS-Farbschema",
 						"Lokale Listensuche, Pagination und Entfernung ab fiktiven Ausgangspunkten",
 						"Öffnungszeiten in HTML-Details; Feature-Deep-Links; automatische Überschriften ab Ebene 2",
 					]}
 					gaps={[
-						"G1: Einige Bedienicons sind derzeit noch blau. Die Produktkorrektur erfolgt separat.",
-						"G14: Einige Produktoberflächen setzen einen hellen Hintergrund voraus. Der Host korrigiert sie hier für beide Farbschemata; eine Produktkorrektur ist in Arbeit.",
 						"G2: Mapsight orientiert sich am Viewport, nicht an der Containerbreite. Der Host komponiert Karte und Liste selbst.",
 						"G3: Keine freie Adresssuche; Entfernung nur ab hinterlegtem Ausgangspunkt oder freigegebenem Gerätestandort.",
 						"G5: Detailinhalte sind HTML aus den lokalen Demodaten, kein kommunales Fachverfahren.",

@@ -54,6 +54,35 @@ for (const colorScheme of ["light", "dark"] as const) {
 						page.locator(".ms3-list__item").first(),
 					).toBeVisible();
 					await expect(page.locator(".ol-viewport")).toBeVisible();
+					// Product surfaces and icons must resolve the host roles in either OS scheme.
+					const hostBackground = await page
+						.locator("body")
+						.evaluate(
+							(element) =>
+								getComputedStyle(element).backgroundColor,
+						);
+					await expect(page.locator(".service-map")).toHaveCSS(
+						"background-color",
+						hostBackground,
+					);
+					await expect(page.locator(".ms3-attribution")).toHaveCSS(
+						"background-color",
+						hostBackground,
+					);
+					const hostAction = await page
+						.locator(".breadcrumb a")
+						.evaluate((element) => getComputedStyle(element).color);
+					const zoomIcon = await page
+						.locator(".ms3-map-overlay__button--zoom--zoomIn")
+						.evaluate((element) => {
+							const icon = getComputedStyle(element, "::before");
+							return {
+								color: icon.backgroundColor,
+								mask: icon.maskImage,
+							};
+						});
+					expect(zoomIcon.color).toBe(hostAction);
+					expect(zoomIcon.mask).not.toBe("none");
 				}
 				await page.evaluate(() => document.fonts.ready);
 				await page.addScriptTag({path: axePath});
