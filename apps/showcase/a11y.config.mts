@@ -105,13 +105,15 @@ const config: AuditConfig = {
 					id: "confirm-with-keyboard",
 					title: "Focus the map, pan and confirm the centre with Enter",
 					viewports: ["desktop", "mobile"],
-					run: async ({root, step}) => {
-						const map = root.locator(".ms3-map-target");
-						step("focus the map, press ArrowRight, then Enter");
+					run: async (context) => {
+						const map = context.root.locator(".ms3-map-target");
+						context.step(
+							"focus the map, press ArrowRight, then Enter",
+						);
 						await map.focus();
 						await map.press("ArrowRight");
 						await map.press("Enter");
-						await root
+						await context.root
 							.getByRole("status")
 							.filter({
 								hasText:

@@ -1,6 +1,7 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../variables";
 @use "../mixins/reduced-motion";
+@use "../mixins/surface";
 
 .ms3-map-overlay-combined-buttons {
 	width: 40px;
@@ -33,7 +34,11 @@
 
 	@include breakpoint.breakpoint(variables.$ms3-breakpoint-mobile) {
 		margin: 5px 7px;
-		background: rgba(255, 255, 255, 0.9);
+		@if surface.$themed {
+			background: surface.$map-control-background;
+		} @else {
+			background: rgba(255, 255, 255, 0.9);
+		}
 		border-radius: 50%;
 
 		&__button:first-child .ms3-map-overlay__button,

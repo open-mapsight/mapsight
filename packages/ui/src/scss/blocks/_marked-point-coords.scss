@@ -1,7 +1,13 @@
+@use "../mixins/surface";
+
 .ms3-marked-point-coords {
 	margin: 0.65em 0 0;
 	padding: 0;
-	color: var(--ms3-marked-point-coords-fg, #5c5c5c);
+	@if surface.$themed {
+		color: var(--ms3-marked-point-coords-fg, var(--ms3-secondary-color));
+	} @else {
+		color: var(--ms3-marked-point-coords-fg, #5c5c5c);
+	}
 	font-size: var(--ms3-marked-point-coords-size, 0.75rem);
 	line-height: 1.45;
 	font-variant-numeric: tabular-nums;

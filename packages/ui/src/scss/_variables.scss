@@ -41,6 +41,10 @@ $ms3-option-showFeatureCountsInTagSwitcherEntries: never !default; // available 
 // - themedIcons: chrome icons are CSS masks filled from `--ms3-icon-color*` (falling back to
 //   `--ms3-theme-color-a`/`-b`) instead of the fixed colours baked into the SVG files
 $ms3-future-v8-themedIcons: false !default;
+// - themedSurfaces: surfaces, text and borders that use fixed light colours (wrapper, attribution,
+//   map controls, tool overlay, mini legend, link share, list search input, …) use the `--ms3-*`
+//   colour tokens instead, and form controls follow the host's `color-scheme`
+$ms3-future-v8-themedSurfaces: false !default;
 
 // transitions/animations
 $ms3-easing-default: ease-in-out;

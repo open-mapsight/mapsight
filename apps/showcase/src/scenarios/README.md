@@ -9,7 +9,10 @@ Each HTML document owns its fonts and CSS. It does not import `global.css` or
 `msui.scss`. KERN CSS is served byte-for-byte from public/vendor/kern, outside
 Vite's CSS transformations; our overrides live in host.scss. `.service-map`
 scopes both emitted Mapsight tokens and the mapping from KERN semantic colours,
-typography, spacing and radius. There is no iframe. The small NativeInstance
+typography, spacing and radius. The scenario opts in to `$ms3-future-v8-themedIcons`
+and `$ms3-future-v8-themedSurfaces`, so product icons and surfaces follow those
+tokens in both OS colour schemes without host fixes for hardcoded light colours.
+There is no iframe. The small NativeInstance
 helper mounts the normal React/Redux Mapsight instance and wrapper. Public
 administration composes Map, TagSwitcher, FeatureList and selected details in the
 host layout. It implements the first citizen task; damage reporting / point input

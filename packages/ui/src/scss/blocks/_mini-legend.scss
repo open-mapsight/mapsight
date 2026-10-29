@@ -1,3 +1,4 @@
+@use "../mixins/surface";
 
 .ms3-mini-legend {
 	pointer-events: auto;
@@ -6,12 +7,20 @@
 
 	//padding: 0;
 	border: 1px solid var(--ms3-border-color);
-	background: white;
+	@if surface.$themed {
+		background: var(--ms3-background-color);
+	} @else {
+		background: white;
+	}
 
 	// reset browser styles
 	select,
 	button {
-		background: white;
+		@if surface.$themed {
+			background: var(--ms3-background-color);
+		} @else {
+			background: white;
+		}
 		border: none;
 		margin: 0;
 	}
@@ -20,7 +29,11 @@
 		height: 100%;
 
 		&[disabled] {
-			background-color: white;
+			@if surface.$themed {
+				background-color: var(--ms3-background-color);
+			} @else {
+				background-color: white;
+			}
 			-webkit-appearance: none;
 		}
 	}

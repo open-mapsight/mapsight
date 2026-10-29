@@ -58,6 +58,10 @@ Behavior that lives only in the SCSS uses a Sass variable with the same contract
 - `$ms3-future-v8-themedIcons`: UI chrome icons keep the colours baked into their SVG files by default; hosts set
   the flag to paint them as CSS masks filled from `--ms3-icon-color*` / `--ms3-theme-color-*`. See the
   [`@mapsight/ui` README](../../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons).
+- `$ms3-future-v8-themedSurfaces`: the wrapper, attribution, tool overlay, mini legend, link share, list search
+  input and narrow-screen map controls keep their fixed light colours by default; hosts set the flag to take them from
+  the `--ms3-*` colour tokens and let form controls follow the host's `color-scheme`. See the
+  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces).
 
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 

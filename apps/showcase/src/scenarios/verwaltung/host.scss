@@ -1,6 +1,8 @@
 @use "~@mapsight/ui/src/scss/variables" with (
 	$ms3-iconPath: "~@mapsight/ui/dist/img/",
 	$ms3-tokens-selector: ".service-map",
+	$ms3-future-v8-themedIcons: true,
+	$ms3-future-v8-themedSurfaces: true,
 	// Icon-only overlay buttons; the labels stay available to assistive technology.
 	$ms3-option-mapOverlayButtonsShowLabel: false,
 	$ms3-rem-px-ratio: 16
@@ -49,45 +51,6 @@
 	--ms3-font-size-input: var(--kern-typography-font-size-medium-static);
 	--ms3-font-size-headline: var(--kern-typography-font-size-large-static);
 	--ms3-border-radius: var(--kern-metric-border-radius-default);
-	// TODO: drop with $ms3-future-v8-themedSurfaces — wrapper background: white.
-	&.ms3-wrapper {
-		background: var(--ms3-background-color);
-		color: var(--ms3-foreground-color);
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces — attribution's #fff base and #222 text.
-	.ms3-attribution {
-		background: var(--ms3-attributions-background-color);
-		color: var(--ms3-foreground-color);
-		a {
-			color: var(--kern-color-action-default);
-		}
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces — mobile rgba(255,255,255,.9).
-	.ms3-map-overlay__button,
-	.ms3-map-overlay-combined-buttons {
-		background: var(--ms3-background-color);
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces and $ms3-future-v8-themedIcons.
-	// The fixed blue zoom SVGs lose contrast on the corrected dark surface.
-	.ms3-map-overlay__button--zoom--zoomIn::before,
-	.ms3-map-overlay__button--zoom--zoomOut::before {
-		background: var(--ms3-foreground-color);
-		mask: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-in.svg") center /
-			auto no-repeat;
-	}
-	.ms3-map-overlay__button--zoom--zoomOut::before {
-		mask-image: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-out.svg");
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces — disabled pagination #555.
-	.ms3-list-pagination__page--disabled {
-		color: var(--ms3-secondary-color);
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces — query #222/#fff/#ccc.
-	.ms3-query-input-with-label__input {
-		color: var(--ms3-foreground-color);
-		background: var(--kern-color-form-input-background);
-		border-color: var(--kern-color-form-input-border);
-	}
 	font-family: var(--kern-typography-font-family-default);
 	position: relative;
 	.service-workspace {
