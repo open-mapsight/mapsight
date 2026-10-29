@@ -213,7 +213,7 @@
 		"clean-build": "run-s clean build",
 		"lint": "eslint",
 		"test": "vitest run",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/typecheck.tsbuildinfo",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:*",
 		"watch:build:modules": "tsc --watch"

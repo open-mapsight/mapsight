@@ -113,13 +113,31 @@ export const runInPackage =
 			});
 	};
 
+export const typecheckPackages = (filenames: readonly string[]): string[] => {
+	const filters = new Set<string>();
+	for (const filename of filenames) {
+		const pkg = getPackageInfo(filename);
+		if (
+			pkg &&
+			packageHasScript(pkg.workspaceDir, pkg.filter, "typecheck")
+		) {
+			filters.add(`--filter=./${pkg.workspaceDir}/${pkg.filter}`);
+		}
+	}
+	return filters.size
+		? [
+				`pnpm turbo run typecheck --concurrency=4 --output-logs=new-only ${[...filters].join(" ")}`,
+			]
+		: [];
+};
+
 export default {
 	"*.{js,mjs,cjs,ts,mts,cts,tsx}": [
 		PRETTIER_WRITE,
 		runInPackage("lint --fix"),
 		// ESLint --fix can reformat outside Prettier; align with CI format:check.
 		PRETTIER_WRITE,
-		runInPackage("typecheck", {passFiles: false}),
+		typecheckPackages,
 	],
 	"*.{json,md}": PRETTIER_WRITE,
 	"**/package.json": () => "pnpm run syncpack:fix-and-format",

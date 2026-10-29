@@ -138,7 +138,7 @@
 		"test": "vitest run",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/typecheck.tsbuildinfo",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:modules watch:build:paths",
 		"watch:build:modules": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",

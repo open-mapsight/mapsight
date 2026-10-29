@@ -3,6 +3,7 @@
 	"globalDependencies": ["configs/tsconfig*.json"],
 	"tasks": {
 		"lint": {
+			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [],
 			"inputs": [
@@ -15,6 +16,7 @@
 		},
 		"clean": {},
 		"build": {
+			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [
 				"dist/**",
@@ -79,11 +81,13 @@
 			"persistent": true
 		},
 		"test": {
+			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [],
 			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
 		},
 		"typecheck": {
+			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [],
 			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
