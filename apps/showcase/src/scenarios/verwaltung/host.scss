@@ -37,7 +37,6 @@
 		--kern-color-layout-background-hued
 	);
 	--ms3-map-background-color: var(--kern-color-layout-background-hued);
-	--ms3-hint-default-color: var(--kern-color-layout-text-muted);
 	--ms3-place-actions-fg: var(--kern-color-action-default);
 	--ms3-outbound-fg: var(--kern-color-action-default);
 	--ms3-scrollbar-track-color: var(--kern-color-layout-background-default);
@@ -66,17 +65,6 @@
 	.ms3-map-overlay__button,
 	.ms3-map-overlay-combined-buttons {
 		background: var(--ms3-background-color);
-	}
-	// TODO: drop with $ms3-future-v8-themedSurfaces and $ms3-future-v8-themedIcons.
-	// The fixed blue zoom SVGs lose contrast on the corrected dark surface.
-	.ms3-map-overlay__button--zoom--zoomIn::before,
-	.ms3-map-overlay__button--zoom--zoomOut::before {
-		background: var(--ms3-foreground-color);
-		mask: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-in.svg") center /
-			auto no-repeat;
-	}
-	.ms3-map-overlay__button--zoom--zoomOut::before {
-		mask-image: url("~@mapsight/ui/dist/img/mapsight-ui/zoom-out.svg");
 	}
 	// TODO: drop with $ms3-future-v8-themedSurfaces — disabled pagination #555.
 	.ms3-list-pagination__page--disabled {

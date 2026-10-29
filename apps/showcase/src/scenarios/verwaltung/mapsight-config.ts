@@ -72,7 +72,6 @@ export const createOptions: CreateOptions = {
 				"piwikTrackFullscreenToggleEvent",
 			].includes(name),
 	),
-	future: {v8_automaticHeadings: true, v8_listSearchButton: true},
 	headings: {baseLevel: 2},
 	uiState: {
 		map: {show: true},

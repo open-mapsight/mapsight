@@ -1,6 +1,6 @@
 @use "../variables";
 
-// Themed chrome icons (`$ms3-future-v8-themedIcons`).
+// Chrome icons use CSS masks filled from theme tokens.
 //
 // The SVG under `$ms3-uiIconPath` only provides the shape: it is used as a CSS mask and the
 // box's background colour fills it. Colours resolve on the icon's own element, so overriding
@@ -10,8 +10,6 @@
 // A mask clips everything its box paints, including focus outlines. Call `mask` only on boxes
 // that paint nothing else (icon-only pseudo-elements and spans). Controls that have their own
 // background, border, or focus ring get a separate icon box from `layer`.
-
-$themed: variables.$ms3-future-v8-themedIcons;
 
 $color: var(--ms3-icon-color, var(--ms3-theme-color-a));
 $color-active: var(--ms3-icon-color-active, var(--ms3-theme-color-b));

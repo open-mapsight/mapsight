@@ -19,7 +19,7 @@ const Header = memo(function FeatureSelectionInfoHeader({
 	headlineAs,
 }: Props) {
 	const name = getFeatureProperty(feature, "name") as string;
-	const Headline = useHeadingElement("featureDetailsTitle", "h3", headlineAs);
+	const Headline = useHeadingElement("featureDetailsTitle", headlineAs);
 	return (
 		<div className="ms3-feature-selection-info__header">
 			<Heading

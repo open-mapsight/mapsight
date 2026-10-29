@@ -71,7 +71,7 @@ export default function PopoverDialog({
 	children,
 	portal = true,
 }: PopoverDialogProps): ReactElement | null {
-	const Headline = useHeadingElement("dialogTitle", "h3", headlineAs);
+	const Headline = useHeadingElement("dialogTitle", headlineAs);
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const generatedId = useId();
 	const popoverId = idProp ?? generatedId;

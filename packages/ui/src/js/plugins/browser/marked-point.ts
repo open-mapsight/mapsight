@@ -46,13 +46,6 @@ export function markedPointLayerId(pluginName: string): string {
 	return `${pluginName}_drawLayer`;
 }
 
-/** @deprecated Import from `@mapsight/ui/helpers/coordinates`. */
-export {
-	formatCoordinateSpellings,
-	formatLonLat,
-} from "../../helpers/coordinates";
-export type {CoordinateSpellings} from "../../helpers/coordinates";
-
 function escapeHtml(value: string): string {
 	return value
 		.replaceAll("&", "&amp;")

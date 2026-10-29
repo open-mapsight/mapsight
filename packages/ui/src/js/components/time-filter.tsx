@@ -72,7 +72,7 @@ function toDateSelector(state: TimeFilterRootState) {
 }
 
 function TimeFilter({headlineAs}: {headlineAs?: ElementType} = {}) {
-	const Headline = useHeadingElement("timeFilter", "h2", headlineAs);
+	const Headline = useHeadingElement("timeFilter", headlineAs);
 	// FIXME: stop using hardcoded ids
 	// TODO: use react input fields
 

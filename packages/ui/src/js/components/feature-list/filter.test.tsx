@@ -86,6 +86,9 @@ describe("FeatureFilter", () => {
 		const store = makeStore();
 		renderFilter(store);
 
+		fireEvent.click(
+			screen.getByRole("button", {name: "In Liste suchen …"}),
+		);
 		const input = screen.getByRole("searchbox");
 		fireEvent.change(input, {target: {value: "a"}});
 		act(() => {
@@ -102,6 +105,9 @@ describe("FeatureFilter", () => {
 		const store = makeStore();
 		renderFilter(store);
 
+		fireEvent.click(
+			screen.getByRole("button", {name: "In Liste suchen …"}),
+		);
 		const input = screen.getByRole("searchbox");
 		fireEvent.change(input, {target: {value: "cafe"}});
 		expect(input).toHaveProperty("value", "cafe");
@@ -136,6 +142,9 @@ describe("FeatureFilter", () => {
 			vi.advanceTimersByTime(1000);
 		});
 		expect(announceStatus).not.toHaveBeenCalled();
+		fireEvent.click(
+			screen.getByRole("button", {name: "In Liste suchen …"}),
+		);
 		const input = screen.getByRole("searchbox");
 		fireEvent.change(input, {target: {value: "ca"}});
 		act(() => {

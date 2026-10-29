@@ -33,16 +33,11 @@
 			flex-shrink: 0;
 			width: var(--ms3-async-status-spinner-size);
 			height: var(--ms3-async-status-spinner-size);
-			@if icon.$themed {
-				@include icon.mask(
-					"loading.svg",
-					$position: center center,
-					$forced-color: CanvasText
-				);
-			} @else {
-				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
-					no-repeat center center;
-			}
+			@include icon.mask(
+				"loading.svg",
+				$position: center center,
+				$forced-color: CanvasText
+			);
 			animation: ms3AsyncStatusSpin 4s linear infinite;
 			@include reduced-motion.respect-reduced-motion;
 		}
@@ -59,17 +54,12 @@
 			flex-shrink: 0;
 			width: 22px;
 			height: 22px;
-			@if icon.$themed {
-				@include icon.mask(
-					"error.svg",
-					$color: icon.$color-error,
-					$position: 0 3px,
-					$forced-color: CanvasText
-				);
-			} @else {
-				background: transparent url(variables.$ms3-uiIconPath + "error.svg")
-					no-repeat 0 3px;
-			}
+			@include icon.mask(
+				"error.svg",
+				$color: icon.$color-error,
+				$position: 0 3px,
+				$forced-color: CanvasText
+			);
 		}
 
 		&.ms3-async-status--placeholder::before {
@@ -84,16 +74,11 @@
 			flex-shrink: 0;
 			width: var(--ms3-async-status-spinner-size);
 			height: var(--ms3-async-status-spinner-size);
-			@if icon.$themed {
-				@include icon.mask(
-					"loading.svg",
-					$position: center center,
-					$forced-color: CanvasText
-				);
-			} @else {
-				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
-					no-repeat center center;
-			}
+			@include icon.mask(
+				"loading.svg",
+				$position: center center,
+				$forced-color: CanvasText
+			);
 			animation: ms3AsyncStatusSpin 4s linear infinite;
 			@include reduced-motion.respect-reduced-motion;
 		}

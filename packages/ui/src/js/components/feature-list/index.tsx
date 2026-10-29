@@ -10,6 +10,10 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
+import {
+	APP_EVENT_SCROLL_TO_FEATURE_LIST,
+	useAppChannelEventListener,
+} from "../../app-channel";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
 import getFeatureProperty from "../../helpers/get-feature-property";
@@ -29,10 +33,6 @@ import type {
 import ErrorBoundary from "../error-boundary";
 import FeatureCycling from "../feature-list-cycling";
 import FeatureSorter from "../feature-list-sorting";
-import {
-	APP_EVENT_SCROLL_TO_FEATURE_LIST,
-	useAppChannelEventListener,
-} from "../helping/app-channel";
 import LayerSwitcher from "../layer-switcher/index";
 import TagSwitcher from "../tag-switcher/index";
 import type {

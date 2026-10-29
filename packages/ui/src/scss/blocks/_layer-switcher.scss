@@ -86,43 +86,26 @@
 		display: inline-block;
 		width: 18px;
 		height: 18px;
-		@if icon.$themed {
-			background: transparent;
-		} @else {
-			background: transparent url(variables.$ms3-uiIconPath + "check-empty.svg")
-				no-repeat 2px 3px;
-		}
+		background: transparent;
 		vertical-align: top;
 		margin: 1px 7px 1px 0;
 		border: none;
 
-		@if icon.$themed {
-			// `::after`: the loading state below uses `::before` for its spinner
-			@include icon.layer("check-empty.svg", $pseudo: after, $position: 2px 3px);
-		}
+		// `::after`: the loading state below uses `::before` for its spinner
+		@include icon.layer("check-empty.svg", $pseudo: after, $position: 2px 3px);
 
 		&--active {
-			@if icon.$themed {
-				&::after {
-					@include icon.shape("check.svg");
-					@include icon.position(0 0);
-				}
-			} @else {
-				background: transparent url(variables.$ms3-uiIconPath + "check.svg")
-					no-repeat 0 0;
+			&::after {
+				@include icon.shape("check.svg");
+				@include icon.position(0 0);
 			}
 		}
 
 		&--error {
-			@if icon.$themed {
-				&::after {
-					@include icon.shape("error.svg");
-					@include icon.position(1px 1px);
-					@include icon.fill(icon.$color-error, ButtonText);
-				}
-			} @else {
-				background: transparent url(variables.$ms3-uiIconPath + "error.svg")
-					no-repeat 1px 1px;
+			&::after {
+				@include icon.shape("error.svg");
+				@include icon.position(1px 1px);
+				@include icon.fill(icon.$color-error, ButtonText);
 			}
 		}
 
@@ -130,10 +113,8 @@
 			background: transparent;
 			margin-top: 2px;
 
-			@if icon.$themed {
-				&::after {
-					content: none;
-				}
+			&::after {
+				content: none;
 			}
 
 			&::before {
@@ -141,12 +122,7 @@
 				display: block;
 				width: 15px;
 				height: 15px;
-				@if icon.$themed {
-					@include icon.mask("loading.svg", $position: 0 0);
-				} @else {
-					background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
-						no-repeat 0 0;
-				}
+				@include icon.mask("loading.svg", $position: 0 0);
 				animation: ms3AsyncStatusSpin 4s linear infinite;
 				@include reduced-motion.respect-reduced-motion;
 			}

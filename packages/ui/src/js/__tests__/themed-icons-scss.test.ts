@@ -20,13 +20,9 @@ const attributionFiles = new Set([
 	"built-with-mapsight-en-90x30-light.svg",
 ]);
 
-function compile(themedIcons?: boolean) {
-	const flag =
-		themedIcons === undefined
-			? ""
-			: `,\n\t$ms3-future-v8-themedIcons: ${themedIcons}`;
+function compile() {
 	return compileString(
-		`@use "variables" with (\n\t$ms3-iconPath: "icons/"${flag}\n);\n@use "default";\n@use "themes/2022-03" as theme;\n`,
+		`@use "variables" with ($ms3-iconPath: "icons/");\n@use "default";\n@use "themes/2022-03" as theme;\n`,
 		{
 			loadPaths: [scssRoot, path.join(packageRoot, "node_modules")],
 			quietDeps: true,
@@ -52,17 +48,7 @@ function scssFiles(dir: string): string[] {
 }
 
 describe("chrome icon SCSS", () => {
-	const legacy = compile();
-	const themed = compile(true);
-
-	it("keeps background-image icons unless the host opts in", () => {
-		expect(compile(false)).toBe(legacy);
-		expect(legacy).not.toMatch(/mask/);
-		expect(legacy).not.toMatch(/--ms3-icon-color/);
-		for (const {property} of iconDeclarations(legacy)) {
-			expect(property).toMatch(/^background(-image)?$/);
-		}
-	});
+	const themed = compile();
 
 	it("paints chrome icons as masks while preserving the attribution artwork", () => {
 		const declarations = iconDeclarations(themed);
@@ -88,18 +74,12 @@ describe("chrome icon SCSS", () => {
 			},
 		]);
 
-		const legacyFiles = new Set(
-			iconDeclarations(legacy).map((d) => d.file),
-		);
 		const maskFiles = new Set(
 			declarations
 				.filter(({property}) => property === "mask-image")
 				.map((d) => d.file),
 		);
-		for (const file of attributionFiles) {
-			legacyFiles.delete(file);
-		}
-		expect(maskFiles).toEqual(legacyFiles);
+		expect(maskFiles.size).toBeGreaterThan(20);
 		for (const file of maskFiles) {
 			expect(themed).toContain(
 				`-webkit-mask-image: url("icons/mapsight-ui/${file}")`,

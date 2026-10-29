@@ -23,12 +23,7 @@
 		width: 100%;
 		height: 40px;
 
-		@if icon.$themed {
-			@include icon.mask(null, $position: center center);
-		} @else {
-			background-repeat: no-repeat;
-			background-position: center center;
-		}
+		@include icon.mask(null, $position: center center);
 	}
 
 	&--top-left {
@@ -55,21 +50,13 @@
 	&--mobile-view-toggle--mobile {
 		// FIXME use differnt icon if there is no list to close
 		&::before {
-			@if icon.$themed {
-				@include icon.shape("close-list.svg");
-			} @else {
-				background-image: url(variables.$ms3-uiIconPath + "close-list.svg");
-			}
+			@include icon.shape("close-list.svg");
 			margin-top: -10px;
 			margin-left: 3px;
 		}
 
 		&.ms3-viewport-button--mobile-view-toggle--map-out-of-view::before {
-			@if icon.$themed {
-				@include icon.shape("map.svg");
-			} @else {
-				background-image: url(variables.$ms3-uiIconPath + "map.svg");
-			}
+			@include icon.shape("map.svg");
 			margin-top: 0;
 			margin-left: 0;
 		}

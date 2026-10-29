@@ -48,10 +48,9 @@ export default function FeatureListOptionsPopover({
 	headlineAs,
 	groupHeadlineAs,
 }: FeatureListOptionsPopoverProps) {
-	const Headline = useHeadingElement("listOptionsTitle", "h3", headlineAs);
+	const Headline = useHeadingElement("listOptionsTitle", headlineAs);
 	const SectionHeadline = useHeadingElement(
 		"listOptionsSection",
-		"h4",
 		groupHeadlineAs,
 		{parentAs: Headline},
 	);

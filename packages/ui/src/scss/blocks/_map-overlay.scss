@@ -93,134 +93,81 @@
 				width: 100%;
 				height: 26px;
 
-				@if icon.$themed {
-					@include icon.mask(null, $position: center center);
-				} @else {
-					background-repeat: no-repeat;
-					background-position: center center;
-				}
+				@include icon.mask(null, $position: center center);
 			}
 		}
 
 		&--search {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("search.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "search.svg");
-				}
+				@include icon.shape("search.svg");
 			}
 		}
 
 		&--layers {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("layers.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "layers.svg");
-				}
+				@include icon.shape("layers.svg");
 			}
 		}
 
 		&--info {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("info.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "info.svg");
-				}
+				@include icon.shape("info.svg");
 			}
 		}
 
 		&--desktop-view-toggle--desktop {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("fullscreen.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
-				}
+				@include icon.shape("fullscreen.svg");
 			}
 		}
 
 		&--desktop-view-toggle--fullscreen {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("fullscreen-close.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
-				}
+				@include icon.shape("fullscreen-close.svg");
 			}
 		}
 
 		&--mobile-view-toggle--mapOnly {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("open-list.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "open-list.svg");
-				}
+				@include icon.shape("open-list.svg");
 			}
 		}
 
 		&--zoom--zoomIn {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("zoom-in.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "zoom-in.svg");
-				}
+				@include icon.shape("zoom-in.svg");
 			}
 		}
 
 		&--zoom--zoomOut {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("zoom-out.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "zoom-out.svg");
-				}
+				@include icon.shape("zoom-out.svg");
 			}
 		}
 
 		&--geo-location--active {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("geo-active.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "geo-active.svg");
-				}
+				@include icon.shape("geo-active.svg");
 			}
 		}
 
 		&--geo-location--inactive {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("geo-inactive.svg");
-					@include icon.fill(icon.$color-muted, GrayText);
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "geo-inactive.svg");
-				}
+				@include icon.shape("geo-inactive.svg");
+				@include icon.fill(icon.$color-muted, GrayText);
 			}
 		}
 
 		&--geo-location--error {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("geo-error.svg");
-					@include icon.fill(icon.$color-muted, GrayText);
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "geo-error.svg");
-				}
+				@include icon.shape("geo-error.svg");
+				@include icon.fill(icon.$color-muted, GrayText);
 			}
 		}
 
 		&--share-link {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("place-marker.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "place-marker.svg");
-				}
+				@include icon.shape("place-marker.svg");
 			}
 
 			.ms3-wrapper--mobile & {
@@ -230,11 +177,7 @@
 
 		&--measure-distance {
 			&::before {
-				@if icon.$themed {
-					@include icon.shape("measure-distance.svg");
-				} @else {
-					background-image: url(variables.$ms3-uiIconPath + "measure-distance.svg");
-				}
+				@include icon.shape("measure-distance.svg");
 			}
 		}
 
@@ -272,11 +215,7 @@
 .ms3-wrapper--embedded {
 	.ms3-map-overlay__button--mobile-view-toggle--mapOnly {
 		&::before {
-			@if icon.$themed {
-				@include icon.shape("fullscreen-close.svg");
-			} @else {
-				background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
-			}
+			@include icon.shape("fullscreen-close.svg");
 		}
 	}
 
@@ -284,16 +223,8 @@
 		display: block;
 
 		&::before {
-			@if icon.$themed {
-				@include icon.position(51% 65%);
-			} @else {
-				background-position: 51% 65%;
-			}
-			@if icon.$themed {
-				@include icon.shape("fullscreen.svg");
-			} @else {
-				background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
-			}
+			@include icon.position(51% 65%);
+			@include icon.shape("fullscreen.svg");
 		}
 	}
 }

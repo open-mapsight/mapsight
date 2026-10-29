@@ -18,6 +18,7 @@ import type {EnhancedStore} from "@mapsight/core/types";
 import {MAP} from "../../config/constants/controllers";
 import {announceStatus} from "../../helpers/announce-status";
 import {makeReplaceableComponent} from "../../helpers/components";
+import {formatCoordinateSpellings} from "../../helpers/coordinates";
 import {translate} from "../../helpers/i18n";
 import {fetchNearestAddress} from "../../helpers/nearest-address";
 import {
@@ -27,7 +28,6 @@ import {
 	eventTargetIsInMap,
 	eventTargetIsInMapMenu,
 	eventTargetIsInteractiveOverlay,
-	formatCoordinateSpellings,
 	isMapContextMenuKeyboardEvent,
 	lonLatFromMapCoordinate,
 	setMarkedPoint,

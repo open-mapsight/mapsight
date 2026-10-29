@@ -49,9 +49,9 @@ function setup(skipLinks?: boolean, keyboardMap = true) {
 	);
 }
 
-it("renders no skip links unless the host opts in", () => {
+it("renders skip links by default and supports an explicit opt-out", () => {
 	setup();
-	expect(screen.queryByRole("button", {name: /springen$/})).toBeNull();
+	expect(screen.getAllByRole("button", {name: /springen$/})).toHaveLength(3);
 	cleanup();
 	setup(false);
 	expect(screen.queryByRole("button", {name: /springen$/})).toBeNull();

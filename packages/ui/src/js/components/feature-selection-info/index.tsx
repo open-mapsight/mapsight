@@ -13,11 +13,7 @@ import {removeFrom} from "@mapsight/core/lib/base/actions";
 
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {FEATURE_SELECTION_SELECT} from "../../config/feature/selections";
-import {
-	HeadingContent,
-	useAutomaticHeadings,
-	useHeadingElement,
-} from "../../headings";
+import {HeadingContent, useHeadingElement} from "../../headings";
 import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import {featureSelectionInfoUiOptionsSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
@@ -47,8 +43,7 @@ export default function FeatureSelectionInfo({
 	/** Disable inside an already named region (e.g. BottomSheet); keeps the details heading. */
 	landmark?: boolean;
 }) {
-	const Headline = useHeadingElement("featureDetailsTitle", "h3", headlineAs);
-	const automatic = useAutomaticHeadings();
+	const Headline = useHeadingElement("featureDetailsTitle", headlineAs);
 	const dispatch = useDispatch();
 	const options = useSelector(featureSelectionInfoUiOptionsSelector);
 	const hasStickyHeader = options.stickyHeader;
@@ -120,9 +115,7 @@ export default function FeatureSelectionInfo({
 				<Header
 					feature={feature}
 					id={headingId}
-					{...(automatic || headlineAs !== undefined
-						? {headlineAs: Headline}
-						: {})}
+					headlineAs={Headline}
 				/>
 			}
 			content={

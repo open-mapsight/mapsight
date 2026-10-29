@@ -195,10 +195,10 @@ describe("feature-list row keyboard model", () => {
 			tag: "BUTTON",
 		},
 		{
-			kind: "legacy HTML",
+			kind: "obsolete HTML property",
 			options: {},
-			properties: {overrideListHtml: "<span>Place</span>"},
-			tag: "DIV",
+			properties: {overrideListHtml: "<span>Obsolete HTML</span>"},
+			tag: "BUTTON",
 		},
 	])(
 		"includes $kind rows in the Tab order and arrow navigation",
@@ -209,6 +209,7 @@ describe("feature-list row keyboard model", () => {
 			);
 			const [one, two] = rows(container);
 			expect(one?.tagName).toBe(tag);
+			expect(container.textContent).not.toContain("Obsolete HTML");
 			expect(rows(container).map((row) => row.tabIndex)).toEqual([0, -1]);
 			focus(one!);
 			fireEvent.keyDown(one!, {key: "ArrowDown"});

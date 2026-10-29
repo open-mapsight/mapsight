@@ -4,11 +4,9 @@
 .ms3-layer-switcher-overlay {
 	display: block;
 	position: relative;
-	@if icon.$themed {
-		// themed icons are masks, which stack like positioned boxes; keep the open panel
-		// above the map controls that follow it
-		z-index: 1;
-	}
+	// themed icons are masks, which stack like positioned boxes; keep the open panel
+	// above the map controls that follow it
+	z-index: 1;
 
 	.ms3-layer-switcher-container {
 		position: absolute;

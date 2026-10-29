@@ -18,16 +18,10 @@ import {
 	TAG_FILTER,
 	USER_GEOLOCATION,
 } from "../../../config/constants/controllers";
-import {useFutureFlag} from "../../../future/context";
-import {
-	filterListQuery,
-	hideTagAndTagGroup,
-	sortList,
-} from "../../../store/actions";
+import {hideTagAndTagGroup, sortList} from "../../../store/actions";
 import {
 	type RootStateSlice,
 	effectiveListSortingSelector,
-	listQuerySelector,
 	listSortingSelector,
 	placesSelector,
 } from "../../../store/selectors";
@@ -106,18 +100,14 @@ export default function useListOptionsController() {
 		effectiveListSortingSelector(state, featureSourceId),
 	);
 	const customSorting = useSelector(listSortingSelector);
-	const query = useSelector(listQuerySelector);
 	const tagFilterActive = useSelector(hasActiveTagFilter);
 	const rawFeatureCount = useSelector(rawFeatureCountSelector);
 	const places = useSelector(placesSelector);
 	const geolocationStatus = useSelector((state: ListOptionsState) =>
 		geolocationStatusSelector(state[USER_GEOLOCATION]),
 	);
-	const listSearchButton = useFutureFlag("v8_listSearchButton");
 
-	const activeFilterCount =
-		(!listSearchButton && query?.trim() ? 1 : 0) +
-		(tagFilterActive ? 1 : 0);
+	const activeFilterCount = tagFilterActive ? 1 : 0;
 	const canResetOptions =
 		activeFilterCount > 0 ||
 		(customSorting !== undefined && customSorting !== "");
@@ -136,10 +126,7 @@ export default function useListOptionsController() {
 	const reset = useCallback(() => {
 		dispatch(sortList("") as never);
 		dispatch(hideTagAndTagGroup() as never);
-		if (!listSearchButton) {
-			dispatch(filterListQuery(null) as never);
-		}
-	}, [dispatch, listSearchButton]);
+	}, [dispatch]);
 
 	return {
 		featureCount,

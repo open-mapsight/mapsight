@@ -5,8 +5,8 @@ import {translate} from "../../helpers/i18n";
 import {setSelectedRegionIdAndAnimateMap} from "../../store/actions";
 import {regionsSelector, selectedRegionIdSelector} from "../../store/selectors";
 import type {MapsightUiStore} from "../../types";
-import HintTooltip from "../hint-tooltip";
 import type {PolymorphicProps} from "../polymorphic-props";
+import Tooltip from "../tooltip";
 
 const RegionSelectorEntry = memo(function RegionSelectorEntry({
 	regionId,
@@ -55,7 +55,7 @@ const RegionSelector = memo(function RegionSelector({
 	const label = translate("ui.region-selector.label");
 
 	return (
-		<HintTooltip text={label} placement="right">
+		<Tooltip text={label} placement="right">
 			<T className="ms3-region-selector" style={style} aria-label={label}>
 				{Object.entries(regions).map(([id, region]) => (
 					<RegionSelectorEntry
@@ -65,7 +65,7 @@ const RegionSelector = memo(function RegionSelector({
 					/>
 				))}
 			</T>
-		</HintTooltip>
+		</Tooltip>
 	);
 });
 

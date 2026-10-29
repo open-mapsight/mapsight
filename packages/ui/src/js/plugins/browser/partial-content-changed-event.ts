@@ -1,4 +1,4 @@
-import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "../../components/helping/app-channel";
+import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "../../app-channel";
 import type {PluginInstance} from "../../types";
 
 /**

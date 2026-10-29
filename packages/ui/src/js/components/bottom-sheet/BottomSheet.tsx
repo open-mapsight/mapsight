@@ -133,7 +133,7 @@ export default function BottomSheet({
 	onTallChange,
 	tallRatio = 0.6,
 }: BottomSheetProps): ReactElement | null {
-	const Headline = useHeadingElement("sheetTitle", "h2", headlineAs);
+	const Headline = useHeadingElement("sheetTitle", headlineAs);
 	const bodyId = useId();
 	const titleId = useId();
 	const rootRef = useRef<HTMLDivElement>(null);

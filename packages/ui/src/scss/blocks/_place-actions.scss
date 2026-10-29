@@ -35,51 +35,27 @@
 	}
 
 	&__share-button &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("sharing.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "sharing.svg");
-		}
+		@include icon.mask("sharing.svg", $size: contain);
 	}
 
 	&__show-on-map &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("map.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "map.svg");
-		}
+		@include icon.mask("map.svg", $size: contain);
 	}
 
 	&__copy-coords &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("copy.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "copy.svg");
-		}
+		@include icon.mask("copy.svg", $size: contain);
 	}
 
 	&__navigate-button &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("route.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "route.svg");
-		}
+		@include icon.mask("route.svg", $size: contain);
 	}
 
 	&__website &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("globe.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "globe.svg");
-		}
+		@include icon.mask("globe.svg", $size: contain);
 	}
 
 	&__call &__icon:empty {
-		@if icon.$themed {
-			@include icon.mask("phone.svg", $size: contain);
-		} @else {
-			background-image: url(variables.$ms3-uiIconPath + "phone.svg");
-		}
+		@include icon.mask("phone.svg", $size: contain);
 	}
 
 	&__navigate-list {

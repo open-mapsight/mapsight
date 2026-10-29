@@ -290,7 +290,6 @@ export function create(
 			store: context.store,
 			components: context.createOptions.components || {},
 			appChannelListeners: context.appChannelListeners,
-			future: context.createOptions.future,
 			headings: context.createOptions.headings,
 			...context.rendererProps,
 			serverState: context.serverState,

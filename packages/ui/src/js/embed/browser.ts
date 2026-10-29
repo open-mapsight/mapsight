@@ -2,32 +2,29 @@ import merge from "lodash/merge";
 
 import {create} from "../index";
 import browserDomRenderer from "../renderer/browser-dom";
-import type {MapsightUiRenderFunction} from "../types";
-import type {BrowserEmbedInput} from "./normalize-legacy-options";
-import {normalizeBrowserEmbedOptions} from "./normalize-legacy-options";
+import type {CreateOptions, MapsightUiRenderFunction} from "../types";
+import type {BrowserEmbedOptions} from "./index";
+import {prepareBrowserCreateOptions} from "./prepare-options";
 
 /**
  * Browser embed
  *
- * Accepts either the current flat options
- * `{ styleFunction, baseMapsightConfig, createOptions }` or a legacy bag from
- * {@link createEmbedBag} (`baseMapsightCoreConfig` / `embedOptions` / `hook` /
- * `defaultPluginsOptions`).
+ * Accepts flat `{ styleFunction, baseMapsightConfig, createOptions }` options.
  *
  * @param container the container element to render the app into
- * @param options current or legacy embed options
+ * @param options browser embed options
  * @returns render function
  */
 export default function browserEmbed(
 	container: HTMLElement,
-	options: BrowserEmbedInput,
+	options: BrowserEmbedOptions,
 ): MapsightUiRenderFunction<any> | undefined {
-	const normalized = normalizeBrowserEmbedOptions(options);
 	const {
 		styleFunction,
 		baseMapsightConfig = {},
-		createOptions = {},
-	} = normalized;
+		createOptions: inputOptions = {},
+	} = options;
+	const createOptions = prepareBrowserCreateOptions(inputOptions);
 
 	const {dehydratedStateAttributeName = "data-dehydrated-state"} =
 		createOptions;
@@ -63,9 +60,7 @@ export default function browserEmbed(
 }
 
 function pullDeHydratedStateFromContainer(
-	createOptions: NonNullable<
-		ReturnType<typeof normalizeBrowserEmbedOptions>["createOptions"]
-	>,
+	createOptions: CreateOptions,
 	dehydratedStateAttributeName: string,
 	container: HTMLElement,
 ): void {

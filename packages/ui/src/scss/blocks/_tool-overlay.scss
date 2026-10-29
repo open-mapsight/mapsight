@@ -2,10 +2,8 @@
 
 .ms3-tool-overlay {
 	position: relative;
-	@if icon.$themed {
-		// see `.ms3-layer-switcher-overlay`
-		z-index: 1;
-	}
+	// see `.ms3-layer-switcher-overlay`
+	z-index: 1;
 
 	min-width: 240px;
 	margin-left: 15px;

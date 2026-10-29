@@ -11,13 +11,11 @@ import {
 	TAG_FILTER,
 	USER_GEOLOCATION,
 } from "../../../config/constants/controllers";
-import {FutureFlagsContext} from "../../../future/context";
 import {
 	FILTER_LIST_QUERY,
 	HIDE_TAG_AND_TAG_GROUP,
 	SORT_LIST,
 } from "../../../store/actions";
-import type {FutureFlags} from "../../../types";
 import {
 	FeatureListContextProvider,
 	type FeatureListContextValue,
@@ -118,18 +116,13 @@ function baseState(
 function renderController(
 	state: TestState,
 	contextOverrides?: Partial<FeatureListContextValue["state"]>,
-	future?: FutureFlags,
 ) {
 	const store = makeStore(state);
 	const wrapper = ({children}: {children: ReactNode}) => (
 		<Provider store={store}>
-			<FutureFlagsContext.Provider value={future ?? {}}>
-				<FeatureListContextProvider
-					value={listContext(contextOverrides)}
-				>
-					{children}
-				</FeatureListContextProvider>
-			</FutureFlagsContext.Provider>
+			<FeatureListContextProvider value={listContext(contextOverrides)}>
+				{children}
+			</FeatureListContextProvider>
 		</Provider>
 	);
 	const hook = renderHook(() => useListOptionsController(), {wrapper});
@@ -151,15 +144,6 @@ describe("useListOptionsController", () => {
 		expect(result.current.canResetOptions).toBe(false);
 		expect(result.current.hasCustomSorting).toBe(false);
 		expect(result.current.sorting).toBe("");
-	});
-
-	it("counts a list query as an active filter that can be reset", () => {
-		const {result} = renderController(
-			baseState({app: {listQuery: "cafe"}}),
-		);
-
-		expect(result.current.activeFilterCount).toBe(1);
-		expect(result.current.canResetOptions).toBe(true);
 	});
 
 	it("counts a visible tag as an active filter", () => {
@@ -186,43 +170,9 @@ describe("useListOptionsController", () => {
 		expect(result.current.sorting).toBe("center");
 	});
 
-	it("reset clears query, tags, and custom sorting", () => {
-		const {result, store} = renderController(
-			baseState({
-				app: {
-					listQuery: "cafe",
-					listSorting: "center",
-					tagSwitcher: {featureSourceId: "pois"},
-				},
-				tagFilter: {
-					visibleTags: {pois: {group: {open: true}}},
-				},
-			}),
-		);
-
-		expect(result.current.activeFilterCount).toBe(2);
-		expect(result.current.canResetOptions).toBe(true);
-
-		act(() => {
-			result.current.reset();
-		});
-
-		expect(result.current.activeFilterCount).toBe(0);
-		expect(result.current.hasCustomSorting).toBe(false);
-		expect(result.current.canResetOptions).toBe(false);
-		expect(result.current.sorting).toBe("");
-		expect(store.getState().app.listQuery).toBe("");
-	});
-});
-
-describe("useListOptionsController with v8_listSearchButton", () => {
-	const future = {v8_listSearchButton: true};
-
 	it("does not count a list query as an active popover filter", () => {
 		const {result, store} = renderController(
 			baseState({app: {listQuery: "cafe"}}),
-			undefined,
-			future,
 		);
 
 		expect(result.current.activeFilterCount).toBe(0);
@@ -247,8 +197,6 @@ describe("useListOptionsController with v8_listSearchButton", () => {
 					visibleTags: {pois: {group: {open: true}}},
 				},
 			}),
-			undefined,
-			future,
 		);
 
 		expect(result.current.activeFilterCount).toBe(1);

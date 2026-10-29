@@ -36,17 +36,17 @@ afterEach(() => {
 	setDocumentLanguage("de");
 });
 
-it("supports section and nested group heading levels, retaining h3/h4 defaults", () => {
+it("supports section and nested group heading levels, defaulting to contextual h2/h3", () => {
 	const {rerender} = render(
 		<Provider store={store}>
 			<SplitBaseLayerSwitcher {...props} />
 		</Provider>,
 	);
 	expect(
-		screen.getByRole("heading", {level: 3, name: "Basiskarte"}),
+		screen.getByRole("heading", {level: 2, name: "Basiskarte"}),
 	).toBeTruthy();
 	expect(
-		screen.getByRole("heading", {level: 4, name: "Places"}),
+		screen.getByRole("heading", {level: 3, name: "Places"}),
 	).toBeTruthy();
 	expect(screen.getByRole("radiogroup", {name: "Basiskarte"})).toBeTruthy();
 	rerender(
@@ -100,7 +100,7 @@ it("contains the complete visible group label and count in the toggle name in bo
 it("derives nested ranks in split mode with collapsible groups", () => {
 	const {rerender} = render(
 		<Provider store={store}>
-			<HeadingsProvider enabled options={{baseLevel: 2}}>
+			<HeadingsProvider options={{baseLevel: 2}}>
 				<SplitBaseLayerSwitcher {...props} collapsibleGroups />
 			</HeadingsProvider>
 		</Provider>,
@@ -113,7 +113,7 @@ it("derives nested ranks in split mode with collapsible groups", () => {
 	).toBeTruthy();
 	rerender(
 		<Provider store={store}>
-			<HeadingsProvider enabled options={{baseLevel: 2}}>
+			<HeadingsProvider options={{baseLevel: 2}}>
 				<SplitBaseLayerSwitcher
 					{...props}
 					headlineAs="h4"

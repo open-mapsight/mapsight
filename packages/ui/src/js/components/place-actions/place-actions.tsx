@@ -13,16 +13,16 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {animate} from "@mapsight/core/lib/map/actions";
 
+import {
+	APP_EVENT_SCROLL_TO_MAP,
+	useAppChannelDispatchEvent,
+} from "../../app-channel";
 import {MAP} from "../../config/constants/controllers";
 import {announceStatus} from "../../helpers/announce-status";
 import {mapExtentFromFeature} from "../../helpers/geo";
 import {translate} from "../../helpers/i18n";
 import {isMapOutOfViewportSelector} from "../../store/selectors";
 import type {MapsightUiFeature} from "../../types";
-import {
-	APP_EVENT_SCROLL_TO_MAP,
-	useAppChannelDispatchEvent,
-} from "../helping/app-channel";
 import NativeDialog from "../native-dialog";
 import OutboundLink from "../outbound-link";
 import PopoverDialog from "../popover-dialog";

@@ -87,12 +87,6 @@ export function createTagFilterFunction(): FilterFunction {
 	};
 }
 
-/**
- * @deprecated Do not use. This uses a global cache. Use export createTagFilterFunction instead to create local function per mapsight instance!
- */
-const deprecatedTagFilterFunction = createTagFilterFunction();
-export default deprecatedTagFilterFunction;
-
 function transformTagMapsToArrays(
 	visibleTags: Record<string, Array<string>> | null = null,
 	visibleTagGroups: Record<string, boolean> | null = null,

@@ -1,4 +1,4 @@
-import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "@mapsight/ui/components/helping/app-channel";
+import {APP_EVENT_PARTIAL_CONTENT_CHANGED} from "@mapsight/ui/app-channel";
 import type {PluginInstance} from "@mapsight/ui/types";
 
 import {

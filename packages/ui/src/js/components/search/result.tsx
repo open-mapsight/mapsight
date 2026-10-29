@@ -34,11 +34,7 @@ function SearchResult({
 	onResultSelected,
 	groupHeadlineAs,
 }: Omit<SearchResultEntryProps, "feature"> & {groupHeadlineAs?: ElementType}) {
-	const GroupHeadline = useHeadingElement(
-		"searchGroup",
-		"h4",
-		groupHeadlineAs,
-	);
+	const GroupHeadline = useHeadingElement("searchGroup", groupHeadlineAs);
 	const status = useSelector(searchStatusSelector);
 	const features = useSelector(searchResultFeaturesSelector);
 
