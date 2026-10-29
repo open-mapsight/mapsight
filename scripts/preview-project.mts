@@ -1,6 +1,6 @@
 import path from "node:path/posix";
 
-import * as ts from "typescript";
+import ts from "typescript";
 
 export type Sources = Map<string, string>;
 
