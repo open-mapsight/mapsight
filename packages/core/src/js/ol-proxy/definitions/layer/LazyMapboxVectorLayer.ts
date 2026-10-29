@@ -9,6 +9,8 @@ import {applyBackground, applyStyle} from "ol-mapbox-style";
 export type LazyMapboxVectorLayerOptions = {
 	styleUrl: string;
 	accessToken?: string;
+	/** CSS URL template; style metadata `ol:webfonts` takes precedence. */
+	webfonts?: string;
 	source?: string;
 	layers?: string[];
 	background?: unknown;
@@ -126,6 +128,7 @@ export default class LazyMapboxVectorLayer extends VectorTileLayer {
 		const promises = [
 			applyStyle(this, styleUrl, layers ?? sourceId, {
 				accessToken: this.accessToken,
+				webfonts: this.styleOptions.webfonts,
 			}),
 		];
 
