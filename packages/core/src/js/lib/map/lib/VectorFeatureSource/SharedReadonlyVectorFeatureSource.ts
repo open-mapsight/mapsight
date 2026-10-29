@@ -171,6 +171,18 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		if (!force && data === this._lastData) {
 			return;
 		}
+		// Same features array (and crs): only collection metadata changed, e.g.
+		// the selector reused the features of a poll whose fingerprint matched.
+		// Skip the fingerprint, which serialises every feature.
+		if (
+			!force &&
+			this._lastData != null &&
+			data.features === this._lastData.features &&
+			data.crs === this._lastData.crs
+		) {
+			this._lastData = data;
+			return;
+		}
 		const featuresKey = featureCollectionFeaturesKey(data);
 		if (
 			!force &&

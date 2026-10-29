@@ -234,6 +234,17 @@ export function createFilteredFeatureSourceSelector(
 		}
 
 		const filters = filtersSelector(state);
+		// Neither the source state nor the filter values changed: return the
+		// cached result so its reference stays stable. Observers compare by
+		// reference (observeState, useSelector); a fresh object here makes every
+		// subscriber of this source run on every dispatch.
+		if (
+			!hasChanged &&
+			cache.state !== undefined &&
+			shallowEqualRecords(filters, cache.filters)
+		) {
+			return cache.state;
+		}
 		if (
 			cache.state &&
 			source?.featuresKey &&
