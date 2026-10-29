@@ -332,6 +332,22 @@ Hosts may disable or replace it:
 When shown, use the artwork unmodified (no opacity, filters or cropping). See the
 [trademark policy](https://github.com/open-mapsight/mapsight/blob/main/docs/TRADEMARK.md#logos-and-visual-identity).
 
+## Citations and pictogram licenses
+
+The information button opens layer credits, pictogram-source licenses and legends in every
+view, including list-only embeds. Font Awesome pictograms add one CC BY 4.0 credit line with
+an adaptation notice. Native traffic-style pictograms do not add a third-party credit.
+
+The UI derives pictogram ids from visible layer styles and loaded list/search features.
+Hosts can register additional compact icon ids with the `citationPictogramIds` create option,
+for example `citationPictogramIds: ["fa-school", "fa-bolt"]`, to cover custom-rendered icons.
+
+For custom layouts, import `Citations` from
+`@mapsight/ui/components/citations/citations` inside the Mapsight app context. Its optional
+`datasetLicenses`, `projectNotice` and `hostCopyright` React-node props append host content;
+`hostPictogramIds` overrides the host ids for that Citations body. The `MapOverlayModal`
+component slot can still replace the default dialog body.
+
 ## Documentation
 
 | Guide                                                                                                                          | Package                   | Description                                           |

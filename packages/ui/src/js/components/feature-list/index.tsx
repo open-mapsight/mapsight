@@ -17,6 +17,7 @@ import scrollBehavior from "../../helpers/scroll-behavior";
 import {
 	layerSwitcherConfigExternalSelector,
 	listUiOptionsSelector,
+	mapVisible,
 	viewSelector,
 } from "../../store/selectors";
 import type {
@@ -26,6 +27,7 @@ import type {
 	MapsightUiFeatureId,
 	SelectFeatureActionOptions,
 } from "../../types";
+import CitationsTrigger from "../citations/citations-trigger";
 import ErrorBoundary from "../error-boundary";
 import FeatureCycling from "../feature-list-cycling";
 import FeatureSorter from "../feature-list-sorting";
@@ -126,6 +128,7 @@ function FeatureListInner(
 		listControllerName,
 	);
 	const view = useSelector(viewSelector);
+	const isMapVisible = useSelector(mapVisible);
 
 	if (renderAs === "table") {
 		throw new Error(
@@ -286,6 +289,8 @@ function FeatureListInner(
 						) : (
 							<TagSwitcher />
 						))}
+
+					{!isMapVisible && <CitationsTrigger />}
 				</HeaderT>
 				<ContentT
 					groupAs={renderGroupAs}

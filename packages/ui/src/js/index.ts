@@ -291,6 +291,7 @@ export function create(
 			components: context.createOptions.components || {},
 			appChannelListeners: context.appChannelListeners,
 			future: context.createOptions.future,
+			citationPictogramIds: context.createOptions.citationPictogramIds,
 			headings: context.createOptions.headings,
 			...context.rendererProps,
 			serverState: context.serverState,

@@ -9,6 +9,8 @@ export type {
 	PictogramSource,
 } from "./types.ts";
 export {pictogramPackForIconId} from "./types.ts";
+export type {PictogramSourceLicense} from "./license.ts";
+export {getPictogramSourceLicense} from "./license.ts";
 export {
 	getPictogram,
 	getPictograms,

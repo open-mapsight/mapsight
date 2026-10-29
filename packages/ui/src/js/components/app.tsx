@@ -25,6 +25,7 @@ import {
 	titleSelector,
 	viewSelector,
 } from "../store/selectors";
+import Citations from "./citations/citations";
 import ErrorBoundary from "./error-boundary";
 import FeatureList from "./feature-list";
 import VisibilityWrapper from "./helping/visibility-wrapper";
@@ -45,12 +46,10 @@ import {MainPanelListToggleButton} from "./main-panel/list-toggle-button";
 import Map from "./map";
 import MapOverlay from "./map-overlay";
 import MapOverlayArea from "./map-overlay/area";
-import Attribution from "./map-overlay/attribution";
 import InfoOverlayLeft from "./map-overlay/info-overlay-left";
 import InfoOverlayModal from "./map-overlay/info-overlay-modal";
 import InfoOverlayRight from "./map-overlay/info-overlay-right";
 import LayerSwitcherOverlay from "./map-overlay/layer-switcher-overlay";
-import Legend from "./map-overlay/legend";
 import Logo from "./map-overlay/logo";
 import MapPointContextMenu from "./map-overlay/map-point-context-menu";
 import RegionSelector from "./map-overlay/region-selector";
@@ -187,16 +186,6 @@ function App() {
 									<ErrorBoundary variant="overlay">
 										{mapOverlayEnd()}
 									</ErrorBoundary>
-
-									<InfoOverlayModal>
-										{mapOverlayModal(
-											<Fragment>
-												{isMobile && <Attribution />}
-												<Legend />
-												<Logo />
-											</Fragment>,
-										)}
-									</InfoOverlayModal>
 								</MapOverlay>
 							</MapWrapper>
 						</MapRow>
@@ -267,6 +256,14 @@ function App() {
 					<ViewportViewToggleButton />
 				</VisibilityWrapper>
 			</HeadingContent>
+			<InfoOverlayModal>
+				{mapOverlayModal(
+					<Fragment>
+						<Citations />
+						<Logo />
+					</Fragment>,
+				)}
+			</InfoOverlayModal>
 		</AppWrapper>
 	);
 }

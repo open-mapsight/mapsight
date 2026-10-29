@@ -149,6 +149,8 @@ const de: Record<string, string> = {
 	"ui.map-overlay.info.open":
 		"Quellenangaben und weitere Informationen öffnen",
 
+	"ui.citations.pictograms": "Piktogramme",
+
 	"ui.map-overlay.layer-switcher.modal.label": "Ebenenauswahl",
 	"ui.map-overlay.layer-switcher.layers": "Ebenen",
 	"ui.map-overlay.layer-switcher.closeLayers": "Ebenenauswahl schließen",

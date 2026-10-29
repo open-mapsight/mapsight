@@ -5,9 +5,11 @@ import type {LayerAttributions} from "@mapsight/core/lib/map/selectors";
 function AttributionEntries({
 	children,
 	attributions,
+	extraEntries,
 }: {
 	children?: React.ReactNode;
 	attributions?: LayerAttributions;
+	extraEntries?: React.ReactNode;
 }) {
 	return (
 		<div className="ms3-attribution">
@@ -20,6 +22,7 @@ function AttributionEntries({
 							dangerouslySetInnerHTML={{__html: attr}}
 						/>
 					))}
+				{extraEntries}
 				{children && (
 					<li className="ms3-attribution__entry ms3-attribution__entry--additional">
 						{children}
