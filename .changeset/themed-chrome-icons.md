@@ -1,7 +1,0 @@
----
-"@mapsight/ui": minor
----
-
-UI chrome icons can follow the host theme. Set `$ms3-future-v8-themedIcons: true` with the other `@mapsight/ui` Sass variables to paint the `mapsight-ui/*.svg` icons (map controls, list filter buttons, layer switcher checkboxes, search, close buttons, feature links, place actions, loading/error status) as CSS masks filled from `var(--ms3-icon-color, var(--ms3-theme-color-a))`, with `--ms3-icon-color-active`, `--ms3-icon-color-error` (falling back to `--ms3-theme-color-b`) and `--ms3-icon-color-muted` for states. Overriding the `--ms3-*` colours at runtime now recolours the icons, and forced-colors mode uses system colours. The default stays unchanged: without the flag the compiled CSS is identical to before.
-
-When you opt in: icon files from a custom `$ms3-iconPath` supply only the shape; icons must be same-origin, `data:` URIs or served with CORS headers; host overrides must set `mask-image` instead of `background-image` (several controls now draw the icon on `::before`/`::after`); and host panels that overlap Mapsight controls need `z-index: 1` or more. The red icons change from `#cc100c` to `--ms3-theme-color-b` (`#cc0000`) and the print icon from `#207ab6` to the theme blue. See [Themed chrome icons](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons). The flag becomes the only behaviour in v8.

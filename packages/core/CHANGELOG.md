@@ -1,5 +1,19 @@
 # @mapsight/core
 
+## 14.6.7
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- a27f576: PointInputControls confirm with Enter or Space and wait for a running pan to end, so the point lands under the crosshair. The status updates once the map stops moving and reports confirmation while the stored point is at the centre. The source projection is derived from the editor, and a `crs` is only written for non-geographic sources or to keep an existing one accurate.
+
+    Keyboard measure and share-position drawing also wait for a running pan. Every keyboard crosshair follows view padding and only appears with the map's keyboard focus indicator (`:focus-visible`), not after a pointer click. The measure and share overlays keep their instructions to one sentence and list the keys in a collapsed “Keyboard controls” disclosure (react-aria-components `Disclosure`, styleable via `[data-expanded]`/`[data-focus-visible]`). While a keyboard tool is open, a “Skip to the map” link in its overlay and a “Back to …” link right after the map connect the two without trapping focus; both appear only on keyboard focus (`.ms3-skip-link`). Tool actions use the shared 3 px focus ring. The measure overlay shows a labelled “Distance” output above the keyboard help, live while drawing; “Done” only appears while measuring and stays `aria-disabled` (focusable, announced as unavailable) until there are two points. Native keyboard pan/zoom only read the motion preference for key events, and in-flight reduced-motion handling falls back to execution-time behaviour if OpenLayers' internal animation queue changes.
+
+- Updated dependencies [`2f975c0`]:
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+    - `@mapsight/lib-ol@4.3.1 → 4.3.2` (patch)
+    - `@mapsight/lib-redux@2.2.4 → 2.2.5` (patch)
+
 ## 14.6.6
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @mapsight/vector-style-compiler
 
+## 13.1.2
+
+### Patch Changes
+
+- c1627bd: Keep popovers connected to their visible title when opened after an initially closed render.
+  Include nested fill and stroke constructors for compiled text and regular-shape styles.
+  Replace compiler source snapshots and mocked popover checks with executable behavior tests.
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- Updated dependencies [`2f975c0`, `a27f576`]:
+    - `@mapsight/core@14.6.6 → 14.6.7` (patch)
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+    - `@mapsight/lib-ol@4.3.1 → 4.3.2` (patch)
+
 ## 13.1.1
 
 ### Patch Changes

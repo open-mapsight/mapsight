@@ -1,5 +1,42 @@
 # @mapsight/ui
 
+## 7.10.0
+
+### Minor Changes
+
+- ff3adb5: Replace the map watermark with the approved **Erstellt mit Mapsight** / **Built with Mapsight** attribution mark. `.ms3-logo` is now a link to `https://open-mapsight.org/` in the same tab, its accessible name is the visible text (`ui.map-overlay.logo.copyright`), and it shows a `:focus-visible` ring. German and English follow the UI language; other languages use the German mark. Desktop keeps 120×40 CSS px, mobile and map-only views 90×30. The mark keeps its opaque light backing and is no longer dimmed. The SVGs ship in `dist/img/mapsight-ui/` (`built-with-mapsight-{de,en}-{120x40,90x30}-light.svg`) and load through `$ms3-iconPath` without external requests. `watermark.svg` remains as a copy of the German 120×40 mark.
+
+    The mark stays optional. Hide or restyle it with CSS on `.ms3-logo` as before, or use the new `components.MapOverlayLogo` create option (`() => null`, or your own component). The `MapOverlayBottomLeft` and `MapOverlayModal` slots are unchanged. Hosts that copy UI icons into their own icon path need the new files; replacing `watermark.svg` there no longer changes the default mark. See the [trademark policy](https://github.com/open-mapsight/mapsight/blob/main/docs/TRADEMARK.md#logos-and-visual-identity).
+
+- a27f576: “Share place” (`SharePositionLinkButton`) now shares the map centre right away: the link is visible as soon as the tool opens and follows the map until the user clicks the map (or presses Space/Enter with keyboard drawing) to mark a place. Another click moves the marked place, and “Remove marker” returns to sharing the centre, so the separate “Share map centre” button is gone. The link has a visible label (“Link to the map centre” / “Link to the marked place”, new optional `label` on `LinkShare`), the keyboard help stays last, and marking a place no longer selects the marker, so its feature details do not open over the tool.
+- 8f0f4b2: UI chrome icons can follow the host theme. Set `$ms3-future-v8-themedIcons: true` with the other `@mapsight/ui` Sass variables to paint the `mapsight-ui/*.svg` icons (map controls, list filter buttons, layer switcher checkboxes, search, close buttons, feature links, place actions, loading/error status) as CSS masks filled from `var(--ms3-icon-color, var(--ms3-theme-color-a))`, with `--ms3-icon-color-active`, `--ms3-icon-color-error` (falling back to `--ms3-theme-color-b`) and `--ms3-icon-color-muted` for states. Overriding the `--ms3-*` colours at runtime now recolours the icons, and forced-colors mode uses system colours. The default stays unchanged: without the flag the compiled CSS is identical to before.
+
+    When you opt in: icon files from a custom `$ms3-iconPath` supply only the shape; icons must be same-origin, `data:` URIs or served with CORS headers; host overrides must set `mask-image` instead of `background-image` (several controls now draw the icon on `::before`/`::after`); and host panels that overlap Mapsight controls need `z-index: 1` or more. The red icons change from `#cc100c` to `--ms3-theme-color-b` (`#cc0000`) and the print icon from `#207ab6` to the theme blue. See [Themed chrome icons](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons). The flag becomes the only behaviour in v8.
+
+- 4803ecf: UI surfaces can follow a dark host theme. Set `$ms3-future-v8-themedSurfaces: true` with the other `@mapsight/ui` Sass variables to take the colours that were fixed to light values from the `--ms3-*` tokens: the `.ms3-wrapper` background (`--ms3-page-background-color`), the attribution box, tool overlay, mini legend, link share field, button and icon, list search input, search reset circle, disabled pagination text, marked point coordinates, map point menu border, and the translucent map controls on narrow screens (new optional `--ms3-map-control-background-color`, default `--ms3-background-color` at 90 % opacity). `.ms3-wrapper` follows the page's `color-scheme` unless the host sets the new optional `--ms3-color-scheme`, and buttons, inputs and selects without their own colour inherit the text colour instead of the browser default. The default stays unchanged: without the flag the compiled CSS is identical to before.
+
+    When you opt in: hosts that already set `--ms3-background-color` or `--ms3-page-background-color` to a non-white value see it on these surfaces; form controls that Mapsight does not colour take the inherited text colour instead of `buttontext`/`fieldtext`; and in the default theme four near-duplicate greys change slightly (link share field `#444` on `#f5f5f5` to `#222` on `#f2f2f2`, disabled page and coordinates `#555`/`#5c5c5c` to `#636567`, search reset circle `#eee` to `#f2f2f2`). Dark themes also need a light text colour on the page, or on the wrapper and portaled surfaces, and should set `--ms3-place-actions-fg`, `--ms3-outbound-fg`, `--ms3-focus-ring-color` and `--ms3-attributions-background-color`. See [Themed surfaces and dark host themes](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces). The flag becomes the only behaviour in v8.
+
+    The KERN citizen-service scenario enables both themed surfaces and themed icons, replacing its temporary dark-mode overrides with the product flags.
+
+- 69fc674: Add opt-in skip links: with `uiState.skipLinks: true` the instance starts with “Skip to the map / list / search” links, each only when its target is present and visible, shown only on keyboard focus. They render after hydration, so server markup is unchanged. Default `false`; planned to default to `true` in v8.
+
+### Patch Changes
+
+- c1627bd: Keep popovers connected to their visible title when opened after an initially closed render.
+  Include nested fill and stroke constructors for compiled text and regular-shape styles.
+  Replace compiler source snapshots and mocked popover checks with executable behavior tests.
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- a27f576: PointInputControls confirm with Enter or Space and wait for a running pan to end, so the point lands under the crosshair. The status updates once the map stops moving and reports confirmation while the stored point is at the centre. The source projection is derived from the editor, and a `crs` is only written for non-geographic sources or to keep an existing one accurate.
+
+    Keyboard measure and share-position drawing also wait for a running pan. Every keyboard crosshair follows view padding and only appears with the map's keyboard focus indicator (`:focus-visible`), not after a pointer click. The measure and share overlays keep their instructions to one sentence and list the keys in a collapsed “Keyboard controls” disclosure (react-aria-components `Disclosure`, styleable via `[data-expanded]`/`[data-focus-visible]`). While a keyboard tool is open, a “Skip to the map” link in its overlay and a “Back to …” link right after the map connect the two without trapping focus; both appear only on keyboard focus (`.ms3-skip-link`). Tool actions use the shared 3 px focus ring. The measure overlay shows a labelled “Distance” output above the keyboard help, live while drawing; “Done” only appears while measuring and stays `aria-disabled` (focusable, announced as unavailable) until there are two points. Native keyboard pan/zoom only read the motion preference for key events, and in-flight reduced-motion handling falls back to execution-time behaviour if OpenLayers' internal animation queue changes.
+
+- Updated dependencies [`2f975c0`, `a27f576`]:
+    - `@mapsight/core@14.6.6 → 14.6.7` (patch)
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+    - `@mapsight/lib-ol@4.3.1 → 4.3.2` (patch)
+    - `@mapsight/lib-redux@2.2.4 → 2.2.5` (patch)
+
 ## 7.9.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @mapsight/lib-redux
 
+## 2.2.5
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- Updated dependencies [`2f975c0`]:
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+
 ## 2.2.4
 
 ### Patch Changes
