@@ -58,3 +58,10 @@ host changes fixed fictional data through normal feature-source actions; its
 combined list follows visible layers. Count widgets in traffic details use the
 existing same-origin Count-Aggregator mock, with invented counter positions and
 clearly synthetic values. Neither scenario provides live information.
+
+The full accessibility suite serves the same static build via the fixture server
+on port 5174 with `--audit-tiles`. This explicit test-only mode returns synthetic
+SVG texture for same-origin tile URLs so keyboard panning can be observed even
+on the initially empty point-input map. It never fetches upstream map imagery.
+Ordinary e2e tests still stub basemap requests themselves. The fixture server
+accepts `--port` for independent local runs; synthetic tiles are off by default.
