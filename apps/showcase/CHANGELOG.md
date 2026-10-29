@@ -1,5 +1,18 @@
 # @mapsight/showcase
 
+## 0.1.11
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`ab13ef7`, `2270229`, `6f5e113`, `eed3ab3`, `374a3e4`, `2d13e3d`, `957ed95`, `b4d67eb`, `59c334d`]:
+    - `@mapsight/core@14.6.7 → 14.6.8` (patch)
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/count-aggregator-api@1.5.0 → 1.5.1` (patch)
+    - `@mapsight/count-aggregator-ui@3.2.0 → 3.2.1` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
 ## 0.1.10
 
 ### Patch Changes

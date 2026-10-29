@@ -1,5 +1,14 @@
 # @mapsight/vector-editor
 
+## 1.2.10
+
+### Patch Changes
+
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`ab13ef7`, `2270229`, `eed3ab3`, `374a3e4`, `2d13e3d`, `957ed95`, `b4d67eb`, `59c334d`]:
+    - `@mapsight/core@14.6.7 → 14.6.8` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
 ## 1.2.9
 
 ### Patch Changes

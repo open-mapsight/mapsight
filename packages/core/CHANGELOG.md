@@ -1,5 +1,20 @@
 # @mapsight/core
 
+## 14.6.8
+
+### Patch Changes
+
+- ab13ef7: Reuse combined feature-source results while member feature arrays are unchanged, avoiding array copies and deep observer comparisons during map interactions. Build changed combinations in a single pass.
+- 2270229: Keep the filtered feature source selector's result stable while neither the source state nor its filter values change. The featuresKey fast path rebuilt the result on every call, so every `SharedReadonlyVectorFeatureSource` (and list) subscriber ran on every Redux dispatch and fingerprinted all features of its source again; with a few thousand features that cost 10–100 ms per dispatch and dropped pinch zoom on mid-range phones to ~25 fps. `SharedReadonlyVectorFeatureSource` also skips the fingerprint when only collection metadata changed and the features array is the same.
+- eed3ab3: Keep integrated and external layer-switcher id arrays stable across map view updates and layer changes that leave switcher membership and order unchanged. Memoize filtering from the layers state instead of allocating arrays in input selectors, avoiding unnecessary renders in layer switchers.
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- 2d13e3d: Validate immutable feature-source objects once and normalize only sources that need runtime fields. Adding or reconfiguring one source no longer rehashes all loaded GeoJSON or replaces unrelated source objects.
+- 957ed95: Run the map's first feature hit detection while the page is idle. OpenLayers 10 benchmarks canvas reads on the first hit detection of a rendered vector layer (three 50 ms busy loops in `ExecutorGroup`), which froze the user's first hover or tap on the map for ~150 ms. Maps with feature interactions now trigger it once after a visible vector layer with features has rendered.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- 59c334d: Expose the `webfonts` CSS URL template on lazy Mapbox vector layers so hosts can route fallback fonts through their own proxy.
+- Updated dependencies [`b4d67eb`]:
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
 ## 14.6.7
 
 ### Patch Changes

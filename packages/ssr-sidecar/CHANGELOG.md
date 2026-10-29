@@ -1,5 +1,11 @@
 # @mapsight/ssr-sidecar
 
+## 0.1.2
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # mapsight-next-starter
 
+## 0.1.9
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`6f5e113`, `374a3e4`, `b4d67eb`]:
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
 ## 0.1.8
 
 ### Patch Changes
