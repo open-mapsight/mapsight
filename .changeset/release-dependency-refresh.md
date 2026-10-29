@@ -13,4 +13,4 @@
 "mapsight-vite-spa-starter": patch
 ---
 
-Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions without raising explicit peer dependency requirements.
+Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
