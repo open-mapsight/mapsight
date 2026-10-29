@@ -1,6 +1,6 @@
 # tile-proxy integration
 
-[tile-proxy](https://github.com/open-mapsight/mapsight-pulp) is a **PHP basemap tile proxy** — cache and optionally
+[tile-proxy](https://github.com/open-mapsight/tile-proxy) is a **PHP basemap tile proxy** — cache and optionally
 transform XYZ tiles from upstream sources (OSM, basemap.de, municipal tile servers, GeoServer XYZ, etc.). Mapsight
 embeds and SPAs use it as a **same-origin basemap URL** in OpenLayers layer config.
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ## Deployment pattern
 
-1. **Install** from the [mapsight-pulp monorepo](https://github.com/open-mapsight/mapsight-pulp) (Composer / vendor copy —
+1. **Install** from the [tile-proxy](https://github.com/open-mapsight/tile-proxy) (Composer / vendor copy —
    see upstream docs).
 2. Add a **web entrypoint** (`index.php`) that loads config and calls `Base::runFromJsonConfigFile()`.
 3. Configure **`config.jsonc`** — pipeline of tile sources and transforms (see upstream `test/` for a working example).
@@ -92,7 +92,7 @@ Config is **JSONC** with an `ops` array — first op is always a **tile source**
 Each stage can define **server-side** and **browser** cache TTLs, MIME type, and optional `streamContext` for HTTP proxy
 or auth to upstream.
 
-Full option list and examples: [mapsight-pulp monorepo](https://github.com/open-mapsight/mapsight-pulp) (
+Full option list and examples: [tile-proxy](https://github.com/open-mapsight/tile-proxy) (
 `test/config.jsonc`, `README.md`).
 
 ---
@@ -107,6 +107,36 @@ Configure basemap as an OpenLayers XYZ (or compatible) layer in embed config —
 - Thematic **overlay** layers (GeoJSON, WMS) remain separate from basemap.
 
 No tile-proxy code runs in the browser or in the Mapsight monorepo build.
+
+### Vector styles and web fonts
+
+`MapboxVectorLayer` accepts an initial `webfonts` option with the CSS URL template understood by
+ol-mapbox-style:
+
+```js
+{
+    type: "MapboxVectorLayer",
+    options: {
+        styleUrl: "/map-assets/styles/base.json",
+        webfonts: "/map-assets/fonts/base/{font-family}/{fontweight}{-fontstyle}.css",
+        visible: false,
+    },
+}
+```
+
+The template is passed when the layer first becomes visible. The style's
+`metadata["ol:webfonts"]` takes precedence. Without either setting, ol-mapbox-style can load
+fonts from jsDelivr, even when every tile, sprite, and `glyphs` URL is already proxied.
+OpenLayers uses browser fonts rather than the style's PBF glyphs.
+
+The template may point to any compatible same-origin font endpoint. Set `ol:webfonts` in the
+proxied style metadata when the proxy owns the font policy; this takes precedence over the layer
+option.
+For an existing page font, map `text-font` to the family and weights actually declared by the
+host's CSS. Missing weights can trigger additional font requests and complete tile restyling.
+For generic system fonts, use a stack such as `["sans-serif"]` via `setLayerProperties`.
+
+These settings affect initial style loading; recreate the layer to change them at runtime.
 
 ---
 
@@ -124,7 +154,7 @@ No tile-proxy code runs in the browser or in the Mapsight monorepo build.
 
 ## Repository
 
-- **GitHub:** [github.com/open-mapsight/mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)
+- **GitHub:** [github.com/open-mapsight/tile-proxy](https://github.com/open-mapsight/tile-proxy)
 - **License:** See upstream `LICENSE`
 - **Related:** [mapsight-pulp](PULP.md) (GeoJSON ETL), [Ecosystem](../architecture/ECOSYSTEM.md)
 

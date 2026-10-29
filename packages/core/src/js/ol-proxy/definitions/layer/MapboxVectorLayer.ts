@@ -23,6 +23,7 @@ export default {
 		...base.initialOptionMap,
 		styleUrl: "styleUrl",
 		accessToken: "accessToken",
+		webfonts: "webfonts",
 		sourceId: "source",
 		layers: "layers",
 		background: "background",
