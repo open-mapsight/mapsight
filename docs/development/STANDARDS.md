@@ -6,14 +6,30 @@ Conventions for contributing to the Mapsight monorepo.
 
 ## Toolchain
 
-| Tool           | Version / note                                                                                        |
-| -------------- | ----------------------------------------------------------------------------------------------------- |
-| **Node**       | ^24.15.0 (see root `package.json` `engines`)                                                          |
-| **pnpm**       | ^11.1.2 — workspace package manager                                                                   |
-| **Turborepo**  | `turbo build`, `turbo test`, `turbo typecheck`, etc.                                                  |
-| **TypeScript** | Shared via `configs/tsconfig-base.json`; per-package `tsconfig.json` + `tsconfig.build.json` for emit |
+| Tool           | Version / note                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------- |
+| **Node**       | ^24.15.0 (see root `package.json` `engines`)                                                            |
+| **pnpm**       | ^11.1.2 — workspace package manager                                                                     |
+| **Turborepo**  | `turbo build`, `turbo test`, `turbo typecheck`, etc.                                                    |
+| **TypeScript** | Native 7.0 compiler; 6.0 compatibility API and UI declaration emit; shared `configs/tsconfig-base.json` |
 
 Install from repo root: `pnpm install`
+
+`pnpm exec tsc` runs the native TypeScript 7 compiler, installed as
+`@typescript/native`. The `typescript` dependency uses Microsoft's official
+`@typescript/typescript6` compatibility package, preserving the JavaScript
+compiler API needed by ESLint, Next.js and source inspection scripts. Its compiler
+is available as `tsc6`. Keep both dependencies when updating the toolchain; see
+[Microsoft's side-by-side setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-60).
+
+Builds use native `tsc` except UI module builds and their watch command, which use
+`tsc6` to preserve the public React prop declarations for consumers with
+`exactOptionalPropertyTypes`. Next.js retains its internal TypeScript 6 API check;
+the standalone package typechecks use TypeScript 7.
+
+For coding assistance in an editor with native TypeScript 7 support, select the
+installed `node_modules/@typescript/native` package. The `node_modules/typescript`
+package intentionally supplies the TypeScript 6 compatibility API.
 
 ---
 
@@ -89,12 +105,14 @@ compiler exclude the tests omitted by their emitting TypeScript configs from the
 build hash. Test changes still invalidate the owning package's lint, test and
 typecheck tasks. Published documentation and generated inputs remain build inputs.
 
-Core and UI use TypeScript's [incremental checker](https://www.typescriptlang.org/tsconfig/incremental.html) for `typecheck`, keeping its
-state in each package's ignored `node_modules/.cache/typecheck.tsbuildinfo`.
-It rechecks changed source files and imported types. Emitting builds use a separate,
-non-incremental invocation so removing `dist` cannot leave missing build outputs
-hidden by checker state. A Turbo task-cache hit can skip the checker entirely;
-the TypeScript state speeds up checks after edits that miss that task cache.
+Native TypeScript 7.0.2 typechecks run without TypeScript's incremental state.
+Changing `lib` or `target` can otherwise retain stale diagnostics, including
+missing errors; see [the upstream issue](https://github.com/microsoft/TypeScript/issues/64552).
+Standalone checks override inherited incremental/composite settings where needed,
+while Next.js keeps its own TypeScript 6 build state. Turbo still caches
+complete successful tasks and invalidates them when source or shared compiler
+configuration changes. Emitting library builds remain non-incremental so a
+missing `dist` is always rebuilt.
 
 When creating a worktree, run `pnpm install --frozen-lockfile` rather than linking
 another checkout's `node_modules`. If your development tools support setup
