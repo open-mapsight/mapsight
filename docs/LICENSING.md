@@ -25,6 +25,12 @@ EUPL-1.2) and Fira Sans (SIL OFL-1.1) under their own licences. Licence copies
 and source notices accompany those files in `apps/showcase/public/vendor/kern/`;
 these third-party files are not covered by the repository MIT licence.
 
+The tourism scenario separately redistributes a small OpenStreetMap database
+extract in `apps/showcase/src/scenarios/tourismus/osm-pois.json` under **ODbL 1.0**,
+with © OpenStreetMap contributors attribution. Its provenance and separation
+from MIT editorial copy and application code are documented in
+[the tourism data notice](../apps/showcase/src/scenarios/tourismus/DATA.md).
+
 **Trademark:** MIT does not grant use of the **Mapsight** name or logo — [TRADEMARK.md](TRADEMARK.md).
 
 ---

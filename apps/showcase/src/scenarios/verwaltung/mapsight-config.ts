@@ -89,13 +89,13 @@ export const createOptions: CreateOptions = {
 		places: {
 			mitte: {
 				title: "Mustermitte (fiktiver Ausgangspunkt)",
-				x: 1171479,
-				y: 6848253,
+				x: 10.5235749073,
+				y: 52.2653825653,
 			},
 			nord: {
 				title: "Musternord (fiktiver Ausgangspunkt)",
-				x: 1171479,
-				y: 6853253,
+				x: 10.5235749073,
+				y: 52.2928627161,
 			},
 		},
 	},

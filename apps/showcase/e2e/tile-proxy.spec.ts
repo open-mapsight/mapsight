@@ -23,6 +23,10 @@ test("combined list uses the deployed same-origin tile endpoint", async ({
 		tileRequests.every((url) => url.startsWith(`${origin}/tiles/osm/`)),
 	).toBe(true);
 	await expect(
-		page.locator('a[href="https://www.openstreetmap.org/copyright"]'),
-	).toBeAttached();
+		page
+			.locator(
+				'a[href="https://www.openstreetmap.org/copyright"]:visible',
+			)
+			.first(),
+	).toBeVisible();
 });

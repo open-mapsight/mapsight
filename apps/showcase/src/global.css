@@ -610,9 +610,18 @@ body {
 	padding-block: 16px;
 }
 .msb-shell .showcase__brand {
-	display: block;
+	display: flex;
+	align-items: center;
+	gap: 24px;
 	padding: 12px;
 	margin-left: -12px;
+	color: var(--msb-text);
+	text-decoration: none;
+}
+.msb-shell .showcase__descriptor {
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.5;
 }
 .msb-shell .showcase__brand img {
 	display: block;
@@ -711,7 +720,8 @@ body {
 	padding: 0 0 56px;
 }
 .msb-shell .landing .showcase-page__hero {
-	padding: 80px max(40px, calc((100% - 1120px) / 2));
+	margin-bottom: 0;
+	padding: 56px max(40px, calc((100% - 1120px) / 2));
 	background: var(--msb-heritage);
 	color: var(--msb-heritage-text);
 }
@@ -719,13 +729,13 @@ body {
 	font-weight: 800;
 }
 .msb-shell .landing h1 {
-	max-width: 14ch;
+	max-width: 20ch;
 	margin-block: 20px 28px;
-	font-size: clamp(48px, 7.5vw, 96px);
+	font-size: clamp(40px, 5.5vw, 64px);
 	line-height: 1.12;
 	letter-spacing: -0.025em;
 }
-.msb-shell .landing .msb-eyebrow {
+.msb-shell .msb-content .msb-eyebrow {
 	color: inherit;
 	font: 600 13px/1.5 var(--msb-font-code);
 	letter-spacing: 0.04em;
@@ -746,9 +756,6 @@ body {
 	font-size: 16px;
 }
 .msb-shell .landing__grid {
-	max-width: 1200px;
-	margin: auto;
-	padding-inline: 40px;
 	gap: 24px;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -764,7 +771,8 @@ body {
 	box-shadow: none;
 	border-color: var(--msb-text);
 }
-.msb-shell .landing__card h2 {
+.msb-shell .landing__card h3 {
+	margin: 0;
 	font-size: 28px;
 	font-weight: 800;
 	line-height: 1.12;
@@ -797,8 +805,7 @@ body {
 		:where(
 			.showcase__header-inner,
 			.showcase__subnav-inner,
-			.showcase__footer-inner,
-			.landing__grid
+			.showcase__footer-inner
 		) {
 		padding-inline: 24px;
 	}
@@ -817,8 +824,7 @@ body {
 		:where(
 			.showcase__header-inner,
 			.showcase__subnav-inner,
-			.showcase__footer-inner,
-			.landing__grid
+			.showcase__footer-inner
 		) {
 		padding-inline: 20px;
 	}
@@ -839,4 +845,211 @@ body {
 
 .msb-shell .showcase__main--brand {
 	background: var(--msb-surface);
+}
+
+/* Showcase content stays inside the brand frame, separate from demo hosts. */
+.msb-shell .landing__actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px 28px;
+	margin-top: 28px;
+}
+.msb-shell .landing__actions a {
+	color: var(--msb-heritage-text);
+	font-size: 18px;
+	font-weight: 600;
+	text-underline-offset: 4px;
+}
+.msb-shell .landing__actions .msb-primary-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 20px;
+	min-height: 48px;
+	padding: 12px 20px;
+	background: var(--msb-neutral-950);
+	color: var(--msb-neutral-50);
+	text-decoration: none;
+}
+.msb-shell .landing__actions .msb-primary-link:hover {
+	text-decoration: underline;
+}
+.msb-shell .landing .showcase-page__hero :is(a, button):focus-visible {
+	outline-color: var(--msb-heritage-focus);
+	box-shadow: 0 0 0 2px var(--msb-heritage);
+}
+.msb-shell :is(.landing__scenarios, .landing__tools) {
+	max-width: 1200px;
+	margin-inline: auto;
+	padding-inline: 40px;
+}
+.msb-shell .landing__scenarios {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	align-items: center;
+	gap: 24px 56px;
+	padding-block: 48px;
+}
+.msb-shell :is(.landing__scenarios, .landing__tools) h2 {
+	margin: 0 0 20px;
+	font-size: 32px;
+	font-weight: 800;
+	line-height: 1.2;
+}
+.msb-shell .landing__scenarios p {
+	max-width: 62ch;
+	margin: 0;
+}
+.msb-shell .landing__scenarios .msb-eyebrow {
+	margin-bottom: 12px;
+	color: var(--msb-muted);
+}
+.msb-shell :is(.landing__scenarios, .scenario-overview) a {
+	color: var(--msb-link);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+.msb-shell .landing__scenarios > a {
+	justify-self: start;
+	padding-block: 10px;
+}
+.msb-shell .landing__tools {
+	padding-top: 16px;
+}
+.msb-shell .scenario-overview {
+	max-width: none;
+	padding: 0 0 56px;
+}
+.msb-shell .scenario-overview__intro {
+	padding: 56px max(40px, calc((100% - 1120px) / 2));
+	background: var(--msb-heritage);
+	color: var(--msb-heritage-text);
+}
+.msb-shell .scenario-overview__intro h1 {
+	max-width: 20ch;
+	margin: 20px 0 28px;
+	font-size: clamp(40px, 5.5vw, 64px);
+	line-height: 1.12;
+	letter-spacing: -0.025em;
+}
+.msb-shell .scenario-overview__intro .msb-eyebrow {
+	margin: 0;
+}
+.msb-shell .scenario-overview__intro .msb-intro {
+	max-width: 54ch;
+	margin: 0;
+	font-size: 24px;
+	line-height: 1.45;
+}
+.msb-shell .scenario-overview__notice {
+	max-width: 76ch;
+	margin: 28px 0 0;
+	font-size: 16px;
+}
+.msb-shell .scenario-overview__list {
+	max-width: 1200px;
+	margin: 48px auto;
+	padding-inline: 40px;
+}
+.msb-shell .scenario-overview__card {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+	gap: 24px 48px;
+	padding-block: 32px 40px;
+	border-top: 3px solid var(--msb-border);
+}
+.msb-shell .scenario-overview__category span {
+	font: 400 40px/1.2 var(--msb-font-code);
+	color: var(--msb-muted);
+}
+.msb-shell .scenario-overview__category p {
+	margin: 12px 0 0;
+	font-weight: 600;
+}
+.msb-shell .scenario-overview__task .scenario-overview__host {
+	margin: 0 0 12px;
+	color: var(--msb-muted);
+	font-size: 16px;
+}
+.msb-shell .scenario-overview__task h2 {
+	max-width: 26ch;
+	margin: 0 0 20px;
+	font-size: clamp(28px, 3vw, 36px);
+	font-weight: 800;
+	line-height: 1.2;
+}
+.msb-shell .scenario-overview__task > p {
+	max-width: 65ch;
+	margin: 0 0 20px;
+}
+.msb-shell .scenario-overview__task ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 24px;
+	padding: 0;
+	list-style: none;
+}
+.msb-shell .scenario-overview__task li {
+	padding: 4px 10px;
+	border: 1px solid var(--msb-border);
+	font-size: 16px;
+}
+.msb-shell .scenario-overview__task > a {
+	display: inline-block;
+	padding-block: 10px;
+}
+.msb-shell .scenario-overview__about {
+	max-width: 1200px;
+	margin-inline: auto;
+	padding: 0 40px;
+}
+.msb-shell .scenario-overview__about h2 {
+	margin: 0 0 20px;
+	font-size: 28px;
+	font-weight: 800;
+	line-height: 1.2;
+}
+.msb-shell .scenario-overview__about p {
+	max-width: 76ch;
+	margin: 0 0 20px;
+}
+@media (max-width: 800px) {
+	.msb-shell :is(.landing__scenarios, .scenario-overview__card) {
+		grid-template-columns: 1fr;
+	}
+	.msb-shell
+		:is(
+			.landing__scenarios,
+			.landing__tools,
+			.scenario-overview__intro,
+			.scenario-overview__list,
+			.scenario-overview__about
+		) {
+		padding-inline: 24px;
+	}
+	.msb-shell .scenario-overview__category {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+	.msb-shell .scenario-overview__category p {
+		margin: 0;
+	}
+}
+@media (max-width: 480px) {
+	.msb-shell
+		:is(
+			.landing__scenarios,
+			.landing__tools,
+			.scenario-overview__intro,
+			.scenario-overview__list,
+			.scenario-overview__about
+		) {
+		padding-inline: 20px;
+	}
+	.msb-shell .scenario-overview__intro .msb-intro {
+		font-size: 20px;
+	}
 }

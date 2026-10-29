@@ -3,11 +3,11 @@
 	"pages": {
 		"LandingPage": {
 			"label": "Showcase home",
-			"check": "Open the demo cards and check navigation at desktop and mobile widths."
+			"check": "Use the Scenarios navigation or home card, open the administration, tourism and traffic host pages, then return to the showcase. Check the Showcase descriptor, theme toggle and navigation at desktop and mobile widths."
 		},
 		"CombinedListPage": {
 			"label": "Combined feature list",
-			"check": "Toggle the park and café layers; select a list entry and check that the map and list stay in sync.",
+			"check": "Choose this demo’s system/light/dark appearance, toggle the park and café layers, search the local list and select a place. Check map/list synchronisation and that the Full technical demo retains its own styles.",
 			"scenarios": ["featureList", "layers", "overlays"]
 		},
 		"FullPage": {

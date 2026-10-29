@@ -39,6 +39,9 @@ export default defineConfig(({command}) => ({
 				"index.html",
 				"scenarios/index.html",
 				"scenarios/verwaltung/index.html",
+				"scenarios/tourismus/index.html",
+				"scenarios/tourismus/en.html",
+				"scenarios/verkehr/index.html",
 			],
 			output: {
 				codeSplitting: {

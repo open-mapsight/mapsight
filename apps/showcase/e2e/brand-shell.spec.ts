@@ -40,8 +40,14 @@ test("narrow navigation wraps and the skip link focuses the content", async ({
 	await page.setViewportSize({width: 360, height: 800});
 	await page.goto("/");
 	await expect(
-		page.getByRole("heading", {name: "Maps that fit your site."}),
+		page.getByRole("heading", {name: "Try Mapsight in context."}),
 	).toBeVisible();
+	await expect(
+		page.getByRole("link", {name: "Mapsight Showcase", exact: true}),
+	).toBeVisible();
+	await expect(
+		page.getByRole("link", {name: "Explore scenarios", exact: true}),
+	).toHaveAttribute("href", "/scenarios/index.html");
 	await page.keyboard.press("Tab");
 	await expect(
 		page.getByRole("link", {name: "Skip to content"}),
@@ -50,6 +56,7 @@ test("narrow navigation wraps and the skip link focuses the content", async ({
 	await expect(page.locator("#showcase-content")).toBeFocused();
 	for (const name of [
 		"Home",
+		"Scenarios",
 		"Demos",
 		"Count aggregator",
 		"Icons",
@@ -85,4 +92,38 @@ test.describe("with the OS in dark mode", () => {
 			"light",
 		);
 	});
+});
+
+test("Demos stays active across UI routes", async ({page}) => {
+	await page.route("https://**/*", (route) => route.abort());
+	await page.goto("/ui/simple-map");
+	await expect(
+		page
+			.getByRole("navigation", {name: "Main", exact: true})
+			.getByRole("link", {name: "Demos", exact: true}),
+	).toHaveAttribute("aria-current", "page");
+});
+
+test("home opens the standalone scenarios overview and its brand links return to the showcase", async ({
+	page,
+}) => {
+	await page.goto("/");
+	await page
+		.getByRole("link", {name: "Explore scenarios", exact: true})
+		.click();
+	await expect(page).toHaveURL(/\/scenarios\/index\.html$/);
+	await expect(
+		page.getByRole("heading", {name: "Maps within a real task."}),
+	).toBeVisible();
+	await expect(
+		page
+			.getByRole("navigation", {name: "Main", exact: true})
+			.getByRole("link", {name: "Scenarios", exact: true}),
+	).toHaveAttribute("aria-current", "page");
+	await page
+		.getByRole("link", {name: "Mapsight Showcase", exact: true})
+		.click();
+	await expect(
+		page.getByRole("heading", {name: "Try Mapsight in context."}),
+	).toBeVisible();
 });
