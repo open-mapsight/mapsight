@@ -4,9 +4,10 @@ import {
 	memo,
 	useCallback,
 	useId,
+	useMemo,
 	useState,
 } from "react";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
@@ -157,15 +158,31 @@ const CollapsibleOverlayGroup = memo(function CollapsibleOverlayGroup({
 });
 
 function SplitBaseLayerSwitcher({
-	baseLayerIds,
-	groups,
-	ungroupedLayerIds,
+	layerIdsSelector,
 	renderBaseLayerEntry,
 	renderEntry,
 	collapsibleGroups = false,
 	headlineAs,
 	groupHeadlineAs,
-}: SplitBaseLayerSwitcherMergedProps) {
+}: SplitBaseLayerSwitcherOwnProps) {
+	// Memoize per instance while the selector inputs are stable. `sameSplit`
+	// also skips renders when a custom layerIdsSelector returns fresh arrays
+	// with the same ids, or when layer changes leave the split unchanged.
+	const selectSplit = useMemo(
+		() =>
+			createSelector(
+				[
+					(state: State) => layerIdsSelector(state[MAP] as MapState),
+					(state: State) => (state[MAP] as MapState).layers,
+				],
+				getSplitLayerIds,
+			),
+		[layerIdsSelector],
+	);
+	const {baseLayerIds, groups, ungroupedLayerIds} = useSelector(
+		selectSplit,
+		sameSplit,
+	);
 	const Headline = useHeadingElement("switcher", "h3", headlineAs);
 	const GroupHeadline = useHeadingElement(
 		"switcherGroup",
@@ -335,55 +352,4 @@ function sameSplit(
 	);
 }
 
-/**
- * Per instance: recompute only when the layer ids or the layer states change,
- * and keep the previous result when the split is the same. Every new array
- * would re-render all groups and entries, on every dispatch (map view updates
- * while panning included).
- */
-function makeMapStateToProps() {
-	const split = createSelector(
-		[
-			(
-				state: State,
-				{layerIdsSelector}: SplitBaseLayerSwitcherOwnProps,
-			) => layerIdsSelector(state[MAP] as MapState),
-			(state: State) => (state[MAP] as MapState).layers,
-		],
-		getSplitLayerIds,
-	);
-	let previous: SplitBaseLayerSwitcherStateProps | undefined;
-	return (state: State, ownProps: SplitBaseLayerSwitcherOwnProps) => {
-		const next = split(state, ownProps);
-		if (previous && sameSplit(previous, next)) {
-			return previous;
-		}
-		previous = next;
-		return next;
-	};
-}
-
-type SplitBaseLayerSwitcherMergedProps = Omit<
-	SplitBaseLayerSwitcherOwnProps,
-	"layerIdsSelector"
-> &
-	SplitBaseLayerSwitcherStateProps;
-
-export default connect<
-	SplitBaseLayerSwitcherStateProps,
-	object,
-	SplitBaseLayerSwitcherOwnProps,
-	SplitBaseLayerSwitcherMergedProps,
-	State
->(
-	makeMapStateToProps,
-	null,
-	(
-		stateProps,
-		_dispatchProps,
-		{layerIdsSelector: _layerIdsSelector, ...ownProps},
-	) => ({
-		...ownProps,
-		...stateProps,
-	}),
-)(SplitBaseLayerSwitcher);
+export default memo(SplitBaseLayerSwitcher);

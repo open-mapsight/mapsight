@@ -147,7 +147,7 @@ it("does not re-render its entries on dispatches that leave the layers unchanged
 		<Provider store={viewStore}>
 			<SplitBaseLayerSwitcher
 				{...props}
-				// A selector that builds a new array on every call, like the defaults.
+				// Custom selectors may build a new array on every call.
 				layerIdsSelector={(mapState: {layers: object}) =>
 					Object.keys(mapState.layers)
 				}
@@ -165,4 +165,83 @@ it("does not re-render its entries on dispatches that leave the layers unchanged
 	});
 
 	expect(renderEntry.mock.calls.length).toBe(initialRenders);
+});
+
+it("keeps entries stable on parent renders and follows a replacement id selector", () => {
+	const renderBaseLayerEntry = vi.fn(props.renderBaseLayerEntry);
+	const {rerender} = render(
+		<Provider store={store}>
+			<SplitBaseLayerSwitcher
+				{...props}
+				renderBaseLayerEntry={renderBaseLayerEntry}
+			/>
+		</Provider>,
+	);
+	const initialRenders = renderBaseLayerEntry.mock.calls.length;
+
+	rerender(
+		<Provider store={store}>
+			<SplitBaseLayerSwitcher
+				{...props}
+				renderBaseLayerEntry={renderBaseLayerEntry}
+			/>
+		</Provider>,
+	);
+	expect(renderBaseLayerEntry.mock.calls.length).toBe(initialRenders);
+
+	rerender(
+		<Provider store={store}>
+			<SplitBaseLayerSwitcher
+				{...props}
+				renderBaseLayerEntry={renderBaseLayerEntry}
+				layerIdsSelector={() => ["aerial"]}
+			/>
+		</Provider>,
+	);
+	expect(screen.queryByRole("radio", {name: "street"})).toBeNull();
+	expect(screen.getByRole("radio", {name: "aerial"})).toBeTruthy();
+	expect(screen.queryByRole("heading", {name: "Datenebenen"})).toBeNull();
+});
+
+it("updates group counts and default collapse state when layer visibility changes", () => {
+	setDocumentLanguage("en");
+	const visibilityStore = configureStore({
+		reducer: (
+			state: {map: {layers: typeof layers}} = {map: {layers}},
+			action: {type: string},
+		) =>
+			action.type === "hideParking"
+				? {
+						map: {
+							layers: {
+								...layers,
+								parking: {
+									...layers.parking,
+									options: {visible: false},
+								},
+							},
+						},
+					}
+				: state,
+	});
+	render(
+		<Provider store={visibilityStore}>
+			<SplitBaseLayerSwitcher {...props} collapsibleGroups />
+		</Provider>,
+	);
+	expect(
+		screen
+			.getByRole("button", {name: "Places 1/1 Collapse group"})
+			.getAttribute("aria-expanded"),
+	).toBe("true");
+
+	act(() => {
+		visibilityStore.dispatch({type: "hideParking"});
+	});
+
+	expect(
+		screen
+			.getByRole("button", {name: "Places 0/1 Expand group"})
+			.getAttribute("aria-expanded"),
+	).toBe("false");
 });
