@@ -1,4 +1,3 @@
-import type {ReactNode} from "react";
 import {useReducer} from "react";
 
 import App from "@mapsight/ui/components/app";
@@ -32,7 +31,7 @@ const baseMapsightConfig = {
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,
@@ -109,7 +108,7 @@ const createOptions: CreateOptions = {
 	],
 	imagesUrl: "/img/",
 	components: {
-		MapOverlayTopLeft({fallback}: {fallback?: ReactNode}) {
+		MapOverlayTopLeft() {
 			const [toggleStates, setActive] = useToggleGroup([
 				PLUGIN_NAME_MEASURE_DISTANCE,
 				PLUGIN_NAME_SHARE_LINK,
@@ -117,7 +116,6 @@ const createOptions: CreateOptions = {
 
 			return (
 				<>
-					{fallback}
 					<SharePositionLinkButton
 						opened={toggleStates[PLUGIN_NAME_SHARE_LINK] ?? false}
 						onOpenedChange={(value) =>

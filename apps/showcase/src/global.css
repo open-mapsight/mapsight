@@ -208,6 +208,27 @@ body {
 	min-height: 0;
 }
 
+.point-input-demo__value {
+	margin-top: 1rem;
+	font-size: 0.875rem;
+}
+
+.point-input-demo__value h2 {
+	margin-bottom: 0.25rem;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.point-input-demo__value pre {
+	margin-top: 0.5rem;
+	padding: 0.75rem;
+	overflow: auto;
+	border: 1px solid #d8dee6;
+	border-radius: 4px;
+	background: #f8fafc;
+	font-size: 0.75rem;
+}
+
 .vector-webgl-demo {
 	display: flex;
 	flex-direction: column;

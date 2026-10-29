@@ -1,6 +1,6 @@
 /**
  * Accessibility audit of the showcase demos, i.e. @mapsight/ui and
- * @mapsight/count-aggregator-ui without host theming.
+ * @mapsight/count-aggregator-ui, plus standalone scenario host pages.
  *
  *   pnpm --filter @mapsight/showcase build && pnpm --filter @mapsight/showcase start
  *   node packages/a11y-audit/src/cli.ts run --config apps/showcase/a11y.config.mts \
@@ -10,10 +10,11 @@ import type {AuditConfig, ScenarioContext} from "@mapsight/a11y-audit";
 
 const MAPSIGHT_ROOT = ".ms3-wrapper";
 
-async function selectFirstListEntry({root, page, step}: ScenarioContext) {
+async function selectFirstListEntry(context: ScenarioContext) {
+	const {root, page} = context;
 	const entry = root.locator(".ms3-list__item button").first();
 	await entry.waitFor({state: "visible", timeout: 20_000});
-	step(
+	context.step(
 		`focus "${(await entry.innerText()).trim().slice(0, 60)}" and press Enter`,
 	);
 	await entry.focus();
@@ -34,6 +35,22 @@ const config: AuditConfig = {
 		},
 	],
 	targets: [
+		{
+			id: "scenarios",
+			title: "Scenario overview",
+			url: "/scenarios/index.html",
+			root: "body",
+			readySelector: "h1",
+			features: [],
+		},
+		{
+			id: "verwaltung",
+			title: "Fictional citizen services",
+			url: "/scenarios/verwaltung/index.html",
+			root: "body",
+			readySelector: ".ms3-list__item",
+			features: ["map", "list", "details", "filters"],
+		},
 		{
 			id: "ui-full",
 			title: "Full UI (map, list, search, layers, details)",
@@ -75,6 +92,41 @@ const config: AuditConfig = {
 			root: MAPSIGHT_ROOT,
 			readySelector: `${MAPSIGHT_ROOT} .ms3-list__item`,
 			features: ["map", "list", "details"],
+		},
+		{
+			id: "ui-point-input",
+			title: "Keyboard point input",
+			url: "/ui/point-input",
+			root: MAPSIGHT_ROOT,
+			readySelector: `${MAPSIGHT_ROOT} .ms3-point-input-controls button:enabled`,
+			features: ["map"],
+			scenarios: [
+				{
+					id: "confirm-with-keyboard",
+					title: "Focus the map, pan and confirm the centre with Enter",
+					viewports: ["desktop", "mobile"],
+					run: async (context) => {
+						const map = context.root.locator(".ms3-map-target");
+						context.step(
+							"focus the map, press ArrowRight, then Enter",
+						);
+						await map.focus();
+						await map.press("ArrowRight");
+						await map.press("Enter");
+						await context.root
+							.getByRole("status")
+							.filter({
+								hasText:
+									/Position übernommen|Position confirmed/,
+							})
+							.waitFor({timeout: 5000});
+					},
+					expectAnnouncement:
+						/Position übernommen|Position confirmed/,
+					expectFocusWithin: ".ms3-map-target",
+					checks: ["axe", "keyboard"],
+				},
+			],
 		},
 		{
 			id: "count-aggregator",

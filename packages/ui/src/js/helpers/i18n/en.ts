@@ -171,7 +171,7 @@ const en: Record<string, string> = {
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
 	"ui.point-input.instructions":
-		"Focus the map with Tab. Arrow keys pan the map; + and − change the zoom. The crosshair marks the map centre. Press Enter or Use map centre to confirm the position. Confirming again replaces the point.",
+		"On the focused map, arrow keys pan and + and − zoom. The crosshair marks the map centre. Press Enter or Space, or the “Use map centre” button, to set the point there. Confirming again replaces it.",
 	"ui.point-input.confirm": "Use map centre",
 	"ui.point-input.help": "Keyboard help",
 	"ui.point-input.close-help": "Close keyboard help",
@@ -239,17 +239,38 @@ const en: Record<string, string> = {
 	"ui.map-point.copied": "Coordinates copied",
 
 	"ui.share-position-link.title": "Share position",
+	"ui.share-position-link.shareTitle": "Place on the map",
+	"ui.share-position-link.shareButtonLabel": "Share link",
 	"ui.share-position-link.instructions":
-		"Click on the map to share a position.",
-	"ui.share-position-link.shareTitle": "Share marked position",
-	"ui.share-position-link.shareButtonLabel": "Share marked position",
-	"ui.share-position-link.share-center": "Share map centre",
-	"ui.share-position-link.keyboard-instructions":
-		"Click the map or choose “Share map centre”. With the map focused: arrow keys pan, Enter or Space selects the centre, and Backspace removes the point.",
+		"Share the map centre or click the map to choose a place.",
+	"ui.share-position-link.instructions-marked":
+		"Click the map again to change the place.",
+	"ui.share-position-link.link-center": "Link to the map centre",
+	"ui.share-position-link.link-marked": "Link to the marked place",
+	"ui.share-position-link.remove-marker": "Remove marker",
+	"ui.share-position-link.keyboard.select":
+		"Mark the place at the map centre",
+	"ui.share-position-link.keyboard.remove": "Remove the marker",
+
+	"ui.tool-overlay.keyboard-help": "Keyboard controls",
+	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",
+	"ui.skip-links.map": "Skip to the map",
+	"ui.skip-links.list": "Skip to the list",
+	"ui.skip-links.search": "Skip to the search",
+	"ui.tool-overlay.to-map": "Skip to the map",
+	"ui.tool-overlay.back-to-tool": "Back to “{name}”",
+	"ui.tool-overlay.keyboard.pan": "Pan the map",
+	"ui.keys.space": "Space",
+	"ui.keys.enter": "Enter",
+	"ui.keys.backspace": "Backspace",
+	"ui.keys.arrows": "Arrow keys",
 
 	"ui.link-share.input": "Link to share",
 
 	"ui.measure-distance.finish": "Done",
+	"ui.measure-distance.keyboard.add": "Add a point at the map centre",
+	"ui.measure-distance.keyboard.finish": "Finish the line (from two points)",
+	"ui.measure-distance.keyboard.remove": "Remove the last point",
 };
 
 export default en;

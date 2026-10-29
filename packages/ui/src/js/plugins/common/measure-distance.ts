@@ -1,7 +1,9 @@
 import type OlMap from "ol/Map";
+import type {Coordinate} from "ol/coordinate";
 import LineString from "ol/geom/LineString";
 import Draw from "ol/interaction/Draw";
 import type VectorSource from "ol/source/Vector";
+import {getLength} from "ol/sphere";
 
 import {createSelector} from "@reduxjs/toolkit";
 
@@ -29,6 +31,7 @@ import {
 	MAP,
 } from "../../config/constants/controllers";
 import {getDictionary} from "../../helpers/i18n";
+import {bindMapTargetKeyboard} from "../../helpers/map-target-keyboard";
 import type {PluginInstance} from "../../types";
 
 export const createActivateAction = (mapController: string, name: string) =>
@@ -55,14 +58,69 @@ export function getKeyboardDraw(map: OlMap, name: string): Draw | undefined {
 		);
 }
 
-function vertexCount(draw: Draw): number {
-	const source = draw.getOverlay().getSource() as VectorSource | null;
+/** Fixed sketch vertices; the last sketch coordinate follows the pointer. */
+function sketchVertices(draw: Draw | undefined): Coordinate[] {
+	const source = draw?.getOverlay().getSource() as VectorSource | null;
 	const line = source
 		?.getFeatures()
 		.find((feature) => feature.getGeometry() instanceof LineString)
 		?.getGeometry();
-	// The last sketch coordinate follows the pointer and is not a fixed vertex.
-	return line instanceof LineString ? line.getCoordinates().length - 1 : 0;
+	return line instanceof LineString ? line.getCoordinates().slice(0, -1) : [];
+}
+
+function vertexCount(draw: Draw): number {
+	return sketchVertices(draw).length;
+}
+
+export type KeyboardMeasurementSketch = {
+	/** Fixed points of the line being drawn; 0 when no measurement is in progress. */
+	vertices: number;
+	/** Geodesic length of those points in metres, from two points on. */
+	length: number | null;
+};
+
+/**
+ * Follow the sketch of a keyboard measurement tool (pointer clicks included),
+ * e.g. to enable "Done" only when there is a line to finish.
+ */
+export function observeKeyboardMeasurement(
+	map: OlMap,
+	name: string,
+	listener: (sketch: KeyboardMeasurementSketch) => void,
+): () => void {
+	let draw: Draw | undefined;
+	let source: VectorSource | null = null;
+	const emit = () => {
+		const vertices = draw?.getActive() ? sketchVertices(draw) : [];
+		listener({
+			vertices: vertices.length,
+			length:
+				vertices.length >= 2
+					? getLength(new LineString(vertices), {
+							projection: map.getView().getProjection(),
+						})
+					: null,
+		});
+	};
+	const watch = () => {
+		source?.un("change", emit);
+		draw?.un("change:active", emit);
+		draw = getKeyboardDraw(map, name);
+		source =
+			(draw?.getOverlay().getSource() as VectorSource | null) ?? null;
+		source?.on("change", emit);
+		draw?.on("change:active", emit);
+		emit();
+	};
+	map.getInteractions().on("add", watch);
+	map.getInteractions().on("remove", watch);
+	watch();
+	return () => {
+		map.getInteractions().un("add", watch);
+		map.getInteractions().un("remove", watch);
+		source?.un("change", emit);
+		draw?.un("change:active", emit);
+	};
 }
 
 export function finishKeyboardMeasurement(map: OlMap, name: string): void {
@@ -79,82 +137,54 @@ export function installKeyboardDrawing(
 	pointActions?: {add: () => void; remove: () => void},
 ): () => void {
 	if (typeof document === "undefined") return () => {};
-	let target: HTMLElement | null = null;
-	const updateCrosshair = () => {
-		const active = map
-			.getInteractions()
-			.getArray()
-			.some(
-				(interaction) =>
-					interaction instanceof Draw &&
-					interaction.get("keyboardTool") &&
-					interaction.getActive(),
-			);
-		target?.classList.toggle(
-			"ms3-map-target--keyboard-drawing",
-			active && document.activeElement === target,
-		);
-	};
-	const onKeyDown = (event: KeyboardEvent) => {
-		const draw = getKeyboardDraw(map, name);
-		if (
-			!draw?.getActive() ||
-			event.defaultPrevented ||
-			event.target !== target ||
-			document.activeElement !== target ||
-			event.altKey ||
-			event.ctrlKey ||
-			event.metaKey ||
-			event.shiftKey ||
-			event.repeat
-		)
-			return;
-		if (!["Enter", " ", "Backspace"].includes(event.key)) return;
-		event.preventDefault();
-		if (event.key === "Backspace") {
-			if (pointActions) pointActions.remove();
-			else draw.removeLastPoint();
-		} else if (pointActions) {
-			pointActions.add();
-		} else if (event.key === "Enter" && vertexCount(draw) >= 2) {
-			draw.finishDrawing();
-		} else {
-			const center = map.getView().getCenter();
-			if (center) draw.appendCoordinates([center.slice()]);
-		}
-	};
-	const detach = () => {
-		target?.removeEventListener("keydown", onKeyDown);
-		target?.removeEventListener("focus", updateCrosshair);
-		target?.removeEventListener("blur", updateCrosshair);
-		target?.classList.remove("ms3-map-target--keyboard-drawing");
-	};
-	const attach = () => {
-		detach();
-		target = map.getTargetElement() ?? null;
-		target?.addEventListener("keydown", onKeyDown);
-		target?.addEventListener("focus", updateCrosshair);
-		target?.addEventListener("blur", updateCrosshair);
-		updateCrosshair();
-	};
+	const keyboard = bindMapTargetKeyboard(map, {
+		crosshairClass: "ms3-map-target--keyboard-drawing",
+		showCrosshair: () =>
+			map
+				.getInteractions()
+				.getArray()
+				.some(
+					(interaction) =>
+						interaction instanceof Draw &&
+						interaction.get("keyboardTool") &&
+						interaction.getActive(),
+				),
+		isActive: () => Boolean(getKeyboardDraw(map, name)?.getActive()),
+		onKey({key}) {
+			if (!["Enter", " ", "Backspace"].includes(key)) return undefined;
+			// Runs once a keyboard pan ends; the tool may have closed meanwhile.
+			return () => {
+				const draw = getKeyboardDraw(map, name);
+				if (!draw?.getActive()) return;
+				if (key === "Backspace") {
+					if (pointActions) pointActions.remove();
+					else draw.removeLastPoint();
+				} else if (pointActions) {
+					pointActions.add();
+				} else if (key === "Enter" && vertexCount(draw) >= 2) {
+					draw.finishDrawing();
+				} else {
+					const center = map.getView().getCenter();
+					if (center) draw.appendCoordinates([center.slice()]);
+				}
+			};
+		},
+	});
 	let observedDraw: Draw | undefined;
 	const watchDraw = () => {
-		observedDraw?.un("change:active", updateCrosshair);
+		observedDraw?.un("change:active", keyboard.update);
 		observedDraw = getKeyboardDraw(map, name);
-		observedDraw?.on("change:active", updateCrosshair);
-		updateCrosshair();
+		observedDraw?.on("change:active", keyboard.update);
+		keyboard.update();
 	};
-	map.on("change:target", attach);
 	map.getInteractions().on("add", watchDraw);
 	map.getInteractions().on("remove", watchDraw);
 	watchDraw();
-	attach();
 	return () => {
-		detach();
-		map.un("change:target", attach);
+		keyboard.dispose();
 		map.getInteractions().un("add", watchDraw);
 		map.getInteractions().un("remove", watchDraw);
-		observedDraw?.un("change:active", updateCrosshair);
+		observedDraw?.un("change:active", keyboard.update);
 	};
 }
 
@@ -279,9 +309,9 @@ const translations = {
 		"ui.measure-distance.instructions-done":
 			"Klicken Sie auf die Karte um eine neue Strecke zu messen.",
 		"ui.measure-distance.keyboard-instructions":
-			"Klicken Sie auf die Karte, um Punkte hinzuzufügen; Doppelklick beendet die Strecke. Mit Fokus auf der Karte: Leertaste oder Eingabe setzt einen Punkt in der Kartenmitte. Pfeiltasten verschieben die Karte. Rücktaste entfernt den letzten Punkt. Ab zwei Punkten beendet Eingabe oder Fertig die Strecke.",
+			"Klicken Sie auf die Karte, um Punkte zu setzen. Doppelklick oder „Fertig“ beendet die Strecke.",
 		"ui.measure-distance.keyboard-instructions-done":
-			"Klicken Sie auf die Karte oder drücken Sie bei fokussierter Karte die Leertaste, um eine neue Strecke zu messen.",
+			"Klicken Sie auf die Karte, um eine neue Strecke zu messen.",
 		"ui.measure-distance.measurement": "Streckenlänge",
 	},
 	en: {
@@ -291,9 +321,9 @@ const translations = {
 		"ui.measure-distance.instructions-done":
 			"Click on the map to start measuring a new line.",
 		"ui.measure-distance.keyboard-instructions":
-			"Click the map to add points; double click to finish. With the map focused: Space or Enter adds a point at the map centre. Arrow keys pan the map. Backspace removes the last point. After two points, Enter or Done finishes the line.",
+			"Click the map to add points. Double-click or “Done” finishes the line.",
 		"ui.measure-distance.keyboard-instructions-done":
-			"Click the map or press Space with the map focused to start a new line.",
+			"Click the map to measure a new line.",
 		"ui.measure-distance.measurement": "Distance",
 	},
 } as const;

@@ -246,7 +246,7 @@ export const baseMapsightConfig: Partial<State> = {
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,

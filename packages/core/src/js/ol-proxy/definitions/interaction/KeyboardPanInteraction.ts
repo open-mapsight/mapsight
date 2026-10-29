@@ -14,6 +14,8 @@ class MotionAwareKeyboardPan extends KeyboardPan {
 		this.instant = new KeyboardPan({...options, duration: 0});
 	}
 	override handleEvent(...args: Parameters<KeyboardPan["handleEvent"]>) {
+		// Every map browser event passes through here; only keys can animate.
+		if (args[0].type !== "keydown") return super.handleEvent(...args);
 		let propagate = true;
 		runWithMotionPreference(args[0].map, (reduced) => {
 			propagate = reduced

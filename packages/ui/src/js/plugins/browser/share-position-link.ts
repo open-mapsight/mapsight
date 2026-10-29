@@ -230,6 +230,9 @@ function setupDrawInteraction({
 				mapControllerName,
 				featureSourcesControllerName,
 				featureSelectionsControllerName,
+				// Sharing marks a place; selecting it would open feature details
+				// over the tool the user is still working with.
+				select: false,
 				lon: lonLat.lon,
 				lat: lonLat.lat,
 				featureId: markerFeatureId,

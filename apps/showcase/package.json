@@ -5,6 +5,7 @@
 	"private": true,
 	"type": "module",
 	"dependencies": {
+		"@kern-ux/native": "2.8.2",
 		"@mapsight/core": "workspace:^",
 		"@mapsight/count-aggregator-api": "workspace:^",
 		"@mapsight/count-aggregator-ui": "workspace:^",
@@ -26,6 +27,7 @@
 		"tailwindcss": "catalog:"
 	},
 	"devDependencies": {
+		"@mapsight/a11y-audit": "workspace:^",
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@playwright/test": "catalog:",
 		"@tailwindcss/vite": "^4.3.3",

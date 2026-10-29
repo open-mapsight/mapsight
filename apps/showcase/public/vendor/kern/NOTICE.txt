@@ -1,0 +1,6 @@
+KERN UX native 2.8.2 — unmodified distribution, EUPL-1.2.
+Copyright and contributors: see upstream source and package.
+Source: https://gitlab.opencode.de/kern-ux/kern-ux-plain/-/tree/v2.8.2
+Exact published source: https://registry.npmjs.org/@kern-ux/native/-/native-2.8.2.tgz
+Fira Sans: SIL OFL-1.1; see FiraSans-OFL.txt.
+KERN graphics, copy and logos are not used as host content.

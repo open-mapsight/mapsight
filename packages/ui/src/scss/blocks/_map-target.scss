@@ -25,13 +25,16 @@
 	}
 }
 
-// Crosshair at the map centre while a keyboard drawing tool is active.
-.ms3-map-target--keyboard-drawing::after,
-.ms3-map-target--point-input::after {
+// Crosshair at the view centre while a keyboard drawing tool or point input is
+// active, shown with the keyboard focus indicator only: pointer users click
+// where they mean, and a centre mark would only distract them. The custom
+// properties follow view padding (see map-target-keyboard).
+.ms3-map-target--keyboard-drawing:focus-visible::after,
+.ms3-map-target--point-input:focus-visible::after {
 	content: "";
 	position: absolute;
-	left: 50%;
-	top: 50%;
+	left: var(--ms3-view-center-x, 50%);
+	top: var(--ms3-view-center-y, 50%);
 	width: 24px;
 	height: 24px;
 	transform: translate(-50%, -50%);
@@ -68,14 +71,12 @@
 		margin-block: 0.25rem;
 		font: inherit;
 		padding: 4px 8px;
+		border: 1px solid currentColor;
+		border-radius: 4px;
+
 		&:focus-visible {
 			outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
 			outline-offset: 2px;
 		}
 	}
-}
-
-.ms3-map-target--point-input::after {
- left: var(--ms3-point-input-x, 50%);
- top: var(--ms3-point-input-y, 50%);
 }

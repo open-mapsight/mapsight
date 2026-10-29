@@ -248,6 +248,9 @@ export const searchResultFeaturesSelector: Selector<
 export const searchRenderFormSelector = (state: RootStateSlice) =>
 	state.app.searchRenderForm !== false;
 
+export const skipLinksSelector = (state: RootStateSlice) =>
+	state.app.skipLinks === true;
+
 export const haveSearchInMapSelector = (state: RootStateSlice) =>
 	state.app.searchInMap;
 export const isEmbeddedMapSelector = (state: RootStateSlice) =>
