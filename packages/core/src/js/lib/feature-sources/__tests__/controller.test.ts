@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {ACTION_MERGE} from "@/lib/base/reducer";
+import {ACTION_MERGE, ACTION_SET} from "@/lib/base/reducer";
 import {
 	FEATURE_SOURCE_DATA_ADD_FEATURE,
 	FEATURE_SOURCE_DATA_UNDO,
@@ -270,5 +270,70 @@ describe("FeatureSourcesController", () => {
 		expect(state.editor?.ids).toEqual([]);
 		expect(state.editor?.featuresById).toBeUndefined();
 		expect(state.editor?.featuresKey).not.toBe(afterAdd?.featuresKey);
+	});
+});
+
+describe("feature-source normalization during reconfiguration", () => {
+	it("preserves loaded sources and indexes when another source is added", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const next = controller.reduce(
+			initial,
+			mergeAt(["newSource"], {type: "local"}),
+		);
+		expect(next.smartCity).toBe(initial.smartCity);
+		expect(next.smartCity?.featuresById).toBe(
+			initial.smartCity?.featuresById,
+		);
+		expect(next.newSource).toMatchObject({
+			data: null,
+			lastUpdate: null,
+			lastActionType: null,
+		});
+		expect(initial.newSource).toBeUndefined();
+		expect(controller.reduce(next, {type: "UNRELATED"})).toBe(next);
+	});
+
+	it("validates fresh sources from a serialized snapshot", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const snapshot = JSON.parse(
+			JSON.stringify(initial),
+		) as FeatureSourcesState;
+		snapshot.smartCity!.ids = ["stale-id"];
+		const next = controller.reduce(snapshot, {type: "INIT"});
+		expect(next.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(next.smartCity?.featuresById).toEqual({
+			"sensor-1": sensorFeature,
+		});
+		expect(controller.reduce(initial, {type: "TIME_TRAVEL"})).toBe(initial);
+	});
+
+	it("repairs replaced indexes even after the old source was validated", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const next = controller.reduce(initial, {
+			type: ACTION_SET,
+			path: ["smartCity", "ids"],
+			value: ["stale-id"],
+		});
+		expect(next.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(initial.smartCity?.ids).toEqual(["sensor-1"]);
+	});
+
+	it("updates features and indexes after reconfiguration without changing other sources", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const withOther = controller.reduce(
+			initial,
+			mergeAt(["other"], {type: "local"}),
+		);
+		const replacement = {...sensorFeature, properties: {name: "updated"}};
+		const next = controller.reduce(withOther, {
+			type: ACTION_SET,
+			path: ["smartCity", "data"],
+			value: {type: "FeatureCollection", features: [replacement]},
+		});
+		expect(next.smartCity?.featuresById?.["sensor-1"]).toBe(replacement);
+		expect(next.smartCity?.featuresKey).not.toBe(
+			initial.smartCity?.featuresKey,
+		);
+		expect(next.other).toBe(withOther.other);
 	});
 });
