@@ -1,5 +1,53 @@
 import {expect, test} from "@playwright/test";
 
+for (const width of [320, 360, 768, 1280]) {
+	test(`header geometry stays stable when the current nav item changes at ${width}px`, async ({
+		page,
+	}) => {
+		await page.setViewportSize({width, height: 900});
+		await page.goto("/");
+		const header = page.locator(".msb-site-header");
+		await expect(header).toBeVisible();
+		await page.evaluate(() => document.fonts.ready);
+		const geometry = () =>
+			header.evaluate((element) => {
+				const box = (node: Element) => {
+					const {x, y, width, height} = node.getBoundingClientRect();
+					return {x, y, width, height};
+				};
+				return {
+					logo: box(element.querySelector("img")!),
+					links: [...element.querySelectorAll("nav a")].map(box),
+					header: box(element),
+				};
+			});
+		const before = await geometry();
+		await header.locator("nav a").evaluateAll((links) => {
+			for (const link of links) link.removeAttribute("aria-current");
+		});
+		for (const link of await header.locator("nav a").all()) {
+			await link.evaluate((element) =>
+				element.setAttribute("aria-current", "page"),
+			);
+			expect(await geometry()).toEqual(before);
+			await link.evaluate((element) =>
+				element.removeAttribute("aria-current"),
+			);
+		}
+		await page.getByRole("button", {name: "Dark mode"}).click();
+		expect(await geometry()).toEqual(before);
+		expect(
+			await page
+				.locator("html")
+				.evaluate((element) => element.scrollWidth),
+		).toBe(width);
+		await page.goto("/scenarios/index.html");
+		await expect(header).toBeVisible();
+		await page.evaluate(() => document.fonts.ready);
+		expect(await geometry()).toEqual(before);
+	});
+}
+
 test("brand theme switches the logo without changing product typography or roles", async ({
 	page,
 }) => {

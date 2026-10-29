@@ -3,6 +3,7 @@
 	"extends": "../../configs/tsconfig-vite-node.json",
 	"include": [
 		"e2e/**/*.ts",
+		"scripts/web-brand.mts",
 		"playwright.config.ts",
 		"vite.config.ts",
 		"vite.count-aggregator-mock.ts",

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./brand/fonts.css";
+@import "./brand/site-header.css";
 
 html,
 body,
@@ -33,63 +34,9 @@ body {
 	min-height: 0;
 }
 
-.showcase__header {
-	border-bottom: 1px solid #d8dee6;
-	background: #fff;
-}
-
-.showcase__header-inner,
 .showcase__subnav-inner {
 	padding-left: 1.25rem;
 	padding-right: 1.25rem;
-}
-
-.showcase__header-inner {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-	padding-top: 0.65rem;
-	padding-bottom: 0.65rem;
-}
-
-.showcase__brand {
-	display: flex;
-	align-items: baseline;
-	gap: 0.5rem;
-}
-
-.showcase__tagline {
-	font-size: 0.85rem;
-	color: #64748b;
-}
-
-.showcase__nav ul {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.showcase__nav-link {
-	display: inline-block;
-	padding: 0.35rem 0.75rem;
-	border-radius: 999px;
-	font-size: 0.9rem;
-	font-weight: 600;
-	color: #334155;
-	text-decoration: none;
-}
-
-.showcase__nav-link:hover {
-	background: #f1f5f9;
-}
-
-.showcase__nav-link.is-active {
-	background: #dbeafe;
-	color: #1d4ed8;
 }
 
 .showcase__main {
@@ -578,76 +525,25 @@ body {
 	height: max(640px, calc(100dvh - 180px));
 }
 .msb-shell
-	:where(
-		.showcase__header,
-		.showcase__subnav,
-		.showcase__footer,
-		.msb-content,
-		.msb-skip
-	) {
+	:where(.showcase__subnav, .showcase__footer, .msb-content, .msb-skip) {
 	background: var(--msb-surface);
 	color: var(--msb-text);
 	font-family: var(--msb-font-body);
 	line-height: var(--msb-leading-body);
 }
-.msb-shell :where(.showcase__header, .showcase__subnav, .showcase__footer) {
+.msb-shell :where(.showcase__subnav, .showcase__footer) {
 	flex-shrink: 0;
 	border-color: var(--msb-border);
 }
-.msb-shell
-	:where(
-		.showcase__header-inner,
-		.showcase__subnav-inner,
-		.showcase__footer-inner
-	) {
+.msb-shell :where(.showcase__subnav-inner, .showcase__footer-inner) {
 	max-width: 1200px;
 	margin-inline: auto;
 	padding-inline: 40px;
 }
-.msb-shell .showcase__header-inner {
-	flex-wrap: wrap;
-	gap: 16px 24px;
-	padding-block: 16px;
-}
-.msb-shell .showcase__brand {
-	display: block;
-	white-space: nowrap;
-	padding: 12px;
-	margin-left: -12px;
-	color: var(--msb-text);
-	text-decoration: none;
-}
-.msb-shell .showcase__descriptor {
-	font-size: 16px;
-	font-weight: 600;
-	line-height: 1.5;
-}
-.msb-shell .showcase__brand img {
-	display: inline-block;
-	width: 186px;
-	height: 48px;
-	margin-inline-end: 24px;
-	/* The outlined wordmark baseline is y=46 in the 64-unit SVG. */
-	vertical-align: -13.5px;
-}
-.msb-shell .msb-theme {
-	margin-left: auto;
-	min-height: 44px;
-	padding: 10px 14px;
-	border: 1px solid var(--msb-border);
-	background: var(--msb-surface);
-	color: var(--msb-text);
-	font: 600 16px/1.5 var(--msb-font-body);
-	cursor: pointer;
-}
-.msb-shell .showcase__nav {
-	flex-basis: 100%;
-}
-.msb-shell .showcase__nav ul,
 .msb-shell .showcase__subnav ul {
 	gap: 4px 24px;
 }
-.msb-shell :where(.showcase__nav-link, .showcase__subnav-link) {
+.msb-shell .showcase__subnav-link {
 	padding: 8px 0;
 	min-height: 44px;
 	border-radius: 0;
@@ -655,8 +551,7 @@ body {
 	color: var(--msb-link);
 	text-underline-offset: 5px;
 }
-.msb-shell
-	:where(.showcase__nav-link, .showcase__subnav-link):is(:hover, .is-active) {
+.msb-shell .showcase__subnav-link:is(:hover, .is-active) {
 	background: transparent;
 	color: var(--msb-text);
 	box-shadow: none;
@@ -687,12 +582,7 @@ body {
 	text-underline-offset: 4px;
 }
 .msb-shell
-	:where(
-		.showcase__header,
-		.showcase__subnav,
-		.showcase__footer,
-		.msb-content
-	)
+	:where(.showcase__subnav, .showcase__footer, .msb-content)
 	:is(a, button):focus-visible,
 .msb-shell .msb-skip:focus-visible {
 	outline: 2px solid var(--msb-focus);
@@ -803,12 +693,7 @@ body {
 	line-height: 1.2;
 }
 @media (max-width: 800px) {
-	.msb-shell
-		:where(
-			.showcase__header-inner,
-			.showcase__subnav-inner,
-			.showcase__footer-inner
-		) {
+	.msb-shell :where(.showcase__subnav-inner, .showcase__footer-inner) {
 		padding-inline: 24px;
 	}
 	.msb-shell .landing .showcase-page__hero {
@@ -822,20 +707,8 @@ body {
 	}
 }
 @media (max-width: 480px) {
-	.msb-shell
-		:where(
-			.showcase__header-inner,
-			.showcase__subnav-inner,
-			.showcase__footer-inner
-		) {
+	.msb-shell :where(.showcase__subnav-inner, .showcase__footer-inner) {
 		padding-inline: 20px;
-	}
-	.msb-shell .showcase__header-inner {
-		align-items: start;
-		gap: 8px;
-	}
-	.msb-shell .msb-theme {
-		margin-left: 0;
 	}
 	.msb-shell .landing .showcase-page__hero {
 		padding: 48px 20px;

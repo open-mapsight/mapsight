@@ -79,30 +79,40 @@ export function ShowcaseFrame({
 			<a className="msb-skip" href="#showcase-content">
 				Skip to content
 			</a>
-			<header className="showcase__header">
-				<div className="showcase__header-inner">
-					<ShellLink
-						href="/"
-						nativeNavigation={nativeNavigation}
-						className="showcase__brand"
+			<header className="showcase__header msb-site-header">
+				<div className="msb-site-header__inner">
+					<div className="msb-site-header__mast">
+						<ShellLink
+							href="/"
+							nativeNavigation={nativeNavigation}
+							className="showcase__brand msb-site-header__brand"
+						>
+							<img
+								className="msb-site-header__logo"
+								src={darkFrame ? paperLogo : inkLogo}
+								alt="Mapsight"
+								width="186"
+								height="48"
+							/>
+							<span className="msb-site-header__descriptor">
+								Showcase
+							</span>
+						</ShellLink>
+						<div className="msb-site-header__tools">
+							<button
+								className="msb-site-header__theme"
+								type="button"
+								aria-pressed={darkFrame}
+								onClick={() => setDarkFrame(!darkFrame)}
+							>
+								Dark mode
+							</button>
+						</div>
+					</div>
+					<nav
+						className="showcase__nav msb-site-header__nav"
+						aria-label="Main"
 					>
-						<img
-							src={darkFrame ? paperLogo : inkLogo}
-							alt="Mapsight"
-							width="186"
-							height="48"
-						/>
-						<span className="showcase__descriptor">Showcase</span>
-					</ShellLink>
-					<button
-						className="msb-theme"
-						type="button"
-						aria-pressed={darkFrame}
-						onClick={() => setDarkFrame(!darkFrame)}
-					>
-						Dark mode
-					</button>
-					<nav className="showcase__nav" aria-label="Main">
 						<ul>
 							{navItems.map(({href, label, activePath}) => {
 								const active =
@@ -117,7 +127,7 @@ export function ShowcaseFrame({
 											aria-current={
 												active ? "page" : undefined
 											}
-											className={`showcase__nav-link${active ? " is-active" : ""}`}
+											className="showcase__nav-link"
 										>
 											{label}
 										</ShellLink>

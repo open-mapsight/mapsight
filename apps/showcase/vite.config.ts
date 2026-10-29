@@ -7,6 +7,7 @@ import {
 	createWorkspaceDevAliases,
 	workspacePackages,
 } from "../../configs/vite-workspace-dev.mts";
+import {webBrandManifest} from "./scripts/web-brand.mts";
 import {countAggregatorMockPlugin} from "./vite.count-aggregator-mock.ts";
 
 export default defineConfig(({command}) => ({
@@ -74,7 +75,22 @@ export default defineConfig(({command}) => ({
 			ignored: ["**/node_modules/**", "!**/node_modules/@mapsight/**"],
 		},
 	},
-	plugins: [countAggregatorMockPlugin(), tailwindcss()],
+	plugins: [
+		countAggregatorMockPlugin(),
+		tailwindcss(),
+		{
+			name: "web-brand-provenance",
+			async generateBundle() {
+				this.emitFile({
+					type: "asset",
+					fileName: "web-brand.json",
+					source:
+						JSON.stringify(await webBrandManifest(), null, 2) +
+						"\n",
+				});
+			},
+		},
+	],
 	css: {
 		preprocessorOptions: {
 			scss: {
