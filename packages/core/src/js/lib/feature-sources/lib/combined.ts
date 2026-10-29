@@ -10,15 +10,14 @@ export function combineFeatureSources(
 	featureSourcesState: FeatureSourcesState | undefined,
 	featureSourceNames: string[],
 ): FeatureSourceData {
-	let combinedFeatures: FeatureSourceData["features"] = [];
+	const combinedFeatures: NonNullable<FeatureSourceData["features"]> = [];
 
 	for (const id of featureSourceNames) {
 		const source = featureSourcesState?.[id];
 		if (!hasFeatureSourceLoadError(source) && source?.data) {
-			combinedFeatures = [
-				...combinedFeatures,
-				...(source.data.features ?? []),
-			];
+			for (const feature of source.data.features ?? []) {
+				combinedFeatures.push(feature);
+			}
 		}
 	}
 
@@ -32,17 +31,40 @@ export function createCombinedFeatureSourceSelector(
 	featureSourceNames: string[],
 	featureSourcesControllerName: string,
 ) {
+	let previousMembers: Array<FeatureSourceData["features"]> | undefined;
+	let result: {error: null; data: FeatureSourceData} | undefined;
+
 	return function combinedFeatureSourceSelector(state: State) {
 		const featureSourcesState = state[featureSourcesControllerName] as
 			FeatureSourcesState | undefined;
 
-		return {
+		// Loading flags and collection metadata do not change the combined
+		// features. Compare the contributing arrays, rather than rebuilding
+		// them and making the observer deep-compare every feature per action.
+		const members = featureSourceNames.map((id) => {
+			const source = featureSourcesState?.[id];
+			return hasFeatureSourceLoadError(source)
+				? undefined
+				: source?.data?.features;
+		});
+		if (
+			result &&
+			previousMembers?.length === members.length &&
+			members.every(
+				(features, index) => features === previousMembers![index],
+			)
+		) {
+			return result;
+		}
+		previousMembers = members;
+		result = {
 			error: null,
 			data: combineFeatureSources(
 				featureSourcesState,
 				featureSourceNames,
 			) satisfies FeatureSourceData,
 		};
+		return result;
 	};
 }
 
