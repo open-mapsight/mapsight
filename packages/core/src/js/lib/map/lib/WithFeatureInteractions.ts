@@ -28,6 +28,7 @@ import {
 	FeatureInteractionNames,
 } from "./featureInteractionNames";
 import {getIdForLayer} from "./tagLayer";
+import {warmUpHitDetection} from "./warmUpHitDetection";
 
 export {FeatureInteractionNames, type FeatureInteractionName};
 
@@ -566,6 +567,12 @@ export default class WithFeatureInteractions extends WithMap {
 				});
 			},
 			isEqual,
+		);
+
+		warmUpHitDetection(
+			map,
+			() =>
+				!!(handlers.mouseover || handlers.mousedown || handlers.touch),
 		);
 
 		map.on("pointermove", function onPointerMove(e) {
