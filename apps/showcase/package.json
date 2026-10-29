@@ -76,7 +76,7 @@
 	},
 	"scripts": {
 		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
-		"build:app": "vite build --mode production --minify terser",
+		"build:app": "vite build --mode production --minify oxc",
 		"build:mapsightStyle": "npm-run-all build:mapsightStyle:*",
 		"build:mapsightStyle:demo": "vector-style-compiler src/vector-styles/demo.scss --output src/generated/mapsight-vector-styles --name demo",
 		"build:mapsightStyle:icons": "vector-style-compiler src/vector-styles/icon-demo.scss --output src/generated/mapsight-vector-styles --name icon-demo",
