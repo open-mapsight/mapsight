@@ -75,6 +75,9 @@ export default function PopoverDialog({
 	const popoverRef = useRef<HTMLDivElement>(null);
 	const generatedId = useId();
 	const popoverId = idProp ?? generatedId;
+	// useDialog's inferred title slot can disappear while the closed panel is unmounted.
+	const titleId =
+		labelledBy ?? (title != null ? `${popoverId}-title` : undefined);
 	const {popoverProps, titleProps} = usePopoverDialog({
 		isOpen,
 		onClose,
@@ -86,7 +89,7 @@ export default function PopoverDialog({
 		shouldCloseOnBlur,
 		shouldFlip,
 		popoverId,
-		labelledBy,
+		labelledBy: titleId,
 		"aria-label":
 			labelledBy != null || title != null ? undefined : ariaLabel,
 	});
@@ -110,7 +113,7 @@ export default function PopoverDialog({
 							<Heading
 								as={Headline}
 								{...titleProps}
-								id={labelledBy ?? titleProps.id}
+								id={titleId ?? titleProps.id}
 								className="ms3-popover-dialog__title"
 							>
 								{title}

@@ -56,6 +56,10 @@ that list when migrating it — the check fails on stale entries.
 
 Run from root: `pnpm test` (turbo). Package-specific: `pnpm --filter @mapsight/core test`, `test:e2e`.
 
+Run `pnpm test:starters:copy-out` after building packages to check their published surface. It packs the packages,
+installs them into standalone starters, and builds the starters, including their imports of the packaged UI Sass
+entrypoints. Source-file checks against `package.json` or Sass text cannot establish this integration contract.
+
 **Quality goal:** Playwright E2E for GIS regressions — called out in ecosystem positioning vs Masterportal (Vitest-only
 upstream).
 

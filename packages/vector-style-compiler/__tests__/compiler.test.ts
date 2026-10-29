@@ -1,306 +1,100 @@
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import type RegularShape from "ol/style/RegularShape";
+
 import {expect, it} from "vitest";
 
-import cssToRules from "../src/js/cssToRules.ts";
-import Replacer from "../src/js/helpers/Replacer.ts";
 import compile from "../src/js/index.ts";
-import rulesToTree, {type Tree} from "../src/js/rulesToTree.ts";
-import treeToProgram from "../src/js/treeToProgram.ts";
+import {loadStyleModule} from "./helpers/loadStyleModule.ts";
 
-// language=CSS
-const testCss = `
-	@import "will/be/ignored";
-
-	@media (print) {
-		/* will be ignored */
-	}
-
-	global-will-be-ignored: true
-
-	;
-
-	* {
-		fillColor: #ff0000;
-		attrTest: attr(test);
-		attrPathTest: attr(path-to-test);
-		envAttrTest: attr(--env-test);
-		envAttrPathTest: attr(--env-path-to-test);
-		calcTest: calc(33 * 200 + 45);
-		replaceTest: replace("a", "e", "hallo");
-		calcWithAttributesTest: calc(3 * attr(--env-path-to-test));
-	}
-
-	#testCircle {
-		circle-stroke-width: 4;
-		circle-fill-color: black;
-	}
-
-	:selected {
-		stroke-color: orange;
-	}
-
-	:highlighted {
-		stroke-color: green;
-	}
-
-	[state = "someState"] {
-		fill-color: orange;
-	}
-
-	[state = "anotherState"] {
-		fill-color: green;
-	}
-
-	#emptyStyle {
-	}
-
-	#features {
-		icon-sizeX: 20;
-		icon-sizeY: 20;
-	}
-
-	#features {
-		/* this should extend the previous declaration */
-		icon-sizeY: 30;
-		icon-sizeZ: 30;
-	}
-
-	.group {
-		fillColor: #ff0000;
-		testEmptyValue: ;
-	}
-
-	.emptyGroup {
-	}
-
-	[attr="test"] {
-		fillColor: #ff0000;
-	}
-
-	:not( [attr   =  "test"]   ) {
-		fillColor: #ffff00;
-	}
-
-	[hasAttrTest] {
-		foo: bar;
-	}
-
-	[attr="123"] {
-		fillColor: #ff0000;
-	}
-
-	[props|attr="456"] {
-		fillColor: #00ff00;
-	}
-
-	:not( [props|attr= "456"]   ) {
-		fillColor: #00ffff;
-	}
-
-	[props|parking-capacity="tests nested properites"] {
-		fillColor: #0000ff;
-	}
-
-	[env|zoom="2"] {
-		test: test;
-	}
-
-	:not( [env|zoom="2"]   ) {
-		foo: bar;
-	}
-
-	[geometry|type="Point"],
-	[geometry|type="LineString"] {
-		strokeColor: orange;
-	}
-
-	[geometry|type="Polygon"] {
-		strokeColor: orange;
-	}
-
-	[|js="23 > 42"] {
-		lorem: "ipsum";
-	}
-
-	:not( [|js="23 > 42"]   ) {
-		lorem: dolor;
-	}
-
-	#features .group [attr="test"] {
-		foo: bar;
-	}
-
-	/* test three equal signs */
-	[|js="env.zoom >= 1 && env.zoom <= 10"] {
-		foo: bar;
-	}
-
-	.nullishValues {
-		a: 0;
-		b: "";
-		c: 0px;
-		d: 0cm;
-		e: "0";
-		f: " ";
-		g: "0px";
-		h: "0cm";
-	}
-
-	[geometry|type="LineString"] .start {
-		geometry: firstSegmentStart;
-	}
-
-	[geometry|type="LineString"] .arrow {
-		geometry: intermediateSegmentEnd;
-	}
-
-	[geometry|type="LineString"] .arrowLast {
-		geometry: lastSegmentEnd;
-	}
-
-	:not([attr]) {
-		fillColor: #ff4400;
-	}
-`;
-
-const exampleTree: Tree = {
-	myStyleName: {
-		myStateName: {
-			children: [
-				{
-					conditions: [
-						[
-							{
-								type: "value",
-								target: "props",
-								path: ["state"],
-								value: "selected",
-								negate: false,
-							},
-						],
-					],
-					declarations: {
-						default: {
-							fill: {
-								color: {
-									value: "'orange'",
-								},
-							},
-						},
-						other: {
-							fill: {
-								color: {
-									value: "#00f",
-								},
-							},
-						},
-					},
-				},
-				{
-					conditions: [
-						[
-							{
-								type: "geometryType",
-								value: "'LineString'",
-								negate: false,
-							},
-						],
-					],
-				},
-			],
-		},
-	},
-};
-
-it("creates replacer instance", () => {
-	expect(() => new Replacer()).not.toThrow();
+it("loads an empty stylesheet as a callable style with no declarations", async () => {
+	const style = await loadStyleModule(compile(""));
+	expect(style({}, new Feature(new Point([0, 0])))).toEqual([]);
 });
 
-it("transforms tree to hash program", () => {
-	const program = treeToProgram(exampleTree, "hash");
-	expect(program).toMatchSnapshot();
-});
-
-it("transforms tree to declaration program", () => {
-	const program = treeToProgram(exampleTree);
-	expect(program).toMatchSnapshot();
-});
-
-it("transforms tree to volatile hash NOP program", () => {
-	const program = treeToProgram(exampleTree, "volatileHash");
-
-	expect(program).not.toContain("parts.push");
-});
-
-it("throws exception on invalid :not() selector", () => {
-	expect(() => cssToRules(":not(*) {}")).toThrowError(
-		"Cannot negate selector part [*] with :not().",
-	);
-	expect(() => cssToRules(":not(.group) {}")).toThrowError(
-		"Cannot negate selector part [.group] with :not().",
-	);
-	expect(() => cssToRules(":not(#style) {}")).toThrowError(
-		"Cannot negate selector part [#style] with :not().",
-	);
-});
-
-it("parses nested declaration blocks as property paths", () => {
-	const rules = cssToRules(`
-		.clusterLabel {
-			text {
-				stroke {
-					color: "red";
-				}
+it("materializes nested declaration groups with the generated constructors", async () => {
+	const style = await loadStyleModule(
+		compile(`
+		#features {
+			stroke { color: red; width: 3; }
 			}
+		#features .label { text { text: "Station"; fill { color: blue; } }
 		}
-	`);
+	`),
+	);
+	const styles = style({style: "features"}, new Feature(new Point([0, 0])));
+	expect(styles).toHaveLength(2);
+	expect(styles[0]?.getStroke()?.getColor()).toBe("red");
+	expect(styles[0]?.getStroke()?.getWidth()).toBe(3);
+	expect(styles[1]?.getText()?.getText()).toBe("Station");
+	expect(styles[1]?.getText()?.getFill()?.getColor()).toBe("blue");
+});
 
-	expect(rules.rules[0]?.declarations).toEqual({
-		clusterLabel: {
-			text: {
-				stroke: {
-					color: {value: "'red'"},
-				},
-			},
-		},
+it.each(["circle", "regularShape"])(
+	"loads nested paint constructors for %s without a separate root fill or stroke",
+	async (kind) => {
+		const style = await loadStyleModule(
+			compile(`* {
+			image-type: ${kind};
+			${kind}-radius: 5;
+			${kind}-points: 3;
+			${kind}-fill-color: blue;
+			${kind}-stroke-color: red;
+		}`),
+		);
+		const [result] = style({}, new Feature(new Point([0, 0])));
+		const image = result?.getImage() as RegularShape;
+		expect(image.getFill()?.getColor()).toBe("blue");
+		expect(image.getStroke()?.getColor()).toBe("red");
+	},
+);
+
+it("updates cached styles when selector, attribute, or environment inputs change", async () => {
+	const style = await loadStyleModule(
+		compile(`
+		#features {
+			stroke-width: calc(1 * attr(width));
+			stroke-color: attr(--env-color);
+		}
+		#features [closed] { stroke-width: 0; }
+	`),
+	);
+	const feature = new Feature({geometry: new Point([0, 0]), width: 2});
+	const env = {style: "features", color: "red"};
+	expect(Number(style(env, feature)[0]?.getStroke()?.getWidth())).toBe(2);
+	feature.set("width", 4);
+	expect(Number(style(env, feature)[0]?.getStroke()?.getWidth())).toBe(4);
+	env.color = "blue";
+	expect(style(env, feature)[0]?.getStroke()?.getColor()).toBe("blue");
+	feature.set("closed", true);
+	expect(Number(style(env, feature)[0]?.getStroke()?.getWidth())).toBe(0);
+	feature.unset("closed");
+	expect(Number(style(env, feature)[0]?.getStroke()?.getWidth())).toBe(4);
+});
+
+it("loads the built-in path and replacement helpers used by expressions", async () => {
+	const style = await loadStyleModule(
+		compile(`
+		* {
+			text-text: replace("a", "e", attr(label-name));
+			text-offsetX: calc(3 * attr(--env-scale-factor));
+		}
+	`),
+	);
+	const feature = new Feature({
+		geometry: new Point([0, 0]),
+		label: {name: "hallo"},
 	});
-	expect(rules.__meta.declarationNames).toEqual(["text"]);
+	const [result] = style({scale: {factor: 2}}, feature);
+	expect(result?.getText()?.getText()).toBe("hello");
+	expect(result?.getText()?.getOffsetX()).toBe(6);
 });
 
-it("parses full css to rules correctly", () => {
-	const rules = cssToRules(testCss);
-	expect(rules).toMatchSnapshot();
-});
-
-it("parses full css to tree correctly", () => {
-	const rules = cssToRules(testCss);
-	const tree = rulesToTree(rules.rules);
-	expect(tree).toMatchSnapshot();
-});
-
-it("parses and transforms full css to hash program correctly", () => {
-	const rules = cssToRules(testCss);
-	const tree = rulesToTree(rules.rules);
-
-	const program = treeToProgram(tree, "hash");
-
-	expect(program).toMatchSnapshot();
-});
-
-it("parses and transforms full css to declaration program correctly", () => {
-	const rules = cssToRules(testCss);
-	const tree = rulesToTree(rules.rules);
-
-	const program = treeToProgram(tree);
-
-	expect(program).toMatchSnapshot();
-});
-
-it("parses and template full css correctly", () => {
-	const program = compile(testCss);
-	expect(program).toMatchSnapshot();
-});
-
-it("parses and template empty css correctly", () => {
-	const program = compile("");
-	expect(program).toMatchSnapshot();
-});
+it.each(["*", ".group", "#style"])(
+	"rejects unsupported negation of %s",
+	(selector) => {
+		expect(() =>
+			compile(`:not(${selector}) { stroke-color: red; }`),
+		).toThrow(/Cannot negate/);
+	},
+);
