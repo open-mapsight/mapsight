@@ -1,7 +1,6 @@
 import {readFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 
- 
 import sharp from "sharp";
 import {describe, expect, it} from "vitest";
 
