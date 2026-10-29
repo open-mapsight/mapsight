@@ -30,7 +30,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@tanstack/react-query": "^5.104.5",
+		"@tanstack/react-query": "^5.105.0",
 		"@testing-library/react": "^16.3.3",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
@@ -39,7 +39,7 @@
 		"chokidar": "^6.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"sass": "1.105.1",
+		"sass": "1.106.1",
 		"svgo": "^4.1.0",
 		"vitest": "catalog:"
 	},
@@ -190,7 +190,7 @@
 	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"@tanstack/react-query": "^5.104.5",
+		"@tanstack/react-query": "^5.105.0",
 		"react": "catalog:",
 		"react-dom": "catalog:"
 	},
