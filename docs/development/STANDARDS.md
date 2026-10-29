@@ -96,20 +96,17 @@ non-incremental invocation so removing `dist` cannot leave missing build outputs
 hidden by checker state. A Turbo task-cache hit can skip the checker entirely;
 the TypeScript state speeds up checks after edits that miss that task cache.
 
-In a fresh worktree, run `pnpm install --frozen-lockfile` rather than linking another
-checkout's `node_modules`. Run `pnpm verify --filter=@mapsight/<package>` once to
-prepare prerequisites before starting individual test-file loops.
+When creating a worktree, run `pnpm install --frozen-lockfile` rather than linking
+another checkout's `node_modules`. If your development tools support setup
+scripts, configure this command to run when the worktree is created.
+Run `pnpm verify --filter=@mapsight/<package>` once to prepare prerequisites
+before running individual test files.
 Turbo shares its local cache between worktrees; avoid
 `clean-build` during normal iteration. Shared TypeScript/ESLint configs are cache
 inputs. The showcase tile URL is excluded from automatic `VITE_*` inference in
 other tasks and included in the showcase build hash. Keep full
 CI coverage when adding local shortcuts; a file-only ESLint cache does not track
 changes to imported types.
-
-For T3 Code, configure `pnpm install --frozen-lockfile` as a project script that
-runs when a worktree is created. Keep checks manual during editing; use the
-filtered `verify` command before pushing rather than rerunning the entire suite
-after every agent turn.
 
 Run `pnpm test:starters:copy-out` after building packages to check their published surface. It packs the packages,
 installs them into standalone starters, and builds the starters, including their imports of the packaged UI Sass

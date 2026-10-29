@@ -1,8 +1,7 @@
 # Linked host apps
 
 Guidance for host apps that depend on `@mapsight/*` via local `link:` (or
-workspace) paths into this monorepo. Aimed at agents and humans doing
-pre-OSS migration / parity work.
+workspace) paths into this monorepo, including pre-OSS migration and parity work.
 
 ## Prefer a stable checkout
 
