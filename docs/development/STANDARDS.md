@@ -82,6 +82,23 @@ changes to imported types.
 **Quality goal:** Playwright E2E for GIS regressions — called out in ecosystem positioning vs Masterportal (Vitest-only
 upstream).
 
+### Long-term test value
+
+Keep a test when it catches a plausible, consequential regression: a public contract, an external input boundary,
+a nontrivial domain rule, a timing or concurrency interaction, or behavior spanning application components.
+Small unit tests are useful when the rule itself is easy to get wrong; an integration test adds value only when
+it exercises the relevant interaction rather than replacing it with mocks.
+
+Avoid tests that merely repeat obvious assignments, constants, or forwarding wrappers. Prefer observable results
+over internal object shapes, generated source text, and incidental CSS classes. Keep identity or serialization
+assertions when consumers actually depend on them. Before deleting an overlapping test, check which entry point
+and failure mode each test covers.
+
+A test introduced for a fix does not expire when the fix lands. Remove migration checks with the compatibility
+path they protect, and run one-off dependency checks with the affected tooling instead of keeping duplicate
+dependency API tests. Document intent and usage in the appropriate guide; retain behavioral tests for important
+contracts so accidental changes are still detected.
+
 ---
 
 ## Lint and format
