@@ -67,6 +67,17 @@ Packs register into a shared runtime catalog. Import a pack once at app startup
 (before rendering `fa-*` icons). Without the Font Awesome import, `fa-*` ids fall
 back to the default marker icon at runtime.
 
+### Pictogram attribution
+
+Credit is keyed by **pictogram source**, not by each `fa-*` id. Font Awesome
+Free paths are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The
+package ships a `NOTICE` and a banner on the generated file for redistribution.
+On-screen credit is one Citations line when registration includes
+`fontawesome` — look up `getPictogramSourceLicense("fontawesome")` from
+`@mapsight/traffic-style/pictograms`. Traffic-style native pictograms stay
+uncredited in the UI. Remapped ids (`fa-car-bus` is van-shuttle) are not
+listed as official Font Awesome names.
+
 ---
 
 ## Build-time vs runtime customization

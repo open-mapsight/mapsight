@@ -147,6 +147,8 @@ const en: Record<string, string> = {
 	"ui.map-overlay.info.open":
 		"open source disclosures and further information",
 
+	"ui.citations.pictograms": "Pictograms",
+
 	"ui.map-overlay.layer-switcher.modal.label": "Layers",
 	"ui.map-overlay.layer-switcher.layers": "layers",
 	"ui.map-overlay.layer-switcher.closeLayers": "close layer picker",

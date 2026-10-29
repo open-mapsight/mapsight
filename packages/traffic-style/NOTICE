@@ -1,0 +1,19 @@
+@mapsight/traffic-style
+
+Package code is MIT. Font Awesome Free icon paths redistributed here are
+CC BY 4.0.
+
+Code (TypeScript, SCSS, build scripts)
+  License: MIT
+
+Font Awesome pictogram paths (`src/generated/pictograms/fontawesome.ts`)
+  Copyright: Fonticons, Inc. / Dave Gandy
+  License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  Homepage: https://fontawesome.com
+  Build-time source: @fortawesome/free-solid-svg-icons
+  Adaptation: SVG paths extracted and composited onto Mapsight markers;
+  some pictogram ids are remapped (for example `fa-car-bus` is van-shuttle).
+
+The package `"license"` field remains MIT. This NOTICE is the dual-license
+story for redistribution. On-screen credit is pictogram attribution in
+Mapsight Citations when registration includes `fontawesome`.

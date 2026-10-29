@@ -122,6 +122,8 @@ export type InternalMapsightUiRendererProps = {
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
 	future?: FutureFlags;
+	/** Host pictogram ids, combined with ids derived from layers and loaded list/search features. */
+	citationPictogramIds?: readonly string[];
 	headings?: HeadingOptions;
 };
 
@@ -392,6 +394,8 @@ export type CreateOptions = {
 	 * Opt into next-major behavior. See Decision 012.
 	 */
 	future?: FutureFlags;
+	/** Host pictogram ids, combined with ids derived from layers and loaded list/search features. */
+	citationPictogramIds?: readonly string[];
 	/** Page-outline placement and exceptions. Read when future.v8_automaticHeadings is true. */
 	headings?: HeadingOptions;
 

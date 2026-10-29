@@ -8,6 +8,7 @@ import {type HeadingOptions, HeadingsProvider} from "../../headings";
 import type {MapsightUiComponents} from "../../helpers/components";
 import {ComponentsContext} from "../../helpers/components";
 import type {AppChannelListenerDefinition, FutureFlags} from "../../types";
+import {CitationPictogramIdsContext} from "../citations/citation-pictogram-ids-context";
 import ErrorBoundary from "../error-boundary";
 import {AppChannelProvider} from "./app-channel";
 
@@ -19,6 +20,7 @@ function AppContext({
 	appChannelListeners = [],
 	future = EMPTY_FUTURE_FLAGS,
 	headings,
+	citationPictogramIds = [],
 	children,
 }: {
 	store: Store;
@@ -28,6 +30,7 @@ function AppContext({
 	appChannelListeners?: AppChannelListenerDefinition[];
 	future?: FutureFlags;
 	headings?: HeadingOptions;
+	citationPictogramIds?: readonly string[];
 	children?: React.ReactNode;
 }) {
 	useEffect(() => {
@@ -38,16 +41,20 @@ function AppContext({
 		<ReduxProvider store={store} serverState={serverState}>
 			<AppChannelProvider listeners={appChannelListeners}>
 				<FutureFlagsContext.Provider value={future}>
-					<ComponentsContext.Provider value={components}>
-						<HeadingsProvider
-							enabled={future.v8_automaticHeadings === true}
-							options={headings}
-						>
-							<ErrorBoundary variant="page">
-								{children}
-							</ErrorBoundary>
-						</HeadingsProvider>
-					</ComponentsContext.Provider>
+					<CitationPictogramIdsContext.Provider
+						value={citationPictogramIds}
+					>
+						<ComponentsContext.Provider value={components}>
+							<HeadingsProvider
+								enabled={future.v8_automaticHeadings === true}
+								options={headings}
+							>
+								<ErrorBoundary variant="page">
+									{children}
+								</ErrorBoundary>
+							</HeadingsProvider>
+						</ComponentsContext.Provider>
+					</CitationPictogramIdsContext.Provider>
 				</FutureFlagsContext.Provider>
 			</AppChannelProvider>
 		</ReduxProvider>
