@@ -6,6 +6,10 @@ Keep the PR in draft until the scope and host migrations have been agreed.
 The major Changeset belongs to the eventual v8 cut; merging this branch makes
 it eligible for the normal Changesets release workflow.
 
+For host migration steps and before/after examples, use the
+[UI v8 upgrade guide](UPGRADE_TO_UI_V8.md). This inventory tracks implementation
+scope and release decisions.
+
 ## Behavior changes implemented in the draft
 
 | 7.x opt-in                        | v8 behavior / host action                                                                                                                                                                                                                                    |

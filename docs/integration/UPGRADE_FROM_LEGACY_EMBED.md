@@ -1,8 +1,8 @@
 # Upgrade from legacy embed hosts (7.x reference)
 
 The UI compatibility paths below describe **7.x only**. The UI v8 draft removes
-these shims; see [UI v8 preparation and migration inventory](UI_V8_MIGRATION.md)
-for the flat embed API, removed imports, and open layout-slot decisions.
+these shims; follow the [UI v8 upgrade guide](UPGRADE_TO_UI_V8.md) for migration
+steps. The [preparation inventory](UI_V8_MIGRATION.md) tracks open layout-slot decisions.
 Deprecations owned by core/lib-js follow their own release schedules.
 
 Short guide for host apps built against the pre–open-source Mapsight embed

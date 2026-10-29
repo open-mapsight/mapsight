@@ -14,6 +14,11 @@ build), a declarative config object, and `create()` mounts the Redux-backed GIS 
 See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md) for architecture,
 integration patterns, and licensing.
 
+## Upgrading from v7
+
+Follow the [UI v8 upgrade guide](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/UPGRADE_TO_UI_V8.md)
+for host migration steps and before/after examples. The v8 release is still being prepared; the guide tracks the draft scope.
+
 ## Quick start
 
 ```ts

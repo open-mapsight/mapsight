@@ -73,7 +73,7 @@ different configurations without sharing mutable state. React portals retain the
 ## Explicit elements and exceptions
 
 Resolution order is an explicit component element (`headlineAs`, `groupHeadlineAs`, or list `groupAs`), then the
-configured slot override, then the contextual rank, then the historical element when automatic headings are off.
+configured slot override, then the contextual rank.
 Explicit native heading elements also determine the depth of their child content.
 
 ```ts
@@ -109,7 +109,7 @@ heading rank is opaque; supply a `HeadingLevel` scope explicitly for their conte
 
 `uiState.list.renderGroupAs` also controls whether grouping is enabled. Keep those choices explicit:
 
-- `"auto"` enables grouping with contextual headings .
+- `"auto"` enables grouping with contextual headings.
 - An existing tag such as `"h3"` or `"div"` remains an explicit element override.
 - Falsy values continue to disable grouping.
 
