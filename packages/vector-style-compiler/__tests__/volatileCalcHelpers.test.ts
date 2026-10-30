@@ -17,3 +17,11 @@ it("detects volatile calc helper calls", () => {
 	).toBe(true);
 	expect(containsVolatileCalcHelper("zoom * 2 + props['test']")).toBe(false);
 });
+
+it("treats synchronous icon dimensions as non-volatile", () => {
+	expect(
+		containsVolatileCalcHelper(
+			'mapsightRuntimeIconSize(props["mapsightIconId"], "small", "width")',
+		),
+	).toBe(false);
+});

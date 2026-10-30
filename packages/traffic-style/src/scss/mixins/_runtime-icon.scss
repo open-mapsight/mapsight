@@ -10,7 +10,7 @@
 			)
 		);
 
-		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+		@include runtime-icon-dimensions.runtimeIconDimensions($state, "--env-mapsightIconId");
 	}
 
 	[mapsightIconId] {
@@ -34,7 +34,7 @@
 					)
 				);
 
-				@include runtime-icon-dimensions.runtimeIconDimensions($state);
+				@include runtime-icon-dimensions.runtimeIconDimensions($state, "--env-mapsightIconId");
 			}
 		}
 	}
@@ -55,7 +55,7 @@
 			snapToPixel: true;
 		}
 
-		@include runtime-icon-dimensions.runtimeIconDimensions($state);
+		@include runtime-icon-dimensions.runtimeIconDimensions($state, "--env-mapsightIconId");
 	}
 
 	[mapsightIconId] {
@@ -85,8 +85,46 @@
 					)
 				);
 
-				@include runtime-icon-dimensions.runtimeIconDimensions($state);
+				@include runtime-icon-dimensions.runtimeIconDimensions($state, "--env-mapsightIconId");
 			}
+		}
+	}
+}
+
+/// Preserve the square halo and grow it with horizontal compositions.
+@mixin runtimeIconSelection {
+	:not([mapsightIconId]) [env|mapsightIconId] {
+		@include runtimeSelectionRadius("--env-mapsightIconId");
+	}
+	[mapsightIconId] {
+		@include runtimeSelectionRadius("mapsightIconId");
+	}
+	@if variables.$MAPSIGHT_TRAFFIC_STYLE__ICON_ENABLE_FORCE_BY_ENV {
+		[env|mapsightIconUse="force"] [env|mapsightIconId] {
+			@include runtimeSelectionRadius("--env-mapsightIconId");
+		}
+	}
+}
+
+@mixin runtimeSelectionRadius($id) {
+	[state="highlight"],
+	[state="select"] {
+		.selectionBackground {
+			circle-radius: calc(
+				26 +
+					(
+						mapsightRuntimeIconSize(
+								attr(#{$id}),
+								"default",
+								"width"
+							) - mapsightRuntimeIconSize(
+								attr(#{$id}),
+								"default",
+								"height"
+							)
+					) /
+					4
+			);
 		}
 	}
 }

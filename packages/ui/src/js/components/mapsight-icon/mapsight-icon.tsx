@@ -1,13 +1,15 @@
 import {memo} from "react";
 
 import {parseMapsightIcon, uiIconSrc} from "@mapsight/traffic-style/icon";
-import {isComposableIcon} from "@mapsight/traffic-style/icon-meta";
+import {hasIcon, isComposableIcon} from "@mapsight/traffic-style/icon-meta";
+import {hasPictogram} from "@mapsight/traffic-style/pictograms";
 
 import {siteConfig} from "../../config";
 
 export type MapsightIconProps = {
 	id: string | undefined;
 	className?: string;
+	/** With one dimension omitted, composed icons preserve their aspect ratio. */
 	width?: number;
 	height?: number;
 };
@@ -44,8 +46,8 @@ function SpriteMapsightIcon({
 function ComposableMapsightIcon({
 	id,
 	className,
-	width = 40,
-	height = 40,
+	width,
+	height,
 }: {
 	id: string;
 	className?: string;
@@ -64,23 +66,23 @@ function ComposableMapsightIcon({
 		);
 	}
 
+	const displayHeight =
+		height ??
+		(width === undefined ? 40 : (width * icon.height) / icon.width);
+	const displayWidth = width ?? (displayHeight * icon.width) / icon.height;
 	return (
 		<img
 			className={className}
 			src={icon.src}
-			width={width}
-			height={height}
+			width={displayWidth}
+			height={displayHeight}
+			style={{objectFit: "contain"}}
 			alt=""
 		/>
 	);
 }
 
-function MapsightIcon({
-	id,
-	className,
-	width = 40,
-	height = 40,
-}: MapsightIconProps) {
+function MapsightIcon({id, className, width, height}: MapsightIconProps) {
 	if (!id) {
 		return null;
 	}
@@ -88,6 +90,7 @@ function MapsightIcon({
 	if (
 		id.includes("/") ||
 		isComposableIcon(id) ||
+		(!hasIcon(id) && hasPictogram(id)) ||
 		parseMapsightIcon(id)?.label != null
 	) {
 		return (

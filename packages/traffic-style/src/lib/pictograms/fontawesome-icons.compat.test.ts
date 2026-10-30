@@ -35,6 +35,7 @@ const requiredIcons = [
 	"faPersonShelter",
 	"faPersonWalking",
 	"faRecycle",
+	"faRestroom",
 	"faRoute",
 	"faSchool",
 	"faSeedling",
@@ -55,6 +56,7 @@ const requiredIcons = [
 	"faWater",
 	"faWaterLadder",
 	"faWifi",
+	"faWheelchair",
 ] as const;
 
 it("exports every Font Awesome icon used by the pictogram importer", async () => {

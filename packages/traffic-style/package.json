@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^7.3.1",
+		"@mapsight/lib-js": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^5.0.0",
 		"fs-extra": "^11.4.0",
@@ -110,7 +111,7 @@
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:src copy:misc",
-		"copy:misc": "node scripts/dev/write-dist-package.json.ts && cp README.md base.scss full.scss dist/",
+		"copy:misc": "node scripts/dev/write-dist-package.json.ts && cp README.md THIRD_PARTY_NOTICES.md base.scss full.scss dist/",
 		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
 		"lint": "eslint scripts scripts/dev src/lib/icon src/lib/runtime",
 		"test": "vitest run",

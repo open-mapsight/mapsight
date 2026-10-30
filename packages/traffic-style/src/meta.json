@@ -1372,6 +1372,24 @@
 			"aliases": ["university"],
 			"groups": ["education", "poi", "poi-services"],
 			"render": "composable"
+		},
+		"wc": {
+			"label": {
+				"de": "WC",
+				"en": "Restroom"
+			},
+			"aliases": [],
+			"groups": ["default", "poi"],
+			"render": "composable"
+		},
+		"wc-accessible": {
+			"label": {
+				"de": "Barrierefreies WC",
+				"en": "Accessible restroom"
+			},
+			"aliases": [],
+			"groups": ["default", "poi"],
+			"render": "composable"
 		}
 	}
 }

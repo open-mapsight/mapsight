@@ -73,7 +73,11 @@
 	}
 
 	&__icon {
-		width: calc(var(--ms3-list-icon-width) + 12px);
+		width: auto;
+		min-width: calc(var(--ms3-list-icon-width) + 12px);
+		flex-shrink: 0;
+		padding-inline-end: 12px;
+		box-sizing: border-box;
 		min-height: var(--ms3-list-icon-width);
 	}
 

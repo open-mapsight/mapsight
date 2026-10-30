@@ -180,6 +180,10 @@ function _declarationToStyle(
 			//	style.size = declarationValueValue ? declarationValueValue.split(' ').map(part => parseFloat(part)) : style.size;
 			//	break;
 
+			case "radius":
+				style.radius = numberValue(declarationValueValue);
+				break;
+
 			case "sizeX":
 				style.size = style.size || [0, 0];
 				style.size[0] = numberValue(declarationValueValue);

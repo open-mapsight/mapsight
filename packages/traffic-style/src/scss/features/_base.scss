@@ -51,6 +51,8 @@
 		}
 	}
 
+	@include runtime-icon.runtimeIconSelection;
+
 	[mapsightIconId="stau"] {
 		stroke-color: #f00;
 	}

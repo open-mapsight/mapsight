@@ -13,3 +13,12 @@ describe("createHelperImportsFromProgram", () => {
 		expect(imports).toContain("@mapsight/traffic-style/runtime");
 	});
 });
+
+it("imports the catalog dimension helper for icon size expressions", () => {
+	const imports = createHelperImportsFromProgram(
+		'mapsightRuntimeIconSize(props["mapsightIconId"], "small", "width")',
+	);
+	expect(imports).toContain(
+		"import { mapsightRuntimeIconSize } from '@mapsight/traffic-style/runtime'",
+	);
+});

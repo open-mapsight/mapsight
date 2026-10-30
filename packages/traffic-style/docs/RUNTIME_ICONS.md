@@ -389,3 +389,56 @@ Run unit tests with `pnpm test` in this package.
 | `@mapsight/traffic-style/runtime-dev` | Dev tools, parsing, prewarm, stats            |
 | `@mapsight/traffic-style/icon`        | Icon formation + sync `uiIconSrc` for UI HTML |
 | `@mapsight/traffic-style/icon-style`  | Direct `mapsightRuntimeIcon` (compiler alias) |
+
+## Horizontal compositions
+
+A `PictogramDefinition` may contain `composition: {layout: "horizontal", glyphs}`
+instead of `viewBox`/`markup`. `glyphs` holds at least two ordinary glyph definitions
+(viewBox, markup, source and optional padding); there are no nested layouts or
+feature-level dimensions. Each glyph gets the same content slot and padding as a
+single icon. Adjacent slots touch, producing a compact row inside one extended
+background. The default square frame becomes a rounded rectangle; small circles
+become capsules. Single-glyph geometry stays unchanged.
+
+`getIconLayout` is the shared source of template dimensions for SVG, runtime PNG,
+prebuilt PNG and UI sources. The compiler imports `mapsightRuntimeIconSize(id,
+variant, axis)` for independent physical `icon-sizeX`/`icon-sizeY` values, including
+while the bitmap is pending. Runtime bitmaps use pixelRatio 2 and default OL scale
+0.5; OL's default fractional center anchor therefore centers the complete image.
+The full rectangle is one image, hit target and declutter unit. Selection uses the
+default variant at any zoom, with an expanded halo for a wider definition.
+
+| `wc-accessible` | Logical size | Raster at 2× |
+| --------------- | ------------ | ------------ |
+| default         | 64×40        | 128×80       |
+| small           | 41×28        | 82×56        |
+| xsmall          | 31×22        | 62×44        |
+| plain           | 54×34        | 108×68       |
+
+`MapsightIcon` keeps the existing default height of 40 CSS pixels and derives the
+width from the SVG's aspect ratio. A single explicit width or height scales the
+other dimension; two explicit dimensions define a containing box. List icon
+columns accommodate the intrinsic width without shrinking it. Host CSS should
+also preserve the image's aspect ratio and allow the icon column to grow.
+
+### WC migration for hosts
+
+After updating `@mapsight/traffic-style` and `@mapsight/ui` to a release containing
+this change, use `wc/#f2c14e/#0e2a4f` or `wc-accessible/#ffffff/#0e2a4f` directly as
+`mapsightIconId`. Both are in the standard catalog, including picker metadata and
+prebuilt assets; the optional Font Awesome pack is unnecessary for these ids.
+Rebuild host SCSS with the released vector-style-compiler so the new dimension
+helper is imported (or use the released precompiled traffic style).
+
+Remove local registrations of `wc` and the provisional stacked `wc-accessible`;
+otherwise a later local registration will override the standard definitions.
+Existing uppercase `WC` remains a two-letter text label. Migrate that export to
+lowercase `wc` when a pictogram is intended, and then remove any local `WC` alias.
+Other one/two-character labels retain their existing behavior.
+
+For Braunschweig, remove only the superseded pictogram-related portion of the UI
+patch after verifying the release. Preserve its independent list-sorting changes
+and any other host pictograms. No host files are changed by this implementation.
+
+Font Awesome Free glyph attribution and license links are shipped in
+`THIRD_PARTY_NOTICES.md` and retained in generated modules/composed SVGs.

@@ -85,3 +85,19 @@ it("skips Icon construction when icon-src is empty", () => {
 	expect(style?.getImage()).toBeNull();
 	expect(style?.getFill()).not.toBeNull();
 });
+
+it("passes computed circle radii as numbers to OpenLayers", async () => {
+	const {default: CircleStyle} = await import("ol/style/Circle");
+	const style = declarationToStyle(
+		{...constructorsMap, circle: CircleStyle},
+		{
+			image: {type: {value: "circle"}},
+			circle: {radius: {value: "38"}, fill: {color: {value: "cyan"}}},
+		},
+		"style",
+		"computed-radius",
+	);
+	const circle = style?.getImage() as InstanceType<typeof CircleStyle>;
+	expect(circle.getRadius()).toBe(38);
+	expect(circle.getSize()).toEqual([76, 76]);
+});

@@ -53,3 +53,38 @@ describe("MapsightIcon", () => {
 		expect(container.querySelector("img")).toBeNull();
 	});
 });
+
+it("keeps a wide icon proportional with default and one-sided size overrides", () => {
+	for (const [props, width, height] of [
+		[{}, (40 * 54) / 34, 40],
+		[{height: 34}, 54, 34],
+		[{width: 54}, 54, 34],
+	] as const) {
+		const {container} = render(
+			<MapsightIcon id="wc-accessible" {...props} />,
+		);
+		const image = container.querySelector("img");
+		expect(Number(image?.getAttribute("width"))).toBeCloseTo(width);
+		expect(Number(image?.getAttribute("height"))).toBeCloseTo(height);
+		expect(image?.getAttribute("src")).toContain("data:image/svg+xml");
+	}
+});
+
+it("uses registered custom compositions even without colors in the id", async () => {
+	const {registerPictograms} =
+		await import("@mapsight/traffic-style/pictograms");
+	const glyph = {
+		viewBox: "0 0 10 10",
+		markup: '<path d="M0 0h10v10H0z"/>',
+		source: "traffic-style" as const,
+	};
+	registerPictograms([
+		{
+			id: "host-wide",
+			source: "traffic-style",
+			composition: {layout: "horizontal", glyphs: [glyph, glyph]},
+		},
+	]);
+	const {container} = render(<MapsightIcon id="host-wide" height={34} />);
+	expect(container.querySelector("img")?.getAttribute("width")).toBe("54");
+});

@@ -78,6 +78,13 @@ plugin; feature lists compose SVG icons synchronously (SSR-safe). Map markers st
 
 `markerCaption` draws bigger outlined text **below** the icon on `#features` (not clusters). Optional `markerCaptionColor` and `markerCaptionHalo` set fill and outline; defaults are the traffic-style text colors. Captions share a style part (`.iconCaption`) so they can sit next to a side `title` label. Hidden on spread features except highlight/select.
 
+The standard catalog also includes `wc` and `wc-accessible` (Font Awesome Free
+restroom / restroom + wheelchair). The latter uses one compact wide frame with
+two full-sized glyphs. Set `mapsightIconId`, for example
+`wc-accessible/#ffffff/#0e2a4f`; dimensions are defined by the catalog.
+Uppercase `WC` remains a text label. See [horizontal compositions and host migration](docs/RUNTIME_ICONS.md#horizontal-compositions)
+and [third-party icon attribution](THIRD_PARTY_NOTICES.md).
+
 Optional Font Awesome pictograms (`fa-*` ids):
 
 ```ts

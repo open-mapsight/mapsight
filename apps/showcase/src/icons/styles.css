@@ -587,7 +587,7 @@ select {
 
 .catalog-grid-item__preview > img,
 .catalog-grid-item__preview > .catalog-grid-item__placeholder {
-	width: 48px;
+	width: auto;
 	height: 48px;
 }
 
@@ -616,7 +616,8 @@ select {
 .catalog-grid-item__preview {
 	display: grid;
 	place-items: center;
-	width: 62px;
+	min-width: 62px;
+	width: max-content;
 	height: 56px;
 	padding: 0.35rem;
 	border: 1px solid transparent;
@@ -669,8 +670,9 @@ select {
 }
 
 .catalog-grid-item__variants {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 	gap: 0.25rem;
 	width: 100%;
 }
