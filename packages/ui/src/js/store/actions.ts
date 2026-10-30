@@ -4,7 +4,7 @@ import type {Extent} from "ol/extent";
 
 import {batchActions} from "redux-batched-actions";
 
-import {mergeAll} from "@mapsight/core/lib/base/actions";
+import {mergeConfigAll} from "@mapsight/core/lib/base/actions";
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 import {isDevelopment} from "@mapsight/core/lib/helpers";
 import {animate as animateMap} from "@mapsight/core/lib/map/actions";
@@ -49,7 +49,7 @@ export function resetMapsightCore(config: Partial<State>) {
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_HIGHLIGHT),
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_PRESELECT),
 		deselectAll(c.FEATURE_SELECTIONS, FEATURE_SELECTION_SELECT),
-		mergeAll(validatedConfig),
+		mergeConfigAll(validatedConfig),
 	]);
 }
 

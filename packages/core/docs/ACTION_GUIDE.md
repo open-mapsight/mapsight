@@ -12,7 +12,7 @@ Mapsight has three coexisting action systems. Pick the one that matches your int
 
 | I want to…                  | Use                                                        |
 | --------------------------- | ---------------------------------------------------------- |
-| Apply CMS / preset JSON     | `mergeAll`, `set`, `resetMapsightCore`                     |
+| Apply CMS / preset JSON     | `mergeConfigAll`, `set`, `resetMapsightCore`               |
 | Switch entire view/module   | `resetMapsightCore`                                        |
 | Animate map, fit to feature | Domain actions in `@mapsight/core/lib/map/actions`         |
 | Load GeoJSON                | `LOAD_FEATURE_SOURCE` family (`load`, …)                   |
@@ -26,20 +26,23 @@ Mapsight has three coexisting action systems. Pick the one that matches your int
 **Use:** path actions from `@mapsight/core/lib/base/actions`, and `resetMapsightCore` when you also need to clear selections.
 
 - `set(path, value)` — replace a single value (layer visibility, one field).
-- `merge(path, value)` — shallow-merge an object at a path.
-- `mergeAll({ map: …, featureSources: … })` — batch several top-level slices at once.
-- `resetMapsightCore(config)` — deselect all features, then `mergeAll(config)` (see §2).
+- `mergeConfig(path, value)` — deep-merge acyclic JSON-style config, keeping unchanged branches by reference.
+- `mergeConfigAll({ map: …, featureSources: … })` — batch several top-level config slices at once.
+- `merge` / `mergeAll` — the existing deep-merge actions; their behavior is unchanged.
+- `resetMapsightCore(config)` — deselect all features, then `mergeConfigAll(config)` (see §2).
+
+Both merge families keep omitted keys, ignore incoming `undefined` for existing values, and merge arrays **by index**. They do not replace arrays or remove keys. Use `set` for replacement (including removal of object keys) and `removeFrom` to remove an array element. The config family avoids copying loaded GeoJSON omitted from a preset; [configuration merge performance](./CONFIG_MERGE.md) describes its scope and verification.
 
 Paths are arrays routed by the first segment (`["map", "layers", id, …]`).
 
 ### Good
 
 ```typescript
-import {mergeAll, set} from "@mapsight/core/lib/base/actions";
+import {mergeConfigAll, set} from "@mapsight/core/lib/base/actions";
 
 // Bulk preset fragment: layers + sources in one batch
 store.dispatch(
-	mergeAll({
+	mergeConfigAll({
 		map: {layers: moduleLayers, view: {zoom: 12}},
 		featureSources: moduleSources,
 	}),
@@ -90,7 +93,7 @@ store.dispatch(
 );
 ```
 
-`base` should include a **complete** layer catalog for the target module. `mergeAll` deep-merges `map.layers`; omitted layer IDs survive from the previous module.
+`base` should include a **complete** layer catalog for the target module, including explicit visibility for inactive layers. Both merge families deep-merge `map.layers`; omitted layer IDs survive from the previous module. Structural sharing does not change this requirement.
 
 ### Anti-pattern
 

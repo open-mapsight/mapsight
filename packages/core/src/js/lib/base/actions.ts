@@ -5,6 +5,7 @@ import {batchActions} from "redux-batched-actions";
 import {
 	ACTION_ADD_TO,
 	ACTION_MERGE,
+	ACTION_MERGE_CONFIG,
 	ACTION_REMOVE_FROM,
 	ACTION_SET,
 } from "@/lib/base/reducer";
@@ -127,6 +128,19 @@ export function merge(path: ActionPath | null, value: unknown) {
 }
 
 export const mergeAll = allKeys(merge);
+
+/**
+ * Merge acyclic JSON-style configuration, retaining unchanged state branches.
+ * Arrays merge by index and omitted keys remain, just like merge(). Use set()
+ * for replacement, or removeFrom() to remove an array element.
+ */
+export function mergeConfig(path: ActionPath | null, value: unknown) {
+	throwOnEmptyPath(path);
+
+	return withPath({type: ACTION_MERGE_CONFIG, value}, path);
+}
+
+export const mergeConfigAll = allKeys(mergeConfig);
 
 export function addTo(path: ActionPath | null, element: unknown) {
 	throwOnEmptyPath(path);
