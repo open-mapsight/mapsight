@@ -11,14 +11,16 @@ import {gzipSync} from "node:zlib";
 import {chromium} from "@playwright/test";
 import {build} from "vite";
 
+import type {PreloadPlan} from "./icon-preload.ts";
 import type {Input, Mode, Tile, run} from "./icon-rendering.ts";
 
 const {values} = parseArgs({
 	options: {
 		out: {type: "string"},
 		assets: {type: "string"},
+		suite: {type: "string", default: "rendering"},
 		repeats: {type: "string", default: "5"},
-		frames: {type: "string", default: "30"},
+		frames: {type: "string"},
 	},
 });
 const appRoot = path.resolve(
@@ -30,7 +32,9 @@ const trafficRoot = path.join(repoRoot, "packages/traffic-style");
 const assetsRoot = path.resolve(
 	values.assets ?? path.join(trafficRoot, "dist"),
 );
-const frames = Number(values.frames);
+const suite = values.suite;
+assert(suite === "rendering" || suite === "preload");
+const frames = Number(values.frames ?? (suite === "preload" ? "2" : "30"));
 assert(Number.isInteger(frames) && frames > 0);
 const repeats = Number(values.repeats);
 assert(Number.isInteger(repeats) && repeats > 0);
@@ -173,9 +177,94 @@ const profiles = [
 const cases = [
 	{count: 1000, unique: 1},
 	{count: 1000, unique: ids.length},
-	{count: 5000, unique: ids.length},
+	...(suite === "rendering" ? [{count: 5000, unique: ids.length}] : []),
 ];
+type Strategy = {name: string; mode: Mode; preload?: PreloadPlan};
 const modes: Mode[] = ["sprite", "png", "svg", "runtime"];
+const strategies: Strategy[] =
+	suite === "rendering"
+		? modes.map((mode) => ({name: mode, mode}))
+		: [
+				...(["sprite", "png", "runtime"] as const).map((mode) => ({
+					name: `${mode}-demand`,
+					mode,
+				})),
+				...(["sprite", "png"] as const).flatMap((mode) =>
+					[100, 300].map((leadMs) => ({
+						name: `${mode}-preload-${leadMs}`,
+						mode,
+						preload: {
+							leadMs,
+							concurrency: 2,
+							maxTargets: 32,
+							budgetMs: 250,
+							forecast: "correct" as const,
+							mapImage: true,
+						},
+					})),
+				),
+				...[0, 100, 300].map((leadMs) => ({
+					name: `runtime-bitmap-2-${leadMs}`,
+					mode: "runtime" as const,
+					preload: {
+						leadMs,
+						concurrency: 2,
+						maxTargets: 32,
+						budgetMs: 250,
+						forecast: "correct" as const,
+						mapImage: false,
+					},
+				})),
+				...[100, 300].map((leadMs) => ({
+					name: `runtime-image-2-${leadMs}`,
+					mode: "runtime" as const,
+					preload: {
+						leadMs,
+						concurrency: 2,
+						maxTargets: 32,
+						budgetMs: 250,
+						forecast: "correct" as const,
+						mapImage: true,
+					},
+				})),
+				{
+					name: "runtime-bitmap-4-100",
+					mode: "runtime",
+					preload: {
+						leadMs: 100,
+						concurrency: 4,
+						maxTargets: 32,
+						budgetMs: 250,
+						forecast: "correct",
+						mapImage: false,
+					},
+				},
+				{
+					name: "runtime-wrong-300",
+					mode: "runtime",
+					preload: {
+						leadMs: 300,
+						concurrency: 2,
+						maxTargets: 8,
+						budgetMs: 250,
+						forecast: "wrong",
+						mapImage: true,
+					},
+				},
+				{
+					name: "runtime-abandon-100",
+					mode: "runtime",
+					preload: {
+						leadMs: 100,
+						concurrency: 2,
+						maxTargets: 8,
+						budgetMs: 250,
+						forecast: "wrong",
+						mapImage: true,
+						cancelAfterMs: 25,
+					},
+				},
+			];
 type Result = Awaited<ReturnType<typeof run>>;
 const samples: Array<
 	Result & {
@@ -183,6 +272,7 @@ const samples: Array<
 		count: number;
 		unique: number;
 		mode: Mode;
+		strategy: string;
 		repeat: number;
 		warm: boolean;
 	}
@@ -192,10 +282,12 @@ try {
 		for (const scenario of cases)
 			for (let repeat = 0; repeat < repeats; repeat++) {
 				// Rotate order to avoid consistently giving one path the earliest/coldest run.
-				const order = modes.map(
-					(_, index) => modes[(index + repeat) % modes.length]!,
+				const order = strategies.map(
+					(_, index) =>
+						strategies[(index + repeat) % strategies.length]!,
 				);
-				for (const mode of order) {
+				for (const strategy of order) {
+					const {mode, preload} = strategy;
 					const context = await browser.newContext({
 						viewport: {width: 1280, height: 960},
 						deviceScaleFactor: 2,
@@ -223,9 +315,12 @@ try {
 							downloadThroughput: profile.down,
 							uploadThroughput: profile.down,
 						});
-						for (const warm of [false, true]) {
+						for (const warm of suite === "preload"
+							? [false]
+							: [false, true]) {
 							const input: Input = {
 								mode,
+								preload,
 								ids: ids.slice(0, scenario.unique),
 								tiles,
 								count: scenario.count,
@@ -254,7 +349,19 @@ try {
 								);
 								assert.deepEqual(sample.protocols, ["h2"]);
 							}
+							if (preload) {
+								assert(sample.preloading);
+								assert(
+									sample.preloading.peakActive <=
+										preload.concurrency,
+								);
+								assert(
+									sample.preloading.started <=
+										preload.maxTargets,
+								);
+							}
 							samples.push({
+								strategy: strategy.name,
 								profile: profile.name,
 								...scenario,
 								mode,
@@ -277,6 +384,8 @@ try {
 		JSON.stringify(
 			{
 				date: new Date().toISOString(),
+				suite,
+				strategies,
 				chromium: browser.version(),
 				viewport: [1280, 960],
 				dpr: 2,

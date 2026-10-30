@@ -15,6 +15,12 @@ import {
 	setRuntimeIconMapRenderCallback,
 } from "@mapsight/traffic-style/runtime-dev";
 
+import {
+	type PreloadPlan,
+	prepareIcons,
+	prepareRuntimeIcon,
+} from "./icon-preload.ts";
+
 export type Mode = "sprite" | "png" | "svg" | "runtime";
 export type Tile = {x: number; y: number; width: number; height: number};
 export type Input = {
@@ -24,10 +30,12 @@ export type Input = {
 	count: number;
 	warm: boolean;
 	frames: number;
+	preload?: PreloadPlan;
 };
 
 export async function run(input: Input) {
 	if (!input.warm) defaultIconCache.clear();
+	const missesBefore = defaultIconCache.getStats().misses;
 	performance.clearResourceTimings();
 	const target = document.createElement("div");
 	target.style.cssText = "position:absolute;inset:0";
@@ -95,7 +103,59 @@ export async function run(input: Input) {
 		layer.changed();
 		map.render();
 	});
+	const plan = input.preload;
+	const intentAt = performance.now();
+	const forecast =
+		plan?.forecast === "wrong"
+			? input.ids.map((id) => `${id}/#badbad`)
+			: input.ids;
+	const preparation = plan
+		? prepareIcons(forecast, plan, (id) =>
+				input.mode === "runtime"
+					? prepareRuntimeIcon(id)
+					: input.mode === "sprite"
+						? "/sprite.png"
+						: `/png/${id}.png`,
+			)
+		: undefined;
+	const intentFrames: number[] = [];
+	let lastIntentFrame: number | undefined;
+	let navigationStarted = false;
+	const probe = (time: number) => {
+		if (navigationStarted) return;
+		if (lastIntentFrame !== undefined)
+			intentFrames.push(time - lastIntentFrame);
+		lastIntentFrame = time;
+		requestAnimationFrame(probe);
+	};
+	if (plan?.leadMs) {
+		requestAnimationFrame(probe);
+		await new Promise<void>((resolve) =>
+			setTimeout(
+				resolve,
+				Math.max(0, intentAt + plan.leadMs - performance.now()),
+			),
+		);
+	}
+	navigationStarted = true;
+	preparation?.stop(); // Commit takes priority; never start more speculative jobs after navigation.
 	const start = performance.now();
+	const readyAtNavigation = input.ids.filter((id) =>
+		defaultIconCache.has(id, "default"),
+	).length;
+	const imagesReadyAtNavigation = plan
+		? input.ids.filter((id) => {
+				const src =
+					input.mode === "runtime"
+						? defaultIconCache.getCached(id, "default")?.dataUrl
+						: input.mode === "sprite"
+							? "/sprite.png"
+							: `/png/${id}.png`;
+				return (
+					src !== undefined && new Icon({src}).getImageState() === 2
+				);
+			}).length
+		: undefined;
 	let firstIconsMs: number | undefined;
 	let renderEvents = 0;
 	const allIconsMs = await new Promise<number>((resolve, reject) => {
@@ -148,6 +208,7 @@ export async function run(input: Input) {
 		.getImageData(0, 0, canvas.width, canvas.height).data;
 	if (!pixels.some((value, index) => index % 4 === 3 && value > 0))
 		throw new Error("Map canvas is empty");
+	await preparation?.settled;
 	map.setTarget(undefined);
 	map.dispose();
 	target.remove();
@@ -168,5 +229,26 @@ export async function run(input: Input) {
 				imageResources.map((resource) => resource.nextHopProtocol),
 			),
 		],
+		preloading: plan
+			? {
+					leadMs: start - intentAt,
+					navigationDelayMs: Math.max(
+						0,
+						start - intentAt - plan.leadMs,
+					),
+					intentToAllIconsMs: start - intentAt + allIconsMs,
+					readyAtNavigation,
+					imagesReadyAtNavigation,
+					started: preparation!.started.length,
+					completed: preparation!.completed.length,
+					unused: preparation!.completed.filter(
+						(id) => !input.ids.includes(id),
+					).length,
+					peakActive: preparation!.peakActive,
+					cacheMisses:
+						defaultIconCache.getStats().misses - missesBefore,
+					intentFrames,
+				}
+			: undefined,
 	};
 }

@@ -75,6 +75,9 @@ For the one-icon case, cold completion is 348.0 ms for the atlas versus 210.0 ms
 
 This does not prove zero UX cost for removing sprites. A sprite-free release should explicitly address cold preparation/transfer rather than assume today's lazy runtime path is an equivalent replacement. These local headless Chromium measurements do not establish physical-phone, other-browser, or WebGL performance.
 
+Follow-up: [bounded icon preloading](ICON_PRELOADING.md) tests actual lead time,
+partial preparation, wrong forecasts, and cancellation.
+
 ## Migration direction
 
 A sprite-free major release should preserve prepared raster images for dense
