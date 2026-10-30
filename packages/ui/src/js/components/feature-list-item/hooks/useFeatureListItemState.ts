@@ -11,7 +11,14 @@ import {
 	hasSelectSelectionSelector,
 } from "./feature-list-item-selection-selectors";
 
-export default function useFeatureListItemState(feature: MapsightUiFeature) {
+const noSelectionSelector = () => false;
+
+export default function useFeatureListItemState(
+	feature: MapsightUiFeature,
+	// Deep imports are published too. Preserve the global hasSelection result
+	// by default; built-in rows only need it for selected-only visibility.
+	{observeGlobalSelection = true}: {observeGlobalSelection?: boolean} = {},
+) {
 	const view = useSelector(viewSelector);
 	const isMobile = isViewMobile(view);
 	const {
@@ -28,7 +35,13 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 	const isSelected = useSelector(createIsSelectedSelector(feature.id));
 	const isPreselected = useSelector(createIsPreselectedSelector(feature.id));
 	const isHighlighted = useSelector(createIsHighlightedSelector(feature.id));
-	const hasSelection = useSelector(hasSelectSelectionSelector);
+	// Global selection only affects rows when it controls their visibility.
+	// Keep the hook unconditional so changing showSelectedOnly stays supported.
+	const hasSelection = useSelector(
+		observeGlobalSelection || showSelectedOnly
+			? hasSelectSelectionSelector
+			: noSelectionSelector,
+	);
 
 	return useMemo(() => {
 		const behavior = selectionBehavior?.[view];
@@ -48,7 +61,7 @@ export default function useFeatureListItemState(feature: MapsightUiFeature) {
 			view: view,
 			isMobile: isMobile,
 			hidden: !!(showSelectedOnly && hasSelection && !isSelected),
-			hasSelection: hasSelection,
+			hasSelection,
 			isSelected: isSelected,
 			isHighlighted: isHighlighted,
 			isPreselected: isPreselected,

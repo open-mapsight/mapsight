@@ -4,6 +4,7 @@ import sharp from "sharp";
 import {describe, expect, it} from "vitest";
 
 import meta from "../../meta.json" with {type: "json"};
+import {mapsightRuntimeIconSize} from "../runtime/icon-size.ts";
 import {composeSvg} from "./compose.ts";
 import {
 	type IconVariant,
@@ -32,6 +33,27 @@ async function rasterize(svg: string) {
 }
 
 describe("traditional signs", () => {
+	it.each([
+		["default", 40],
+		["small", 28],
+		["xsmall", 22],
+		["plain", 34],
+	] as const)(
+		"keeps sign UI and map geometry square in %s alongside wide POI icons",
+		(variant, size) => {
+			const id = "baustelle///#2266cc";
+			expect(uiIconSrc(id, variant)).toMatchObject({
+				width: size,
+				height: size,
+			});
+			expect(mapsightRuntimeIconSize(id, variant, "width")).toBe(
+				size * 2,
+			);
+			expect(mapsightRuntimeIconSize(id, variant, "height")).toBe(
+				size * 2,
+			);
+		},
+	);
 	it.each(signIds)(
 		"preserves every original %s variant, including parking fallbacks",
 		async (id) => {

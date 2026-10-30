@@ -1,3 +1,4 @@
+import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
 import Icon from "ol/style/Icon";
 import Stroke from "ol/style/Stroke";
@@ -8,6 +9,7 @@ import {expect, it} from "vitest";
 import declarationToStyle from "./declarationToStyle.ts";
 
 const constructorsMap = {
+	circle: CircleStyle,
 	fill: Fill,
 	icon: Icon,
 	stroke: Stroke,
@@ -87,4 +89,19 @@ it("skips Icon construction when icon-src is empty", () => {
 
 	expect(style?.getImage()).toBeNull();
 	expect(style?.getFill()).not.toBeNull();
+});
+
+it("passes computed circle radii as numbers to OpenLayers", () => {
+	const style = declarationToStyle(
+		constructorsMap,
+		{
+			image: {type: {value: "circle"}},
+			circle: {radius: {value: "38"}, fill: {color: {value: "cyan"}}},
+		},
+		"style",
+		"computed-radius",
+	);
+	const circle = style?.getImage() as CircleStyle;
+	expect(circle.getRadius()).toBe(38);
+	expect(circle.getSize()).toEqual([76, 76]);
 });

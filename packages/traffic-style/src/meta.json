@@ -750,6 +750,15 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-restroom+fa-wheelchair": {
+			"label": {
+				"de": "Barrierefreie Toilette",
+				"en": "Accessible restroom"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-route": {
 			"label": {
 				"de": "Route",

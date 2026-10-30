@@ -143,3 +143,5 @@ export function mapsightRuntimeIcon(
 
 	return RUNTIME_ICON_PLACEHOLDER_SRC;
 }
+
+export {mapsightRuntimeIconSize} from "./icon-size.ts";

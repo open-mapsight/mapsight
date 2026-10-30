@@ -1,7 +1,6 @@
 import {composeSvg} from "./compose.ts";
 import {type IconVariant, resolveMapsightIconSpec} from "./icon-id.ts";
-import {resolveSpec} from "./resolve.ts";
-import {getTemplate} from "./templates.ts";
+import {getIconLayout} from "./layout.ts";
 
 const SVG_DATA_URL_PREFIX = "data:image/svg+xml;charset=utf-8,";
 
@@ -21,7 +20,7 @@ export function uiIconSrc(
 		return null;
 	}
 
-	const template = getTemplate(resolveSpec(spec).variant);
+	const {template} = getIconLayout(spec);
 	return {
 		src: `${SVG_DATA_URL_PREFIX}${encodeURIComponent(composeSvg(spec))}`,
 		width: template.width,

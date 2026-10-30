@@ -10,10 +10,12 @@ import {
 	buildTargetsFromMapsightIconId,
 	composableIconFileName,
 	loadComposableIconTargets,
+	renderComposableIconPng,
 	resolveIconColors,
 } from "./composable-icons.ts";
 import {
 	PACKAGE_COMPOSABLE_PACKS,
+	ensurePictogramPacks,
 	pictogramPackForIconId,
 } from "./pictogram-packs.ts";
 
@@ -65,6 +67,7 @@ describe("composable-icons", () => {
 		const iconIds = new Set(targets.map((target) => target.iconId));
 
 		expect(iconIds.has("museum")).toBe(true);
+		expect(iconIds.has("fa-restroom+fa-wheelchair")).toBe(false);
 		expect(iconIds.has("fa-route")).toBe(false);
 	});
 
@@ -107,6 +110,7 @@ describe("composable-icons", () => {
 			"fontawesome",
 		]);
 		expect(iconIds).toContain("fa-route");
+		expect(iconIds).toContain("fa-restroom+fa-wheelchair");
 		expect(iconIds).toEqual(composableIds);
 		expect(
 			targets.some(
@@ -139,4 +143,17 @@ describe("composable-icons", () => {
 		expect(source).toContain("PACKAGE_COMPOSABLE_PACKS");
 		expect(source).not.toMatch(/--pack["\s,]+traffic-style["\s]/);
 	});
+});
+
+// Exercise the shipped build-time rasterizer too: it must not fit a wide SVG
+// back into the old square bitmap dimensions.
+it.each([1, 2])("rasterizes wide prebuilt icons at %sx", async (scale) => {
+	await ensurePictogramPacks(["fontawesome"]);
+	const {width, height, buffer} = await renderComposableIconPng(
+		{pictogram: "fa-restroom+fa-wheelchair"},
+		scale,
+	);
+	expect([width, height]).toEqual([64 * scale, 40 * scale]);
+	expect(buffer.readUInt32BE(16)).toBe(width);
+	expect(buffer.readUInt32BE(20)).toBe(height);
 });

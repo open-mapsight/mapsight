@@ -52,6 +52,11 @@ const mapsightCssFunctions = [
 			"Returns a synchronous runtime icon URL and participates in volatile style cache hashing.",
 	},
 	{
+		name: "mapsightRuntimeIconSize",
+		description:
+			"Returns the physical width or height of a runtime icon from its catalog definition and variant.",
+	},
+	{
 		name: "replace",
 		description:
 			"Performs a string replacement while compiling Mapsight vector style values.",
