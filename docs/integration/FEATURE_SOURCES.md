@@ -115,3 +115,6 @@ correct features-stable ETag should 304 instead.
 - [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md) — `featureSources` in embed config
 - [SSR_HYDRATION.md](SSR_HYDRATION.md) — dehydrated state and sidecar warm/purge
 - [`@mapsight/core` Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
+
+For request ownership, URL/type invalidation, edits during loading, and refresh
+timer behavior, see [Feature-source load ownership](FEATURE_SOURCE_LOAD_LIFECYCLE.md).

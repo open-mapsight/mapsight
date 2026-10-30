@@ -60,11 +60,13 @@ type FeatureSourcesControllerAction =
 			typeof FEATURE_SOURCE_ERROR | typeof LOAD_FEATURE_SOURCE_ERROR
 	  > & {
 			error: FeatureSourceState["error"];
+			requestId?: number;
 	  })
 	| (FeatureSourceActionWithId<
 			typeof FEATURE_SOURCE_DATA | typeof LOAD_FEATURE_SOURCE_SUCCESS
 	  > & {
 			data: FeatureSourceData;
+			requestId?: number;
 	  })
 	| FeatureSourceActionWithId<
 			| typeof PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD
@@ -288,6 +290,15 @@ function reduceUncontrolledFeatureSourceChanges(
 				data: null,
 				featuresKey: undefined,
 				featuresCount: undefined,
+				ids: undefined,
+				featuresById: undefined,
+				error: undefined,
+				isLoading: false,
+				requestId: undefined,
+				refreshPaused: undefined,
+				lastUpdate: null,
+				lastActionType: null,
+				dataHistory: undefined,
 			});
 		}
 	}
@@ -296,6 +307,12 @@ function reduceUncontrolledFeatureSourceChanges(
 		const oldSource = oldState[id];
 		if (!oldSource || oldSource.data === source.data) {
 			continue;
+		}
+
+		// Generic set/merge can install data too. Retire an in-flight request
+		// only for a real write, not a deep-equal copy made by legacy merge.
+		if (source.isLoading && !isEqual(oldSource.data, source.data)) {
+			next = mergeSource(next, id, {isLoading: false});
 		}
 
 		const fingerprint = nextFeatureCollectionFeaturesKey(source.data);
@@ -447,6 +464,20 @@ export class FeatureSourcesController extends BaseController {
 		action: Action,
 	): FeatureSourcesState {
 		const featureSourceAction = action as FeatureSourcesControllerAction;
+
+		// Completions are queued by async dispatch. Validate at reduction time,
+		// after any intervening URL/type change, removal, edit or newer load.
+		// Manually dispatched completion actions without a token stay compatible.
+		if (
+			(featureSourceAction.type === LOAD_FEATURE_SOURCE_SUCCESS ||
+				featureSourceAction.type === LOAD_FEATURE_SOURCE_ERROR) &&
+			featureSourceAction.requestId !== undefined &&
+			(state[featureSourceAction.id]?.requestId !==
+				featureSourceAction.requestId ||
+				!state[featureSourceAction.id]?.isLoading)
+		) {
+			return state;
+		}
 
 		switch (featureSourceAction.type) {
 			case LOAD_FEATURE_SOURCE:
