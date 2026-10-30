@@ -1,11 +1,11 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../configs/tsconfig-base.json",
-	"include": ["scripts/**/*"],
-	"exclude": ["**/__tests__/**", "**/*.test.ts"],
+	"include": ["scripts/**/*", "src/lib/**/*", "src/generated/**/*"],
 	"compilerOptions": {
-		"outDir": "dist/scripts",
-		"rootDir": "scripts",
+		"noEmit": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"types": ["node"]
 	}
 }

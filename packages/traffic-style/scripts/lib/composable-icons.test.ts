@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 
 import {
+	buildIconSpec,
 	buildTargetsFromMapsightIconId,
 	composableIconFileName,
 	loadComposableIconTargets,
@@ -64,6 +65,22 @@ describe("composable-icons", () => {
 
 		expect(iconIds.has("museum")).toBe(true);
 		expect(iconIds.has("fa-route")).toBe(false);
+	});
+
+	it.each([
+		["lkwsperrung", {}],
+		["lkwsperrung///#987654", {border: "#987654"}],
+		["parkflaeche/#abcdef", {background: "#abcdef"}],
+	])("keeps source defaults when pre-baking a sign: %s", (id, colors) => {
+		const [target] = buildTargetsFromMapsightIconId(id, ["plain"]);
+		expect(target?.colors).toEqual(colors);
+		expect(
+			buildIconSpec(target!.iconId, target!.variant, target!.colors),
+		).toEqual({
+			pictogram: target!.iconId,
+			variant: "plain",
+			colors,
+		});
 	});
 
 	it("package catalog packs include every composable meta.json icon", async () => {

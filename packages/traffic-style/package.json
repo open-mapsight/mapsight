@@ -88,6 +88,16 @@
 					"outputs": [
 						"src/generated/pictograms/"
 					]
+				},
+				{
+					"inputs": [
+						"src/icons/",
+						"src/meta.json",
+						"scripts/dev/import-signs.ts"
+					],
+					"outputs": [
+						"src/generated/signs.ts"
+					]
 				}
 			]
 		}
@@ -129,9 +139,10 @@
 		"build:icons:2x": "node scripts/optimize-icons.ts --target png --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
 		"build:icons:svg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
 		"build:meta": "node scripts/dev/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
-		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:pictograms:modules",
+		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:pictograms:signs build:pictograms:modules",
 		"build:pictograms:fontawesome": "node scripts/dev/import-fontawesome.ts",
 		"build:pictograms:modules": "tsc --project tsconfig.lib.json",
+		"build:pictograms:signs": "node scripts/dev/import-signs.ts",
 		"build:pictograms:traffic-style": "node scripts/dev/import-pictograms.ts",
 		"build:scripts": "rimraf dist/scripts && tsc --project tsconfig.scripts.json",
 		"build:setup": "mkdirp dist/docs && mkdirp dist/img",

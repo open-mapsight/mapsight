@@ -36,9 +36,7 @@ function createPendingCache(): MockIconCache & IconCache {
 
 async function flushPendingGetResults(get: Mock) {
 	await Promise.all(
-		get.mock.results.map(
-			(result: {value: Promise<unknown>}) => result.value,
-		),
+		get.mock.results.map((result: {value: unknown}) => result.value),
 	);
 }
 

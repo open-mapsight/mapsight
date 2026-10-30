@@ -58,6 +58,45 @@ describe("parseMapsightIcon", () => {
 			}),
 		).toBe("museum");
 	});
+
+	it.each([
+		["baustelle", {pictogram: "baustelle"}],
+		[
+			"baustelle/#abcdef",
+			{pictogram: "baustelle", colors: {background: "#abcdef"}},
+		],
+		[
+			"baustelle//#123456",
+			{pictogram: "baustelle", colors: {foreground: "#123456"}},
+		],
+		[
+			"baustelle///#987654",
+			{pictogram: "baustelle", colors: {border: "#987654"}},
+		],
+		[
+			"baustelle/#abcdef/#123456/#987654",
+			{
+				pictogram: "baustelle",
+				colors: {
+					background: "#abcdef",
+					foreground: "#123456",
+					border: "#987654",
+				},
+			},
+		],
+	] as const)("round-trips independent sign overrides: %s", (id, spec) => {
+		expect(parseMapsightIcon(id)).toEqual(spec);
+		expect(formatMapsightIcon(spec)).toBe(id);
+	});
+
+	it("ignores invalid sign colors without losing other overrides", () => {
+		expect(
+			parseMapsightIcon("baustelle/not-a-color/#123456/also-invalid"),
+		).toEqual({
+			pictogram: "baustelle",
+			colors: {foreground: "#123456"},
+		});
+	});
 });
 
 describe("resolveMapsightIconSpec", () => {

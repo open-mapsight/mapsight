@@ -1,12 +1,15 @@
 import {hasPictogram} from "../pictograms/index.ts";
 import {pickContrastForeground} from "./contrast.ts";
 import {resolveSpec} from "./resolve.ts";
+import {hasSignIcon} from "./signs.ts";
 
 export type IconVariant = "default" | "small" | "xsmall" | "plain";
 
 export type IconColors = {
 	background?: string;
 	foreground?: string;
+	/** Colored sign border; outer visibility outlines keep their original colors. */
+	border?: string;
 };
 
 export type IconSpec = {
@@ -52,7 +55,12 @@ function specFromIconIdSegment(
 }
 
 function withDefaultPictogramFallback(spec: IconSpec): IconSpec {
-	if (spec.label || !spec.pictogram || hasPictogram(spec.pictogram)) {
+	if (
+		spec.label ||
+		!spec.pictogram ||
+		hasPictogram(spec.pictogram) ||
+		hasSignIcon(spec.pictogram)
+	) {
 		return spec;
 	}
 
@@ -74,7 +82,8 @@ export function parseMapsightIcon(value: string): IconSpec | null {
 		return null;
 	}
 
-	const [iconIdPart, backgroundPart, foregroundPart] = trimmed.split("/");
+	const [iconIdPart, backgroundPart, foregroundPart, borderPart] =
+		trimmed.split("/");
 	const iconId = iconIdPart?.trim();
 	if (!iconId) {
 		return null;
@@ -82,12 +91,21 @@ export function parseMapsightIcon(value: string): IconSpec | null {
 
 	const background = normalizeColorSegment(backgroundPart);
 	const explicitForeground = normalizeColorSegment(foregroundPart);
+	const border = normalizeColorSegment(borderPart);
 	const colors: IconColors = {};
 
 	if (background) {
 		colors.background = background;
-		colors.foreground =
-			explicitForeground ?? pickContrastForeground(background);
+		if (!hasSignIcon(iconId)) {
+			colors.foreground =
+				explicitForeground ?? pickContrastForeground(background);
+		}
+	}
+	if (explicitForeground) {
+		colors.foreground = explicitForeground;
+	}
+	if (border) {
+		colors.border = border;
 	}
 
 	return specFromIconIdSegment(
@@ -106,6 +124,20 @@ export function formatMapsightIcon(spec: IconSpec): string {
 		return "";
 	}
 
+	// Preserve independent overrides and gaps; omitted sign roles retain source colors.
+	if (hasSignIcon(iconId) || spec.colors?.border) {
+		const parts = [
+			iconId,
+			spec.colors?.background ?? "",
+			spec.colors?.foreground ?? "",
+			spec.colors?.border ?? "",
+		];
+		while (parts.at(-1) === "") {
+			parts.pop();
+		}
+		return parts.join("/");
+	}
+
 	const background = spec.colors?.background;
 	const foreground = spec.colors?.foreground;
 	const resolved = resolveSpec({
@@ -122,7 +154,7 @@ export function formatMapsightIcon(spec: IconSpec): string {
 	}
 
 	if (!background) {
-		return iconId;
+		return foreground ? `${iconId}//${foreground}` : iconId;
 	}
 
 	if (!foreground) {

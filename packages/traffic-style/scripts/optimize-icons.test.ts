@@ -14,7 +14,7 @@ import {fileURLToPath} from "node:url";
 
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
-import {main} from "./optimize-icons";
+import {main} from "./optimize-icons.ts";
 
 type OptimizeManifest = {
 	files: Record<string, {outputs: string[]}>;
@@ -206,7 +206,7 @@ describe("optimize-icons.ts", () => {
 		const manifestPath = getManifestPath(srcDir, destDir);
 		const manifestRaw = await readFile(manifestPath, "utf8");
 		const outputs =
-			parseManifest(manifestRaw).files["target-test.svg"].outputs;
+			parseManifest(manifestRaw).files["target-test.svg"]?.outputs;
 		expect(outputs).toEqual(["target-test.png"]);
 	});
 

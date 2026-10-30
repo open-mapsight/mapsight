@@ -32,6 +32,7 @@ export type IconColors = z.infer<typeof IconColorsSchema>;
 export const IconColorsSchema = z.object({
 	background: z.string().optional(),
 	foreground: z.string().optional(),
+	border: z.string().optional(),
 });
 
 export type IconMeta = z.infer<typeof IconMetaSchema>;

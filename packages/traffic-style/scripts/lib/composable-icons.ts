@@ -7,6 +7,8 @@ import type {IconColors, IconSpec, IconVariant} from "#icon/icon-id.js";
 import {parseMapsightIcon, resolveMapsightIconSpec} from "#icon/icon-id.js";
 import {prepareSvgForRasterization} from "#icon/rasterize.js";
 import {resolveSpec} from "#icon/resolve.js";
+import type {RequiredIconColors} from "#icon/resolve.js";
+import {hasSignIcon} from "#icon/signs.js";
 import {getTemplate} from "#icon/templates.js";
 import sharp from "sharp";
 import {z} from "zod/v4";
@@ -33,7 +35,7 @@ const SourceMetaSchema = z.object({
 export type ComposableIconTarget = {
 	iconId: string;
 	variant: IconVariant;
-	colors: Required<IconColors>;
+	colors: IconColors;
 };
 
 export type BuildComposableIconsOptions = {
@@ -67,23 +69,25 @@ export function composableIconFileName(
 export function resolveIconColors(
 	metaColors?: IconColors,
 	override?: IconColors,
-): Required<IconColors> {
+): RequiredIconColors {
 	const defaults = resolveSpec({}).colors;
 	const background =
 		override?.background ?? metaColors?.background ?? defaults.background;
 	const explicitForeground =
 		override?.foreground ?? metaColors?.foreground ?? undefined;
+	const border = override?.border ?? metaColors?.border;
 
 	return {
 		background,
 		foreground: explicitForeground ?? pickContrastForeground(background),
+		...(border ? {border} : {}),
 	};
 }
 
 export function buildIconSpec(
 	iconId: string,
 	variant: IconVariant,
-	colors: Required<IconColors>,
+	colors: IconColors,
 ): IconSpec {
 	const base = resolveMapsightIconSpec(iconId, variant);
 	if (!base) {
@@ -114,7 +118,9 @@ export function buildTargetsFromMapsightIconId(
 		throw new Error(`Invalid mapsightIconId: ${mapsightIconId}`);
 	}
 
-	const colors = resolveIconColors(parsed.colors);
+	const colors = hasSignIcon(iconId)
+		? (parsed.colors ?? {})
+		: resolveIconColors(parsed.colors);
 	return variants.map((variant) => ({iconId, variant, colors}));
 }
 

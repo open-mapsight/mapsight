@@ -29,6 +29,16 @@ describe("MapsightIcon", () => {
 		);
 	});
 
+	it("composes a sign border override while preserving its original face and symbol", () => {
+		const {container} = render(<MapsightIcon id="baustelle///#2266cc" />);
+		const src = container.querySelector("img")?.getAttribute("src") ?? "";
+		expect(src).toContain("data:image/svg+xml;charset=utf-8,");
+		const svg = decodeURIComponent(src.split(",")[1]!);
+		expect(svg).toContain('stroke="#2266cc"');
+		expect(svg).toContain('fill="#fff"');
+		expect(svg).toContain('fill="#000"');
+	});
+
 	it("composes a colored custom pictogram id instead of a slashed sprite URL", () => {
 		const {container} = render(<MapsightIcon id="my-poi/#035799" />);
 		const src = container.querySelector("img")?.getAttribute("src") ?? "";
