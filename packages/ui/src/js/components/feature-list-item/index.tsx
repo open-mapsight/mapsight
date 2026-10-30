@@ -92,7 +92,7 @@ function FeatureListItemLegacyHtmlRow({
 		isHighlighted,
 		showDetails,
 		scrollOnSelection,
-	} = useFeatureListItemState(feature);
+	} = useFeatureListItemState(feature, {observeGlobalSelection: false});
 
 	const ref = useRef<HTMLElement | null>(null);
 
@@ -206,7 +206,7 @@ function FeatureListItemStandard({
 		detailsDisclosure,
 		showDetails,
 		scrollOnSelection,
-	} = useFeatureListItemState(feature);
+	} = useFeatureListItemState(feature, {observeGlobalSelection: false});
 
 	const ref = useRef<HTMLElement | null>(null);
 	const detailsId = useId();

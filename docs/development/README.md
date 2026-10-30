@@ -10,3 +10,5 @@ Maintainer and contributor documentation for working on the Mapsight monorepo.
 | [Linked host apps](LINKED_HOST_APPS.md)             | Local `link:` hosts, Vite/Sass, worktree hygiene     |
 | [npm Trusted Publishing](NPM_TRUSTED_PUBLISHING.md) | New package npm release setup                        |
 | [Showcase deployments](PREVIEW_DEPLOYMENTS.md)      | Automatic PR previews, cleanup, and deployment setup |
+
+[Feature-list selection subscriptions](FEATURE_LIST_SELECTION_PERFORMANCE.md) documents the bounded row-render fix and controlled local measurements.
