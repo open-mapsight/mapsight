@@ -28,7 +28,7 @@ MAPSIGHT_CONFIG_BENCH_STATE=/absolute/path/to/state.json \
 
 The snapshot must contain loaded feature collections. Customer data stays outside the repository. The benchmark normalizes the captured state and clones its config so preset arrays do not alias live state. It applies the same config with both actions, checks equal results, and asserts retained data/index references before timing. It separately measures repeated config and changed filters, with 3 warmup iterations and 30 measured iterations per implementation.
 
-On 2026-10-30, the Braunschweig hidden-source-fix capture (4,046,615 bytes, SHA-256 `6cb00f8cb3cff3021c20627f24ab7019c54d4f50229f3d17b4f453d453bacc64`) produced these mean controller reduction times:
+On 2026-10-30, a private captured-state fixture (4,046,615 bytes) produced these mean controller reduction times. The fixture is not distributed, so these measurements are illustrative; use the command above with your own snapshot to measure your workload:
 
 | Update             | Existing merge | Config merge |
 | ------------------ | -------------: | -----------: |
