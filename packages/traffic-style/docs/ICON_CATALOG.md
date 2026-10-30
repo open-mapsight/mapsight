@@ -6,6 +6,8 @@ features, and how pictogram packs affect the runtime bundle.
 For map integration with `@mapsight/ui`, see the [README](../README.md#quick-start-with-mapsightui).
 For standalone integration, see [ICON_INTEGRATION.md](ICON_INTEGRATION.md).
 For caching internals, see [RUNTIME_ICONS.md](RUNTIME_ICONS.md).
+For measured sprite trade-offs and a migration direction, see
+[SPRITE_EVALUATION.md](SPRITE_EVALUATION.md).
 For subsetting assets at build time, see [CUSTOM_ICON_BUILDS.md](CUSTOM_ICON_BUILDS.md).
 
 ---
@@ -74,10 +76,14 @@ visibility outlines and the red/amber/green lamps in `ampel` stay unchanged.
 Signs without a separate band ignore `border`; a symbol-free `vollsperrung`
 ignores `foreground`.
 
-The recipes share identical SVG base layers and preserve the artwork of each
-size, including existing small-size parking fallbacks. They are generated from
-`src/icons/` during `build:pictograms:signs`; edit those source SVGs rather than
-generated data. The other sprite families (flags, `ort`, `stadtteil`) remain
+The compositions use explicit, repository-owned SVG bases and symbols in
+`src/lib/icon/signs/frames.ts` and `src/lib/icon/signs/symbols.ts`, assembled in
+`catalog.ts`. Edit those files directly; no importer, palette inference, or design
+file is required. Each size retains its optical adjustments and existing parking
+fallbacks. The old `src/icons/` SVGs remain compatibility assets and raster parity
+fixtures. Package builds emit the sign defaults from these same compositions
+after the legacy asset pass, so editing a composition also updates the default
+PNG/SVG files and sprite. The other sprite families (flags, `ort`, `stadtteil`) remain
 unchanged. `render: "sprite"` continues to describe the default asset path, so
 existing sprite builds and catalog filters retain their behavior.
 

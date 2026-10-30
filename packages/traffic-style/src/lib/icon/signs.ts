@@ -1,8 +1,15 @@
-import {signLayers, signRecipes} from "../../generated/signs.ts";
 import type {IconColors, IconVariant} from "./icon-id.ts";
+import {signs} from "./signs/catalog.ts";
 
 export function hasSignIcon(id: string): boolean {
-	return Object.hasOwn(signRecipes, id);
+	return Object.hasOwn(signs, id);
+}
+
+function escapeColor(color: string | undefined): string | undefined {
+	return color
+		?.replaceAll("&", "&amp;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("<", "&lt;");
 }
 
 /** Reuse the original SVG layers, including size-specific artwork and fallback glyphs. */
@@ -14,16 +21,9 @@ export function composeSignMarkup(
 	if (!hasSignIcon(id)) {
 		return null;
 	}
-	return signRecipes[id]![variant].map((index) => signLayers[index]!)
-		.join("")
-		.replace(
-			/\{\{(background|foreground|border):([^}]+)\}\}/g,
-			(_match, role: keyof IconColors, original: string) => {
-				const color = colors[role] ?? original;
-				return color
-					.replaceAll("&", "&amp;")
-					.replaceAll('"', "&quot;")
-					.replaceAll("<", "&lt;");
-			},
-		);
+	return signs[id]![variant]({
+		background: escapeColor(colors.background),
+		foreground: escapeColor(colors.foreground),
+		border: escapeColor(colors.border),
+	});
 }

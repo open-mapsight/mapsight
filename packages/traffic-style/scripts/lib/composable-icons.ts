@@ -140,7 +140,7 @@ export async function loadComposableIconTargets(
 	const targets: ComposableIconTarget[] = [];
 
 	for (const [iconId, iconMeta] of Object.entries(icons)) {
-		if (iconMeta.render !== "composable") {
+		if (iconMeta.render !== "composable" && !hasSignIcon(iconId)) {
 			continue;
 		}
 		if (options.iconIds?.length && !options.iconIds.includes(iconId)) {
@@ -156,7 +156,17 @@ export async function loadComposableIconTargets(
 			continue;
 		}
 
-		const colors = resolveIconColors(iconMeta.colors, options.colors);
+		const colors = hasSignIcon(iconId)
+			? {
+					background:
+						options.colors?.background ??
+						iconMeta.colors?.background,
+					foreground:
+						options.colors?.foreground ??
+						iconMeta.colors?.foreground,
+					border: options.colors?.border ?? iconMeta.colors?.border,
+				}
+			: resolveIconColors(iconMeta.colors, options.colors);
 		for (const variant of variants) {
 			targets.push({iconId, variant, colors});
 		}

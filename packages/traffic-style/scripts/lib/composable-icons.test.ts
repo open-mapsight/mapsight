@@ -2,6 +2,7 @@ import {readFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
+import {hasSignIcon} from "#icon/signs.js";
 import {describe, expect, it} from "vitest";
 
 import {
@@ -88,7 +89,10 @@ describe("composable-icons", () => {
 			icons?: Record<string, {render?: string}>;
 		};
 		const composableIds = Object.entries(meta.icons ?? {})
-			.filter(([, iconMeta]) => iconMeta.render === "composable")
+			.filter(
+				([id, iconMeta]) =>
+					iconMeta.render === "composable" || hasSignIcon(id),
+			)
 			.map(([iconId]) => iconId)
 			.sort();
 
@@ -110,6 +114,20 @@ describe("composable-icons", () => {
 					target.iconId === "fa-route" && target.variant === "plain",
 			),
 		).toBe(true);
+	});
+
+	it("builds authored signs with their defaults even while their default rendering uses sprites", async () => {
+		const [target] = await loadComposableIconTargets(sourceMetaPath, {
+			iconIds: ["baustelle"],
+			variants: ["plain"],
+			colors: {border: "#2266cc"},
+		});
+		expect(target?.iconId).toBe("baustelle");
+		expect(target?.colors).toEqual({
+			background: undefined,
+			foreground: undefined,
+			border: "#2266cc",
+		});
 	});
 
 	it("package composable build script uses PACKAGE_COMPOSABLE_PACKS", async () => {
