@@ -1,3 +1,5 @@
+import "@mapsight/traffic-style/pictograms-fontawesome";
+
 import {cleanup, render} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 
@@ -61,7 +63,7 @@ it("keeps a wide icon proportional with default and one-sided size overrides", (
 		[{width: 54}, 54, 34],
 	] as const) {
 		const {container} = render(
-			<MapsightIcon id="toilet-accessible" {...props} />,
+			<MapsightIcon id="fa-restroom+fa-wheelchair" {...props} />,
 		);
 		const image = container.querySelector("img");
 		expect(Number(image?.getAttribute("width"))).toBeCloseTo(width);

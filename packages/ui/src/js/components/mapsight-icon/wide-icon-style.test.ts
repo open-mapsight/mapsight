@@ -1,3 +1,5 @@
+import "@mapsight/traffic-style/pictograms-fontawesome";
+
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import CircleStyle from "ol/style/Circle";
@@ -38,7 +40,7 @@ it.each([
 		);
 		const feature = new Feature({
 			geometry: new Point([0, 0]),
-			mapsightIconId: "toilet-accessible/#ffffff/#0e2a4f",
+			mapsightIconId: "fa-restroom+fa-wheelchair/#ffffff/#0e2a4f",
 			state,
 		});
 		const styles = styleFunction(
@@ -69,11 +71,15 @@ it.each([
 );
 
 it.each([
-	[{}, {mapsightIconId: "toilet-accessible"}, 128],
-	[{mapsightIconId: "toilet"}, {mapsightIconId: "toilet-accessible"}, 80],
+	[{}, {mapsightIconId: "fa-restroom+fa-wheelchair"}, 128],
 	[
-		{mapsightIconId: "toilet"},
-		{mapsightIconId: "toilet-accessible", mapsightIconUse: "force"},
+		{mapsightIconId: "fa-restroom"},
+		{mapsightIconId: "fa-restroom+fa-wheelchair"},
+		80,
+	],
+	[
+		{mapsightIconId: "fa-restroom"},
+		{mapsightIconId: "fa-restroom+fa-wheelchair", mapsightIconUse: "force"},
 		128,
 	],
 ])(

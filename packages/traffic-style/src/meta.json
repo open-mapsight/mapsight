@@ -750,6 +750,15 @@
 			"groups": ["poi", "poi-services"],
 			"render": "composable"
 		},
+		"fa-restroom+fa-wheelchair": {
+			"label": {
+				"de": "Barrierefreie Toilette",
+				"en": "Accessible restroom"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
 		"fa-route": {
 			"label": {
 				"de": "Route",
@@ -1497,24 +1506,6 @@
 			},
 			"aliases": ["university"],
 			"groups": ["education", "poi", "poi-services"],
-			"render": "composable"
-		},
-		"toilet": {
-			"label": {
-				"de": "Toilette",
-				"en": "Toilet"
-			},
-			"aliases": [],
-			"groups": ["default", "poi"],
-			"render": "composable"
-		},
-		"toilet-accessible": {
-			"label": {
-				"de": "Barrierefreie Toilette",
-				"en": "Accessible toilet"
-			},
-			"aliases": [],
-			"groups": ["default", "poi"],
 			"render": "composable"
 		}
 	}

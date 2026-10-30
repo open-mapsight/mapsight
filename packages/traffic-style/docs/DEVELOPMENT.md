@@ -30,9 +30,9 @@ Do **not** add composable icons to the sprite pipeline.
 
 For a horizontal composition, register a definition with `composition` instead of
 packing several glyphs into one square SVG viewBox. See
-[Horizontal compositions](RUNTIME_ICONS.md#horizontal-compositions). Standard
-Font Awesome Free glyphs used by the default catalog are generated separately by
-`import-fontawesome.ts`, so the full optional pack is not loaded.
+[Horizontal compositions](RUNTIME_ICONS.md#horizontal-compositions). Font Awesome
+composites are generated alongside their glyphs by `import-fontawesome.ts` and
+loaded through the existing optional Font Awesome pack.
 
 Optional per-icon default colors in `src/meta.json`:
 

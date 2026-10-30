@@ -1,3 +1,5 @@
+import "@mapsight/traffic-style/pictograms-fontawesome";
+
 import {renderIconBitmap} from "@mapsight/traffic-style/icon";
 import {afterEach, expect, it, vi} from "vitest";
 
@@ -36,7 +38,7 @@ it.each([
 		);
 		try {
 			const bitmap = await renderIconBitmap({
-				pictogram: "toilet-accessible",
+				pictogram: "fa-restroom+fa-wheelchair",
 				variant,
 			});
 			expect(bitmap).toMatchObject({

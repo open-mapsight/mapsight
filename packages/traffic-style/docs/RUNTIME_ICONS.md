@@ -400,6 +400,12 @@ single icon. Adjacent slots touch, producing a compact row inside one extended
 background. The default square frame becomes a rounded rectangle; small circles
 become capsules. Single-glyph geometry stays unchanged.
 
+`fa-restroom+fa-wheelchair` is a registered catalog ID in the Font Awesome pack.
+The `+` expresses combination for readers; it is not parsed as an expression.
+Only horizontal layout is supported. If vertical stacking is needed later, its
+orientation can be defined in the catalog without assigning more punctuation
+special meaning.
+
 `getIconLayout` is the shared source of template dimensions for SVG, runtime PNG,
 prebuilt PNG and UI sources. The compiler imports `mapsightRuntimeIconSize(id,
 variant, axis)` for independent physical `icon-sizeX`/`icon-sizeY` values, including
@@ -408,12 +414,12 @@ while the bitmap is pending. Runtime bitmaps use pixelRatio 2 and default OL sca
 The full rectangle is one image, hit target and declutter unit. Selection uses the
 default variant at any zoom, with an expanded halo for a wider definition.
 
-| `toilet-accessible` | Logical size | Raster at 2× |
-| ------------------- | ------------ | ------------ |
-| default             | 64×40        | 128×80       |
-| small               | 41×28        | 82×56        |
-| xsmall              | 31×22        | 62×44        |
-| plain               | 54×34        | 108×68       |
+| `fa-restroom+fa-wheelchair` | Logical size | Raster at 2× |
+| --------------------------- | ------------ | ------------ |
+| default                     | 64×40        | 128×80       |
+| small                       | 41×28        | 82×56        |
+| xsmall                      | 31×22        | 62×44        |
+| plain                       | 54×34        | 108×68       |
 
 `MapsightIcon` keeps the existing default height of 40 CSS pixels and derives the
 width from the SVG's aspect ratio. A single explicit width or height scales the
@@ -424,17 +430,23 @@ also preserve the image's aspect ratio and allow the icon column to grow.
 ### Host migration
 
 After updating `@mapsight/traffic-style` and `@mapsight/ui` to a release containing
-this change, use `toilet/#f2c14e/#0e2a4f` or
-`toilet-accessible/#ffffff/#0e2a4f` directly as `mapsightIconId`. Both are in the
-standard catalog, including picker metadata and prebuilt assets; the optional
-Font Awesome pack is unnecessary for these ids. Rebuild host SCSS with the
-released vector-style-compiler so the new dimension helper is imported (or use
-the released precompiled traffic style).
+this change, import the existing Font Awesome pack once at host startup:
+
+```ts
+import "@mapsight/traffic-style/pictograms-fontawesome";
+```
+
+Use `fa-restroom/#f2c14e/#0e2a4f` or
+`fa-restroom+fa-wheelchair/#ffffff/#0e2a4f` as `mapsightIconId`. Both have catalog
+metadata and prebuilt assets. Without the pack import, map/UI runtime rendering
+uses the usual marker fallback. Rebuild host SCSS with the released
+vector-style-compiler so the new dimension helper is imported (or use the
+released precompiled traffic style). For CLI subsets, include `--pack fontawesome`.
 
 Update existing host data to these ids and remove superseded local registrations
-such as Braunschweig's `wc`, stacked `wc-accessible` and `WC` alias. The standard
-catalog provides no aliases for those ids. All one/two-character labels keep
-their normal text-label behavior, regardless of case.
+such as Braunschweig's `wc`, stacked `wc-accessible` and `WC` alias. These local
+ids have no aliases in the catalog. All one/two-character labels keep their normal
+text-label behavior, regardless of case.
 
 For Braunschweig, remove only the superseded pictogram-related portion of the UI
 patch after verifying the release. Preserve its independent list-sorting changes

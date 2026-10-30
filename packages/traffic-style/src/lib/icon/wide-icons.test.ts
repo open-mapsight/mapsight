@@ -1,3 +1,5 @@
+import "../pictograms/fontawesome.ts";
+
 import {describe, expect, it} from "vitest";
 
 import {
@@ -21,11 +23,11 @@ const variants = [
 ] as const;
 
 describe("horizontal catalog icons", () => {
-	it("includes both standard toilet catalog definitions", () => {
-		expect(hasPictogram("toilet")).toBe(true);
-		expect(hasPictogram("toilet-accessible")).toBe(true);
+	it("includes the registered Font Awesome restroom composite", () => {
+		expect(hasPictogram("fa-restroom")).toBe(true);
+		expect(hasPictogram("fa-restroom+fa-wheelchair")).toBe(true);
 		expect(
-			getPictogram("toilet-accessible").composition?.glyphs,
+			getPictogram("fa-restroom+fa-wheelchair").composition?.glyphs,
 		).toHaveLength(2);
 	});
 
@@ -34,11 +36,15 @@ describe("horizontal catalog icons", () => {
 		(variant, width, height, step) => {
 			const colors = {background: "#f2c14e", foreground: "#0e2a4f"};
 			const svg = composeSvg({
-				pictogram: "toilet-accessible",
+				pictogram: "fa-restroom+fa-wheelchair",
 				variant,
 				colors,
 			});
-			const single = composeSvg({pictogram: "toilet", variant, colors});
+			const single = composeSvg({
+				pictogram: "fa-restroom",
+				variant,
+				colors,
+			});
 			const glyphs = [
 				...svg.matchAll(
 					/<g transform="translate\(([^ ]+) ([^)]+)\) scale\(([^)]+)\)/g,
@@ -58,16 +64,12 @@ describe("horizontal catalog icons", () => {
 			expect(svg.match(/color="#0e2a4f"/g)).toHaveLength(2);
 			expect(svg).toContain('fill="#f2c14e"');
 			const icon = uiIconSrc(
-				"toilet-accessible/#f2c14e/#0e2a4f",
+				"fa-restroom+fa-wheelchair/#f2c14e/#0e2a4f",
 				variant,
 			);
 			expect(icon).toMatchObject({width, height});
-			const wheelchair =
-				getPictogram("toilet-accessible").composition?.glyphs[1];
-			if (!wheelchair) throw new Error("Missing wheelchair glyph");
-			registerPictograms([{id: "test-wheelchair", ...wheelchair}]);
 			const singleWheelchair = composeSvg({
-				pictogram: "test-wheelchair",
+				pictogram: "fa-wheelchair",
 				variant,
 				colors,
 			});
@@ -84,7 +86,7 @@ describe("horizontal catalog icons", () => {
 	);
 
 	it("matches the compact reference frame", () => {
-		const svg = composeSvg({pictogram: "toilet-accessible"});
+		const svg = composeSvg({pictogram: "fa-restroom+fa-wheelchair"});
 		expect(svg).toContain(
 			'<rect x="7" y="7" width="50" height="26" rx="4"',
 		);
@@ -118,20 +120,20 @@ describe("horizontal catalog icons", () => {
 				colors: {background: "#f2c14e", foreground: "#0e2a4f"},
 			});
 		}
-		expect(parseMapsightIcon("toilet/#fff/#123")).toEqual({
-			pictogram: "toilet",
+		expect(parseMapsightIcon("fa-restroom/#fff/#123")).toEqual({
+			pictogram: "fa-restroom",
 			colors: {background: "#fff", foreground: "#123"},
 		});
-		expect(resolveMapsightIconSpec("toilet-accessible")?.pictogram).toBe(
-			"toilet-accessible",
-		);
+		expect(
+			resolveMapsightIconSpec("fa-restroom+fa-wheelchair")?.pictogram,
+		).toBe("fa-restroom+fa-wheelchair");
 	});
 
 	it.each(["default", "small", "xsmall", "plain"] as IconVariant[])(
 		"retains attribution in %s SVG",
 		(variant) => {
 			expect(
-				composeSvg({pictogram: "toilet-accessible", variant}),
+				composeSvg({pictogram: "fa-restroom+fa-wheelchair", variant}),
 			).toContain("Font Awesome Free by Fonticons");
 		},
 	);
