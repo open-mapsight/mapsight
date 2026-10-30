@@ -73,8 +73,13 @@ plugin; feature lists compose SVG icons synchronously (SSR-safe). Map markers st
 ```json
 { "mapsightIconId": "museum" }
 { "mapsightIconId": "museum/#be123c" }
+{ "mapsightIconId": "baustelle///#2266cc" }
 { "mapsightIconId": "charging-station", "markerCaption": "150 kW", "markerCaptionColor": "#0095c8" }
 ```
+
+Traffic and parking signs also accept background, symbol, and border overrides;
+empty slots keep the original sign colors. For example, `baustelle///#2266cc`
+changes only the red border. See [traditional sign colors](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/docs/ICON_CATALOG.md#traditional-traffic-and-parking-signs).
 
 `markerCaption` draws bigger outlined text **below** the icon on `#features` (not clusters). Optional `markerCaptionColor` and `markerCaptionHalo` set fill and outline; defaults are the traffic-style text colors. Captions share a style part (`.iconCaption`) so they can sit next to a side `title` label. Hidden on spread features except highlight/select.
 

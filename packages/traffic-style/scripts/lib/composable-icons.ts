@@ -8,6 +8,8 @@ import {parseMapsightIcon, resolveMapsightIconSpec} from "#icon/icon-id.js";
 import {getIconLayout} from "#icon/layout.js";
 import {prepareSvgForRasterization} from "#icon/rasterize.js";
 import {resolveSpec} from "#icon/resolve.js";
+import type {RequiredIconColors} from "#icon/resolve.js";
+import {hasSignIcon} from "#icon/signs.js";
 import sharp from "sharp";
 import {z} from "zod/v4";
 
@@ -33,7 +35,7 @@ const SourceMetaSchema = z.object({
 export type ComposableIconTarget = {
 	iconId: string;
 	variant: IconVariant;
-	colors: Required<IconColors>;
+	colors: IconColors;
 };
 
 export type BuildComposableIconsOptions = {
@@ -67,23 +69,25 @@ export function composableIconFileName(
 export function resolveIconColors(
 	metaColors?: IconColors,
 	override?: IconColors,
-): Required<IconColors> {
+): RequiredIconColors {
 	const defaults = resolveSpec({}).colors;
 	const background =
 		override?.background ?? metaColors?.background ?? defaults.background;
 	const explicitForeground =
 		override?.foreground ?? metaColors?.foreground ?? undefined;
+	const border = override?.border ?? metaColors?.border;
 
 	return {
 		background,
 		foreground: explicitForeground ?? pickContrastForeground(background),
+		...(border ? {border} : {}),
 	};
 }
 
 export function buildIconSpec(
 	iconId: string,
 	variant: IconVariant,
-	colors: Required<IconColors>,
+	colors: IconColors,
 ): IconSpec {
 	const base = resolveMapsightIconSpec(iconId, variant);
 	if (!base) {
@@ -114,7 +118,9 @@ export function buildTargetsFromMapsightIconId(
 		throw new Error(`Invalid mapsightIconId: ${mapsightIconId}`);
 	}
 
-	const colors = resolveIconColors(parsed.colors);
+	const colors = hasSignIcon(iconId)
+		? (parsed.colors ?? {})
+		: resolveIconColors(parsed.colors);
 	return variants.map((variant) => ({iconId, variant, colors}));
 }
 
@@ -134,7 +140,7 @@ export async function loadComposableIconTargets(
 	const targets: ComposableIconTarget[] = [];
 
 	for (const [iconId, iconMeta] of Object.entries(icons)) {
-		if (iconMeta.render !== "composable") {
+		if (iconMeta.render !== "composable" && !hasSignIcon(iconId)) {
 			continue;
 		}
 		if (options.iconIds?.length && !options.iconIds.includes(iconId)) {
@@ -150,7 +156,17 @@ export async function loadComposableIconTargets(
 			continue;
 		}
 
-		const colors = resolveIconColors(iconMeta.colors, options.colors);
+		const colors = hasSignIcon(iconId)
+			? {
+					background:
+						options.colors?.background ??
+						iconMeta.colors?.background,
+					foreground:
+						options.colors?.foreground ??
+						iconMeta.colors?.foreground,
+					border: options.colors?.border ?? iconMeta.colors?.border,
+				}
+			: resolveIconColors(iconMeta.colors, options.colors);
 		for (const variant of variants) {
 			targets.push({iconId, variant, colors});
 		}

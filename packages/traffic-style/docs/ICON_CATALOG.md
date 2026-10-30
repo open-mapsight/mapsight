@@ -6,13 +6,15 @@ features, and how pictogram packs affect the runtime bundle.
 For map integration with `@mapsight/ui`, see the [README](../README.md#quick-start-with-mapsightui).
 For standalone integration, see [ICON_INTEGRATION.md](ICON_INTEGRATION.md).
 For caching internals, see [RUNTIME_ICONS.md](RUNTIME_ICONS.md).
+For measured sprite trade-offs and a migration direction, see
+[SPRITE_EVALUATION.md](SPRITE_EVALUATION.md).
 For subsetting assets at build time, see [CUSTOM_ICON_BUILDS.md](CUSTOM_ICON_BUILDS.md).
 
 ---
 
 ## Sprite vs composable
 
-Icons are either pre-baked **sprite** assets or **composable** pictograms. These
+Icons are classified as pre-baked **sprite** assets or **composable** pictograms. These
 terms describe different layers: composable is a catalog/build classification;
 **runtime icon** is the rendering engine that draws composable icons on the client.
 
@@ -35,9 +37,10 @@ Features store icons as a single string property:
 { "mapsightIconId": "museum/#be123c/#ffffff" }
 ```
 
-Format: `pictogramOrLabel[/background[/foreground]]`
+Format: `pictogramOrLabel[/background[/foreground[/border]]]`
 
-- Colors are optional; omitted foreground is chosen automatically for contrast.
+- Colors are optional. For POI pictograms and labels, omitted foreground is chosen
+  automatically for contrast when a background is supplied.
 - **Variant** (`default` / `small` / `xsmall` / `plain`) comes from zoom rules in
   SCSS, not from the compact id.
 - Cache keys are `mapsightIconId|variant`.
@@ -49,6 +52,56 @@ import {
 	formatMapsightIcon,
 	parseMapsightIcon,
 } from "@mapsight/traffic-style/runtime-dev";
+```
+
+### Traditional traffic and parking signs
+
+The sprite icons in the `traffic` and `poi-parking` groups also support runtime
+composition with color overrides. Bare ids keep using the existing sprites;
+adding `/` selects the runtime path on maps and in `MapsightIcon`.
+
+```json
+{ "mapsightIconId": "baustelle" }
+{ "mapsightIconId": "baustelle/#ffffcc" }
+{ "mapsightIconId": "baustelle//#333333" }
+{ "mapsightIconId": "baustelle///#2266cc" }
+{ "mapsightIconId": "baustelle/#ffffcc/#333333/#2266cc" }
+{ "mapsightIconId": "parkflaeche/#2266cc/#ffffff" }
+```
+
+For signs, **each omitted or empty color slot keeps its original SVG color**:
+`background` changes the sign face, `foreground` changes the symbol, and `border`
+changes the red warning/restriction band where present. Outer white/black
+visibility outlines and the red/amber/green lamps in `ampel` stay unchanged.
+Signs without a separate band ignore `border`; a symbol-free `vollsperrung`
+ignores `foreground`.
+
+The compositions use explicit, repository-owned SVG bases and symbols in
+`src/lib/icon/signs/frames.ts` and `src/lib/icon/signs/symbols.ts`, assembled in
+`catalog.ts`. Edit those files directly; no importer, palette inference, or design
+file is required. Each size retains its optical adjustments and existing parking
+fallbacks. The old `src/icons/` SVGs remain compatibility assets and raster parity
+fixtures. Package builds emit the sign defaults from these same compositions
+after the legacy asset pass, so editing a composition also updates the default
+PNG/SVG files and sprite. The other sprite families (flags, `ort`, `stadtteil`) remain
+unchanged. `render: "sprite"` continues to describe the default asset path, so
+existing sprite builds and catalog filters retain their behavior.
+
+Direct composition and single-icon pre-baking accept these ids too:
+
+```ts
+import {composeSvg, uiIconSrc} from "@mapsight/traffic-style/icon";
+
+const svg = composeSvg({
+	pictogram: "baustelle",
+	colors: {border: "#2266cc"},
+});
+const icon = uiIconSrc("baustelle///#2266cc", "plain");
+```
+
+```bash
+traffic-composable-icons --dest ./out \
+  --mapsight-icon-id "baustelle///#2266cc" --format both
 ```
 
 ---

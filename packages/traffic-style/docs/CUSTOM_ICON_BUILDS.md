@@ -172,6 +172,11 @@ files to disk. Use this when you want static assets (smaller runtime work, custo
 hosting, or mixing composable tiles into a custom sprite) instead of client-side
 composition for every variant.
 
+This also builds the authored traffic and parking signs, even though their
+default catalog render mode remains `sprite` for compatibility. Their defaults
+and color overrides come from the repository-owned SVG compositions; see
+[traditional signs](ICON_CATALOG.md#traditional-traffic-and-parking-signs).
+
 ### Example — POI services, traffic-style pack, 2× PNGs
 
 ```bash

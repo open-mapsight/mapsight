@@ -1,0 +1,211 @@
+{
+	"date": "2026-10-30T17:08:09.732Z",
+	"suite": "preload",
+	"chromium": "156.0.8078.4",
+	"cpu": "AMD Ryzen 5 3600XT 6-Core Processor",
+	"cpus": 12,
+	"viewport": [1280, 960],
+	"dpr": 2,
+	"profiles": [
+		{
+			"name": "desktop",
+			"cpu": 1,
+			"latency": 0,
+			"down": -1
+		},
+		{
+			"name": "mobile-simulated",
+			"cpu": 4,
+			"latency": 80,
+			"down": 200000
+		}
+	],
+	"repeats": 5,
+	"frames": 2,
+	"spriteBytes": 27958,
+	"pngBytes": {
+		"ampel": 2277,
+		"baustelle": 2394,
+		"behindertenparken": 1690,
+		"breitenbeschraenkung": 2230,
+		"busparkplatz": 1579,
+		"cam": 1350,
+		"einbahnstrasse": 1938,
+		"fahrbahnverengung": 2045,
+		"gegenverkehr": 2163,
+		"hoehenbeschraenkung": 2192,
+		"lkwsperrung": 2163,
+		"meldung": 2116,
+		"motorradstellplatz": 1822,
+		"parkflaeche": 1187,
+		"parkhaus": 1458,
+		"pundr": 1486,
+		"stau": 2265,
+		"tiefgarage": 1133,
+		"tonnage": 2049,
+		"umleitung": 993,
+		"vollsperrung": 1883
+	},
+	"strategies": [
+		{
+			"name": "sprite-demand",
+			"mode": "sprite"
+		},
+		{
+			"name": "png-demand",
+			"mode": "png"
+		},
+		{
+			"name": "runtime-demand",
+			"mode": "runtime"
+		},
+		{
+			"name": "sprite-preload-100",
+			"mode": "sprite",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "sprite-preload-300",
+			"mode": "sprite",
+			"preload": {
+				"leadMs": 300,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "png-preload-100",
+			"mode": "png",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "png-preload-300",
+			"mode": "png",
+			"preload": {
+				"leadMs": 300,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "runtime-bitmap-2-0",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 0,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": false
+			}
+		},
+		{
+			"name": "runtime-bitmap-2-100",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": false
+			}
+		},
+		{
+			"name": "runtime-bitmap-2-300",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 300,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": false
+			}
+		},
+		{
+			"name": "runtime-image-2-100",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "runtime-image-2-300",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 300,
+				"concurrency": 2,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "runtime-bitmap-4-100",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 4,
+				"maxTargets": 32,
+				"budgetMs": 250,
+				"forecast": "correct",
+				"mapImage": false
+			}
+		},
+		{
+			"name": "runtime-wrong-300",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 300,
+				"concurrency": 2,
+				"maxTargets": 8,
+				"budgetMs": 250,
+				"forecast": "wrong",
+				"mapImage": true
+			}
+		},
+		{
+			"name": "runtime-abandon-100",
+			"mode": "runtime",
+			"preload": {
+				"leadMs": 100,
+				"concurrency": 2,
+				"maxTargets": 8,
+				"budgetMs": 250,
+				"forecast": "wrong",
+				"mapImage": true,
+				"cancelAfterMs": 25
+			}
+		}
+	],
+	"totalSamples": 300,
+	"rawSha256": "024f94f0567d01a15d625d25edb46ab1431781fb6efa9029f42c69f3827c1317",
+	"timingScope": "Data/ids and shared JS already loaded; no existing active app before navigation; timer/RAF contention proxies, not field INP."
+}

@@ -115,7 +115,7 @@
 		"directory": "packages/traffic-style"
 	},
 	"scripts": {
-		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
+		"build": "npm-run-all build:setup build:pictograms build:meta build:icons --parallel build:scripts build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
 		"build:composable-icons": "run-p build:composable-icons:*",
 		"build:composable-icons:1x": "node scripts/dev/build-composable-icons.ts --scale 1",
 		"build:composable-icons:2x": "node scripts/dev/build-composable-icons.ts --scale 2",

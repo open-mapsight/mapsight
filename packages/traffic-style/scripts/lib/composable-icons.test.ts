@@ -2,9 +2,11 @@ import {readFile} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
+import {hasSignIcon} from "#icon/signs.js";
 import {describe, expect, it} from "vitest";
 
 import {
+	buildIconSpec,
 	buildTargetsFromMapsightIconId,
 	composableIconFileName,
 	loadComposableIconTargets,
@@ -69,12 +71,31 @@ describe("composable-icons", () => {
 		expect(iconIds.has("fa-route")).toBe(false);
 	});
 
+	it.each([
+		["lkwsperrung", {}],
+		["lkwsperrung///#987654", {border: "#987654"}],
+		["parkflaeche/#abcdef", {background: "#abcdef"}],
+	])("keeps source defaults when pre-baking a sign: %s", (id, colors) => {
+		const [target] = buildTargetsFromMapsightIconId(id, ["plain"]);
+		expect(target?.colors).toEqual(colors);
+		expect(
+			buildIconSpec(target!.iconId, target!.variant, target!.colors),
+		).toEqual({
+			pictogram: target!.iconId,
+			variant: "plain",
+			colors,
+		});
+	});
+
 	it("package catalog packs include every composable meta.json icon", async () => {
 		const meta = JSON.parse(await readFile(sourceMetaPath, "utf8")) as {
 			icons?: Record<string, {render?: string}>;
 		};
 		const composableIds = Object.entries(meta.icons ?? {})
-			.filter(([, iconMeta]) => iconMeta.render === "composable")
+			.filter(
+				([id, iconMeta]) =>
+					iconMeta.render === "composable" || hasSignIcon(id),
+			)
 			.map(([iconId]) => iconId)
 			.sort();
 
@@ -97,6 +118,20 @@ describe("composable-icons", () => {
 					target.iconId === "fa-route" && target.variant === "plain",
 			),
 		).toBe(true);
+	});
+
+	it("builds authored signs with their defaults even while their default rendering uses sprites", async () => {
+		const [target] = await loadComposableIconTargets(sourceMetaPath, {
+			iconIds: ["baustelle"],
+			variants: ["plain"],
+			colors: {border: "#2266cc"},
+		});
+		expect(target?.iconId).toBe("baustelle");
+		expect(target?.colors).toEqual({
+			background: undefined,
+			foreground: undefined,
+			border: "#2266cc",
+		});
 	});
 
 	it("package composable build script uses PACKAGE_COMPOSABLE_PACKS", async () => {

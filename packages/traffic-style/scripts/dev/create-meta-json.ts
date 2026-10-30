@@ -25,6 +25,7 @@ interface MetaIcon {
 	colors?: {
 		background?: string;
 		foreground?: string;
+		border?: string;
 	};
 }
 

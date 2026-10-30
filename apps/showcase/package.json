@@ -1,6 +1,6 @@
 {
 	"name": "@mapsight/showcase",
-	"description": "Mapsight ecosystem showcase — UI demo, icon catalog, and package overview",
+	"description": "Mapsight ecosystem showcase \u2014 UI demo, icon catalog, and package overview",
 	"version": "0.1.11",
 	"private": true,
 	"type": "module",
@@ -76,6 +76,7 @@
 		"url": "https://github.com/open-mapsight/mapsight"
 	},
 	"scripts": {
+		"bench:icons": "node bench/icon-rendering.mts",
 		"build": "npm-run-all --parallel build:mapsightStyle copy --sequential build:app",
 		"build:app": "vite build --mode production --minify oxc",
 		"build:mapsightStyle": "npm-run-all build:mapsightStyle:*",

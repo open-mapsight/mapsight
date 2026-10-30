@@ -124,9 +124,12 @@ Features store icons as a single string property:
 { "mapsightIconId": "P2/#035799" }
 ```
 
-Format: `pictogramOrLabel[/background[/foreground]]`
+Format: `pictogramOrLabel[/background[/foreground[/border]]]`
 
-- Colors are optional; omitted foreground is chosen via `pickContrastForeground`.
+- Colors are optional; for POI pictograms and labels, omitted foreground is chosen
+  via `pickContrastForeground` when a background is supplied. Traditional traffic
+  and parking signs retain each omitted source color; `border` overrides their
+  warning/restriction band. See [traditional signs](ICON_CATALOG.md#traditional-traffic-and-parking-signs).
 - **Variant is not part of the compact id** — it comes from the style rule (zoom
   band, highlight state, etc.).
 - Cache key is always **`mapsightIconId|variant`** (see `icon-key.ts`).
