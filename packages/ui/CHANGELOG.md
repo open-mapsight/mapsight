@@ -1,5 +1,25 @@
 # @mapsight/ui
 
+## 7.11.0
+
+### Minor Changes
+
+- 6e1979d: Add opt-in compact feature-source indexes to nodeEmbed dehydration. The wire
+  snapshot omits ids/featuresById while retaining source collections, metadata,
+  selections, combined data, and edit history. Existing core normalization restores
+  indexed runtime state before React hydration; full snapshots remain the default.
+
+### Patch Changes
+
+- dedaf83: Preserve unchanged loaded feature data and derived indexes when applying JSON-style configuration. Add opt-in `mergeConfig`/`mergeConfigAll` actions and use them in `resetMapsightCore`, retaining selection resets, path routing and existing deep-merge value semantics.
+- 8394258: Avoid SSR renderAsync timeouts when a disabled/default list references an
+  unconfigured feature source, or an ordinary load would skip an already-failed
+  source. Continue awaiting configured first-paint data and combined members, and
+  preserve explicit forced-refresh retries.
+- Updated dependencies [`6e1979d`, `8394258`, `dedaf83`]:
+    - `@mapsight/core@14.6.8 → 14.7.0` (minor)
+    - `@mapsight/lib-redux@2.2.5 → 2.3.0` (minor)
+
 ## 7.10.1
 
 ### Patch Changes

@@ -8,7 +8,7 @@
 		"@mapsight/lib-js": "^3.0.11",
 		"@mapsight/lib-ol": "^4.3.3",
 		"@mapsight/traffic-style": "^5.5.4",
-		"@mapsight/ui": "^7.10.1",
+		"@mapsight/ui": "^7.11.0",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
 		"ol": "^10.11.0",

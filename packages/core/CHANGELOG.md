@@ -1,5 +1,24 @@
 # @mapsight/core
 
+## 14.7.0
+
+### Minor Changes
+
+- dedaf83: Preserve unchanged loaded feature data and derived indexes when applying JSON-style configuration. Add opt-in `mergeConfig`/`mergeConfigAll` actions and use them in `resetMapsightCore`, retaining selection resets, path routing and existing deep-merge value semantics.
+
+### Patch Changes
+
+- 6e1979d: Index feature IDs such as constructor, toString and **proto** as ordinary own
+  entries in runtime and filtered feature lookups. Preserve first-feature lookup
+  semantics for duplicate IDs, including after full or compact SSR hydration.
+- 8394258: Ignore obsolete feature-source load completions after URL/type replacement,
+  removal, a newer request, or an intervening data edit. Clear retired lookup,
+  loading, error and history metadata with the old collection so the replacement
+  can load immediately, while preserving refresh configuration and manual
+  completion action compatibility.
+- Updated dependencies [`dedaf83`]:
+    - `@mapsight/lib-redux@2.2.5 → 2.3.0` (minor)
+
 ## 14.6.8
 
 ### Patch Changes

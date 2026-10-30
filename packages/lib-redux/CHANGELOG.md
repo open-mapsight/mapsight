@@ -1,5 +1,11 @@
 # @mapsight/lib-redux
 
+## 2.3.0
+
+### Minor Changes
+
+- dedaf83: Preserve unchanged loaded feature data and derived indexes when applying JSON-style configuration. Add opt-in `mergeConfig`/`mergeConfigAll` actions and use them in `resetMapsightCore`, retaining selection resets, path routing and existing deep-merge value semantics.
+
 ## 2.2.5
 
 ### Patch Changes
