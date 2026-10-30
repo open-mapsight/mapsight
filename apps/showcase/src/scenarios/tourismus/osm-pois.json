@@ -1,0 +1,161 @@
+{
+	"type": "FeatureCollection",
+	"attribution": "© OpenStreetMap contributors",
+	"license": "https://opendatacommons.org/licenses/odbl/1-0/",
+	"extractedAt": "2026-10-29",
+	"source": "https://api.openstreetmap.org/api/0.6/map?bbox=10.515,52.258,10.532,52.271",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "osm-node-1238956832",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5275245, 52.2638177]
+			},
+			"properties": {
+				"osmType": "node",
+				"osmId": 1238956832,
+				"osmVersion": 13,
+				"osmTimestamp": "2026-03-13T16:28:28Z",
+				"coordinateMethod": "node",
+				"tags": {
+					"name": "Schlossmuseum",
+					"tourism": "museum"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-node-12199215628",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5251069, 52.2594128]
+			},
+			"properties": {
+				"osmType": "node",
+				"osmId": 12199215628,
+				"osmVersion": 1,
+				"osmTimestamp": "2024-09-25T15:02:06Z",
+				"coordinateMethod": "node",
+				"tags": {
+					"name": "Museum Hinter Aegidien",
+					"tourism": "museum"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-way-5563264",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5324852, 52.2671603]
+			},
+			"properties": {
+				"osmType": "way",
+				"osmId": 5563264,
+				"osmVersion": 21,
+				"osmTimestamp": "2022-05-03T16:30:20Z",
+				"coordinateMethod": "mean-of-way-nodes",
+				"tags": {
+					"leisure": "park",
+					"name": "Theaterpark"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-way-23100098",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5218448, 52.2580459]
+			},
+			"properties": {
+				"osmType": "way",
+				"osmId": 23100098,
+				"osmVersion": 19,
+				"osmTimestamp": "2024-08-07T09:46:18Z",
+				"coordinateMethod": "mean-of-way-nodes",
+				"tags": {
+					"leisure": "park",
+					"name": "Kiryat-Tivon-Park"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-way-22996131",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5198107, 52.2676099]
+			},
+			"properties": {
+				"osmType": "way",
+				"osmId": 22996131,
+				"osmVersion": 26,
+				"osmTimestamp": "2026-10-27T18:36:31Z",
+				"coordinateMethod": "mean-of-way-nodes",
+				"tags": {
+					"name": "Alte Waage",
+					"tourism": "attraction"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-way-33048725",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5288001, 52.2624024]
+			},
+			"properties": {
+				"osmType": "way",
+				"osmId": 33048725,
+				"osmVersion": 12,
+				"osmTimestamp": "2025-02-13T17:57:06Z",
+				"coordinateMethod": "mean-of-way-nodes",
+				"tags": {
+					"name": "Happy Rizzi House",
+					"tourism": "attraction"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-way-23095958",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.5323055, 52.2659666]
+			},
+			"properties": {
+				"osmType": "way",
+				"osmId": 23095958,
+				"osmVersion": 28,
+				"osmTimestamp": "2025-11-11T05:21:25Z",
+				"coordinateMethod": "mean-of-way-nodes",
+				"tags": {
+					"amenity": "theatre",
+					"name": "Staatstheater Großes Haus"
+				}
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "osm-node-3067837131",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [10.51786, 52.2640136]
+			},
+			"properties": {
+				"osmType": "node",
+				"osmId": 3067837131,
+				"osmVersion": 7,
+				"osmTimestamp": "2026-05-01T22:22:39Z",
+				"coordinateMethod": "node",
+				"tags": {
+					"amenity": "theatre",
+					"name": "Komödie am Altstadtmarkt"
+				}
+			}
+		}
+	]
+}

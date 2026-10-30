@@ -16,6 +16,7 @@ interface StationEntry {
 	origin_id: string;
 	name: string;
 	label: string | null;
+	lastDataAt?: string | null;
 }
 
 interface StationListFixture {
@@ -235,6 +236,41 @@ export function resolveCountAggregatorMockRequest(
 
 		return jsonResponse(
 			buildValuesMap(stationIds, fromYmd, toYmd, resolution),
+		);
+	}
+
+	// The feature-detail metric uses the single-station endpoint, while the
+	// wizard uses the multi-station endpoint below. Both share the same fixtures.
+	const stationLastValues = subPath.match(
+		/^\/([^/]+)\/(\d+)\/last-values\/([^/]+)$/,
+	);
+	if (stationLastValues) {
+		const stationId = Number(stationLastValues[2]);
+		const station = stationById.get(stationId);
+		if (!station || station.type !== stationLastValues[1]) {
+			return jsonResponse({message: "Unknown demo station"}, 404);
+		}
+		const limit = Number(url.searchParams.get("limit") ?? "7");
+		if (!Number.isInteger(limit) || limit < 1 || limit > 366) {
+			return jsonResponse(
+				{message: "limit must be an integer from 1 to 366"},
+				400,
+			);
+		}
+		const end =
+			url.searchParams.get("anchor") === "lastDataAt" &&
+			station.lastDataAt
+				? parseYmd(station.lastDataAt.slice(0, 10))
+				: new Date();
+		const start = new Date(end);
+		start.setDate(end.getDate() - limit + 1);
+		return jsonResponse(
+			buildValuesMap(
+				[stationId],
+				formatLocalDateTime(start).slice(0, 10),
+				formatLocalDateTime(end).slice(0, 10),
+				stationLastValues[3]!,
+			)[String(stationId)],
 		);
 	}
 

@@ -14,12 +14,15 @@ export function UiDemoShell({
 	createOptions,
 	styleFunction,
 	mergeDefaultPlugins = true,
+	introduction,
 	children,
 }: {
 	baseMapsightConfig: Partial<State>;
 	createOptions: CreateOptions;
 	styleFunction: StyleFunction;
 	mergeDefaultPlugins?: boolean;
+	/** Optional route introduction; other demos retain the technical notice. */
+	introduction?: ReactNode;
 	children: ReactNode;
 }) {
 	const resolvedOptions = mergeDefaultPlugins
@@ -34,11 +37,14 @@ export function UiDemoShell({
 
 	return (
 		<div className="ui-demo-embed">
-			<p role="note">
-				Fiktive Demodaten. Die Ortssuche ist auf dem statischen Showcase
-				deaktiviert, da kein Suchserver bereitsteht. Die lokale
-				Listensuche bleibt verfügbar, sofern die Demo eine Liste zeigt.
-			</p>
+			{introduction ?? (
+				<p role="note">
+					Fiktive Demodaten. Die Ortssuche ist auf dem statischen
+					Showcase deaktiviert, da kein Suchserver bereitsteht. Die
+					lokale Listensuche bleibt verfügbar, sofern die Demo eine
+					Liste zeigt.
+				</p>
+			)}
 			<div className="ui-demo-embed__frame">
 				<div className="ui-demo">
 					<Instance

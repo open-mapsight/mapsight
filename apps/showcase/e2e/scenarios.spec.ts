@@ -5,7 +5,7 @@ import {createRequire} from "node:module";
 import {expect, test} from "@playwright/test";
 
 const require = createRequire(
-	new URL("../../../../packages/a11y-audit/package.json", import.meta.url),
+	new URL("../../../packages/a11y-audit/package.json", import.meta.url),
 );
 const axePath = require.resolve("axe-core/axe.min.js");
 const output = process.env.SCENARIO_SCREENSHOTS;
@@ -40,15 +40,43 @@ for (const colorScheme of ["light", "dark"] as const) {
 				await expect(page.locator("h1")).toBeVisible();
 				await expect(page).toHaveTitle(
 					name === "overview"
-						? "Mapsight · Szenarien"
+						? "Scenarios · Mapsight Showcase"
 						: "Musterstadt · Bürgerservice – fiktive Demo",
 				);
-				await expect(
-					page.locator('link[href="/vendor/kern/dist/kern.min.css"]'),
-				).toBeAttached();
-				expect(
-					await page.locator('link[href*="global.css"]').count(),
-				).toBe(0);
+				if (name === "overview") {
+					await expect(page.locator(".msb-shell")).toBeVisible();
+					await expect(
+						page.locator(
+							'link[href="/vendor/kern/dist/kern.min.css"]',
+						),
+					).toHaveCount(0);
+					await expect(
+						page.getByRole("link", {
+							name: "Mapsight Showcase",
+							exact: true,
+						}),
+					).toBeVisible();
+					for (const scenario of [
+						"verwaltung",
+						"tourismus",
+						"verkehr",
+					]) {
+						await expect(
+							page.locator(
+								`a[href="/scenarios/${scenario}/index.html"]`,
+							),
+						).toBeVisible();
+					}
+				} else {
+					await expect(
+						page.locator(
+							'link[href="/vendor/kern/dist/kern.min.css"]',
+						),
+					).toBeAttached();
+					expect(
+						await page.locator('link[href*="global.css"]').count(),
+					).toBe(0);
+				}
 				if (name === "verwaltung") {
 					await expect(
 						page.locator(".ms3-list__item").first(),
@@ -186,6 +214,11 @@ test("citizen task: filter stufenlos, select a service, read opening hours", asy
 	});
 	await page.goto("/scenarios/verwaltung/index.html");
 	await expect(page.locator(".ms3-list__item").first()).toBeVisible();
+	await page.locator(".ms3-features-sorting > button").click();
+	await page.locator(".ms3-features-sorting select").selectOption("mitte");
+	await expect(page.locator(".ms3-list__item").first()).toContainText(
+		"Servicestelle Mustermitte 05",
+	);
 	await page.getByRole("checkbox", {name: /Stufenlos/}).click();
 	await page.locator(".ms3-list__item button").first().click();
 	await expect(page.getByText(/Öffnungszeiten: Montag/)).toBeVisible();

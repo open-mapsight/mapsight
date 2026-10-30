@@ -9,8 +9,7 @@ export default defineConfig({
 	reporter: "list",
 	use: {baseURL: "http://127.0.0.1:5174"},
 	webServer: {
-		command:
-			"pnpm exec vite preview --host 127.0.0.1 --port 5174 --strictPort",
+		command: "node scripts/serve-static.mts --port 5174 --audit-tiles",
 		url: "http://127.0.0.1:5174/ui/full",
 		timeout: 30_000,
 		reuseExistingServer: false,

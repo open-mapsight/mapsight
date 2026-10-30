@@ -3,21 +3,21 @@ import {Link} from "react-router-dom";
 const sections = [
 	{
 		to: "/ui/combined-list",
-		title: "Demos",
+		title: "UI demos",
 		description:
-			"Mapsight UI examples — combined list, simple map, full layout, custom overlays, and router integration.",
+			"Search, filter and select map features. Compare layouts, custom overlays and router integration.",
 	},
 	{
 		to: "/count-aggregator",
 		title: "Count aggregator",
 		description:
-			"Embeddable stepped wizard and a headless custom-UI demo against a mock count-aggregator API — no live tenant required.",
+			"Step through a counting workflow or try a custom UI, both backed by a mock API.",
 	},
 	{
 		to: "/icons",
 		title: "Icons",
 		description:
-			"Runtime icon editor and catalog — compose pictograms on a map or browse prebuilt sprites and Font Awesome pictograms.",
+			"Compose a map icon, adjust its appearance, or browse the pictogram and sprite catalogs.",
 	},
 ] as const;
 
@@ -25,31 +25,63 @@ export function LandingPage() {
 	return (
 		<div className="showcase-page landing msb-content">
 			<div className="showcase-page__hero">
-				<p className="msb-eyebrow">Mapsight / Showcase</p>
-				<h1>Maps that fit your site.</h1>
+				<p className="msb-eyebrow">Interactive examples</p>
+				<h1>Try Mapsight in context.</h1>
 				<p className="msb-intro">
-					An open-source framework for communicative web maps,
-					designed to take on the look of the page they sit on.
+					Find a service, explore a destination, or inspect traffic
+					information. Try complete fictional websites and the UI
+					patterns behind them.
 				</p>
+				<div className="landing__actions">
+					<a
+						className="msb-primary-link"
+						href="/scenarios/index.html"
+					>
+						Explore scenarios <span aria-hidden="true">→</span>
+					</a>
+					<Link to="/ui/combined-list">Try a UI demo →</Link>
+				</div>
 				<p className="msb-status">
-					Work in progress; used in controlled production deployments,
-					not yet turnkey.
+					Work in progress. Examples use demonstration data; Mapsight
+					is used in controlled production deployments and is not yet
+					turnkey.
 				</p>
 			</div>
 
-			<div className="landing__grid">
-				{sections.map((section) => (
-					<Link
-						key={section.to}
-						to={section.to}
-						className="landing__card"
-					>
-						<h2>{section.title}</h2>
-						<p>{section.description}</p>
-						<span className="landing__card-link">Open →</span>
-					</Link>
-				))}
-			</div>
+			<section
+				className="landing__scenarios"
+				aria-labelledby="landing-scenarios"
+			>
+				<div>
+					<p className="msb-eyebrow">Start with a task</p>
+					<h2 id="landing-scenarios">
+						One map framework. Different host sites.
+					</h2>
+					<p>
+						The scenarios show Mapsight within the identity and
+						workflow of a fictional administration, tourism site and
+						traffic portal.
+					</p>
+				</div>
+				<a href="/scenarios/index.html">Choose a scenario →</a>
+			</section>
+
+			<section className="landing__tools" aria-labelledby="landing-tools">
+				<h2 id="landing-tools">Explore the building blocks</h2>
+				<div className="landing__grid">
+					{sections.map((section) => (
+						<Link
+							key={section.to}
+							to={section.to}
+							className="landing__card"
+						>
+							<h3>{section.title}</h3>
+							<p>{section.description}</p>
+							<span className="landing__card-link">Open →</span>
+						</Link>
+					))}
+				</div>
+			</section>
 		</div>
 	);
 }

@@ -3,6 +3,7 @@
 	"extends": "../../configs/tsconfig-base-app.json",
 	"include": [
 		"src/**/*",
+		"scripts/web-brand.mts",
 		"e2e/**/*.ts",
 		"playwright.config.ts",
 		"vite.config.ts",

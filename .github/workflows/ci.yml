@@ -377,6 +377,10 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Build showcase and audit
+        # The audit fixture serves synthetic texture at this same-origin path.
+        # Accessibility checks must not depend on upstream tile availability.
+        env:
+          VITE_SHOWCASE_OSM_TILE_URL: "/tiles/osm/{z}/{x}/{y}.png"
         run: pnpm turbo run build --filter=@mapsight/showcase --filter=@mapsight/a11y-audit
 
       - name: Check accessibility against baseline

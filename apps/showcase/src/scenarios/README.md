@@ -1,12 +1,23 @@
 # Native scenario documents
 
-Vite builds `/scenarios/index.html` and `/scenarios/verwaltung/index.html` as real
-files. Always link these explicit paths: the deployed `try_files {path} /index.html`
-need not resolve directory indexes. No Caddy change is needed. A link from the
-showcase navigation is intentionally left to the separate shell workstream.
+Vite builds the overview and each host page as real files:
 
-Each HTML document owns its fonts and CSS. It does not import `global.css` or
-`msui.scss`. KERN CSS is served byte-for-byte from public/vendor/kern, outside
+| Document                           | Context                                                   |
+| ---------------------------------- | --------------------------------------------------------- |
+| `/scenarios/index.html`            | Mapsight-branded overview with shared showcase navigation |
+| `/scenarios/verwaltung/index.html` | Fictional KERN citizen-service host                       |
+| `/scenarios/tourismus/index.html`  | Fictional tourism host, German                            |
+| `/scenarios/tourismus/en.html`     | Tourism host, English                                     |
+| `/scenarios/verkehr/index.html`    | Fictional traffic-information host with simulated values  |
+
+Always link these explicit paths: the deployed `try_files {path} /index.html`
+need not resolve directory indexes. No Caddy change is needed. The overview is linked from the showcase navigation
+and home page. Its shared
+brand frame identifies the site as the Mapsight Showcase and links to the project
+website; each host page retains its own visual identity and return link.
+
+Each host HTML document owns its fonts and CSS and imports neither `global.css`
+nor `msui.scss`. The overview alone uses the common showcase brand frame. KERN CSS is served byte-for-byte from public/vendor/kern, outside
 Vite's CSS transformations; our overrides live in host.scss. `.service-map`
 scopes both emitted Mapsight tokens and the mapping from KERN semantic colours,
 typography, spacing and radius. The scenario opts in to `$ms3-future-v8-themedIcons`
@@ -20,18 +31,18 @@ is not part of this first scenario.
 
 ## Local deployment and accessibility check
 
-From the repository root, with absolute paths for this checkout:
+From the repository root:
 
 1. `pnpm install --frozen-lockfile`
 2. `VITE_SHOWCASE_OSM_TILE_URL='/tiles/osm/{z}/{x}/{y}.png' pnpm exec turbo build --filter=@mapsight/showcase... --filter=@mapsight/a11y-audit`
-3. `node /home/pje/Sites/mapsight-worktrees/showcase-scenarios/apps/showcase/scripts/serve-static.mts`
-4. `SHOWCASE_TEST_URL=http://127.0.0.1:5176 SCENARIO_SCREENSHOTS=/home/pje/Sites/mapsight-brand/reviews/WP5/scenarios pnpm --filter @mapsight/showcase test:e2e`
+3. `node apps/showcase/scripts/serve-static.mts`
+4. `SHOWCASE_TEST_URL=http://127.0.0.1:5176 SCENARIO_SCREENSHOTS=/tmp/mapsight-scenarios pnpm --filter @mapsight/showcase test:e2e`
 5. `pnpm --filter @mapsight/showcase test:a11y`
 
 The static fixture server models the file-only try_files lookup and SPA fallback.
 Scenario e2e tests stub same-origin tiles, abort and fail any third-party request,
 run axe at 360/768/1280, check horizontal overflow, and exercise filtering and
-opening hours. The CI accessibility configuration includes both documents.
+opening hours. The CI accessibility configuration includes the overview and all host documents.
 The standard showcase has no unit-test script; its tests are Playwright e2e and
 the audit suite.
 
@@ -40,3 +51,17 @@ shared demo shell, and explicitly removed from full/router/custom overlays.
 A visible shared notice explains that free-place search has no static backend.
 List search still filters local fixture data. No service worker is needed for
 this scenario; the existing count-aggregator worker is unchanged.
+
+Tourism and traffic each document data provenance in their own `DATA.md`. Tourism
+ships a small dated OSM extract separately from its own editorial copy. The traffic
+host changes fixed fictional data through normal feature-source actions; its
+combined list follows visible layers. Count widgets in traffic details use the
+existing same-origin Count-Aggregator mock, with invented counter positions and
+clearly synthetic values. Neither scenario provides live information.
+
+The full accessibility suite serves the same static build via the fixture server
+on port 5174 with `--audit-tiles`. This explicit test-only mode returns synthetic
+SVG texture for same-origin tile URLs so keyboard panning can be observed even
+on the initially empty point-input map. It never fetches upstream map imagery.
+Ordinary e2e tests still stub basemap requests themselves. The fixture server
+accepts `--port` for independent local runs; synthetic tiles are off by default.

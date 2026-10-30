@@ -1,5 +1,53 @@
 import {expect, test} from "@playwright/test";
 
+for (const width of [320, 360, 768, 1280]) {
+	test(`header geometry stays stable when the current nav item changes at ${width}px`, async ({
+		page,
+	}) => {
+		await page.setViewportSize({width, height: 900});
+		await page.goto("/");
+		const header = page.locator(".msb-site-header");
+		await expect(header).toBeVisible();
+		await page.evaluate(() => document.fonts.ready);
+		const geometry = () =>
+			header.evaluate((element) => {
+				const box = (node: Element) => {
+					const {x, y, width, height} = node.getBoundingClientRect();
+					return {x, y, width, height};
+				};
+				return {
+					logo: box(element.querySelector("img")!),
+					links: [...element.querySelectorAll("nav a")].map(box),
+					header: box(element),
+				};
+			});
+		const before = await geometry();
+		await header.locator("nav a").evaluateAll((links) => {
+			for (const link of links) link.removeAttribute("aria-current");
+		});
+		for (const link of await header.locator("nav a").all()) {
+			await link.evaluate((element) =>
+				element.setAttribute("aria-current", "page"),
+			);
+			expect(await geometry()).toEqual(before);
+			await link.evaluate((element) =>
+				element.removeAttribute("aria-current"),
+			);
+		}
+		await page.getByRole("button", {name: "Dark mode"}).click();
+		expect(await geometry()).toEqual(before);
+		expect(
+			await page
+				.locator("html")
+				.evaluate((element) => element.scrollWidth),
+		).toBe(width);
+		await page.goto("/scenarios/index.html");
+		await expect(header).toBeVisible();
+		await page.evaluate(() => document.fonts.ready);
+		expect(await geometry()).toEqual(before);
+	});
+}
+
 test("brand theme switches the logo without changing product typography or roles", async ({
 	page,
 }) => {
@@ -40,8 +88,14 @@ test("narrow navigation wraps and the skip link focuses the content", async ({
 	await page.setViewportSize({width: 360, height: 800});
 	await page.goto("/");
 	await expect(
-		page.getByRole("heading", {name: "Maps that fit your site."}),
+		page.getByRole("heading", {name: "Try Mapsight in context."}),
 	).toBeVisible();
+	await expect(
+		page.getByRole("link", {name: "Mapsight Showcase", exact: true}),
+	).toBeVisible();
+	await expect(
+		page.getByRole("link", {name: "Explore scenarios", exact: true}),
+	).toHaveAttribute("href", "/scenarios/index.html");
 	await page.keyboard.press("Tab");
 	await expect(
 		page.getByRole("link", {name: "Skip to content"}),
@@ -50,6 +104,7 @@ test("narrow navigation wraps and the skip link focuses the content", async ({
 	await expect(page.locator("#showcase-content")).toBeFocused();
 	for (const name of [
 		"Home",
+		"Scenarios",
 		"Demos",
 		"Count aggregator",
 		"Icons",
@@ -85,4 +140,38 @@ test.describe("with the OS in dark mode", () => {
 			"light",
 		);
 	});
+});
+
+test("Demos stays active across UI routes", async ({page}) => {
+	await page.route("https://**/*", (route) => route.abort());
+	await page.goto("/ui/simple-map");
+	await expect(
+		page
+			.getByRole("navigation", {name: "Main", exact: true})
+			.getByRole("link", {name: "Demos", exact: true}),
+	).toHaveAttribute("aria-current", "page");
+});
+
+test("home opens the standalone scenarios overview and its brand links return to the showcase", async ({
+	page,
+}) => {
+	await page.goto("/");
+	await page
+		.getByRole("link", {name: "Explore scenarios", exact: true})
+		.click();
+	await expect(page).toHaveURL(/\/scenarios\/index\.html$/);
+	await expect(
+		page.getByRole("heading", {name: "Maps within a real task."}),
+	).toBeVisible();
+	await expect(
+		page
+			.getByRole("navigation", {name: "Main", exact: true})
+			.getByRole("link", {name: "Scenarios", exact: true}),
+	).toHaveAttribute("aria-current", "page");
+	await page
+		.getByRole("link", {name: "Mapsight Showcase", exact: true})
+		.click();
+	await expect(
+		page.getByRole("heading", {name: "Try Mapsight in context."}),
+	).toBeVisible();
 });
