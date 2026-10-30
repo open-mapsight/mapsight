@@ -1,3 +1,4 @@
+import {type HTMLAttributes, forwardRef} from "react";
 import {Provider} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
@@ -82,10 +83,15 @@ function makeStore(view = VIEW_DESKTOP, list = listContext.listUiOptions) {
 						},
 					};
 				}
-				if (action.type === "test/highlight") {
+				if (
+					action.type === "test/highlight" ||
+					action.type === "test/preselect"
+				) {
 					return {
 						...state,
-						[FEATURE_SELECTION_HIGHLIGHT]: {
+						[action.type === "test/highlight"
+							? FEATURE_SELECTION_HIGHLIGHT
+							: FEATURE_SELECTION_PRESELECT]: {
 							features: action.features ?? [],
 						},
 					};
@@ -242,4 +248,145 @@ it("closes inline details on scoped Escape and restores focus to their trigger",
 	expect(details.hidden).toBe(true);
 	expect(document.activeElement).toBe(trigger);
 	expect(container.querySelector(".ms3-list__item--selected")).toBeNull();
+});
+
+it.each([false, true])(
+	"avoids unrelated row renders and preserves selection/keyboard behavior (legacy=%s)",
+	(legacy) => {
+		const store = makeStore();
+		const renders: Record<string, number> = {};
+		const Row = forwardRef<
+			HTMLDivElement,
+			HTMLAttributes<HTMLDivElement> & {feature: MapsightUiFeature}
+		>(function Row({feature, ...props}, ref) {
+			renders[feature.id] = (renders[feature.id] ?? 0) + 1;
+			return <div {...props} ref={ref} data-row={feature.id} />;
+		});
+		const features = ["a", "b", "c"].map((id) => ({
+			...museumFeature(),
+			id,
+			properties: {
+				...museumFeature().properties,
+				...(legacy ? {overrideListHtml: `<span>${id}</span>`} : {}),
+			},
+		}));
+		const select = (id: string) =>
+			store.dispatch({type: "test/select", features: [id]});
+		const deselect = () =>
+			store.dispatch({type: "test/select", features: []});
+		const children = features.map((feature) => (
+			<FeatureListItem
+				key={feature.id}
+				as={Row}
+				feature={feature}
+				selectFeature={select}
+				deselectFeatures={deselect}
+			/>
+		));
+		const tree = (only: boolean) => (
+			<Provider store={store}>
+				<FeatureListContextProvider
+					value={{
+						...listContext,
+						listUiOptions: {
+							...listContext.listUiOptions,
+							selectOnClick: true,
+							deselectOnClick: true,
+							showSelectedOnly: only,
+						},
+					}}
+				>
+					{children}
+				</FeatureListContextProvider>
+			</Provider>
+		);
+		const {container, rerender} = render(tree(false));
+		const trigger = (id: string) =>
+			container.querySelector<HTMLElement>(
+				`[data-row="${id}"] [data-ms3-list-nav]`,
+			)!;
+		const untouched = container.querySelector('[data-row="c"]');
+		trigger("a").focus();
+		fireEvent.keyDown(trigger("a"), {key: "Enter"});
+		expect(renders).toEqual({a: 2, b: 1, c: 1});
+		expect(trigger("a").getAttribute("aria-pressed")).toBe("true");
+		expect(document.activeElement).toBe(trigger("a"));
+		fireEvent.keyDown(trigger("b"), {key: " "});
+		expect(renders).toEqual({a: 3, b: 2, c: 1});
+		expect(trigger("a").getAttribute("aria-pressed")).toBe("false");
+		expect(trigger("b").getAttribute("aria-pressed")).toBe("true");
+		fireEvent.click(trigger("b"));
+		expect(renders).toEqual({a: 3, b: 3, c: 1});
+		expect(container.querySelector('[data-row="c"]')).toBe(untouched);
+		act(() => {
+			select("a");
+		});
+		rerender(tree(true));
+		expect(container.querySelectorAll("[data-row]")).toHaveLength(1);
+		act(() => {
+			select("b");
+		});
+		expect(container.querySelectorAll("[data-row]")).toHaveLength(1);
+		expect(trigger("b").getAttribute("aria-pressed")).toBe("true");
+		act(() => {
+			deselect();
+		});
+		expect(container.querySelectorAll("[data-row]")).toHaveLength(3);
+	},
+);
+
+it("scrolls/focuses inline details only on selection, without disturbing an unrelated row", () => {
+	const scroll = vi.fn();
+	const store = makeStore(VIEW_MOBILE);
+	const context = {
+		...listContext,
+		listUiOptions: {
+			...listContext.listUiOptions,
+			selectionBehavior: {desktop: null, mobile: "expandInList" as const},
+		},
+	};
+	const {container} = render(
+		<Provider store={store}>
+			<FeatureListContextProvider value={context}>
+				<FeatureListItem
+					feature={museumFeature()}
+					enableKeyboardControl
+				/>
+				<FeatureListItem
+					feature={{...museumFeature(), id: "other"}}
+					enableKeyboardControl
+				/>
+			</FeatureListContextProvider>
+		</Provider>,
+	);
+	const rows = container.querySelectorAll<HTMLElement>(".ms3-list__item");
+	rows.forEach((row) => {
+		row.scrollIntoView = scroll;
+	});
+	const otherTrigger = rows[1]!.querySelector<HTMLElement>(
+		"[data-ms3-list-nav]",
+	)!;
+	otherTrigger.focus();
+	act(() => {
+		store.dispatch({type: "test/select", features: ["museum-1"]});
+	});
+	expect(scroll).toHaveBeenCalledTimes(1);
+	expect(scroll).toHaveBeenCalledWith({
+		block: "start",
+		behavior: expect.any(String),
+	});
+	expect(document.activeElement).toBe(
+		rows[0]!.querySelector("[data-ms3-list-nav]"),
+	);
+	act(() => {
+		store.dispatch({type: "test/preselect", features: ["other"]});
+	});
+	expect(rows[1]!.classList.contains("ms3-list__item--preselected")).toBe(
+		true,
+	);
+	expect(scroll).toHaveBeenCalledTimes(1);
+	act(() => {
+		store.dispatch({type: "test/select", features: []});
+	});
+	expect(scroll).toHaveBeenCalledTimes(1);
 });
