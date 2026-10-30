@@ -1,15 +1,16 @@
 {
 	"name": "@mapsight/vite-count-aggregator-embed",
 	"description": "Vite plugin for Mapsight count-aggregator app-shell CMS embed builds",
-	"version": "0.2.3",
+	"version": "0.2.5",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/vite-host-embed": "workspace:^"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
+		"@typescript/native": "catalog:",
 		"typescript": "catalog:",
-		"vite": "^8.2.2",
+		"vite": "^8.3.5",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -21,12 +22,15 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/vite-count-aggregator-embed#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"vite": "^8.2.2"
+		"vite": "^8.3.5"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/vite-count-aggregator-embed"
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",

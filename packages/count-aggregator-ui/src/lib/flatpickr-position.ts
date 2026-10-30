@@ -15,6 +15,8 @@ export type FlatpickrPositionInstance = {
  *
  * Reposition with `position: fixed` and the input's viewport box, matching
  * how react-select menus use `menuPosition="fixed"` in the same portal.
+ * Pass `alignFlatpickrInstance` as Flatpickr's `position` option so resize
+ * (which closes over the original `positionCalendar`) uses this path too.
  */
 export function alignFlatpickrCalendar(
 	calendar: HTMLElement,
@@ -44,9 +46,13 @@ export function alignFlatpickrCalendar(
 
 export function alignFlatpickrInstance(
 	instance: FlatpickrPositionInstance,
+	customPositionElement?: HTMLElement,
 ): void {
 	const input =
-		instance._positionElement ?? instance.altInput ?? instance._input;
+		customPositionElement ??
+		instance._positionElement ??
+		instance.altInput ??
+		instance._input;
 
 	alignFlatpickrCalendar(instance.calendarContainer, input);
 }

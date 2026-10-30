@@ -1,5 +1,6 @@
 import type {HTMLAttributes, ReactNode} from "react";
 import {memo, useContext, useId, useMemo, useRef} from "react";
+import {FocusScope} from "react-aria";
 import {useDispatch, useSelector} from "react-redux";
 
 import {FocusTrap} from "focus-trap-react";
@@ -18,6 +19,7 @@ import {
 	viewSelector,
 } from "../../store/selectors";
 import ErrorBoundary from "../error-boundary";
+import SkipLinks from "./skip-links";
 
 import "./host-slots";
 
@@ -67,7 +69,8 @@ function AppWrapper({
 		() => ({
 			allowOutsideClick: true,
 			clickOutsideDeactivates: false,
-			escapeDeactivates: true,
+			escapeDeactivates: (event: KeyboardEvent) =>
+				!event.defaultPrevented,
 			preventScroll: true,
 			returnFocusOnDeactivate: true,
 			fallbackFocus: () => wrapperRef.current ?? document.body,
@@ -108,34 +111,37 @@ function AppWrapper({
 		.join(" ");
 
 	return (
-		<FocusTrap
-			active={isOverlayView}
-			paused={nestedPlatformModal}
-			focusTrapOptions={focusTrapOptions}
-		>
-			<div
-				{...attributes}
-				ref={wrapperRef}
-				className={className}
-				role={isOverlayView ? "dialog" : undefined}
-				aria-modal={isOverlayView ? true : undefined}
-				aria-label={overlayLabel}
-				aria-describedby={isOverlayView ? descriptionId : undefined}
-				tabIndex={isOverlayView ? -1 : undefined}
+		<FocusScope>
+			<FocusTrap
+				active={isOverlayView}
+				paused={nestedPlatformModal}
+				focusTrapOptions={focusTrapOptions}
 			>
-				{isOverlayView ? (
-					<p id={descriptionId} className="ms3-visuallyhidden">
-						{escapeHint}
-					</p>
-				) : null}
-				{AppWrapperStart ? (
-					<ErrorBoundary variant="region">
-						<AppWrapperStart />
-					</ErrorBoundary>
-				) : null}
-				{children}
-			</div>
-		</FocusTrap>
+				<div
+					{...attributes}
+					ref={wrapperRef}
+					className={className}
+					role={isOverlayView ? "dialog" : undefined}
+					aria-modal={isOverlayView ? true : undefined}
+					aria-label={overlayLabel}
+					aria-describedby={isOverlayView ? descriptionId : undefined}
+					tabIndex={isOverlayView ? -1 : undefined}
+				>
+					<SkipLinks rootRef={wrapperRef} />
+					{isOverlayView ? (
+						<p id={descriptionId} className="ms3-visuallyhidden">
+							{escapeHint}
+						</p>
+					) : null}
+					{AppWrapperStart ? (
+						<ErrorBoundary variant="region">
+							<AppWrapperStart />
+						</ErrorBoundary>
+					) : null}
+					{children}
+				</div>
+			</FocusTrap>
+		</FocusScope>
 	);
 }
 

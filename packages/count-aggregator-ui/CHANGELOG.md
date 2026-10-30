@@ -1,5 +1,77 @@
 # @mapsight/count-aggregator-ui
 
+## 3.2.1
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`6f5e113`, `374a3e4`, `b4d67eb`]:
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/count-aggregator-api@1.5.0 → 1.5.1` (patch)
+
+## 3.2.0
+
+### Minor Changes
+
+- 3ea8162: Allow hosts to configure wizard and chart section headings with `sectionHeadingAs` so embedded sections fit the page outline.
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `@tanstack/react-query` `^5.104.2` → `^5.104.5` (patch)
+
+- 8ce5ee0: Allow feature details to omit their landmark inside a named sheet via `landmark={false}`, remove nested banner semantics, avoid empty page headings, keep collapsed scroll regions out of the tab order, and preserve layer-switcher hover/focus contrast. Give station and date inputs accessible names and a visible keyboard focus indicator on station selection.
+
+    Support config/target navigation timeouts in accessibility audits, correct fixed-position visibility checks, and return a nonzero exit code for incomplete runs or invalid baseline gates.
+
+- Updated dependencies [`4e0a815`, `133cf96`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
+## 3.1.4
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@tanstack/react-query` `^5.104.1` → `^5.104.2` (patch)
+
+- Updated dependencies [`dd49f24`, `37259f5`]:
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+
+## 3.1.3
+
+### Patch Changes
+
+- a65a96e: Fix preset delete button contrast, accessible name, focus ring, and target size
+- 43ce343: Support request cancellation. Client endpoint calls accept an optional `signal`, and the typed helpers accept `{signal}` request options. The count-aggregator UI hooks pass React Query's abort signal so superseded or unmounted queries cancel their requests.
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@tanstack/react-query` `^5.102.4` → `^5.103.2` (minor)
+    - `tailwind-merge` `^3.3.1` → `^3.7.0` (minor)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `@tanstack/react-query` `^5.103.2` → `^5.104.1` (minor)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`d35cc9f`, `43ce343`, `5980a66`, `5dba09f`, `c46c174`, `58a9796`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+    - `@mapsight/count-aggregator-api@1.4.0 → 1.5.0` (minor)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+
+## 3.1.2
+
+### Patch Changes
+
+- 708841e: Align wizard datepickers with their inputs when the calendar is portaled into the count-aggregator root
+- e3dcf93: Keep wizard datepickers aligned after window resize via Flatpickr's position hook
+- ef16006: Show metric-widget chart hover times in the same local clock as the axis
+- Updated dependencies [`4ebee20`]:
+    - `@mapsight/ui@7.6.0 → 7.6.1` (patch)
+
 ## 3.1.1
 
 ### Patch Changes

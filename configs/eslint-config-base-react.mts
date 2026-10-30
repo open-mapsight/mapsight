@@ -1,3 +1,4 @@
+/// <reference path="./eslint-plugin-jsx-a11y.d.ts" />
 import {importX} from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";

@@ -34,6 +34,12 @@ export function getSelectStyles(
 			lineHeight: "auto",
 			borderColor: "var(--msca-color-border, #e5e7eb)",
 			borderRadius: "var(--msca-radius, 4px)",
+			"&:has(input:focus-visible)": {
+				// react-select sets outline: 0 !important on its control.
+				outline:
+					"2px solid var(--msca-color-focus, #1d4ed8) !important",
+				outlineOffset: 2,
+			},
 			...overrides.control,
 		}),
 		dropdownIndicator: (provided) => ({
@@ -141,6 +147,7 @@ export const StationSelect = memo(function StationSelect({
 	return (
 		<Select
 			className={className}
+			aria-label={placeholder ?? t("station.placeholder")}
 			isMulti={isMulti}
 			options={options}
 			value={value}

@@ -60,11 +60,13 @@ type FeatureSourcesControllerAction =
 			typeof FEATURE_SOURCE_ERROR | typeof LOAD_FEATURE_SOURCE_ERROR
 	  > & {
 			error: FeatureSourceState["error"];
+			requestId?: number;
 	  })
 	| (FeatureSourceActionWithId<
 			typeof FEATURE_SOURCE_DATA | typeof LOAD_FEATURE_SOURCE_SUCCESS
 	  > & {
 			data: FeatureSourceData;
+			requestId?: number;
 	  })
 	| FeatureSourceActionWithId<
 			| typeof PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD
@@ -105,14 +107,25 @@ type FeatureSourcesControllerAction =
 			featureIds: FeatureId[];
 	  });
 
+function isFeatureEntry(feature: unknown): feature is Feature {
+	return typeof feature === "object" && feature !== null;
+}
+
 function getIdsFromData(data: FeatureSourceState["data"]) {
-	return data?.features?.map((feature) => feature.id);
+	const features: unknown = data?.features;
+	if (!Array.isArray(features)) {
+		return undefined;
+	}
+	return features.filter(isFeatureEntry).map((feature) => feature.id);
 }
 
 function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
-	const featuresById: Record<FeatureId, Feature> = {};
-	for (const feature of data?.features ?? []) {
-		featuresById[feature.id] ??= feature;
+	const features: unknown = data?.features;
+	const featuresById = Object.create(null) as Record<FeatureId, Feature>;
+	for (const feature of Array.isArray(features) ? features : []) {
+		if (isFeatureEntry(feature)) {
+			featuresById[feature.id] ??= feature;
+		}
 	}
 	return Object.keys(featuresById).length ? featuresById : undefined;
 }
@@ -198,27 +211,31 @@ function shouldNormalizeFeatureSourceState(source: FeatureSourceState) {
 	);
 }
 
+// Redux source objects are immutable. Once validated, the same object needs
+// no further feature/index scans. Weak references also work across stores and
+// time-travel without retaining old feature collections.
+const normalizedFeatureSources = new WeakSet<FeatureSourceState>();
+
 function normalizeFeatureSourcesState(
 	state: FeatureSourcesState,
 ): FeatureSourcesState {
-	let hasMissingRuntimeFields = false;
-	for (const source of Object.values(state)) {
+	let next = state;
+	for (const [id, source] of Object.entries(state)) {
+		if (normalizedFeatureSources.has(source)) {
+			continue;
+		}
 		if (shouldNormalizeFeatureSourceState(source)) {
-			hasMissingRuntimeFields = true;
-			break;
+			if (next === state) {
+				next = {...state};
+			}
+			const normalized = normalizeFeatureSourceState(source);
+			normalizedFeatureSources.add(normalized);
+			next[id] = normalized;
+		} else {
+			normalizedFeatureSources.add(source);
 		}
 	}
-
-	if (!hasMissingRuntimeFields) {
-		return state;
-	}
-
-	return Object.fromEntries(
-		Object.entries(state).map(([id, source]) => [
-			id,
-			normalizeFeatureSourceState(source),
-		]),
-	);
+	return next;
 }
 
 function shouldClearXhrDataAfterConfigChange(
@@ -273,6 +290,16 @@ function reduceUncontrolledFeatureSourceChanges(
 				data: null,
 				featuresKey: undefined,
 				featuresCount: undefined,
+				ids: undefined,
+				featuresById: undefined,
+				error: undefined,
+				// Retire the completion, but keep the token so the existing
+				// refresh timer can load the replacement definition.
+				isLoading: false,
+				refreshPaused: undefined,
+				lastUpdate: null,
+				lastActionType: null,
+				dataHistory: undefined,
 			});
 		}
 	}
@@ -281,6 +308,12 @@ function reduceUncontrolledFeatureSourceChanges(
 		const oldSource = oldState[id];
 		if (!oldSource || oldSource.data === source.data) {
 			continue;
+		}
+
+		// Generic set/merge can install data too. Retire an in-flight request
+		// only for a real write, not a deep-equal copy made by legacy merge.
+		if (source.isLoading && !isEqual(oldSource.data, source.data)) {
+			next = mergeSource(next, id, {isLoading: false});
 		}
 
 		const fingerprint = nextFeatureCollectionFeaturesKey(source.data);
@@ -432,6 +465,20 @@ export class FeatureSourcesController extends BaseController {
 		action: Action,
 	): FeatureSourcesState {
 		const featureSourceAction = action as FeatureSourcesControllerAction;
+
+		// Completions are queued by async dispatch. Validate at reduction time,
+		// after any intervening URL/type change, removal, edit or newer load.
+		// Manually dispatched completion actions without a token stay compatible.
+		if (
+			(featureSourceAction.type === LOAD_FEATURE_SOURCE_SUCCESS ||
+				featureSourceAction.type === LOAD_FEATURE_SOURCE_ERROR) &&
+			featureSourceAction.requestId !== undefined &&
+			(state[featureSourceAction.id]?.requestId !==
+				featureSourceAction.requestId ||
+				!state[featureSourceAction.id]?.isLoading)
+		) {
+			return state;
+		}
 
 		switch (featureSourceAction.type) {
 			case LOAD_FEATURE_SOURCE:

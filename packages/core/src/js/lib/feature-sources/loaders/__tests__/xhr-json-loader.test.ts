@@ -2,6 +2,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {
 	XhrJsonHttpError,
+	XhrJsonPayloadError,
 	fetchXhrJson,
 	load,
 	resolveXhrJsonUrl,
@@ -78,6 +79,29 @@ describe("xhr-json loader", () => {
 			expect.objectContaining({
 				headers: {"If-None-Match": '"abc"'},
 			}),
+		);
+	});
+
+	it.each([
+		["a null body", null],
+		["an array body", [{id: "a"}]],
+		["a string body", "features"],
+		["an object features value", {features: {}}],
+		["a null features value", {features: null}],
+	])("rejects %s with XhrJsonPayloadError", async (_label, body) => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => ({
+				ok: true,
+				status: 200,
+				statusText: "OK",
+				headers: {get: () => null},
+				json: () => Promise.resolve(body),
+			})),
+		);
+
+		await expect(load({url: "/schools.geojson"})).rejects.toBeInstanceOf(
+			XhrJsonPayloadError,
 		);
 	});
 

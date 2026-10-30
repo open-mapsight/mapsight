@@ -178,6 +178,7 @@ function MapPointContextMenu({
 	const dropGenerationRef = useRef(0);
 
 	const closeMenu = useCallback(() => {
+		lastPointerRef.current = null;
 		setOpen(false);
 		setPoint(null);
 	}, []);
@@ -270,7 +271,10 @@ function MapPointContextMenu({
 			const map = getOlMap(store, mapControllerName);
 			if (
 				!map ||
-				!eventTargetIsInMap(event.target, map.getTargetElement())
+				!eventTargetIsInMap(
+					event.target,
+					map.getTargetElement() ?? null,
+				)
 			) {
 				return;
 			}
@@ -296,7 +300,10 @@ function MapPointContextMenu({
 			const map = getOlMap(store, mapControllerName);
 			if (
 				!map ||
-				!eventTargetIsInMap(event.target, map.getTargetElement())
+				!eventTargetIsInMap(
+					event.target,
+					map.getTargetElement() ?? null,
+				)
 			) {
 				pointerDownRef.current = null;
 				return;
@@ -394,11 +401,6 @@ function MapPointContextMenu({
 				return;
 			}
 			event.preventDefault();
-			const last = lastPointerRef.current;
-			if (last) {
-				openAt({...last, showCrosshair: true});
-				return;
-			}
 			const center = map.getView().getCenter();
 			if (!center) {
 				return;

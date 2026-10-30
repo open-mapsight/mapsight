@@ -2,7 +2,7 @@ import {legalDetails} from "./legal-details.ts";
 
 export function PrivacyPage() {
 	return (
-		<article className="showcase-page legal-page">
+		<article className="showcase-page legal-page msb-content">
 			<div className="showcase-page__hero">
 				<h1>Privacy policy</h1>
 			</div>
@@ -80,11 +80,27 @@ export function PrivacyPage() {
 					This showcase does not set tracking cookies and does not use
 					analytics or advertising tools. The demo pages are designed
 					to run with static assets and mock data from this website.
-					They should not load map tiles, fonts, scripts, or analytics
-					from third-party services for normal operation.
+					On the public showcase and PR previews, basemap tiles are
+					served from this website’s /tiles/ endpoint. Our server
+					fetches and caches OpenStreetMap tiles; OpenStreetMap
+					receives the server’s IP address, not your browser’s IP
+					address. Local development defaults to direct OpenStreetMap
+					requests. Fonts and scripts are served from this website.
 				</p>
 			</section>
 
+			<section>
+				<h2>Local demo storage</h2>
+				<p>
+					The standard Mapsight demos store only the list visibility
+					preference under mapsight--v3-ui in local storage. The
+					citizen-service scenario does not use that plugin.
+					Count-aggregator demos use a same-origin service worker to
+					answer fictional API requests locally; it does not cache app
+					assets. Location access is optional and requires browser
+					permission.
+				</p>
+			</section>
 			<section>
 				<h2>Your rights</h2>
 				<p>

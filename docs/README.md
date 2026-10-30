@@ -74,6 +74,7 @@ Maintainer deployments currently exercise:
 | [OGC_LAYERS.md](integration/OGC_LAYERS.md)                               | WMS/WFS overlay patterns                       |
 | [PRIVACY_DATA_FLOWS.md](integration/PRIVACY_DATA_FLOWS.md)               | Visitor data flows for hosts / DPOs            |
 | [PULP.md](integration/PULP.md)                                           | mapsight-pulp ETL                              |
+| [FEATURE_SOURCES.md](integration/FEATURE_SOURCES.md)                     | Opt-in feature-source cache + ETag contract    |
 | [TILE_PROXY.md](integration/TILE_PROXY.md)                               | Basemap tile proxy                             |
 | [DATA_BACKEND.md](integration/DATA_BACKEND.md)                           | Optional host data platform                    |
 | [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)                         | Dehydrated state contract                      |

@@ -3,6 +3,7 @@
 	select {
 		display: block;
 		width: 100%;
+		min-height: 24px;
 		margin: 5px 0 5px 3px;
 		font-size: var(--ms3-font-size-input);
 	}

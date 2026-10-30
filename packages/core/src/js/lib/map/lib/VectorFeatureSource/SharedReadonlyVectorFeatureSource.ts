@@ -171,6 +171,18 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		if (!force && data === this._lastData) {
 			return;
 		}
+		// Same features array (and crs): only collection metadata changed, e.g.
+		// the selector reused the features of a poll whose fingerprint matched.
+		// Skip the fingerprint, which serialises every feature.
+		if (
+			!force &&
+			this._lastData != null &&
+			data.features === this._lastData.features &&
+			data.crs === this._lastData.crs
+		) {
+			this._lastData = data;
+			return;
+		}
 		const featuresKey = featureCollectionFeaturesKey(data);
 		if (
 			!force &&
@@ -182,10 +194,17 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		}
 
 		try {
+			// A named `crs` wins, then the source's configured projection (the one
+			// its writes use), then GeoJSON's EPSG:4326 default. readProjection
+			// alone returns that default for every collection without a `crs`.
+			const dataProjection =
+				(data.crs != null
+					? this._format.readProjection(data)
+					: undefined) ??
+				this._externalProjection ??
+				this._format.readProjection(data);
 			const newFeatures = this._format.readFeatures(data, {
-				dataProjection:
-					this._format.readProjection(data) ||
-					this._externalProjection,
+				dataProjection,
 				featureProjection: this._internalProjection,
 			}) as Array<OlFeature>;
 

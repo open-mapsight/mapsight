@@ -1,7 +1,7 @@
-@use "sass:color";
-
+@use "../mixins/icon";
 @use "../variables";
 @use "async-status";
+@use "../mixins/reduced-motion";
 
 .ms3-layer-switcher {
 	position: relative;
@@ -86,34 +86,69 @@
 		display: inline-block;
 		width: 18px;
 		height: 18px;
-		background: transparent url(variables.$ms3-uiIconPath + "check-empty.svg")
-			no-repeat 2px 3px;
+		@if icon.$themed {
+			background: transparent;
+		} @else {
+			background: transparent url(variables.$ms3-uiIconPath + "check-empty.svg")
+				no-repeat 2px 3px;
+		}
 		vertical-align: top;
 		margin: 1px 7px 1px 0;
 		border: none;
 
+		@if icon.$themed {
+			// `::after`: the loading state below uses `::before` for its spinner
+			@include icon.layer("check-empty.svg", $pseudo: after, $position: 2px 3px);
+		}
+
 		&--active {
-			background: transparent url(variables.$ms3-uiIconPath + "check.svg") no-repeat
-				0 0;
+			@if icon.$themed {
+				&::after {
+					@include icon.shape("check.svg");
+					@include icon.position(0 0);
+				}
+			} @else {
+				background: transparent url(variables.$ms3-uiIconPath + "check.svg")
+					no-repeat 0 0;
+			}
 		}
 
 		&--error {
-			background: transparent url(variables.$ms3-uiIconPath + "error.svg") no-repeat
-				1px 1px;
+			@if icon.$themed {
+				&::after {
+					@include icon.shape("error.svg");
+					@include icon.position(1px 1px);
+					@include icon.fill(icon.$color-error, ButtonText);
+				}
+			} @else {
+				background: transparent url(variables.$ms3-uiIconPath + "error.svg")
+					no-repeat 1px 1px;
+			}
 		}
 
 		&--loading {
 			background: transparent;
 			margin-top: 2px;
 
+			@if icon.$themed {
+				&::after {
+					content: none;
+				}
+			}
+
 			&::before {
 				content: "";
 				display: block;
 				width: 15px;
 				height: 15px;
-				background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
-					no-repeat 0 0;
+				@if icon.$themed {
+					@include icon.mask("loading.svg", $position: 0 0);
+				} @else {
+					background: transparent url(variables.$ms3-uiIconPath + "loading.svg")
+						no-repeat 0 0;
+				}
 				animation: ms3AsyncStatusSpin 4s linear infinite;
+				@include reduced-motion.respect-reduced-motion;
 			}
 		}
 	}
@@ -135,16 +170,22 @@
 		transition:
 			color 200ms ease-in-out,
 			background 200ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 
 		&--active {
 			background: var(--ms3-background-highlight-color);
 		}
 
-		&:hover:not(:disabled),
-		&:focus:not(:disabled) {
+		&:hover:not(:disabled) {
 			background: var(--ms3-background-color-offset-2);
-			color: color.scale(variables.$ms3-themeColorA, $lightness: -10%);
-			outline: 0;
+			color: var(--ms3-foreground-color);
+		}
+
+		&:focus-visible:not(:disabled) {
+			background: var(--ms3-background-color-offset-2);
+			color: var(--ms3-foreground-color);
+			outline: 2px solid var(--ms3-primary-color);
+			outline-offset: -2px;
 		}
 
 		&:disabled {
@@ -173,6 +214,16 @@
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
+
+	&:hover {
+		background: var(--ms3-background-highlight-color);
+	}
+
+	&:focus-visible {
+		background: var(--ms3-background-highlight-color);
+		outline: 2px solid var(--ms3-primary-color);
+		outline-offset: -2px;
+	}
 }
 
 .ms3-grouped-switcher__meta {
@@ -190,6 +241,7 @@
 	border-bottom: 2px solid currentcolor;
 	transform: rotate(45deg);
 	transition: transform 160ms ease;
+	@include reduced-motion.respect-reduced-motion;
 }
 
 .ms3-grouped-switcher__group:not(.ms3-grouped-switcher__group--collapsed)

@@ -14,7 +14,7 @@
 		"strict": false,
 		"strictNullChecks": true,
 		"noUncheckedIndexedAccess": true,
-		// FIXME: Convert js to ts
+		"allowJs": false,
 		"checkJs": false
 	}
 }

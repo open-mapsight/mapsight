@@ -2,14 +2,7 @@ import type {ElementType, ReactNode} from "react";
 import {memo, useCallback} from "react";
 
 import type {ActionPath} from "@mapsight/core/lib/base/actions";
-import {
-	layerIdsIntegratedSwitcherSelector,
-	makeFeatureSourceFromLayerIdSelector,
-	makeFeatureSourceIdFromLayerIdSelector,
-	makeLayerLockedInLayerSwitcherSelector,
-	makeLayerTitleSelector,
-	makeLayerVisibleSelector,
-} from "@mapsight/core/lib/map/selectors";
+import {layerIdsIntegratedSwitcherSelector} from "@mapsight/core/lib/map/selectors";
 import type {MapState} from "@mapsight/core/lib/map/types";
 
 import {translate} from "../../helpers/i18n";
@@ -17,10 +10,13 @@ import GroupedLayerSwitcher from "./GroupedLayerSwitcher";
 import LayerSwitcher from "./LayerSwitcher";
 import LayerSwitcherEntry from "./LayerSwitcherEntry";
 import SplitBaseLayerSwitcher from "./SplitBaseLayerSwitcher";
-
-// TODO das berechnen der LayerListen (abhängig von grouped und layerIdSelector) in einen Selector packen,
-//  damit diese Berechnung nur bei Änderungen am store berechnet neu wird
-// TODO für das visible eine eigenes connect, damit der Tree nicht dauernd neu berechnet wird
+import {
+	cachedMakeFeatureSourceFromLayerIdSelector,
+	cachedMakeFeatureSourceIdFromLayerIdSelector,
+	cachedMakeLayerLockedInLayerSwitcherSelector,
+	cachedMakeLayerTitleSelector,
+	cachedMakeLayerVisibleSelector,
+} from "./layer-switcher-selectors";
 
 export type LayerSwitcherContainerProps = {
 	as?: ElementType;
@@ -28,6 +24,10 @@ export type LayerSwitcherContainerProps = {
 	onClose?: () => void;
 	layerIdsSelector?: (state: MapState) => string[];
 	grouped?: boolean;
+	/** Explicit group/section element. Otherwise contextual with the flag, h3 without it. */
+	headlineAs?: ElementType;
+	/** Explicit split-mode overlay group element. Otherwise contextual, or h4 without the flag. */
+	groupHeadlineAs?: ElementType;
 	splitBaseLayers?: boolean;
 	/** Opt-in: overlay groups collapse and show visible/total counts. Only with `splitBaseLayers`. */
 	collapsibleGroups?: boolean;
@@ -46,6 +46,8 @@ function LayerSwitcherContainer({
 	collapsibleGroups = false,
 	setFeatureSourceIdPath,
 	renderEntryEnd,
+	headlineAs,
+	groupHeadlineAs,
 	...attributes
 }: LayerSwitcherContainerProps) {
 	const createLayerEntry = useCallback(
@@ -57,11 +59,15 @@ function LayerSwitcherContainer({
 			<LayerSwitcherEntry
 				key={id}
 				layerId={id}
-				titleSelector={makeLayerTitleSelector(id)}
-				lockedSelector={makeLayerLockedInLayerSwitcherSelector(id)}
-				layerVisibilitySelector={makeLayerVisibleSelector(id)}
-				featureSourceSelector={makeFeatureSourceFromLayerIdSelector(id)}
-				featureSourceIdSelector={makeFeatureSourceIdFromLayerIdSelector(
+				titleSelector={cachedMakeLayerTitleSelector(id)}
+				lockedSelector={cachedMakeLayerLockedInLayerSwitcherSelector(
+					id,
+				)}
+				layerVisibilitySelector={cachedMakeLayerVisibleSelector(id)}
+				featureSourceSelector={cachedMakeFeatureSourceFromLayerIdSelector(
+					id,
+				)}
+				featureSourceIdSelector={cachedMakeFeatureSourceIdFromLayerIdSelector(
 					id,
 				)}
 				setFeatureSourceIdPath={entrySetFeatureSourceIdPath}
@@ -96,16 +102,20 @@ function LayerSwitcherContainer({
 					renderBaseLayerEntry={renderBaseLayerEntry}
 					renderEntry={renderLayerEntry}
 					collapsibleGroups={collapsibleGroups}
+					headlineAs={headlineAs}
+					groupHeadlineAs={groupHeadlineAs}
 					{...attributes}
 				/>
 			) : grouped ? (
 				<GroupedLayerSwitcher
+					headlineAs={headlineAs}
 					layerIdsSelector={layerIdsSelector}
 					renderEntry={renderLayerEntry}
 					{...attributes}
 				/>
 			) : (
 				<LayerSwitcher
+					headlineAs={headlineAs}
 					layerIdsSelector={layerIdsSelector}
 					renderEntry={renderLayerEntry}
 					{...attributes}

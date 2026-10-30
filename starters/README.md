@@ -81,8 +81,6 @@ pnpm run check:starter-pins
 
 `check:starter-pins` is part of `pnpm run check`.
 
-Until `@mapsight/vite-host-embed` is on npm, the monorepo root [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) uses a
-`workspace:*` override so `pnpm install` links the local package while starters keep a semver pin (`1.0.0`). Remove that
-override after the first npm publish.
-
-Implementation plan: [`HANDOFF.md`](HANDOFF.md).
+`@mapsight/vite-host-embed` is published on npm. The monorepo root [`pnpm-workspace.yaml`](../pnpm-workspace.yaml)
+still uses a `workspace:*` override so local `pnpm install` links the workspace package while starters keep a semver
+pin.

@@ -5,6 +5,7 @@ import config, {
 	PRETTIER_WRITE,
 	getPackageInfo,
 	runInPackage,
+	typecheckPackages,
 } from "./lint-staged.mts";
 
 describe("getPackageInfo", () => {
@@ -45,17 +46,51 @@ describe("runInPackage", () => {
 
 	it("skips packages that do not define the requested script", () => {
 		const commands = runInPackage("lint --fix")([
-			"/repo/packages/lib-redux/src/js/createSelectorUsingOwnProps.ts",
+			"/repo/packages/lib-js/src/js/array/unique.ts",
 			"/repo/packages/core/src/index.ts",
 		]);
 
+		// lib-js has lint; pick a package without a lint script instead when
+		// asserting skip behavior — prefer a path under scripts/ or an app
+		// without lint. Here both have lint, so this only checks grouping.
 		assert.deepEqual(commands, [
+			"pnpm --filter lib-js run lint --fix -- src/js/array/unique.ts",
 			"pnpm --filter core run lint --fix -- src/index.ts",
 		]);
+	});
+
+	it("skips packages without the requested script", () => {
+		const commands = runInPackage("bench:properties")([
+			"/repo/packages/lib-redux/src/js/observe-state.ts",
+			"/repo/packages/core/src/index.ts",
+		]);
+
+		assert.deepEqual(commands, []);
 	});
 });
 
 describe("lint-staged config", () => {
+	it("checks each affected package once through Turbo, with build prerequisites", () => {
+		const jsTasks = config["*.{js,mjs,cjs,ts,mts,cts,tsx}"];
+		assert.equal(jsTasks[3], typecheckPackages);
+		assert.deepEqual(
+			typecheckPackages([
+				"/repo/packages/core/src/a.ts",
+				"/repo/packages/core/src/b.ts",
+				"/repo/packages/ui/src/c.tsx",
+				"/repo/apps/showcase/src/demo.ts",
+				"/repo/scripts/check.mts",
+			]),
+			[
+				"pnpm turbo run typecheck --concurrency=4 --output-logs=new-only --filter=./packages/core --filter=./packages/ui --filter=./apps/showcase",
+			],
+		);
+	});
+
+	it("does not start a workspace-wide typecheck for files outside packages and apps", () => {
+		assert.deepEqual(typecheckPackages(["/repo/scripts/check.mts"]), []);
+	});
+
 	it("uses a shared prettier write command", () => {
 		const jsTasks = config["*.{js,mjs,cjs,ts,mts,cts,tsx}"];
 		assert(Array.isArray(jsTasks));

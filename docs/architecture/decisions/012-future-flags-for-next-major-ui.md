@@ -44,10 +44,24 @@ Rules:
 
 Current flags:
 
+- `v8_automaticHeadings`: derive native heading ranks from `headings.baseLevel` (default 2) and actual titled
+  sections. Without the flag, historical heading elements remain. The permanent `headings` preferences stay
+  separate from this adoption switch. See [Decision 014](014-automatic-ui-headings.md).
 - `v8_ariaControlTooltip`: leftover hint.css call sites (today: RegionSelector) keep CSS tooltips by default;
   hosts set the flag to use the ARIA `Tooltip` now.
 - `v8_listSearchButton`: list text search keeps a visible label + input by default (7.x host CSS); hosts set
   the flag to expand from a labeled button. That chrome becomes the only path in v8.
+
+Behavior that lives only in the SCSS uses a Sass variable with the same contract, configured with the other
+`@mapsight/ui` variables: `$ms3-future-v8-{behavior}: false !default`.
+
+- `$ms3-future-v8-themedIcons`: UI chrome icons keep the colours baked into their SVG files by default; hosts set
+  the flag to paint them as CSS masks filled from `--ms3-icon-color*` / `--ms3-theme-color-*`. See the
+  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons).
+- `$ms3-future-v8-themedSurfaces`: the wrapper, attribution, tool overlay, mini legend, link share, list search
+  input and narrow-screen map controls keep their fixed light colours by default; hosts set the flag to take them from
+  the `--ms3-*` colour tokens and let form controls follow the host's `color-scheme`. See the
+  [`@mapsight/ui` README](../../../packages/ui/README.md#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces).
 
 Do **not** add a `"none"` / density option to this bag. Future flags are not a general preference API.
 

@@ -3,10 +3,11 @@ import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 import {create} from "..";
 import serverStringRenderer from "../renderer/server-string";
 import type {CreateOptions, MapsightUiStore} from "../types";
+import {compactFeatureSourceIndexes} from "./compact-feature-source-indexes";
 import {wrapEmbedFragment} from "./emit-fragment";
 import {sanitizeRehydratedState} from "./sanitize-rehydrated-state";
 
-type Options = {
+export type NodeEmbedOptions = {
 	/** style function */
 	styleFunction: MapsightStyleFunction;
 
@@ -15,6 +16,9 @@ type Options = {
 
 	/** create options */
 	createOptions: CreateOptions;
+
+	/** Omit derived feature-source indexes from the wire state; restored on hydrate. */
+	compactFeatureSourceIndexes?: boolean;
 };
 
 export type NodeEmbedEmitFragmentOptions = {
@@ -36,11 +40,12 @@ type Result = {
  *
  * @returns embed reference with HTML render and fragment emit helpers
  */
-export default function nodeEmbed(options: Options): Result {
+export default function nodeEmbed(options: NodeEmbedOptions): Result {
 	const {
 		styleFunction,
 		baseMapsightConfig = {},
 		createOptions = {},
+		compactFeatureSourceIndexes: compactIndexes = false,
 	} = options;
 
 	createOptions.renderer = createOptions.renderer ?? serverStringRenderer;
@@ -59,7 +64,10 @@ export default function nodeEmbed(options: Options): Result {
 	function getDehydratedState(): unknown {
 		const state = ctx.store?.getState();
 		try {
-			const serialized = JSON.parse(JSON.stringify(state));
+			const wireState = compactIndexes
+				? compactFeatureSourceIndexes(state)
+				: state;
+			const serialized: unknown = JSON.parse(JSON.stringify(wireState));
 			return sanitizeRehydratedState(serialized).state;
 		} catch (cause) {
 			throw new Error(

@@ -5,7 +5,7 @@ import baseConfig from "../../configs/eslint-config-base.mts";
 export default defineConfig([
 	baseConfig,
 	{
-		files: ["eslint.config.mts", "scripts/**/*.ts"],
+		files: ["eslint.config.mts", "scripts/**/*.ts", "vitest.config.ts"],
 		rules: {
 			"n/hashbang": "off",
 			"n/no-unpublished-import": "off",

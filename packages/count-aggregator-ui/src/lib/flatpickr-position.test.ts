@@ -151,4 +151,44 @@ describe("alignFlatpickrCalendar", () => {
 
 		expect(calendar.style.left).toBe("676px");
 	});
+
+	it("prefers Flatpickr's custom position element when used as the position hook", () => {
+		const hidden = document.createElement("input");
+		const custom = document.createElement("input");
+		const calendar = document.createElement("div");
+		document.body.append(hidden, custom, calendar);
+		Object.defineProperty(window, "innerWidth", {
+			configurable: true,
+			value: 1440,
+		});
+		mockRect(hidden, {
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0,
+			width: 0,
+			height: 0,
+		});
+		mockRect(custom, {
+			left: 676,
+			top: 200,
+			right: 788,
+			bottom: 228,
+			width: 112,
+			height: 28,
+		});
+		mockBox(calendar, 308, 80);
+
+		alignFlatpickrInstance(
+			{
+				calendarContainer: calendar,
+				_input: hidden,
+			},
+			custom,
+		);
+
+		expect(calendar.style.position).toBe("fixed");
+		expect(calendar.style.left).toBe("676px");
+		expect(calendar.style.top).toBe("230px");
+	});
 });

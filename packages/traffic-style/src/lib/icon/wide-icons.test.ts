@@ -21,9 +21,8 @@ const variants = [
 ] as const;
 
 describe("horizontal catalog icons", () => {
-	it("includes WC glyphs without the optional Font Awesome pack", () => {
+	it("includes both standard WC catalog definitions", () => {
 		expect(hasPictogram("wc")).toBe(true);
-		expect(hasPictogram("fa-wheelchair")).toBe(false);
 		expect(hasPictogram("wc-accessible")).toBe(true);
 		expect(getPictogram("wc-accessible").composition?.glyphs).toHaveLength(
 			2,

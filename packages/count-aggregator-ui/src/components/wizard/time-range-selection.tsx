@@ -53,7 +53,6 @@ function DateInput({
 
 	const stopAligning = useCallback(() => {
 		window.removeEventListener("scroll", alignCalendar, true);
-		window.removeEventListener("resize", alignCalendar);
 	}, [alignCalendar]);
 
 	useEffect(() => stopAligning, [stopAligning]);
@@ -72,6 +71,8 @@ function DateInput({
 				altInput: true,
 				altInputClass: dateInputClassName,
 				altFormat: locale === "de" ? "d.m.Y" : "Y-m-d",
+				// Runs inside Flatpickr's closed-over positionCalendar, including resize.
+				position: alignFlatpickrInstance,
 				onReady: (
 					_dates: Date[],
 					_dateStr: string,
@@ -87,7 +88,6 @@ function DateInput({
 					instanceRef.current = instance;
 					alignFlatpickrInstance(instance);
 					window.addEventListener("scroll", alignCalendar, true);
-					window.addEventListener("resize", alignCalendar);
 				},
 				onClose: stopAligning,
 				onMonthChange: (
@@ -210,22 +210,22 @@ export const TimeRangeSelection = memo(function TimeRangeSelection({
 	return (
 		<>
 			<div className="msca:flex msca:flex-wrap msca:items-center msca:gap-x-4 msca:gap-y-2">
-				<div className="msca:flex msca:items-center msca:gap-2">
+				<label className="msca:flex msca:items-center msca:gap-2">
 					<span>{t("dateRange.from")}</span>
 					<DateInput
 						value={startDate}
 						onChange={setStartDate}
 						maxDate={endDate}
 					/>
-				</div>
-				<div className="msca:flex msca:items-center msca:gap-2">
+				</label>
+				<label className="msca:flex msca:items-center msca:gap-2">
 					<span>{t("dateRange.toInclusive")}</span>
 					<DateInput
 						value={endDate}
 						onChange={setEndDate}
 						minDate={startDate}
 					/>
-				</div>
+				</label>
 			</div>
 
 			<div className="msca:mt-3 msca:text-sm msca:text-gray-700">

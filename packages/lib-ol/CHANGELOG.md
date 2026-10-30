@@ -1,5 +1,64 @@
 # @mapsight/lib-ol
 
+## 4.3.3
+
+### Patch Changes
+
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+
+## 4.3.2
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- Updated dependencies [`2f975c0`]:
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+
+## 4.3.1
+
+### Patch Changes
+
+- 7a399a1: Bump dependencies from Dependabot ([#397](https://github.com/open-mapsight/mapsight/pull/397)):
+
+    - `tsc-alias` `^1.9.7` → `^1.9.8` (patch)
+
+## 4.3.0
+
+### Minor Changes
+
+- 96cb6b4: Add `extrusionRoof`, `extrusionLitWalls` and `extrusionShadedWalls` geometry derivations that draw polygons, including courtyard walls, as pseudo-3D blocks. Heights come from the style group's `extrusion-height`; invalid or non-positive values keep a flat footprint. Derived geometry caching is bounded and supports GeometryCollection children.
+
+### Patch Changes
+
+- 79652e1: Bump dependencies from Dependabot ([#368](https://github.com/open-mapsight/mapsight/pull/368)):
+
+    - `tsc-alias` `^1.9.5` → `^1.9.7` (patch)
+
+## 4.2.6
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `tsc-alias` `^1.9.4` → `^1.9.5` (patch)
+
+- 6e1146e: Document the `keepZoom` and `skipIfInView` fit options and export the named constants `DEFAULT_FIT_DURATION`, `DEFAULT_FIT_PADDING`, `DEFAULT_FIT_MAX_ZOOM` (map/fitToExtent) and `DEFAULT_CENTER_DURATION` (view/centerOnFeature) in place of inline magic numbers. No behavior change.
+- d35cc9f: Support nullable map targets in OpenLayers 10.11 transition helpers.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
+## 4.2.5
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `tsc-alias` `^1.9.3` → `^1.9.4` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+
 ## 4.2.4
 
 ### Patch Changes

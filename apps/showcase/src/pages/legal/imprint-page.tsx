@@ -2,7 +2,7 @@ import {legalDetails} from "./legal-details.ts";
 
 export function ImprintPage() {
 	return (
-		<article className="showcase-page legal-page">
+		<article className="showcase-page legal-page msb-content">
 			<div className="showcase-page__hero">
 				<h1>Imprint</h1>
 			</div>

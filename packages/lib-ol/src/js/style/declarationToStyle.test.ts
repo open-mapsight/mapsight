@@ -1,3 +1,4 @@
+import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
 import Icon from "ol/style/Icon";
 import Stroke from "ol/style/Stroke";
@@ -8,6 +9,7 @@ import {expect, it} from "vitest";
 import declarationToStyle from "./declarationToStyle.ts";
 
 const constructorsMap = {
+	circle: CircleStyle,
 	fill: Fill,
 	icon: Icon,
 	stroke: Stroke,
@@ -50,16 +52,19 @@ it("still constructs an Icon when src is a non-empty URL", () => {
 });
 
 it("skips Icon construction when icon is none even if a merged src remains", () => {
+	const icon = Object.assign(
+		{value: "none" as const},
+		{
+			src: {
+				value: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII=",
+			},
+		},
+	);
 	const style = declarationToStyle(
 		constructorsMap,
 		{
 			image: {type: {value: "icon"}},
-			icon: {
-				value: "none",
-				src: {
-					value: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII=",
-				},
-			},
+			icon,
 			fill: {color: {value: "rgba(0,127,0,0.3)"}},
 		},
 		"style",
@@ -86,10 +91,9 @@ it("skips Icon construction when icon-src is empty", () => {
 	expect(style?.getFill()).not.toBeNull();
 });
 
-it("passes computed circle radii as numbers to OpenLayers", async () => {
-	const {default: CircleStyle} = await import("ol/style/Circle");
+it("passes computed circle radii as numbers to OpenLayers", () => {
 	const style = declarationToStyle(
-		{...constructorsMap, circle: CircleStyle},
+		constructorsMap,
 		{
 			image: {type: {value: "circle"}},
 			circle: {radius: {value: "38"}, fill: {color: {value: "cyan"}}},
@@ -97,7 +101,7 @@ it("passes computed circle radii as numbers to OpenLayers", async () => {
 		"style",
 		"computed-radius",
 	);
-	const circle = style?.getImage() as InstanceType<typeof CircleStyle>;
+	const circle = style?.getImage() as CircleStyle;
 	expect(circle.getRadius()).toBe(38);
 	expect(circle.getSize()).toEqual([76, 76]);
 });

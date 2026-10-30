@@ -41,6 +41,7 @@ describe("HintTooltip", () => {
 			name: "Center map on a region",
 		});
 		expect(list.className).not.toContain("ms3-hint--");
+		expect(list.tabIndex).toBe(-1);
 
 		fireEvent.pointerMove(document.body, {pointerType: "mouse"});
 		fireEvent.pointerEnter(list, {pointerType: "mouse"});

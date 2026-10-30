@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/core",
 	"description": "Mapsight Core",
-	"version": "14.6.1",
+	"version": "14.7.0",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
@@ -21,15 +21,16 @@
 		"@types/jsdom": "catalog:",
 		"@types/lodash": "catalog:",
 		"@types/node": "catalog:",
+		"@typescript/native": "catalog:",
 		"canvas": "catalog:",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
-		"ol-mapbox-style": "^13.4.3",
+		"ol-mapbox-style": "^13.8.0",
 		"playwright": "catalog:",
 		"proj4": "catalog:",
-		"tsc-alias": "^1.9.3",
+		"tsc-alias": "^1.9.9",
 		"typescript": "catalog:",
-		"vite": "^8.2.2",
+		"vite": "^8.3.5",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -97,12 +98,13 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/core#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"@redux-devtools/extension": "^4.0.0",
 		"jsdom": "catalog:",
 		"ol": "catalog:",
-		"ol-mapbox-style": "^13.4.3",
+		"ol-mapbox-style": "^13.8.0",
 		"proj4": "catalog:"
 	},
 	"peerDependenciesMeta": {
@@ -123,7 +125,9 @@
 		}
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/core"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules",

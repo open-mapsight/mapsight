@@ -1,8 +1,10 @@
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-feature-selection-info {
 	position: relative;
 	transition: height 300ms linear;
+	@include reduced-motion.respect-reduced-motion;
 	background: var(--ms3-background-color);
 
 	&__headline {
@@ -58,6 +60,7 @@
 		margin-right: 10px;
 		opacity: 1;
 		transition: opacity 100ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 		transition-delay: 300ms;
 
 		&::before,

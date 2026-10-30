@@ -5,26 +5,9 @@ import stationListFixture from "./fixtures/station-list.json";
 import valuesMapFixture from "./fixtures/values-map.json";
 import {schemas} from "./generated/client.js";
 import {parseTimeSeriesMap} from "./lib/responses.js";
+import {createMockFetch} from "./test-helpers.js";
 
 const baseUrl = "https://example.test/msp/public/count-aggregator";
-
-function createMockFetch(handler: (url: string) => unknown): typeof fetch {
-	return vi.fn((input: string | URL | Request) => {
-		const url =
-			typeof input === "string"
-				? input
-				: input instanceof URL
-					? input.toString()
-					: input.url;
-
-		return Promise.resolve({
-			ok: true,
-			status: 200,
-			headers: new Headers({"content-type": "application/json"}),
-			json: () => handler(url),
-		} as Response);
-	});
-}
 
 describe("createCountAggregatorClient", () => {
 	afterEach(() => {
@@ -90,5 +73,74 @@ describe("createCountAggregatorClient", () => {
 				params: {type: "bicycleSensorTotal"},
 			}),
 		).rejects.toMatchObject({status: 404});
+	});
+
+	it("adds default and configured request headers", async () => {
+		const fetchFn = createMockFetch(() => stationListFixture);
+		const client = createCountAggregatorClient(baseUrl, {
+			fetch: fetchFn,
+			headers: {Authorization: "Bearer token"},
+		});
+
+		await client["count-aggregator.public.type.stations"]({
+			params: {type: "bicycleSensorTotal"},
+		});
+
+		expect(fetchFn).toHaveBeenCalledWith(
+			`${baseUrl}/bicycleSensorTotal/stations`,
+			{
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+					Authorization: "Bearer token",
+				},
+			},
+		);
+	});
+
+	it("omits undefined queries and encodes path and query values", async () => {
+		const fetchFn = createMockFetch((url) => {
+			expect(url).toBe(
+				`${baseUrl}/type%20with%2Fslash/values/2025-06-01%2010%3A00/2025-06-01%2012%3A00/daily?stationIds=150+%26+151`,
+			);
+			return valuesMapFixture;
+		});
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+
+		await client["count-aggregator.public.type.values"]({
+			params: {
+				type: "type with/slash",
+				from: "2025-06-01 10:00",
+				to: "2025-06-01 12:00",
+				resolution: "daily",
+			},
+			queries: {
+				stationIds: "150 & 151",
+				metrics: undefined,
+			},
+		});
+	});
+
+	it("rejects responses that do not match the endpoint schema", async () => {
+		const fetchFn = createMockFetch(() => ({data: [{id: "not-a-number"}]}));
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+
+		await expect(
+			client["count-aggregator.public.type.stations"]({
+				params: {type: "bicycleSensorTotal"},
+			}),
+		).rejects.toMatchObject({name: "ZodError"});
+	});
+
+	it("propagates transport failures", async () => {
+		const transportError = new TypeError("network unavailable");
+		const fetchFn = vi.fn<typeof fetch>().mockRejectedValue(transportError);
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+
+		await expect(
+			client["count-aggregator.public.type.stations"]({
+				params: {type: "bicycleSensorTotal"},
+			}),
+		).rejects.toBe(transportError);
 	});
 });

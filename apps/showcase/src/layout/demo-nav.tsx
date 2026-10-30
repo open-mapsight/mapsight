@@ -6,6 +6,7 @@ export const demoItems = [
 	{to: "/ui/vector-webgl", label: "Vector WebGL"},
 	{to: "/ui/full", label: "Full"},
 	{to: "/ui/custom", label: "Custom"},
+	{to: "/ui/point-input", label: "Point input"},
 	{to: "/ui/router", label: "Router", end: false},
 ] as const;
 

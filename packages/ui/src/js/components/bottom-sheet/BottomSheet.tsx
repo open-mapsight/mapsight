@@ -1,16 +1,26 @@
 import {
 	type CSSProperties,
+	type ElementType,
 	type ReactElement,
 	type KeyboardEvent as ReactKeyboardEvent,
 	type ReactNode,
 	type PointerEvent as ReactPointerEvent,
+	type RefObject,
 	useCallback,
 	useEffect,
 	useId,
 	useRef,
 	useState,
 } from "react";
+import {FocusScope, useFocusManager} from "react-aria";
 
+import {Heading, HeadingContent, useHeadingElement} from "../../headings";
+import {translate} from "../../helpers/i18n";
+import useFocusScopeTarget from "../../hooks/useFocusScopeTarget";
+import useOverlayDismiss, {
+	type EscapeDismissMode,
+	shouldDismissOnEscape,
+} from "../../hooks/useOverlayDismiss";
 import CloseOverlayButton from "../close-overlay-button";
 import {
 	SNAP_EPSILON_PX,
@@ -45,17 +55,25 @@ export type BottomSheetProps = {
 	 * Default: `snaps.length - 2` (medium when using four defaults).
 	 */
 	scrollFromSnapIndex?: number;
-	/** Region accessible name. */
+	/** Fallback region accessible name when no title is rendered. */
 	label: string;
 	/** Accessible name for the resize separator. */
 	resizeLabel?: string;
-	/** Optional valuetext for the current snap (screen readers). */
+	/** Custom value text for the current snap. Defaults to a translated "Position n of m". */
 	snapValueText?: (index: number, height: number) => string;
 	/** Escape and close button. */
 	onDismiss?: () => void;
+	/** Escape only within the sheet by default; document restores the legacy scope. */
+	dismissOnEscape?: EscapeDismissMode;
+	/** Opt in after a user action: true focuses the title (or region); a ref selects another target. */
+	initialFocus?: boolean | RefObject<HTMLElement | null>;
+	/** Opt in to focus return on close/unmount: true uses the opener; a ref overrides it. */
+	restoreFocus?: boolean | RefObject<HTMLElement | null>;
 	hideCloseButton?: boolean;
 	closeLabel?: string;
 	title?: ReactNode;
+	/** Explicit title element; the non-modal sheet otherwise inherits the page heading scope. */
+	headlineAs?: ElementType;
 	children?: ReactNode;
 	className?: string;
 	style?: CSSProperties;
@@ -63,6 +81,14 @@ export type BottomSheetProps = {
 	onTallChange?: (tall: boolean) => void;
 	tallRatio?: number;
 };
+
+// Viewport-dependent factories run after commit. The initial HTML uses the
+// same fallback on the server and client, or the explicit serializable snaps.
+function initialSnaps(snaps: BottomSheetProps["snaps"]): SnapHeights {
+	return Array.isArray(snaps) && snaps.length > 0
+		? snaps
+		: defaultViewportSnapHeights(800);
+}
 
 function resolveSnaps(snaps: BottomSheetProps["snaps"]): SnapHeights {
 	if (typeof snaps === "function") {
@@ -91,19 +117,28 @@ export default function BottomSheet({
 	onHeightChange,
 	scrollFromSnapIndex,
 	label,
-	resizeLabel = "Resize",
+	resizeLabel = translate("ui.bottom-sheet.resize"),
 	snapValueText,
 	onDismiss,
+	dismissOnEscape = "within",
+	initialFocus = false,
+	restoreFocus = false,
 	hideCloseButton = false,
 	closeLabel,
 	title,
+	headlineAs,
 	children,
 	className,
 	style,
 	onTallChange,
 	tallRatio = 0.6,
 }: BottomSheetProps): ReactElement | null {
+	const Headline = useHeadingElement("sheetTitle", "h2", headlineAs);
 	const bodyId = useId();
+	const titleId = useId();
+	const rootRef = useRef<HTMLDivElement>(null);
+	const parentFocusManager = useFocusManager();
+	const titleRef = useRef<HTMLHeadingElement>(null);
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const heightRef = useRef(0);
 	const dragRef = useRef<{
@@ -113,9 +148,9 @@ export default function BottomSheet({
 		didDrag: boolean;
 	} | null>(null);
 
-	const [heights, setHeights] = useState(() => resolveSnaps(snapsProp));
+	const [heights, setHeights] = useState(() => initialSnaps(snapsProp));
 	const [uncontrolledIndex, setUncontrolledIndex] = useState(() => {
-		const initial = resolveSnaps(snapsProp);
+		const initial = initialSnaps(snapsProp);
 		return Math.max(0, Math.min(initial.length - 1, defaultSnapIndex));
 	});
 	const [isDragging, setIsDragging] = useState(false);
@@ -202,18 +237,13 @@ export default function BottomSheet({
 		onTallChange?.(tall);
 	}, [height, onTallChange, open, tallRatio]);
 
-	useEffect(() => {
-		if (!open || !onDismiss) {
-			return;
-		}
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				onDismiss();
-			}
-		};
-		document.addEventListener("keydown", onKeyDown);
-		return () => document.removeEventListener("keydown", onKeyDown);
-	}, [onDismiss, open]);
+	useOverlayDismiss({
+		isActive: open && Boolean(onDismiss) && dismissOnEscape === "document",
+		onDismiss: () => onDismiss?.(),
+		excludeRefs: [rootRef],
+		dismissOnOutsidePointer: false,
+		dismissOnEscape,
+	});
 
 	const onMovePointerDown = useCallback(
 		(event: ReactPointerEvent<HTMLDivElement>) => {
@@ -307,7 +337,11 @@ export default function BottomSheet({
 
 	const minH = heights[0]!;
 	const maxH = heights[heights.length - 1]!;
-	const valueText = snapValueText?.(snapIndex, height);
+	const valueText =
+		snapValueText?.(snapIndex, height) ??
+		translate("ui.bottom-sheet.snap-value")
+			.replace("{position}", String(snapIndex + 1))
+			.replace("{count}", String(heights.length));
 
 	const rootClass = [
 		"ms3-bottom-sheet",
@@ -321,56 +355,121 @@ export default function BottomSheet({
 		.join(" ");
 
 	return (
-		<div
-			className={rootClass}
-			style={{...style, height}}
-			data-snap-index={snapIndex}
-			role="region"
-			aria-label={label}
+		<FocusScope
+			autoFocus={Boolean(initialFocus)}
+			restoreFocus={restoreFocus === true}
 		>
-			<header className="ms3-bottom-sheet__header">
-				{/*
+			{/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Delegate Escape from interactive descendants of the region. */}
+			<div
+				ref={rootRef}
+				tabIndex={-1}
+				className={rootClass}
+				style={{...style, height}}
+				data-snap-index={snapIndex}
+				role="region"
+				aria-label={title == null ? label : undefined}
+				aria-labelledby={title != null ? titleId : undefined}
+				onKeyDown={(event) => {
+					if (
+						onDismiss &&
+						dismissOnEscape !== false &&
+						shouldDismissOnEscape(
+							event.nativeEvent,
+							rootRef.current,
+						)
+					) {
+						event.preventDefault();
+						onDismiss();
+					}
+				}}
+			>
+				<div className="ms3-bottom-sheet__header">
+					{/*
 				  Focusable separator (window splitter). jsx-a11y treats separator
 				  as non-interactive; tabindex + handlers are required by APG.
 				  https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/
 				*/}
-				{/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- APG focusable separator */}
-				<div
-					className="ms3-bottom-sheet__move"
-					role="separator"
-					aria-orientation="horizontal"
-					aria-controls={bodyId}
-					aria-valuemin={minH}
-					aria-valuemax={maxH}
-					aria-valuenow={height}
-					aria-valuetext={valueText}
-					aria-label={resizeLabel}
-					tabIndex={0}
-					onPointerDown={onMovePointerDown}
-					onPointerMove={onMovePointerMove}
-					onPointerUp={endMoveDrag}
-					onPointerCancel={endMoveDrag}
-					onKeyDown={onSeparatorKeyDown}
-				>
+					{/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- APG focusable separator */}
 					<div
-						className="ms3-bottom-sheet__handle"
-						aria-hidden="true"
-					/>
+						className="ms3-bottom-sheet__move"
+						role="separator"
+						aria-orientation="horizontal"
+						aria-controls={bodyId}
+						aria-describedby={title != null ? titleId : undefined}
+						aria-valuemin={minH}
+						aria-valuemax={maxH}
+						aria-valuenow={height}
+						aria-valuetext={valueText}
+						aria-label={resizeLabel}
+						tabIndex={0}
+						onPointerDown={onMovePointerDown}
+						onPointerMove={onMovePointerMove}
+						onPointerUp={endMoveDrag}
+						onPointerCancel={endMoveDrag}
+						onKeyDown={onSeparatorKeyDown}
+					>
+						<div
+							className="ms3-bottom-sheet__handle"
+							aria-hidden="true"
+						/>
+					</div>
+					{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
 					{title != null ? (
-						<h2 className="ms3-bottom-sheet__title">{title}</h2>
+						<Heading
+							as={Headline}
+							ref={titleRef}
+							id={titleId}
+							tabIndex={-1}
+							className="ms3-bottom-sheet__title"
+						>
+							{title}
+						</Heading>
 					) : null}
+					{hideCloseButton || !onDismiss ? null : (
+						<CloseOverlayButton
+							label={closeLabel}
+							onClose={onDismiss}
+						/>
+					)}
 				</div>
-				{/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
-				{hideCloseButton || !onDismiss ? null : (
-					<CloseOverlayButton
-						label={closeLabel}
-						onClose={onDismiss}
-					/>
-				)}
-			</header>
-			<div id={bodyId} ref={bodyRef} className="ms3-bottom-sheet__body">
-				{children}
+				<div
+					id={bodyId}
+					ref={bodyRef}
+					className="ms3-bottom-sheet__body"
+				>
+					<HeadingContent
+						headingAs={title != null ? Headline : undefined}
+					>
+						{children}
+					</HeadingContent>
+				</div>
 			</div>
-		</div>
+			<SheetFocusTarget
+				scopeRef={rootRef}
+				initialFocusRef={
+					initialFocus === true
+						? title != null
+							? titleRef
+							: rootRef
+						: initialFocus || undefined
+				}
+				fallbackFocus={
+					restoreFocus && parentFocusManager
+						? () => {
+								parentFocusManager.focusFirst();
+							}
+						: undefined
+				}
+				restoreFocusRef={
+					typeof restoreFocus === "object" ? restoreFocus : undefined
+				}
+			/>
+		</FocusScope>
 	);
+}
+
+/** Must mount inside FocusScope so explicit targeting follows the same open/close lifetime. */
+function SheetFocusTarget(props: Parameters<typeof useFocusScopeTarget>[0]) {
+	useFocusScopeTarget(props);
+	return null;
 }

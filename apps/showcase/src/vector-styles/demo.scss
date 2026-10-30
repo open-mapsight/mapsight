@@ -89,6 +89,17 @@ $MAPSIGHT_TRAFFIC_STYLE__ICONS: sprite.$mapsight-traffic-style-icon-sprite-2x,
 	}
 }
 
+// Point set with PointInputControls or a pointer click.
+#pointInput {
+	image-type: circle;
+	circle: {
+		radius: 8;
+		fill-color: #c62828;
+		stroke-width: 3;
+		stroke-color: white;
+	}
+}
+
 #drawMeasure {
 	stroke-width: 4;
 	stroke-color: #467aff;

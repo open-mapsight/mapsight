@@ -1,7 +1,6 @@
 import {Fragment} from "react";
 
 import RegionSelector from "@mapsight/ui/components/map-overlay/region-selector";
-import SearchOverlay from "@mapsight/ui/components/map-overlay/search-overlay";
 import SharePositionLinkButton from "@mapsight/ui/components/map-overlay/share-position-link-button";
 import * as config from "@mapsight/ui/config";
 import {plain, xhrJson} from "@mapsight/ui/config/feature/sources";
@@ -15,6 +14,7 @@ import createDefaultPlugins from "@mapsight/ui/plugins/browser-defaults";
 import createShareLinkPlugin from "@mapsight/ui/plugins/browser/share-position-link";
 import type {CreateOptions} from "@mapsight/ui/types";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
 import {demoGeoJsonUrl} from "./demo-geojson.ts";
 
 export {default as styleFunction} from "../generated/mapsight-vector-styles/demo";
@@ -23,11 +23,11 @@ export const baseMapsightConfig = {
 	...config.map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,
@@ -90,7 +90,6 @@ export const createOptions: CreateOptions = {
 		MapOverlayTopLeft: function CustomMapOverlayTopLeft() {
 			return (
 				<Fragment>
-					<SearchOverlay />
 					<RegionSelector />
 					<SharePositionLinkButton />
 				</Fragment>

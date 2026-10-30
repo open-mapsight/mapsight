@@ -1,5 +1,78 @@
 # @mapsight/vector-editor
 
+## 1.2.10
+
+### Patch Changes
+
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`ab13ef7`, `2270229`, `eed3ab3`, `374a3e4`, `2d13e3d`, `957ed95`, `b4d67eb`, `59c334d`]:
+    - `@mapsight/core@14.6.7 → 14.6.8` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
+## 1.2.9
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `react-tooltip` `^6.0.8` → `^6.0.9` (patch)
+
+- 2e0f362: Bump dependencies from Dependabot ([#399](https://github.com/open-mapsight/mapsight/pull/399)):
+
+    - `postcss-nested` `^8.0.1` → `^9.0.0` (major)
+
+- Updated dependencies [`4e0a815`, `7a399a1`, `f96b0e4`, `c823f15`]:
+    - `@mapsight/core@14.6.4 → 14.6.5` (patch)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
+## 1.2.8
+
+### Patch Changes
+
+- 79652e1: Bump dependencies from Dependabot ([#368](https://github.com/open-mapsight/mapsight/pull/368)):
+
+    - `postcss-import` `^17.0.0` → `^17.0.1` (patch)
+
+- Updated dependencies [`79652e1`, `96cb6b4`]:
+    - `@mapsight/core@14.6.3 → 14.6.4` (patch)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
+## 1.2.7
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `autoprefixer` `^10.5.5` → `^10.6.1` (minor)
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- 58a9796: Update the shared Redux Toolkit dependency range from ^2.11.2 to ^2.13.0.
+- Updated dependencies [`45aaead`, `e74d2c8`, `d35cc9f`, `86feccf`, `5980a66`, `63cf309`, `5dba09f`, `6e1146e`, `7dd3752`, `c46c174`, `58a9796`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
+## 1.2.6
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `autoprefixer` `^10.5.4` → `^10.5.5` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/core@14.6.1 → 14.6.2` (patch)
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+    - `@mapsight/lib-ol@4.2.4 → 4.2.5` (patch)
+    - `@mapsight/lib-redux@2.2.2 → 2.2.3` (patch)
+
 ## 1.2.5
 
 ### Patch Changes

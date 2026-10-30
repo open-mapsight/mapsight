@@ -1,3 +1,5 @@
+@use "../mixins/icon";
+@use "../mixins/surface";
 @use "../variables";
 
 .ms3-query-input-with-label {
@@ -24,10 +26,15 @@
 				left: 0;
 				width: 33px;
 				height: 33px;
-				background: transparent url(variables.$ms3-uiIconPath + "search.svg") no-repeat
-					center;
+				@if not icon.$themed {
+					background: transparent
+						url(variables.$ms3-uiIconPath + "search.svg") no-repeat center;
+				}
 				transform: translateY(-50%);
 				pointer-events: none;
+				@if icon.$themed {
+					@include icon.mask("search.svg");
+				}
 			}
 		}
 	}
@@ -72,9 +79,15 @@
 	&__input {
 		box-sizing: border-box;
 		vertical-align: top;
-		color: #222;
-		background: #fff;
-		border: 1px solid #ccc;
+		@if surface.$themed {
+			color: var(--ms3-primary-color);
+			background: var(--ms3-background-color);
+			border: 1px solid var(--ms3-border-color);
+		} @else {
+			color: #222;
+			background: #fff;
+			border: 1px solid #ccc;
+		}
 		border-radius: 0;
 		width: 100%;
 		padding: 6px 40px 2px 8px;
@@ -96,11 +109,18 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		color: #fff;
+		@if surface.$themed {
+			color: var(--ms3-inverted-primary-color);
+		} @else {
+			color: #fff;
+		}
 		text-transform: uppercase;
 		text-align: left;
 		cursor: pointer;
-		background: #0e78ad;
+		// (the `background` below replaces this one)
+		@if not surface.$themed {
+			background: #0e78ad;
+		}
 		border: 0;
 		padding: 10px 16px;
 		font-size: 1rem;
@@ -108,13 +128,26 @@
 		line-height: 1;
 		height: 33px;
 		width: 40px;
-		background: transparent url(variables.$ms3-uiIconPath + "/reset.svg") no-repeat
-			center;
+		@if icon.$themed {
+			background: transparent;
+			@include icon.layer("reset.svg", $position-element: false);
+		} @else {
+			background: transparent url(variables.$ms3-uiIconPath + "/reset.svg")
+				no-repeat center;
+		}
 
 		&:hover,
 		&:focus {
-			background: transparent url(variables.$ms3-uiIconPath + "reset-active.svg")
-				no-repeat center;
+			@if icon.$themed {
+				&::before {
+					@include icon.shape("reset-active.svg");
+					@include icon.fill(icon.$color-active, Highlight);
+				}
+			} @else {
+				background: transparent
+					url(variables.$ms3-uiIconPath + "reset-active.svg") no-repeat
+					center;
+			}
 		}
 	}
 }

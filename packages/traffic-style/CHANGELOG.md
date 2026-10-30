@@ -1,5 +1,39 @@
 # @mapsight/traffic-style
 
+## 5.5.4
+
+### Patch Changes
+
+- f96b0e4: Bump dependencies from Dependabot ([#398](https://github.com/open-mapsight/mapsight/pull/398)):
+
+    - `chokidar` `^5.0.0` → `^6.0.0` (major)
+
+- Updated dependencies [`7a399a1`]:
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+
+## 5.5.3
+
+### Patch Changes
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `fs-extra` `^11.4.0` → `^11.4.1` (patch)
+    - `lru-cache` `^11.5.2` → `^11.5.3` (patch)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `sharp` `^0.35.4` → `^0.35.5` (patch)
+
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- Updated dependencies [`86feccf`, `6e1146e`, `d35cc9f`, `c46c174`]:
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+
+## 5.5.2
+
+### Patch Changes
+
+- f21fcae: Add Font Awesome pictograms for family, accessibility, camping, and service POIs
+
 ## 5.5.1
 
 ### Patch Changes

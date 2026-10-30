@@ -55,7 +55,7 @@ export type SwitcherEntryProps = {
 	locked?: boolean;
 	/**
 	 * Exclusive choice (e.g. split-switcher base layers): exactly one stays
-	 * active. The current entry is disabled and cannot be toggled off.
+	 * active. Re-selecting the current entry is a no-op.
 	 */
 	exclusive?: boolean;
 	/** Optional preview thumbnail (e.g. base-layer map tile). */
@@ -99,22 +99,18 @@ function SwitcherEntry({
 	const checkboxStatusClass = mapStatusClassName(checkboxDisplayStatus);
 	const checkboxStatusLabel = mapStatusLabel(checkboxDisplayStatus);
 	const cannotDeselect = exclusive && (active ?? false);
-	const exclusiveLabel = exclusive
-		? cannotDeselect
-			? `${title}, ${checkboxStatusLabel}. ${translate(
-					"ui.layer-switcher.cannotDeselectBaseLayer",
-				)}`
-			: `${title}, ${checkboxStatusLabel}`
-		: undefined;
 
 	const checkbox = (
 		<SwitcherStatusIcon
 			status={checkboxStatusClass}
-			onClick={!toggleActive && toggleActiveCheckbox}
+			label={
+				toggleActiveCheckbox
+					? `${title}, ${checkboxStatusLabel}`
+					: checkboxStatusLabel
+			}
+			onClick={toggleActiveCheckbox}
 			active={activeCheckbox}
-		>
-			{checkboxStatusLabel}
-		</SwitcherStatusIcon>
+		/>
 	);
 
 	const preview = previewUrl ? (
@@ -169,9 +165,11 @@ function SwitcherEntry({
 								cannotDeselect ? undefined : toggleActive
 							}
 							active={active}
-							disabled={cannotDeselect}
 							role={exclusive ? "radio" : "checkbox"}
-							aria-label={exclusiveLabel}
+							aria-label={
+								(exclusive ? title : undefined) ??
+								`${title}, ${checkboxStatusLabel}`
+							}
 						>
 							{preview}
 							{checkbox}
@@ -196,7 +194,7 @@ function SwitcherEntry({
 								onClick={toggleActiveText}
 								className={`${baseClassName}__text-button ${baseClassName}__text-button--${textStatusClass}`}
 								aria-checked={activeText ? "true" : "false"}
-								aria-label={textStatusLabel}
+								aria-label={`${title}, ${textStatusLabel}`}
 							>
 								{text}
 							</button>

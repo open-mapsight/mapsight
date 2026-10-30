@@ -1,10 +1,23 @@
+@use "../mixins/surface";
 
 .ms3-attribution {
 	pointer-events: auto;
 	line-height: 1;
 	font-size: var(--ms3-font-size-base);
 
-	background: var(--ms3-attributions-background-color);
+	// Keep a solid backing even when a host supplies a translucent token.
+	@if surface.$themed {
+		background:
+			linear-gradient(
+				var(--ms3-attributions-background-color),
+				var(--ms3-attributions-background-color)
+			),
+			var(--ms3-background-color);
+		color: var(--ms3-primary-color);
+	} @else {
+		background: linear-gradient(var(--ms3-attributions-background-color), var(--ms3-attributions-background-color)), #fff;
+		color: #222;
+	}
 	border-top-left-radius: var(--ms3-border-radius);
 
 	max-width: calc(100% - 15px);

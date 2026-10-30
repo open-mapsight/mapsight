@@ -1,16 +1,17 @@
 {
 	"name": "@mapsight/lib-redux",
 	"description": "Mapsight Redux Library",
-	"version": "2.2.2",
+	"version": "2.3.0",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/lib-js": "workspace:^",
 		"@reduxjs/toolkit": "catalog:",
-		"@types/lodash": "catalog:",
 		"lodash": "catalog:"
 	},
 	"devDependencies": {
-		"cpx2": "^9.0.0"
+		"@types/lodash": "catalog:",
+		"cpx2": "^9.0.3",
+		"vitest": "catalog:"
 	},
 	"exports": {
 		".": {
@@ -33,20 +34,25 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/lib-redux#readme",
 	"license": "MIT",
 	"main": "index.js",
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/lib-redux"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:modules build:copy",
 		"build:copy": "cpx '{package.json,README.md}' dist/",
-		"build:modules": "tsc",
+		"build:modules": "tsc -p tsconfig.build.json",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
+		"lint": "eslint",
+		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:setup build:modules watch:build",
-		"watch:build": "tsc --watch"
+		"watch:build": "tsc -p tsconfig.build.json --watch"
 	}
 }

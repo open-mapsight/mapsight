@@ -1,4 +1,6 @@
 import GeoJSON from "ol/format/GeoJSON";
+import type Point from "ol/geom/Point";
+import {fromLonLat, transform} from "ol/proj";
 
 import {describe, expect, it, vi} from "vitest";
 
@@ -206,6 +208,66 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 		expect(readFeatures).toHaveBeenCalledTimes(2);
 	});
 
+	it.each([
+		[
+			"the configured source projection without a crs",
+			"EPSG:3857",
+			undefined,
+			"EPSG:3857",
+		],
+		[
+			"EPSG:4326 without a crs or configured projection",
+			undefined,
+			undefined,
+			"EPSG:4326",
+		],
+		[
+			"a named crs over the configured projection",
+			"EPSG:3857",
+			"EPSG:4326",
+			"EPSG:4326",
+		],
+	] as const)(
+		"reads coordinates in %s",
+		(_label, external, crsName, dataProjection) => {
+			const coordinates = transform(
+				[10.5, 52.2],
+				"EPSG:4326",
+				dataProjection,
+			);
+			const store = createStore(
+				sourceState(
+					[
+						{
+							...placeFeature,
+							geometry: {
+								type: "Point",
+								coordinates: [...coordinates],
+							},
+						},
+					],
+					crsName
+						? {crs: {type: "name", properties: {name: crsName}}}
+						: undefined,
+				),
+			);
+			const {instance} = SharedReadonlyVectorFeatureSource.subscribe(
+				store as unknown as EnhancedStore,
+				"featureSources",
+				"parking",
+				"map",
+				new GeoJSON(),
+				"EPSG:3857",
+				external,
+				vi.fn(),
+			);
+			const point = instance.getFeatures()[0]!.getGeometry() as Point;
+			const expected = fromLonLat([10.5, 52.2]);
+			expect(point.getCoordinates()[0]).toBeCloseTo(expected[0]!, 4);
+			expect(point.getCoordinates()[1]).toBeCloseTo(expected[1]!, 4);
+		},
+	);
+
 	it("reads again when a feature actually changes", () => {
 		const format = new GeoJSON();
 		const readFeatures = vi.spyOn(format, "readFeatures");
@@ -288,5 +350,86 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 
 		expect(feature?.get("myHostKey")).toBe("after");
 		expect(onUpdate).toHaveBeenCalledTimes(3);
+	});
+
+	it("does no work on dispatches that do not touch its feature source", () => {
+		// A fingerprinted source (featuresKey set by the reducer), as after any load.
+		const featureSources = {
+			parking: {
+				type: "xhr-json",
+				url: "/parking.geojson",
+				filters: [],
+				featuresKey: "precomputed",
+				data: {type: "FeatureCollection", features: [placeFeature]},
+				lastUpdate: 1,
+				lastActionType: "LOAD",
+				isLoading: false,
+			},
+		};
+		const store = createStore({featureSources, map: {zoom: 12}});
+		const {instance} = SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			new GeoJSON(),
+			undefined,
+			undefined,
+			vi.fn(),
+		);
+		const apply = vi.spyOn(
+			instance as unknown as {_applyFeatureSourceData: () => void},
+			"_applyFeatureSourceData",
+		);
+
+		// e.g. view updates while panning: the feature source state object is unchanged.
+		for (let zoom = 13; zoom < 23; zoom++) {
+			store.setState({featureSources, map: {zoom}});
+		}
+
+		expect(apply).not.toHaveBeenCalled();
+	});
+
+	it("does not serialise the features again when only collection metadata changed", () => {
+		let featureReads = 0;
+		const features = new Proxy([placeFeature], {
+			get(target, property, receiver) {
+				if (typeof property === "string" && /^\d+$/.test(property)) {
+					featureReads++;
+				}
+				return Reflect.get(target, property, receiver) as unknown;
+			},
+		});
+		const state = (buildTimestamp: string): State => ({
+			featureSources: {
+				parking: {
+					type: "xhr-json",
+					url: "/parking.geojson",
+					filters: [],
+					featuresKey: "same-features",
+					data: {type: "FeatureCollection", buildTimestamp, features},
+					lastUpdate: 1,
+					lastActionType: "LOAD",
+					isLoading: false,
+				},
+			},
+			map: {},
+		});
+		const store = createStore(state("t1"));
+		SharedReadonlyVectorFeatureSource.subscribe(
+			store as unknown as EnhancedStore,
+			"featureSources",
+			"parking",
+			"map",
+			new GeoJSON(),
+			undefined,
+			undefined,
+			vi.fn(),
+		);
+		featureReads = 0;
+
+		store.setState(state("t2"));
+
+		expect(featureReads).toBe(0);
 	});
 });

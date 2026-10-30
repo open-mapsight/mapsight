@@ -19,6 +19,17 @@ import {
 /*  eslint quote-props: 0 */
 
 const en: Record<string, string> = {
+	// BottomSheet accessibility defaults.
+	"ui.bottom-sheet.resize": "Resize",
+	"ui.bottom-sheet.snap-value": "Position {position} of {count}",
+	// UE: search status and previously missing shared labels.
+	shareLink: "Share link",
+	marker: "Marker",
+	"ui.search.result.loading": "Searching…",
+	"ui.search.result.count": "{count} results",
+	"ui.search.result.none": "No results",
+	"ui.search.result.selected": "{name} selected",
+
 	open: "open",
 	close: "close",
 	reset: "reset",
@@ -30,7 +41,7 @@ const en: Record<string, string> = {
 	"ui.query-input.reset": "reset search",
 
 	"ui.feature-details.share-link.head": "share link ...",
-	"ui.feature-details.share-link.place": "link to choosen location:",
+	"ui.feature-details.share-link.place": "link to chosen location:",
 	"ui.feature-details.share-link.close": "close dialog to share a link",
 
 	"ui.place-actions.nav": "Place actions",
@@ -40,7 +51,7 @@ const en: Record<string, string> = {
 	"ui.place-actions.share.copy": "Copy link",
 	"ui.place-actions.share.copied": "Copied",
 	"ui.place-actions.share.close": "Close share dialog",
-	"ui.place-actions.share.permalink": "Permalink",
+	"ui.place-actions.share.copy-success": "Link copied",
 	"ui.place-actions.navigate": "Directions",
 	"ui.place-actions.navigate.tooltip":
 		"Navigate to this place with another app",
@@ -53,10 +64,13 @@ const en: Record<string, string> = {
 	"ui.place-actions.copy-coords": "Copy coordinates",
 	"ui.place-actions.copy-coords.tooltip": "Copy these coordinates",
 	"ui.place-actions.copy-coords.copied": "Copied",
+	"ui.place-actions.copy-coords.copy-success": "Coordinates copied",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Open this place’s website",
 	"ui.place-actions.call": "Call",
 	"ui.place-actions.call.tooltip": "Call this place",
+	"ui.place-actions.copy-failed":
+		"Copy failed. Please copy the text manually.",
 
 	"ui.feature-details.content-inner.error": "error at loading details",
 	"ui.feature-details.content-inner.gotoPage": "jump to page",
@@ -120,7 +134,7 @@ const en: Record<string, string> = {
 	"ui.map-overlay.search.modal.label": "Search function",
 	"ui.map-overlay.search.modal.headline": "Search",
 
-	"ui.map-overlay.logo.copyright": "The map is based on Mapsight",
+	"ui.map-overlay.logo.copyright": "Built with Mapsight",
 
 	"ui.region-selector.label": "Center map on a region",
 
@@ -147,14 +161,24 @@ const en: Record<string, string> = {
 	"ui.map.usage.heading": "Keyboard shortcuts for map usage",
 	"ui.map.usage.html":
 		'<dl class="ms3-map-usage">' +
-		'<dt><kbd aria-label="Arrow right">→</kbd></dt><dd>move right</dd>' +
-		'<dt><kbd aria-label="Arrow left">←</kbd></dt><dd>move left</dd>' +
-		'<dt><kbd aria-label="Arrow down">↓</kbd></dt><dd>move down</dd>' +
-		'<dt><kbd aria-label="Arrow up">↑</kbd></dt><dd>move up</dd>' +
+		'<dt><kbd><span aria-hidden="true">→</span><span class="ms3-visuallyhidden">Arrow right</span></kbd></dt><dd>move right</dd>' +
+		'<dt><kbd><span aria-hidden="true">←</span><span class="ms3-visuallyhidden">Arrow left</span></kbd></dt><dd>move left</dd>' +
+		'<dt><kbd><span aria-hidden="true">↓</span><span class="ms3-visuallyhidden">Arrow down</span></kbd></dt><dd>move down</dd>' +
+		'<dt><kbd><span aria-hidden="true">↑</span><span class="ms3-visuallyhidden">Arrow up</span></kbd></dt><dd>move up</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>zoom in</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>zoom out</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Open the menu at the map centre</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden": "This part of the page shows a geographical map.",
+	"ui.point-input.instructions":
+		"On the focused map, arrow keys pan and + and − zoom. The crosshair marks the map centre. Press Enter or Space, or the “Use map centre” button, to set the point there. Confirming again replaces it.",
+	"ui.point-input.confirm": "Use map centre",
+	"ui.point-input.help": "Keyboard help",
+	"ui.point-input.close-help": "Close keyboard help",
+	"ui.point-input.position": "Map centre (latitude, longitude):",
+	"ui.point-input.confirmed": "Position confirmed (latitude, longitude):",
+	"ui.map.label": "Interactive map",
+	"ui.map.roledescription": "Map",
 
 	"ui.wrapper.overlay.fullscreen": "Fullscreen map",
 	"ui.wrapper.overlay.mapOnly": "Map",
@@ -171,11 +195,11 @@ const en: Record<string, string> = {
 	[`ui.view-toggle-button.label${VIEW_DESKTOP}`]: "full screen",
 	[`ui.view-toggle-button.label${VIEW_MOBILE}`]: "list",
 
-	[`ui.zoom-button.ariaLabel${ZOOM_OUT}`]: "zoom in",
-	[`ui.zoom-button.ariaLabel${ZOOM_IN}`]: "zoom out",
+	[`ui.zoom-button.ariaLabel${ZOOM_OUT}`]: "zoom out",
+	[`ui.zoom-button.ariaLabel${ZOOM_IN}`]: "zoom in",
 
-	[`ui.zoom-button.label${ZOOM_OUT}`]: "zoom in",
-	[`ui.zoom-button.label${ZOOM_IN}`]: "zoom out",
+	[`ui.zoom-button.label${ZOOM_OUT}`]: "zoom out",
+	[`ui.zoom-button.label${ZOOM_IN}`]: "zoom in",
 
 	[`ui.switcher.entry.label${STATUS_ERROR}`]: "error at loading",
 	[`ui.switcher.entry.label${STATUS_LOADING}`]: "loading",
@@ -184,6 +208,18 @@ const en: Record<string, string> = {
 
 	"ui.user-geo-location-button.label": "jump to your location",
 	"ui.user-geo-location-button.ariaLabel": "jump to your location",
+	"ui.user-geo-location-button.requesting": "Requesting your location …",
+	"ui.user-geo-location-button.error":
+		"Your location could not be determined.",
+
+	// List chrome accessibility.
+	"ui.pagination.label": "Page navigation",
+	"ui.pagination.jumpForward": "Jump forward",
+	"ui.pagination.jumpBackward": "Jump backward",
+	"ui.pagination.status": "Page {n} of {total}",
+	"ui.feature-list.filter.status": "{n} of {total} entries",
+	"ui.feature-list.filter.empty": "No entries",
+	"ui.feature-list.cycling.status": "Station {n} of {total}: {name}",
 
 	"ui.pagination.nextPage": ">",
 	"ui.pagination.prevPage": "<",
@@ -203,10 +239,38 @@ const en: Record<string, string> = {
 	"ui.map-point.copied": "Coordinates copied",
 
 	"ui.share-position-link.title": "Share position",
+	"ui.share-position-link.shareTitle": "Place on the map",
+	"ui.share-position-link.shareButtonLabel": "Share link",
 	"ui.share-position-link.instructions":
-		"Click on the map to share a position.",
-	"ui.share-position-link.shareTitle": "Share marked position",
-	"ui.share-position-link.shareButtonLabel": "Share marked position",
+		"Share the map centre or click the map to choose a place.",
+	"ui.share-position-link.instructions-marked":
+		"Click the map again to change the place.",
+	"ui.share-position-link.link-center": "Link to the map centre",
+	"ui.share-position-link.link-marked": "Link to the marked place",
+	"ui.share-position-link.remove-marker": "Remove marker",
+	"ui.share-position-link.keyboard.select":
+		"Mark the place at the map centre",
+	"ui.share-position-link.keyboard.remove": "Remove the marker",
+
+	"ui.tool-overlay.keyboard-help": "Keyboard controls",
+	"ui.tool-overlay.keyboard-help.focus": "With the map focused:",
+	"ui.skip-links.map": "Skip to the map",
+	"ui.skip-links.list": "Skip to the list",
+	"ui.skip-links.search": "Skip to the search",
+	"ui.tool-overlay.to-map": "Skip to the map",
+	"ui.tool-overlay.back-to-tool": "Back to “{name}”",
+	"ui.tool-overlay.keyboard.pan": "Pan the map",
+	"ui.keys.space": "Space",
+	"ui.keys.enter": "Enter",
+	"ui.keys.backspace": "Backspace",
+	"ui.keys.arrows": "Arrow keys",
+
+	"ui.link-share.input": "Link to share",
+
+	"ui.measure-distance.finish": "Done",
+	"ui.measure-distance.keyboard.add": "Add a point at the map centre",
+	"ui.measure-distance.keyboard.finish": "Finish the line (from two points)",
+	"ui.measure-distance.keyboard.remove": "Remove the last point",
 };
 
 export default en;

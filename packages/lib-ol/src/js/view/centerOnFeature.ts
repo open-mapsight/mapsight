@@ -6,8 +6,11 @@ export type CenterOnFeatureOptions = {
 	duration?: number;
 };
 
+/** Default duration of the centering animation, in milliseconds. */
+export const DEFAULT_CENTER_DURATION = 300;
+
 export const DEFAULT_OPTIONS = {
-	duration: 300, // TODO: MAGIC NUMBER!
+	duration: DEFAULT_CENTER_DURATION,
 };
 
 export default function centerOnFeature(

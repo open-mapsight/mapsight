@@ -71,7 +71,7 @@ function FeatureListItemHead({
 	 * We support a range of interactive behaviours
 	 * 1. Has some on-page click handler => <button> or <a role=button> (if it also has a permalink)
 	 * 2. Does not have on-page click behaviour, but permalink => link <a>
-	 * 3. Does have neither on-page click behaviour nor permalink, but should highlight on mouse => <span> with hover handlers
+	 * 3. Does have neither on-page click behaviour nor permalink, but should highlight on mouse => <button> with hover and focus handlers
 	 * 4. Not interactive at all => <span>
 	 */
 
@@ -79,7 +79,8 @@ function FeatureListItemHead({
 	if (feature.id && (selectOnClick || deselectOnClick)) {
 		return (
 			<FeatureSelectButton
-				tabIndex={-1}
+				tabIndex={0}
+				data-ms3-list-nav=""
 				className={`${className} [ ms3-list__button ms3-list__button--selectable ]`}
 				{...attributes}
 				featureId={feature.id}
@@ -99,7 +100,8 @@ function FeatureListItemHead({
 	if (permanentLink) {
 		return (
 			<a
-				tabIndex={-1}
+				tabIndex={0}
+				data-ms3-list-nav=""
 				href={permanentLink}
 				className={`${className} [ ms3-list__link ]`}
 				{...attributes}
@@ -112,12 +114,21 @@ function FeatureListItemHead({
 	// 3.
 	if (highlightOnMouse) {
 		return (
-			<span
+			<button
+				type="button"
+				tabIndex={0}
+				data-ms3-list-nav=""
+				aria-pressed={isHighlighted}
+				onFocus={!isSelected ? onFeatureHighlight : undefined}
+				onBlur={onFeatureUnHighlight}
+				onClick={
+					isHighlighted ? onFeatureUnHighlight : onFeatureHighlight
+				}
 				className={`${className} [ ms3-list__button ]`}
 				{...attributes}
 			>
 				{children}
-			</span>
+			</button>
 		);
 	}
 

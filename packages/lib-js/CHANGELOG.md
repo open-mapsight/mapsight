@@ -1,5 +1,30 @@
 # @mapsight/lib-js
 
+## 3.0.11
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+
+## 3.0.10
+
+### Patch Changes
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `@changesets/cli` `^3.0.2` → `^3.0.3` (patch)
+
+- 5dba09f: Tolerate malformed query parameters and throwing plugins. `getQueryStringParameter` now decodes with `decodeURIComponent` and returns the raw value when it is not valid percent-encoding instead of throwing `URIError`. Encoded reserved characters such as `%2F`, `%26`, and `%3D` are now decoded too (previously returned verbatim). A plugin phase that throws synchronously no longer skips later plugins or escapes `render()`; the error is logged with the plugin name and `renderAsync()` still rejects with it.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+
+## 3.0.9
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `@changesets/cli` `^3.0.0` → `^3.0.2` (patch)
+
 ## 3.0.8
 
 ### Patch Changes

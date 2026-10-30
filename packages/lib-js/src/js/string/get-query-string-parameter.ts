@@ -5,7 +5,7 @@ import {escapeRegExp} from "../regExp.ts";
  *
  * @param uri uri to parse
  * @param key key to return value for
- * @returns value
+ * @returns decoded value, or the raw value when it is not valid percent-encoding
  */
 export default function getQueryStringParameter(
 	uri: string,
@@ -15,5 +15,13 @@ export default function getQueryStringParameter(
 		"(?:^|[?&])" + escapeRegExp(key) + "=(.*?)(?:&|$)",
 		"i",
 	).exec(uri);
-	return match?.[1] ? decodeURI(match[1]) : null;
+	return match?.[1] ? decodeQueryValue(match[1]) : null;
+}
+
+function decodeQueryValue(value: string): string {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
 }

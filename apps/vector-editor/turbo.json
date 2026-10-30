@@ -1,0 +1,20 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build:mapsightStyle": {
+			"dependsOn": [
+				"@mapsight/vector-style-compiler#build",
+				"@mapsight/traffic-style#build"
+			],
+			"inputs": ["src/mapsight/**", "package.json"],
+			"outputs": ["src/generated/mapsight-vector-styles/**"],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+		},
+		"lint": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build:mapsightStyle"]
+		},
+		"typecheck": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build:mapsightStyle"]
+		}
+	}
+}

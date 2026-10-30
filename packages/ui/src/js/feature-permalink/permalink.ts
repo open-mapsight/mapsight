@@ -23,6 +23,22 @@ function asNonEmptyString(value: unknown): string | null {
 	return trimmed.length > 0 ? trimmed : null;
 }
 
+function asSafeHref(value: unknown): string | null {
+	const href = asNonEmptyString(value);
+	if (!href) {
+		return null;
+	}
+	try {
+		const protocol = new URL(href, "http://localhost/").protocol;
+		if (protocol === "http:" || protocol === "https:") {
+			return href;
+		}
+	} catch {
+		return null;
+	}
+	return null;
+}
+
 export function featureLocationFromConfig(
 	config: FeaturePermalinkConfig | undefined,
 ): FeatureLocation | null {
@@ -141,12 +157,12 @@ function resolvePermalink(
 	ctx: FeaturePermalinkResolveContext,
 ): string | null {
 	if (typeof config?.permalink === "string") {
-		return asNonEmptyString(config.permalink);
+		return asSafeHref(config.permalink);
 	}
 	if (typeof config?.permalink === "function") {
-		return asNonEmptyString(config.permalink(feature, ctx) ?? null);
+		return asSafeHref(config.permalink(feature, ctx) ?? null);
 	}
-	const permanentLink = asNonEmptyString(
+	const permanentLink = asSafeHref(
 		getFeatureProperty(feature, "permanentLink"),
 	);
 	if (permanentLink) {

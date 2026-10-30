@@ -1,6 +1,9 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../mixins/visually-hidden";
+@use "../mixins/icon";
 @use "../variables";
+@use "../mixins/reduced-motion";
+@use "../mixins/surface";
 
 .ms3-map-overlay {
 	position: absolute;
@@ -60,6 +63,7 @@
 
 	&__button {
 		display: block;
+		min-width: 24px;
 		@if (variables.$ms3-option-mapOverlayButtonsShowLabel) {
 			width: 80px;
 			min-height: 50px;
@@ -75,6 +79,7 @@
 		pointer-events: auto;
 
 		transition: margin 300ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 
 		@if (variables.$ms3-option-mapOverlayButtonsShowLabel == false) {
 			&__label {
@@ -88,80 +93,135 @@
 				content: "";
 				width: 100%;
 				height: 26px;
-				background-repeat: no-repeat;
-				background-position: center center;
+
+				@if icon.$themed {
+					@include icon.mask(null, $position: center center);
+				} @else {
+					background-repeat: no-repeat;
+					background-position: center center;
+				}
 			}
 		}
 
 		&--search {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "search.svg");
+				@if icon.$themed {
+					@include icon.shape("search.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "search.svg");
+				}
 			}
 		}
 
 		&--layers {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "layers.svg");
+				@if icon.$themed {
+					@include icon.shape("layers.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "layers.svg");
+				}
 			}
 		}
 
 		&--info {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "info.svg");
+				@if icon.$themed {
+					@include icon.shape("info.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "info.svg");
+				}
 			}
 		}
 
 		&--desktop-view-toggle--desktop {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+				@if icon.$themed {
+					@include icon.shape("fullscreen.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+				}
 			}
 		}
 
 		&--desktop-view-toggle--fullscreen {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+				@if icon.$themed {
+					@include icon.shape("fullscreen-close.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+				}
 			}
 		}
 
 		&--mobile-view-toggle--mapOnly {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "open-list.svg");
+				@if icon.$themed {
+					@include icon.shape("open-list.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "open-list.svg");
+				}
 			}
 		}
 
 		&--zoom--zoomIn {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "zoom-in.svg");
+				@if icon.$themed {
+					@include icon.shape("zoom-in.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "zoom-in.svg");
+				}
 			}
 		}
 
 		&--zoom--zoomOut {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "zoom-out.svg");
+				@if icon.$themed {
+					@include icon.shape("zoom-out.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "zoom-out.svg");
+				}
 			}
 		}
 
 		&--geo-location--active {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "geo-active.svg");
+				@if icon.$themed {
+					@include icon.shape("geo-active.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "geo-active.svg");
+				}
 			}
 		}
 
 		&--geo-location--inactive {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "geo-inactive.svg");
+				@if icon.$themed {
+					@include icon.shape("geo-inactive.svg");
+					@include icon.fill(icon.$color-muted, GrayText);
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "geo-inactive.svg");
+				}
 			}
 		}
 
 		&--geo-location--error {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "geo-error.svg");
+				@if icon.$themed {
+					@include icon.shape("geo-error.svg");
+					@include icon.fill(icon.$color-muted, GrayText);
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "geo-error.svg");
+				}
 			}
 		}
 
 		&--share-link {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "place-marker.svg");
+				@if icon.$themed {
+					@include icon.shape("place-marker.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "place-marker.svg");
+				}
 			}
 
 			.ms3-wrapper--mobile & {
@@ -171,7 +231,11 @@
 
 		&--measure-distance {
 			&::before {
-				background-image: url(variables.$ms3-uiIconPath + "measure-distance.svg");
+				@if icon.$themed {
+					@include icon.shape("measure-distance.svg");
+				} @else {
+					background-image: url(variables.$ms3-uiIconPath + "measure-distance.svg");
+				}
 			}
 		}
 
@@ -179,7 +243,11 @@
 			margin: 5px 7px;
 			width: 40px;
 			min-height: 40px;
-			background: rgba(255, 255, 255, 0.9);
+			@if surface.$themed {
+				background: surface.$map-control-background;
+			} @else {
+				background: rgba(255, 255, 255, 0.9);
+			}
 			border-radius: 20px;
 
 			&--desktop-view-toggle {
@@ -209,7 +277,11 @@
 .ms3-wrapper--embedded {
 	.ms3-map-overlay__button--mobile-view-toggle--mapOnly {
 		&::before {
-			background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+			@if icon.$themed {
+				@include icon.shape("fullscreen-close.svg");
+			} @else {
+				background-image: url(variables.$ms3-uiIconPath + "fullscreen-close.svg");
+			}
 		}
 	}
 
@@ -217,8 +289,51 @@
 		display: block;
 
 		&::before {
-			background-position: 51% 65%;
-			background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+			@if icon.$themed {
+				@include icon.position(51% 65%);
+			} @else {
+				background-position: 51% 65%;
+			}
+			@if icon.$themed {
+				@include icon.shape("fullscreen.svg");
+			} @else {
+				background-image: url(variables.$ms3-uiIconPath + "fullscreen.svg");
+			}
 		}
+	}
+}
+
+.ms3-map-tool-action {
+	display: block;
+	min-width: 24px;
+	min-height: 32px;
+	max-width: calc(100% - 12px);
+	margin: 6px;
+	padding: 4px 8px;
+	border: 1px solid var(--ms3-border-color);
+	border-radius: var(--ms3-border-radius);
+	background: var(--ms3-background-color);
+	color: var(--ms3-foreground-color);
+
+	&:focus-visible {
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
+
+	// Kept focusable (aria-disabled) so users learn when it becomes available.
+	&[aria-disabled="true"] {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	// Alternative to clicking the map (keyboard, voice and switch users):
+	// still recognisably a button, but compact and unfilled so the map click
+	// stays the obvious main path for pointer users.
+	&--secondary {
+		display: inline-block;
+		min-height: 24px;
+		padding: 2px 8px;
+		background: transparent;
+		font-size: 0.875em;
 	}
 }

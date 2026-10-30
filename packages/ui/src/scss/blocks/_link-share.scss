@@ -1,3 +1,4 @@
+@use "../mixins/surface";
 
 .ms3-link-share {
 	padding: 6px;
@@ -9,16 +10,46 @@
 		user-select: text;
 		padding: 6px;
 		border: 1px solid var(--ms3-border-color);
-		color: #444;
-		background: #f5f5f5;
+		@if surface.$themed {
+			color: var(--ms3-primary-color);
+			background: var(--ms3-background-color-offset);
+		} @else {
+			color: #444;
+			background: #f5f5f5;
+		}
 		border-radius: 2px;
+	}
+
+	&--labelled {
+		flex-wrap: wrap;
+	}
+
+	&__label {
+		flex: 0 0 100%;
+		margin-bottom: 4px;
+		font-weight: bold;
 	}
 
 	&__button {
 		margin-right: 10px;
 		padding: 5px 9px;
 		border: 1px solid var(--ms3-border-color);
-		background: white;
+		@if surface.$themed {
+			background: var(--ms3-background-color);
+		} @else {
+			background: white;
+		}
 		border-radius: 2px;
+
+		@if surface.$themed {
+			// the share icon is inline SVG with black `fill`/`stroke` attributes
+			path[fill] {
+				fill: var(--ms3-foreground-color);
+			}
+
+			path[stroke] {
+				stroke: var(--ms3-foreground-color);
+			}
+		}
 	}
 }

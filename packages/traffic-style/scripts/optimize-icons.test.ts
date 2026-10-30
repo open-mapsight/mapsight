@@ -1,5 +1,13 @@
 import {createHash} from "node:crypto";
-import {mkdir, readFile, rm, stat, unlink, writeFile} from "node:fs/promises";
+import {
+	mkdir,
+	mkdtemp,
+	readFile,
+	rm,
+	stat,
+	unlink,
+	writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -22,10 +30,7 @@ describe("optimize-icons.ts", () => {
 	let destDir: string;
 
 	beforeEach(async () => {
-		tmpDir = path.join(
-			os.tmpdir(),
-			`optimize-icons-test-${Math.random().toString(36).slice(2)}`,
-		);
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), "optimize-icons-test-"));
 		srcDir = path.join(tmpDir, "src");
 		destDir = path.join(tmpDir, "dest");
 		await mkdir(srcDir, {recursive: true});

@@ -1,44 +1,48 @@
-import type {ReactNode} from "react";
-import {useRef} from "react";
+import {useState} from "react";
 
 import FeatureList from "../feature-list";
 import FeatureSelectionInfo from "../feature-selection-info";
 import {useMainPanelContext} from "./context";
 
 function MainPanel() {
-	const {contentType, panelPosition, collapsed, feature} =
+	const {contentType, panelPosition, collapsed, feature, showList} =
 		useMainPanelContext();
 
-	// we keep using the old content stored in contentRef.current if we do not have any new content
-	// to allow for a smooth transition when collapsing the container
-	const contentRef = useRef<ReactNode>(null);
-	const isShowingSelectionInfoRef = useRef(false);
-
-	if (contentType) {
-		isShowingSelectionInfoRef.current = contentType === "selectionInfo";
-		contentRef.current = (
-			<>
-				<FeatureList enableKeyboardControl={!collapsed} />
-
-				{isShowingSelectionInfoRef.current && (
-					<FeatureSelectionInfo
-						feature={feature}
-						enableKeyboardControl={!collapsed}
-					/>
-				)}
-			</>
-		);
+	// Retain data for the collapse animation, but always render live keyboard props.
+	const [retained, setRetained] = useState({contentType, feature});
+	if (
+		contentType &&
+		(contentType !== retained.contentType || feature !== retained.feature)
+	) {
+		setRetained({contentType, feature});
 	}
+	const isShowingSelectionInfo = retained.contentType === "selectionInfo";
 
 	return (
 		<div
+			inert={collapsed}
 			className={`ms3-panel ms3-panel--docked-${panelPosition} ${
 				collapsed ? "ms3-panel--empty" : ""
-			} ${
-				isShowingSelectionInfoRef.current ? "ms3-panel--hide-list" : ""
-			}`}
+			} ${isShowingSelectionInfo ? "ms3-panel--hide-list" : ""}`}
 		>
-			<div className="ms3-panel__inner">{contentRef.current}</div>
+			<div
+				className="ms3-panel__inner"
+				inert={collapsed}
+				aria-hidden={collapsed || undefined}
+			>
+				{showList && retained.contentType && (
+					<FeatureList enableKeyboardControl={!collapsed} />
+				)}
+				{isShowingSelectionInfo && (
+					<FeatureSelectionInfo
+						feature={retained.feature}
+						isOpen={!collapsed && contentType === "selectionInfo"}
+						enableKeyboardControl={
+							!collapsed && contentType === "selectionInfo"
+						}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

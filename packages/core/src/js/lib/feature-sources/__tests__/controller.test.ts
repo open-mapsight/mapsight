@@ -1,11 +1,17 @@
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 
-import {ACTION_MERGE} from "@/lib/base/reducer";
+import {
+	ACTION_MERGE,
+	ACTION_MERGE_CONFIG,
+	ACTION_SET,
+} from "@/lib/base/reducer";
 import {
 	FEATURE_SOURCE_DATA_ADD_FEATURE,
 	FEATURE_SOURCE_DATA_UNDO,
+	LOAD_FEATURE_SOURCE_SUCCESS,
 } from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
+import * as featuresKey from "@/lib/feature-sources/features-key";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 import type {Feature} from "@/types";
 
@@ -52,6 +58,96 @@ const loadedState = {
 } satisfies FeatureSourcesState;
 
 describe("FeatureSourcesController", () => {
+	it("retains normalized sources and skips fingerprinting for repeated config", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const fingerprint = vi.spyOn(
+			featuresKey,
+			"nextFeatureCollectionFeaturesKey",
+		);
+		try {
+			const next = controller.reduce(initial, {
+				type: ACTION_MERGE_CONFIG,
+				path: [],
+				value: {
+					smartCity: {
+						type: "xhr-json",
+						url: "/smart-city.geojson",
+						filters: [],
+					},
+				},
+			});
+			expect(next).toBe(initial);
+			expect(next.smartCity?.data).toBe(initial.smartCity?.data);
+			expect(next.smartCity?.featuresById).toBe(
+				initial.smartCity?.featuresById,
+			);
+			expect(fingerprint).not.toHaveBeenCalled();
+		} finally {
+			fingerprint.mockRestore();
+		}
+	});
+
+	it("retains data and indexes when config changes filters", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const next = controller.reduce(initial, {
+			type: ACTION_MERGE_CONFIG,
+			path: ["smartCity"],
+			value: {filters: ["tags"]},
+		});
+		expect(next.smartCity?.filters).toEqual(["tags"]);
+		expect(next.smartCity?.data).toBe(initial.smartCity?.data);
+		expect(next.smartCity?.featuresById).toBe(
+			initial.smartCity?.featuresById,
+		);
+		expect(next.smartCity?.ids).toBe(initial.smartCity?.ids);
+		expect(next.smartCity?.featuresKey).toBe(
+			initial.smartCity?.featuresKey,
+		);
+	});
+
+	it.each([{url: "/new.geojson"}, {type: "local"}])(
+		"still invalidates loaded data when loader config changes: %o",
+		(value) => {
+			const initial = controller.reduce(loadedState, {
+				type: "initialize",
+			});
+			const action = {path: ["smartCity"], value};
+			expect(
+				controller.reduce(initial, {
+					type: ACTION_MERGE_CONFIG,
+					...action,
+				}),
+			).toStrictEqual(
+				controller.reduce(initial, {type: ACTION_MERGE, ...action}),
+			);
+			expect(
+				controller.reduce(initial, {
+					type: ACTION_MERGE_CONFIG,
+					...action,
+				}).smartCity?.data,
+			).toBeNull();
+		},
+	);
+
+	it("refreshes fingerprints and indexes for actual config data edits", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const next = controller.reduce(initial, {
+			type: ACTION_MERGE_CONFIG,
+			path: ["smartCity"],
+			value: {data: {features: [{properties: {free: 1}}]}},
+		});
+		expect(next.smartCity?.data?.features?.[0]?.properties).toEqual({
+			free: 1,
+		});
+		expect(next.smartCity?.featuresKey).not.toBe(
+			initial.smartCity?.featuresKey,
+		);
+		expect(next.smartCity?.featuresById?.["sensor-1"]).toBe(
+			next.smartCity?.data?.features?.[0],
+		);
+		expect(initial.smartCity?.data?.features?.[0]?.properties).toEqual({});
+	});
+
 	it("normalizes config-only sources to full runtime state", () => {
 		const state = controller.reduce(
 			{},
@@ -112,6 +208,66 @@ describe("FeatureSourcesController", () => {
 		expect(state.smartCity?.featuresById).toEqual({
 			"sensor-1": sensorFeature,
 		});
+	});
+
+	it.each(["constructor", "toString", "__proto__"])(
+		"indexes %s as an own feature entry and keeps the first duplicate",
+		(id) => {
+			const first = {...sensorFeature, id};
+			const duplicate = {...first, properties: {duplicate: true}};
+			const data = {
+				type: "FeatureCollection" as const,
+				features: [first, duplicate],
+			};
+			const initial = controller.reduce(
+				{smartCity: {...loadedState.smartCity, data}},
+				{type: "initialize"},
+			);
+			const loaded = controller.reduce(loadedState, {
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				id: "smartCity",
+				data,
+			});
+			for (const state of [initial, loaded]) {
+				const index = state.smartCity?.featuresById;
+				expect(state.smartCity?.ids).toEqual([id, id]);
+				expect(Object.hasOwn(index!, id)).toBe(true);
+				expect(index?.[id]).toBe(first);
+				expect(Object.keys(index!)).toEqual([id]);
+				const roundTripped = JSON.parse(
+					JSON.stringify(index),
+				) as Record<string, Feature>;
+				expect(roundTripped[id]).toEqual(first);
+			}
+		},
+	);
+
+	it("skips non-object feature entries when indexing loaded data", () => {
+		const state = controller.reduce(loadedState, {
+			type: LOAD_FEATURE_SOURCE_SUCCESS,
+			id: "smartCity",
+			data: {
+				type: "FeatureCollection",
+				features: [null, "sensor", sensorFeature],
+			},
+		});
+
+		expect(state.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(state.smartCity?.featuresById).toEqual({
+			"sensor-1": sensorFeature,
+		});
+		expect(state.smartCity?.isLoading).toBe(false);
+	});
+
+	it("does not throw on loaded data whose features is not an array", () => {
+		const state = controller.reduce(loadedState, {
+			type: LOAD_FEATURE_SOURCE_SUCCESS,
+			id: "smartCity",
+			data: {features: {}},
+		});
+
+		expect(state.smartCity?.ids).toBeUndefined();
+		expect(state.smartCity?.featuresById).toBeUndefined();
 	});
 
 	it("recomputes the fingerprint when an uncontrolled merge changes crs", () => {
@@ -241,5 +397,70 @@ describe("FeatureSourcesController", () => {
 		expect(state.editor?.ids).toEqual([]);
 		expect(state.editor?.featuresById).toBeUndefined();
 		expect(state.editor?.featuresKey).not.toBe(afterAdd?.featuresKey);
+	});
+});
+
+describe("feature-source normalization during reconfiguration", () => {
+	it("preserves loaded sources and indexes when another source is added", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const next = controller.reduce(
+			initial,
+			mergeAt(["newSource"], {type: "local"}),
+		);
+		expect(next.smartCity).toBe(initial.smartCity);
+		expect(next.smartCity?.featuresById).toBe(
+			initial.smartCity?.featuresById,
+		);
+		expect(next.newSource).toMatchObject({
+			data: null,
+			lastUpdate: null,
+			lastActionType: null,
+		});
+		expect(initial.newSource).toBeUndefined();
+		expect(controller.reduce(next, {type: "UNRELATED"})).toBe(next);
+	});
+
+	it("validates fresh sources from a serialized snapshot", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const snapshot = JSON.parse(
+			JSON.stringify(initial),
+		) as FeatureSourcesState;
+		snapshot.smartCity!.ids = ["stale-id"];
+		const next = controller.reduce(snapshot, {type: "INIT"});
+		expect(next.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(next.smartCity?.featuresById).toEqual({
+			"sensor-1": sensorFeature,
+		});
+		expect(controller.reduce(initial, {type: "TIME_TRAVEL"})).toBe(initial);
+	});
+
+	it("repairs replaced indexes even after the old source was validated", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const next = controller.reduce(initial, {
+			type: ACTION_SET,
+			path: ["smartCity", "ids"],
+			value: ["stale-id"],
+		});
+		expect(next.smartCity?.ids).toEqual(["sensor-1"]);
+		expect(initial.smartCity?.ids).toEqual(["sensor-1"]);
+	});
+
+	it("updates features and indexes after reconfiguration without changing other sources", () => {
+		const initial = controller.reduce(loadedState, {type: "INIT"});
+		const withOther = controller.reduce(
+			initial,
+			mergeAt(["other"], {type: "local"}),
+		);
+		const replacement = {...sensorFeature, properties: {name: "updated"}};
+		const next = controller.reduce(withOther, {
+			type: ACTION_SET,
+			path: ["smartCity", "data"],
+			value: {type: "FeatureCollection", features: [replacement]},
+		});
+		expect(next.smartCity?.featuresById?.["sensor-1"]).toBe(replacement);
+		expect(next.smartCity?.featuresKey).not.toBe(
+			initial.smartCity?.featuresKey,
+		);
+		expect(next.other).toBe(withOther.other);
 	});
 });

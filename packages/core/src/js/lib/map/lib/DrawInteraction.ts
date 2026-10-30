@@ -1,6 +1,5 @@
 import type OlFeature from "ol/Feature";
 import type OlMap from "ol/Map";
-import type {Coordinate} from "ol/coordinate";
 import * as events from "ol/events";
 import type {EventsKey} from "ol/events";
 import type Geometry from "ol/geom/Geometry";
@@ -33,8 +32,9 @@ export default class DrawInteraction extends OlDrawInteraction {
 	private _sketchFeature: OlFeature | null = null;
 	private _sketchPoint: OlFeature<Point> | null = null;
 	private _sketchLine: OlFeature<LineString> | null = null;
-	private _measureCoordinate: Coordinate | null = null;
 	private _measureChangeListener: EventsKey | null = null;
+	private _boundMeasurementStart = () => this.handleMeasurementStart();
+	private _boundMeasurementEnd = () => this.handleMeasurementEnd();
 
 	constructor(options: Options) {
 		super({...defaultOptions, ...options});
@@ -91,19 +91,14 @@ export default class DrawInteraction extends OlDrawInteraction {
 	}
 
 	initMeasurement() {
-		this._measureChangeListener = null;
-		this._measureCoordinate = null;
+		this.stopMeasurementChangeListener();
 
-		this.addEventListener("drawstart", (event) => {
-			// TODO: Check that the event actually gives a coordinate!!!
-			console.log(
-				"TODO: Check that the event actually gives a coordinate!!!",
-			);
-			this.handleMeasurementStart(
-				event as unknown as {coordinate: Coordinate},
-			);
-		});
-		this.addEventListener("drawend", this.handleMeasurementEnd.bind(this));
+		// setMap() may attach this interaction more than once, so make sure the
+		// listeners are registered exactly once.
+		this.removeEventListener("drawstart", this._boundMeasurementStart);
+		this.removeEventListener("drawend", this._boundMeasurementEnd);
+		this.addEventListener("drawstart", this._boundMeasurementStart);
+		this.addEventListener("drawend", this._boundMeasurementEnd);
 	}
 
 	updateMeasurementFeatures(label = "") {
@@ -123,8 +118,9 @@ export default class DrawInteraction extends OlDrawInteraction {
 		}
 	}
 
-	handleMeasurementStart({coordinate}: {coordinate: Coordinate}) {
-		this._measureCoordinate = coordinate;
+	handleMeasurementStart() {
+		this.stopMeasurementChangeListener();
+
 		const sketchGeometry = this._sketchFeature?.getGeometry();
 		if (sketchGeometry) {
 			this._measureChangeListener = sketchGeometry.on(
@@ -139,20 +135,21 @@ export default class DrawInteraction extends OlDrawInteraction {
 		let output;
 		if (geometry instanceof Polygon) {
 			output = formatArea(sphere.getArea(geometry));
-			this._measureCoordinate = geometry
-				.getInteriorPoint()
-				.getCoordinates();
 		} else if (geometry instanceof LineString) {
 			output = formatLength(sphere.getLength(geometry));
-			this._measureCoordinate = geometry.getLastCoordinate();
 		}
 
 		this.updateMeasurementFeatures(output);
 	}
 
 	handleMeasurementEnd() {
+		this.stopMeasurementChangeListener();
+	}
+
+	private stopMeasurementChangeListener() {
 		if (this._measureChangeListener) {
 			events.unlistenByKey(this._measureChangeListener);
+			this._measureChangeListener = null;
 		}
 	}
 

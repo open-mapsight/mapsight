@@ -32,6 +32,96 @@ feature sources are loaded on the client. Otherwise the client would see
 
 Large GeoJSON payloads may **lazy-load after shell hydrate** — keep dehydrated state size-bounded.
 
+For data that must be present during SSR, `nodeEmbed({…, compactFeatureSourceIndexes: true})`
+can omit the derived source indexes from wire JSON. Core restores them before React receives
+its hydration snapshot; the live store stays indexed. The full format remains the default.
+See [Compact feature-source SSR indexes](../../packages/ui/docs/COMPACT_SSR.md) for
+compatibility, retained combined data, and host validation.
+
+Heading placement is also part of the render contract. Supply identical `future.v8_automaticHeadings` and
+`headings` create options on both sides; `data-dehydrated-state` does not serialize them. Each instance resolves
+native tags from its own context without inspecting the host DOM or viewport. See [Heading hierarchy](../../packages/ui/docs/HEADINGS.md).
+
+---
+
+## Renderer commit lifecycle
+
+`hydrateRoot()` and `root.render()` schedule React work. Returning from either call does **not** mean the initial
+DOM has committed. Viewport, local-storage, deep-link, and geolocation `afterRender` plugins must wait for that commit.
+The default browser renderer and declarative `<Instance>` handle this automatically.
+
+Custom asynchronous renderers opt in with `props.deferCommit()` **during the renderer call**, before scheduling React.
+It returns an idempotent commit callback. Pass that callback to `AppContext.onCommit`, which invokes it from a passive
+effect after commit:
+
+```tsx
+import {createRoot, hydrateRoot} from "react-dom/client";
+
+import App from "@mapsight/ui/components/app";
+import AppContext from "@mapsight/ui/components/helping/app-context";
+import type {MapsightUiRenderer} from "@mapsight/ui/types";
+
+const renderer: MapsightUiRenderer = (container, props, hydrate) => {
+	if (!container) return;
+	const onCommit = props.deferCommit?.();
+	const app = (
+		<AppContext {...props} onCommit={onCommit}>
+			<App />
+		</AppContext>
+	);
+	if (hydrate) {
+		hydrateRoot(container, app);
+	} else {
+		createRoot(container).render(app);
+	}
+};
+```
+
+This example schedules one initial render. A renderer supporting later `context.render()` calls must retain and reuse
+its React root. The default renderer coalesces additional calls until the first commit. Do not call `root.render()` immediately after `hydrateRoot()`; that can interrupt hydration. Avoid
+replacing a pending initial tree before it commits.
+
+- Calling `deferCommit()` delays `context.hasRendered = true` and `afterRender` until the returned callback runs.
+  Repeated signals (including StrictMode effect replay) are ignored. A superseded render's signal is ignored.
+- The renderer's return value still becomes `context.renderRef` and is returned by `render()`.
+- `renderAsync()` waits for `beforeRender` plugins, then schedules the renderer; it does **not** await React commit.
+- The list-source await plugin waits only for configured sources that can produce a load completion. An absent default list source or a settled failure cannot block map-only, point-input, or static-map rendering. Configured list/combined data is still loaded for first paint, including when the list shell is disabled; an explicit forced refresh can retry failed sources.
+- Existing renderers that do not call `deferCommit()` retain synchronous completion on return. This is appropriate for
+  `renderToString` and legacy synchronous DOM renderers. Existing asynchronous custom renderers must adopt the callback
+  contract to defer plugins correctly.
+- A failed or abandoned deferred render must not signal commit. No timer or animation frame substitutes for commit.
+
+`props.serverState` contains the initial rehydrated store snapshot, captured before `afterCreate` plugins, resumed
+requests, or host dispatches can update the live store. Spread these props onto `AppContext`; it passes `serverState`
+to React-Redux. Keep it for the lifetime of that hydrated tree so even later-hydrating Suspense descendants read the
+SSR snapshot first. Normal client updates use the live store after hydration. A custom Redux provider must explicitly
+pass `serverState={props.serverState}` and signal commit from an effect in the committed subtree.
+
+The signal covers the subtree containing that effect. For a host that suspends the main app, place the commit signal
+inside the relevant Suspense boundary if plugins require that subtree to be ready. Hosts still own their router/query
+SSR bootstrap, matching server/client JSX shape (including optional siblings), `identifierPrefix`, and any CMS scripts
+that mutate the server DOM. Enhance SSR rich-HTML islands only after their hydration has committed.
+
+`<Instance>` uses the same lifecycle and runs `beforeRender` / `afterRender` plugins. Without an explicit
+`reHydratedState`, it uses the shared base config and UI options as its initial snapshot on both sides; browser view
+and preference detection happens after commit. Hosts with server-loaded state must pass that same snapshot to the
+client.
+
+### Deterministic initial rendering
+
+Choose the same `lang`, translation catalogs, component overrides, image URLs, and data on server and client. The
+implicit UI language is always `de`; it no longer reads the browser document's `lang` attribute. Set `createOptions.lang`
+with the default language plugin, or call `setDocumentLanguage()` on both sides before rendering. Translation catalogs
+and site config are currently shared module state, so hosts must configure them consistently across SSR requests.
+
+Browser capability UI (native share), dialog portals, icon cache results, and viewport-dependent
+bottom-sheet snaps activate after hydration. Explicit bottom-sheet snap arrays must match on both sides; snap factories
+run after commit. Measurements and tag sorting use the configured UI locale. Time-filter values accept serialized ISO
+strings and display their UTC calendar date consistently across process timezones.
+
+The render-path audit and regression coverage are recorded in
+[the UI hydration audit](../../packages/ui/docs/HYDRATION_AUDIT.md).
+
 ---
 
 ## Graceful degradation (required)
@@ -62,7 +152,7 @@ Monorepo entry points today:
   `render()` / `renderAsync()` return the HTML shell; `getDehydratedState()` /
   `emitFragment({ id })` build the container fragment with `data-dehydrated-state`
 - Optional Express-style middleware: [
-  `packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js) —
+  `packages/ui/src/js/server-handler.ts`](../../packages/ui/src/js/server-handler.ts) —
   POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
   `text/html` fragment
 
@@ -131,7 +221,7 @@ Same snippet imports `browserEmbed` — it reads `data-dehydrated-state` automat
 | Fallback   | On timeout/error, emit standard client-only snippet ([graceful degradation](#graceful-degradation-required)) |
 
 Monorepo server entry points: [`packages/ui/src/js/embed/node.ts`](../../packages/ui/src/js/embed/node.ts), [
-`packages/ui/src/js/server-handler.js`](../../packages/ui/src/js/server-handler.js).
+`packages/ui/src/js/server-handler.ts`](../../packages/ui/src/js/server-handler.ts).
 
 ### PHP → Node smoke (generic CMS)
 

@@ -1,0 +1,112 @@
+{
+	"router": "src/app.tsx",
+	"pages": {
+		"LandingPage": {
+			"label": "Showcase home",
+			"check": "Open the demo cards and check navigation at desktop and mobile widths."
+		},
+		"CombinedListPage": {
+			"label": "Combined feature list",
+			"check": "Toggle the park and café layers; select a list entry and check that the map and list stay in sync.",
+			"scenarios": ["featureList", "layers", "overlays"]
+		},
+		"FullPage": {
+			"label": "Full UI",
+			"check": "Select a feature, open its details, and check the list and map at desktop and mobile widths.",
+			"sample": true,
+			"scenarios": [
+				"featureList",
+				"search",
+				"layers",
+				"mapTools",
+				"overlays"
+			]
+		},
+		"SimpleMapPage": {
+			"label": "Simple map",
+			"check": "Pan and zoom the map; check the controls without the surrounding feature-list UI."
+		},
+		"CustomPage": {
+			"label": "Custom overlays",
+			"check": "Open the share-position and distance tools; switch between them and close them again.",
+			"scenarios": ["featureList", "layers", "mapTools", "overlays"]
+		},
+		"PointInputPage": {
+			"label": "Keyboard point input",
+			"check": "Tab to the map, pan with the arrow keys, press Enter or Space and check the stored value; then click the map and check the point is replaced.",
+			"scenarios": ["pointInput"]
+		},
+		"RouterPage": {
+			"label": "Router integration",
+			"check": "Switch between Home, Example 1 and Example 2, then use browser Back and Forward.",
+			"scenarios": ["featureList", "search", "layers", "overlays"]
+		},
+		"VectorWebglComparisonPage": {
+			"label": "Canvas / WebGL comparison",
+			"check": "Compare both renderers while selecting features and zooming the map."
+		},
+		"EditorPage": {
+			"label": "Icon editor",
+			"check": "Change the pictogram, label and colors; compare the preview with the marker on the map.",
+			"sample": true
+		},
+		"CatalogPage": {
+			"label": "Icon catalog",
+			"check": "Search for the changed icon or group; enable all variants and compare light and dark previews."
+		},
+		"CountAggregatorDemoPage": {
+			"label": "Count aggregator wizard",
+			"check": "Search for Example, select a station, choose Next, then check the chart, table and CSV download.",
+			"sample": true,
+			"note": "Count-aggregator demos use local mock data."
+		},
+		"CountAggregatorHeadlessPage": {
+			"label": "Headless count aggregator",
+			"check": "Select a station and choose Load daily values; check the returned rows.",
+			"note": "Count-aggregator demos use local mock data."
+		},
+		"ImprintPage": {
+			"label": "Imprint",
+			"check": "Read the legal details and follow the links."
+		},
+		"PrivacyPage": {
+			"label": "Privacy",
+			"check": "Read the privacy text and follow the links."
+		}
+	},
+	"scenarios": {
+		"featureList": {
+			"modules": ["@mapsight/ui/components/feature-list"],
+			"check": "Navigate the feature list with Tab and arrow keys, select an entry, and check pagination and map selection at a narrow viewport."
+		},
+		"search": {
+			"modules": ["@mapsight/ui/components/map-overlay/search-overlay"],
+			"check": "Open search, type a place, and check loading, results, keyboard selection and closing the overlay. Search uses an external service."
+		},
+		"layers": {
+			"modules": [
+				"@mapsight/ui/components/layer-switcher/LayerSwitcherContainer"
+			],
+			"check": "Toggle individual layers and groups; check keyboard focus, visible map features and the feature list."
+		},
+		"mapTools": {
+			"modules": [
+				"@mapsight/ui/components/map-overlay/measure-distance-button",
+				"@mapsight/ui/components/map-overlay/share-position-link-button"
+			],
+			"check": "Open the distance and share-position tools, interact with the map, and switch tools. Check keyboard controls where enabled in this demo's configuration."
+		},
+		"pointInput": {
+			"modules": ["@mapsight/ui/components/point-input"],
+			"check": "Set a point with the keyboard (Enter or Space after panning) and with the pointer; check the status message, the crosshair and the keyboard help dialog."
+		},
+		"overlays": {
+			"modules": [
+				"@mapsight/ui/components/map-overlay/tool-overlay",
+				"@mapsight/ui/components/map-overlay/map-point-context-menu"
+			],
+			"check": "Open and close an overlay with the keyboard, press Escape, and check focus returns to its trigger; repeat at a mobile width."
+		}
+	},
+	"deprioritize": ["@mapsight/ui/helpers/i18n"]
+}

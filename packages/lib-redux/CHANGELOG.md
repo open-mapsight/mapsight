@@ -1,5 +1,40 @@
 # @mapsight/lib-redux
 
+## 2.3.0
+
+### Minor Changes
+
+- dedaf83: Preserve unchanged loaded feature data and derived indexes when applying JSON-style configuration. Add opt-in `mergeConfig`/`mergeConfigAll` actions and use them in `resetMapsightCore`, retaining selection resets, path routing and existing deep-merge value semantics.
+
+## 2.2.5
+
+### Patch Changes
+
+- 2f975c0: Keep library builds cached after test-only edits and reuse incremental Core/UI typechecks during local development.
+- Updated dependencies [`2f975c0`]:
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+
+## 2.2.4
+
+### Patch Changes
+
+- 7dd3752: Move Lodash type declarations out of runtime dependencies.
+- c46c174: Add homepage and repository.directory metadata for npm package pages.
+- 58a9796: Update the shared Redux Toolkit dependency range from ^2.11.2 to ^2.13.0.
+- Updated dependencies [`86feccf`, `5dba09f`, `c46c174`]:
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+
+## 2.2.3
+
+### Patch Changes
+
+- 65e2528: Bump dependencies from Dependabot ([#305](https://github.com/open-mapsight/mapsight/pull/305)):
+
+    - `cpx2` `^9.0.0` → `^9.0.3` (patch)
+
+- Updated dependencies [`65e2528`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+
 ## 2.2.2
 
 ### Patch Changes

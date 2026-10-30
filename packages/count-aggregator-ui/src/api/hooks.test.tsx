@@ -9,6 +9,7 @@ import type {
 	StationTypeListResponse,
 	TimeSeriesMapResponse,
 } from "@mapsight/count-aggregator-api";
+import type * as CountAggregatorApi from "@mapsight/count-aggregator-api";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {renderHook, waitFor} from "@testing-library/react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
@@ -18,9 +19,11 @@ import type {CountAggregatorConfig} from "../types/index.js";
 import {
 	useAggregatedValues,
 	useLastValues,
+	usePresetsQuery,
 	useRawValues,
 	useStationTypeCounts,
 	useStations,
+	useTrafficEvents,
 } from "./hooks.js";
 
 const mocks = vi.hoisted(() => {
@@ -37,8 +40,7 @@ const mocks = vi.hoisted(() => {
 });
 
 vi.mock("@mapsight/count-aggregator-api", async (importActual) => {
-	const actual =
-		await importActual<typeof import("@mapsight/count-aggregator-api")>();
+	const actual = await importActual<typeof CountAggregatorApi>();
 
 	return {
 		...actual,
@@ -191,7 +193,9 @@ describe("count-aggregator hooks", () => {
 			).toBe(12),
 		);
 
-		expect(mocks.listStationTypes).toHaveBeenCalledWith(mocks.mockClient);
+		expect(mocks.listStationTypes).toHaveBeenCalledWith(mocks.mockClient, {
+			signal: expect.any(AbortSignal) as AbortSignal,
+		});
 		expect(
 			queryClient.getQueryData([
 				"count-aggregator",
@@ -214,6 +218,7 @@ describe("count-aggregator hooks", () => {
 		expect(mocks.listStations).toHaveBeenCalledWith(
 			mocks.mockClient,
 			"bicycleSensorTotal",
+			{signal: expect.any(AbortSignal) as AbortSignal},
 		);
 		expect(
 			queryClient.getQueryData([
@@ -243,11 +248,15 @@ describe("count-aggregator hooks", () => {
 			expect(result.current?.stationsById.get(150)).toBeDefined(),
 		);
 
-		expect(mocks.getLastValues).toHaveBeenCalledWith(mocks.mockClient, {
-			type: "bicycleSensorTotal",
-			...request,
-			metrics: ["sum"],
-		} satisfies LastValuesRequest);
+		expect(mocks.getLastValues).toHaveBeenCalledWith(
+			mocks.mockClient,
+			{
+				type: "bicycleSensorTotal",
+				...request,
+				metrics: ["sum"],
+			} satisfies LastValuesRequest,
+			{signal: expect.any(AbortSignal) as AbortSignal},
+		);
 		expect(
 			queryClient.getQueryData([
 				"count-aggregator",
@@ -283,14 +292,18 @@ describe("count-aggregator hooks", () => {
 		await waitFor(() =>
 			expect(result.current?.stationsById.get(150)).toBeDefined(),
 		);
-		expect(mocks.getValues).toHaveBeenCalledWith(mocks.mockClient, {
-			type: "bicycleSensorTotal",
-			from: "2026-06-01",
-			to: "2026-06-02",
-			resolution: "daily",
-			stationIds: [150],
-			metrics: ["sum"],
-		} satisfies ApiValuesRequest);
+		expect(mocks.getValues).toHaveBeenCalledWith(
+			mocks.mockClient,
+			{
+				type: "bicycleSensorTotal",
+				from: "2026-06-01",
+				to: "2026-06-02",
+				resolution: "daily",
+				stationIds: [150],
+				metrics: ["sum"],
+			} satisfies ApiValuesRequest,
+			{signal: expect.any(AbortSignal) as AbortSignal},
+		);
 	});
 
 	it("useRawValues loads exact telemetry without a resolution", async () => {
@@ -313,10 +326,14 @@ describe("count-aggregator hooks", () => {
 			).toBe(67.25),
 		);
 
-		expect(mocks.getRawValues).toHaveBeenCalledWith(mocks.mockClient, {
-			type: "bicycleSensorTotal",
-			...request,
-		} satisfies RawValuesRequest);
+		expect(mocks.getRawValues).toHaveBeenCalledWith(
+			mocks.mockClient,
+			{
+				type: "bicycleSensorTotal",
+				...request,
+			} satisfies RawValuesRequest,
+			{signal: expect.any(AbortSignal) as AbortSignal},
+		);
 		expect(
 			queryClient.getQueryData([
 				"count-aggregator",
@@ -327,5 +344,91 @@ describe("count-aggregator hooks", () => {
 				{...request, metric: "sum"},
 			]),
 		).toBe(result.current);
+	});
+
+	it("aborts the station request when the last observer unmounts", async () => {
+		mocks.listStations.mockReturnValue(new Promise(() => undefined));
+		const {wrapper} = createWrapper();
+
+		const {unmount} = renderHook(() => useStations(appId), {wrapper});
+
+		await waitFor(() => expect(mocks.listStations).toHaveBeenCalled());
+		const [, , options] = mocks.listStations.mock.calls[0] as [
+			unknown,
+			unknown,
+			{signal: AbortSignal},
+		];
+		expect(options.signal.aborted).toBe(false);
+
+		unmount();
+
+		await waitFor(() => expect(options.signal.aborted).toBe(true));
+	});
+
+	it("passes the query signal to platform endpoint fetches", async () => {
+		const fetchMock = vi.fn(() =>
+			Promise.resolve(
+				new Response(JSON.stringify([]), {
+					status: 200,
+					headers: {"Content-Type": "application/json"},
+				}),
+			),
+		);
+		vi.stubGlobal("fetch", fetchMock);
+		const presetsAppId = "withPresets";
+		const queryClient = new QueryClient({
+			defaultOptions: {queries: {retry: false}},
+		});
+		const presetsConfig: CountAggregatorConfig = {
+			...config,
+			apps: {
+				[presetsAppId]: {
+					...config.apps[appId]!,
+					id: presetsAppId,
+					endpoints: {
+						events: "/mock/events",
+						presets: "/mock/presets",
+					},
+				},
+			},
+		};
+
+		try {
+			renderHook(
+				() => {
+					usePresetsQuery(presetsAppId);
+					useTrafficEvents(
+						presetsAppId,
+						new Date(2026, 5, 1),
+						new Date(2026, 5, 2),
+					);
+				},
+				{
+					wrapper: ({children}) => (
+						<QueryClientProvider client={queryClient}>
+							<CountAggregatorProvider config={presetsConfig}>
+								{children}
+							</CountAggregatorProvider>
+						</QueryClientProvider>
+					),
+				},
+			);
+
+			await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+			expect(fetchMock).toHaveBeenCalledWith(
+				"/mock/presets",
+				expect.objectContaining({
+					signal: expect.any(AbortSignal) as AbortSignal,
+				}),
+			);
+			expect(fetchMock).toHaveBeenCalledWith(
+				"/mock/events/2026-06-01/2026-06-02",
+				expect.objectContaining({
+					signal: expect.any(AbortSignal) as AbortSignal,
+				}),
+			);
+		} finally {
+			vi.unstubAllGlobals();
+		}
 	});
 });

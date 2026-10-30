@@ -1,6 +1,6 @@
 # Mapsight
 
-<img width="2000" height="643" alt="Mapsight - Open Source - Accessible - Privacy First" src="https://github.com/user-attachments/assets/955a0c5c-113a-4d61-baa6-f89adc807eb1" />
+![Mapsight logo above the line "Maps that fit your site. Choices that stay yours." with the note "Developed in Germany."](docs/assets/brand/org-header-en.png)
 
 [![CI](https://github.com/open-mapsight/mapsight/actions/workflows/ci.yml/badge.svg)](https://github.com/open-mapsight/mapsight/actions/workflows/ci.yml)
 
@@ -89,7 +89,7 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 </tr>
 <tr>
 <td><nobr>💡 <strong><code>showcase</code></strong></nobr><br><nobr><a href="apps/showcase">README</a></nobr></td>
-<td>Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons.</td>
+<td>Mapsight ecosystem showcase — UI demo, icon catalog, and runtime icons. <a href="https://showcase.open-mapsight.org">Live showcase</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -171,5 +171,5 @@ Participation in Mapsight community spaces is governed by our
 ## Security
 
 To report a security vulnerability, see the
-[Open Mapsight security policy](https://github.com/open-mapsight/.github/blob/main/SECURITY.md)
+[Mapsight security policy](https://github.com/open-mapsight/.github/blob/main/SECURITY.md)
 or email [security@open-mapsight.org](mailto:security@open-mapsight.org).

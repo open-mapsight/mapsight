@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import {type ReactNode, cloneElement, isValidElement} from "react";
 import {useSelector} from "react-redux";
 
 import useStickyHeader from "../../hooks/useStickyHeader";
@@ -48,7 +48,10 @@ function WithStickyHeader({
 	return (
 		<Container className={stuckClass("ms3-sticky-header__container")}>
 			<div aria-hidden="true" className={stuckHeaderClasses}>
-				{header}
+				{/* The visual duplicate must not repeat the labelled heading id. */}
+				{isValidElement<{id?: string}>(header)
+					? cloneElement(header, {id: undefined})
+					: header}
 			</div>
 
 			{renderWrapper({

@@ -56,7 +56,7 @@ it.each([
 		expect(icon.getScale()).toBe(0.5);
 		// OL's draw and declutter/hit instructions use this same full image rectangle.
 		expect(
-			icon.getSize().map((size) => size * icon.getScaleArray()[0]!),
+			icon.getSize()?.map((size) => size * icon.getScaleArray()[0]!),
 		).toEqual([width / 2, height / 2]);
 		if (state) {
 			const halo = styles

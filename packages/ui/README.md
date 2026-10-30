@@ -1,5 +1,7 @@
 # @mapsight/ui
 
+![Mapsight UI (@mapsight/ui): Composable React UI. Work in progress; used in controlled production deployments, not yet turnkey.](https://raw.githubusercontent.com/open-mapsight/mapsight/main/docs/assets/brand/ui-npm-header-en.png)
+
 Default **React UI** for [Mapsight](https://github.com/open-mapsight/mapsight) — maps, feature lists, filters, layer
 switchers, and embed helpers on top of [
 `@mapsight/core`](https://github.com/open-mapsight/mapsight/blob/main/packages/core/README.md). Pass a compiled vector
@@ -39,6 +41,7 @@ Next.js host).
 | -------------------------------------- | ------------------------------------------------------------------------------ |
 | `@mapsight/ui`                         | `create()`, React components, plugins, hooks                                   |
 | `@mapsight/ui/config`                  | Config builders (`map`, `features`, `featureList`, Zod schemas)                |
+| `@mapsight/ui/headings`                | Contextual native headings and scopes for host-composed UI                     |
 | `@mapsight/ui/async-status`            | Loading / error / empty view model + adapters (no Query peer)                  |
 | `@mapsight/ui/async-status/components` | `AsyncStatusRegion`, `AsyncStatusIndicator`                                    |
 | `@mapsight/ui/react-query`             | TanStack Query adapters (`QueryStatusRegion`) — optional peer                  |
@@ -50,6 +53,26 @@ Peer dependency: `react`, `react-dom`. Optional peer for Query helpers: `@tansta
 
 Loading/error presentation architecture:
 [docs/ASYNC_STATUS.md](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/ASYNC_STATUS.md).
+
+## Heading hierarchy
+
+For headings that fit the host page, set `future.v8_automaticHeadings: true` and `headings.baseLevel` on create
+options (`2` beneath the host's `h1`). Without the flag, existing 7.x heading elements remain. See
+[Heading hierarchy](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/HEADINGS.md) for composed
+hosts, explicit overrides, list grouping, and SSR configuration.
+
+## Hydration
+
+The browser embed renderer and `<Instance>` run `afterRender` plugins after React commits. Asynchronous host renderers
+call `props.deferCommit()` before scheduling React and pass the returned callback to `AppContext.onCommit`. Spread
+`props.serverState` into `AppContext` to pin React-Redux's hydration snapshot. Synchronous custom renderers retain
+completion on return. See [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md#renderer-commit-lifecycle)
+for the contract and migration example.
+
+Server embeds can opt into `compactFeatureSourceIndexes: true` on `nodeEmbed` to
+omit derived lookup indexes from wire JSON. Core restores the indexes before
+hydration. See [Compact SSR state](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/COMPACT_SSR.md)
+for the API and compatibility requirements.
 
 ## SCSS (host builds)
 
@@ -115,6 +138,173 @@ per stylesheet, but you can attach that set (or pure CSS overrides) to different
 You can also keep auto-emit on `.ms3-wrapper` and only add modifier overrides — no need for `null`
 unless you want a selector that is not `$ms3-tokens-selector`.
 
+Some surfaces ignore the colour tokens until you set `$ms3-future-v8-themedSurfaces: true`; see
+[Themed surfaces and dark host themes](#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces).
+
+### Themed chrome icons (`$ms3-future-v8-themedIcons`)
+
+By default the UI chrome icons (`mapsight-ui/*.svg`: map controls, list filter buttons, layer switcher checkboxes,
+search, close buttons, feature links, place actions, loading/error status) are CSS background images, so they keep the
+colours baked into the SVG files (theme blue `#0e78ad`, red `#cc100c`) whatever the `--ms3-*` tokens say. Opt in to
+paint them in the theme colours instead:
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-future-v8-themedIcons: true
+);
+@use "@mapsight/ui/src/scss/default";
+```
+
+The SVG then only provides the shape (CSS `mask-image`); the colour comes from these properties, resolved on each
+icon so that overrides on `.ms3-wrapper` or any ancestor apply:
+
+| Icons                                                  | Colour                                                   |
+| ------------------------------------------------------ | -------------------------------------------------------- |
+| Controls and statuses (was blue)                       | `var(--ms3-icon-color, var(--ms3-theme-color-a))`        |
+| Hover and active states: sort, filter, reset (was red) | `var(--ms3-icon-color-active, var(--ms3-theme-color-b))` |
+| Error status (was red)                                 | `var(--ms3-icon-color-error, var(--ms3-theme-color-b))`  |
+| Inactive or unavailable geolocation (was grey)         | `var(--ms3-icon-color-muted, #a8a8a8)`                   |
+
+```css
+.ms3-wrapper {
+	--ms3-theme-color-a: #1e5631; /* recolours buttons, links and icons */
+	--ms3-icon-color-muted: #6b6b6b; /* optional: icons only */
+}
+```
+
+`--ms3-icon-color*` are optional overrides and are not emitted by `tokens`. In the default theme the result matches the
+background icons except for two colour corrections: the red icons use `--ms3-theme-color-b` (`#cc0000` instead of
+`#cc100c`), and the feature-details print icon uses the theme blue (`#0e78ad` instead of `#207ab6`). The Mapsight
+watermark (`.ms3-logo`) stays as it is.
+
+**Compatibility.** Without the flag, the compiled CSS is unchanged. With the flag:
+
+- Icon files from your own `$ms3-iconPath` still work, but only their shape is used. Multi-colour icons become
+  single-colour. Keep the flag off if you rely on coloured icon files.
+- Icons must load from the page's origin, as `data:` URIs (Vite inlines small assets by default), or with an
+  `Access-Control-Allow-Origin` header: browsers fetch mask images in CORS mode and drop a cross-origin icon without it.
+- Host CSS that replaces an icon with `background-image` must set `mask-image` (and `-webkit-mask-image`) instead.
+  Map control and status icons stay on `::before`, place-action icons on their `__icon` span. Controls with their own border, hover background or focus ring (list filter
+  buttons, feature links, dialog close, search buttons) now draw the icon on a `::before` box covering the control
+  (`::after` for the layer switcher checkbox and the search reset icon), so `background-image` on the control itself
+  no longer shows the icon.
+- A mask makes its box stack like a positioned element. Host panels that should cover Mapsight controls need
+  `position` and `z-index: 1` or more; the layer switcher and tool overlays already set this.
+- In forced-colors (high contrast) mode the icons use system colours (`ButtonText`, `CanvasText`, `LinkText`,
+  `GrayText`; `Highlight` for active states) instead of the theme colours. Browsers print icons like other
+  backgrounds: only when the user enables background graphics.
+
+In v8 this becomes the only behaviour and the flag is removed (see
+[Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
+
+### Themed surfaces and dark host themes (`$ms3-future-v8-themedSurfaces`)
+
+By default a few surfaces keep fixed light colours whatever the `--ms3-*` tokens say: the `.ms3-wrapper` background
+(white), the attribution box, the tool overlay, the mini legend, the link share field and button, the list search input,
+and the map controls on narrow screens (`rgba(255, 255, 255, 0.9)`). A host with a dark theme, for example one
+following `prefers-color-scheme: dark`, then gets light boxes with light text in them. Opt in to take these colours from
+the tokens:
+
+```scss
+@use "@mapsight/ui/src/scss/variables" with (
+	$ms3-iconPath: "~@mapsight/ui/dist/img/",
+	$ms3-future-v8-themedSurfaces: true,
+	$ms3-future-v8-themedIcons: true // recommended with dark themes, see above
+);
+@use "@mapsight/ui/src/scss/default";
+```
+
+| Surface or text                                        | Before                     | With the flag                                                                          |
+| ------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------------------- |
+| `.ms3-wrapper` (also map-only and fullscreen)          | `white`                    | `var(--ms3-page-background-color)`                                                     |
+| Attribution backing and text                           | `#fff`, `#222`             | `var(--ms3-background-color)`, `var(--ms3-primary-color)`                              |
+| Tool overlay, mini legend, link share button           | `white`                    | `var(--ms3-background-color)`                                                          |
+| Link share field                                       | `#444` on `#f5f5f5`        | `var(--ms3-primary-color)` on `var(--ms3-background-color-offset)`                     |
+| Link share icon (inline SVG)                           | `#000`                     | `var(--ms3-foreground-color)`                                                          |
+| List search input                                      | `#222` on `#fff`, `#ccc`   | `var(--ms3-primary-color)` on `var(--ms3-background-color)`, `var(--ms3-border-color)` |
+| Map controls on narrow screens                         | `rgba(255, 255, 255, 0.9)` | `var(--ms3-map-control-background-color)`, see below                                   |
+| Search reset circle                                    | `#eee`                     | `var(--ms3-background-color-offset)`                                                   |
+| Disabled page in list pagination                       | `#555`                     | `var(--ms3-secondary-color)`                                                           |
+| Marked point coordinates                               | `#5c5c5c`                  | `var(--ms3-marked-point-coords-fg, var(--ms3-secondary-color))`                        |
+| Map point menu border                                  | `rgb(0 0 0 / 10%)`         | `--ms3-foreground-color` at 10 % opacity                                               |
+| Text in buttons, inputs and selects without own colour | browser default            | inherited, like other text in the wrapper                                              |
+
+Two optional properties, not emitted by `tokens`:
+
+- `--ms3-map-control-background-color`: background of the map controls on narrow screens. Default:
+  `--ms3-background-color` at 90 % opacity.
+- `--ms3-color-scheme`: `color-scheme` of `.ms3-wrapper`. Unset, the wrapper inherits the page's `color-scheme`, so
+  checkboxes, select menus and scrollbars follow the host. Set it (for example to `dark`) when only the Mapsight
+  tokens are dark and the page itself is not.
+
+In the default theme the result matches today's colours, except that four near-duplicate greys now come from the
+tokens: the link share field (`#444` on `#f5f5f5` becomes `#222` on `#f2f2f2`), the disabled page number and the marked
+point coordinates (`#555` and `#5c5c5c` become `#636567`), and the search reset circle (`#eee` becomes `#f2f2f2`).
+
+Text that Mapsight does not colour itself inherits the host's text colour, as before. A dark theme therefore sets the
+colour tokens **and** a light text colour on the page, or on the wrapper and portaled surfaces. Modals and the list
+options popover render under `document.body`, outside `.ms3-wrapper`, so a wrapper-only text colour does not reach
+them. Place actions and outbound links also need their own foreground tokens: the emitted defaults are fixed Sass
+colours, so changing `--ms3-foreground-color` alone does not update them. Load the theme after the Mapsight CSS,
+because `tokens` emits the defaults on the same `:root` selector:
+
+```css
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--ms3-primary-color: #e8ecf1;
+		--ms3-inverted-primary-color: #111418;
+		--ms3-secondary-color: #aeb6c0;
+		--ms3-tertiary-color: #aeb6c0;
+		--ms3-theme-color-a: #7cc0ff;
+		--ms3-theme-color-b: #ff9b8a;
+		--ms3-background-color: #1a1e23;
+		--ms3-background-color-offset: #242a31;
+		--ms3-background-color-offset-2: #2e353e;
+		--ms3-page-background-color: #111418;
+		--ms3-background-highlight-color: #2b323a;
+		--ms3-foreground-color: #f3f5f8;
+		--ms3-place-actions-fg: var(--ms3-foreground-color);
+		--ms3-outbound-fg: var(--ms3-foreground-color);
+		--ms3-border-color: #6b7682;
+		--ms3-table-line-color: #3c444e;
+		--ms3-tooltip-background-color: #242a31;
+		--ms3-tooltip-border-color: #aeb6c0;
+		--ms3-attributions-background-color: rgb(26 30 35 / 85%);
+		--ms3-focus-ring-color: #3b82f6;
+		--ms3-scrollbar-track-color: #1a1e23;
+		--ms3-scrollbar-thumb: rgb(220 228 236 / 30%);
+		--ms3-scrollbar-thumb-hover: rgb(220 228 236 / 50%);
+	}
+
+	.ms3-wrapper,
+	.ms3-modal__inner,
+	.ms3-list-options__popover {
+		color: var(--ms3-primary-color);
+	}
+}
+```
+
+With this sample every text pair stays at 4.5:1 or more, and icons, focus rings and field borders at 3:1 or more. Set
+`--ms3-attributions-background-color` too, because the default is translucent white. Also set `--ms3-focus-ring-color`:
+it draws the map's focus ring on the (still light) tiles and the focus ring of the point input buttons on dark panels,
+so it needs a mid-tone with 3:1 against both. The default `#005fcc` has only 2.8:1 on `#1a1e23`; `#3b82f6` has 3.2:1 on
+light tiles (`#f2efe9`) and 4.6:1 on `#1a1e23`.
+
+**Compatibility.** Without the flag, the compiled CSS is unchanged. With the flag:
+
+- Hosts that already set `--ms3-background-color` or `--ms3-page-background-color` to something other than white now
+  see that colour on the wrapper and the surfaces above.
+- Buttons, inputs and selects that Mapsight does not colour inherit the text colour instead of the browser's
+  `buttontext`/`fieldtext`. The rule has no specificity, so any host rule wins. `reset` already did this.
+- Not covered: map tiles and feature styles (`@mapsight/traffic-style`), the white halos around the map focus ring
+  and keyboard crosshair (they sit on tiles), drop shadows, the deprecated hint.css tooltips, and OpenLayers' own
+  controls (theme those with the `--ol-*` properties).
+
+In v8 this becomes the only behaviour and the flag is removed (see
+[Decision 012](https://github.com/open-mapsight/mapsight/blob/main/docs/architecture/decisions/012-future-flags-for-next-major-ui.md)).
+
 Scroll utilities (also from `default`): `.ms3-minimal-scrollbar`, `.ms3-scroll-container`, plus mixins under
 `src/scss/mixins/minimal-scrollbar`.
 
@@ -130,19 +320,35 @@ Copy-out templates: [
 `starters/mapsight-next-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-next-starter), [
 `starters/mapsight-vite-spa-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-vite-spa-starter).
 
+## Attribution mark
+
+The map overlay shows an optional **Erstellt mit Mapsight** / **Built with Mapsight** mark (`.ms3-logo`). It is a link
+to `https://open-mapsight.org/` whose accessible name is the visible text (`ui.map-overlay.logo.copyright`). German and
+English follow the UI language; other languages use the German mark. Desktop views show 120×40 CSS px, mobile and
+map-only views 90×30. The SVGs ship in `dist/img/mapsight-ui/` and load through `$ms3-iconPath` like the other UI
+icons, without external requests.
+
+Hosts may disable or replace it:
+
+- CSS: `.ms3-logo { display: none; }`, or your own `background` on `.ms3-logo` (keeps the link and its name).
+- Create option `components: {MapOverlayLogo: () => null}`, or your own component instead of `() => null`.
+- The `MapOverlayBottomLeft` and `MapOverlayModal` component slots still replace the areas that contain it.
+
+When shown, use the artwork unmodified (no opacity, filters or cropping). See the
+[trademark policy](https://github.com/open-mapsight/mapsight/blob/main/docs/TRADEMARK.md#logos-and-visual-identity).
+
 ## Documentation
 
-| Guide                                                                                                                                     | Package                   | Description                                           |
-| ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------- |
-| [Documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)                                                   | —                         | Architecture, ecosystem, integration overview         |
-| [Mapsight Redux Architecture](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/REDUX_ARCHITECTURE.md)               | `@mapsight/core`          | GIS state layer — store, controllers, OpenLayers sync |
-| [Mapsight Action API — Decision Guide](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/ACTION_GUIDE.md)            | `@mapsight/core`          | Which action API to dispatch for a given task         |
-| [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md)                                | —                         | CMS embed + `data-dehydrated-state` contract          |
-| [CMS PHP integration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/CMS_PHP.md)                                    | —                         | Classic PHP host pattern                              |
-| [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                            | —                         | Standalone React apps                                 |
-| [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                                 | —                         | Next.js host notes                                    |
-| [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)                   | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
-| [Feature list sorter — deferred UX ideas](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/FEATURE_LIST_SORTER_UX.md) | `@mapsight/ui`            | Low-priority UX notes (not on the roadmap)            |
+| Guide                                                                                                                          | Package                   | Description                                           |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------- | ----------------------------------------------------- |
+| [Documentation hub](https://github.com/open-mapsight/mapsight/blob/main/docs/README.md)                                        | —                         | Architecture, ecosystem, integration overview         |
+| [Mapsight Redux Architecture](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/REDUX_ARCHITECTURE.md)    | `@mapsight/core`          | GIS state layer — store, controllers, OpenLayers sync |
+| [Mapsight Action API — Decision Guide](https://github.com/open-mapsight/mapsight/blob/main/packages/core/docs/ACTION_GUIDE.md) | `@mapsight/core`          | Which action API to dispatch for a given task         |
+| [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md)                     | —                         | CMS embed + `data-dehydrated-state` contract          |
+| [CMS PHP integration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/CMS_PHP.md)                         | —                         | Classic PHP host pattern                              |
+| [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                 | —                         | Standalone React apps                                 |
+| [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                      | —                         | Next.js host notes                                    |
+| [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)        | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
 
 ## Related packages
 

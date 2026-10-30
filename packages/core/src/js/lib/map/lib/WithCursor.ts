@@ -7,9 +7,9 @@ export default class WithCursor extends WithMap {
 		this.getAndObserveUncontrolled(
 			(state) => state.cursor as string | undefined,
 			(newCursor = DEFAULT_CURSOR) => {
-				const map = this.getMap();
-				if (map) {
-					map.getViewport().style.cursor = newCursor;
+				const viewport = this.getMap()?.getViewport();
+				if (viewport) {
+					viewport.style.cursor = newCursor;
 				}
 			},
 		);

@@ -1,9 +1,11 @@
+@use "../mixins/reduced-motion";
 
 .ms3-sticky-header {
 	&__container {
 		position: relative;
 		background: var(--ms3-background-color);
 		transition: background 600ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 	}
 
 	&__container--stuck {
@@ -16,6 +18,7 @@
 			background 200ms ease-in-out,
 			border 200ms ease-in-out,
 			opacity 200ms ease-in-out;
+		@include reduced-motion.respect-reduced-motion;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.01);
 		opacity: 1;
 

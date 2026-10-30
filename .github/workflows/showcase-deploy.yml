@@ -1,0 +1,134 @@
+name: Showcase deployment
+
+on:
+  workflow_run:
+    workflows: [Showcase build]
+    types: [completed]
+  pull_request_target:
+    types: [closed]
+  schedule:
+    - cron: "19 3 * * *"
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Showcase build run to publish; leave empty to reconcile closed previews
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      action: ${{ steps.plan.outputs.action }}
+      target: ${{ steps.plan.outputs.target }}
+      run_id: ${{ steps.plan.outputs.run_id }}
+      sha: ${{ steps.plan.outputs.sha }}
+      attempt: ${{ steps.plan.outputs.attempt }}
+    steps:
+      # Privileged triggers always execute orchestration from main, never PR code.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Resolve current deployment target
+        id: plan
+        run: node scripts/preview-deploy.mts plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_PLAN_FILE: ${{ runner.temp }}/preview-plan.json
+
+  publish:
+    needs: plan
+    if: needs.plan.outputs.action != 'skip'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment: showcase-previews
+    # Different PRs proceed independently. The receiver also locks each target.
+    concurrency:
+      group: showcase-publish-${{ needs.plan.outputs.target }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Restore trusted deployment plan
+        run: |
+          node --input-type=module -e 'import {writeFileSync} from "node:fs"; writeFileSync(process.env.PREVIEW_PLAN_FILE, process.env.PREVIEW_PLAN)'
+        env:
+          PREVIEW_PLAN_FILE: ${{ runner.temp }}/preview-plan.json
+          PREVIEW_PLAN: ${{ toJSON(needs.plan.outputs) }}
+      - name: Download static artifact into an isolated directory
+        if: needs.plan.outputs.action == 'deploy'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: showcase-static
+          run-id: ${{ needs.plan.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/showcase-static
+      - name: Publish or clean up preview
+        run: node scripts/preview-deploy.mts publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_PLAN_FILE: ${{ runner.temp }}/preview-plan.json
+          PREVIEW_ARTIFACT_DIR: ${{ runner.temp }}/showcase-static
+          PREVIEW_HOST: ${{ vars.PREVIEW_HOST }}
+          PREVIEW_USER: ${{ vars.PREVIEW_USER }}
+          PREVIEW_BASE_DOMAIN: ${{ vars.PREVIEW_BASE_DOMAIN }}
+          SHOWCASE_HOST: ${{ vars.SHOWCASE_HOST }}
+          PREVIEW_SSH_KEY: ${{ secrets.PREVIEW_SSH_KEY }}
+          PREVIEW_KNOWN_HOSTS: ${{ secrets.PREVIEW_KNOWN_HOSTS }}
+
+  review-links:
+    needs: [plan, publish]
+    if: startsWith(needs.plan.outputs.target, 'pr-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Comment writes have their own job/token and no deployment environment.
+    permissions:
+      contents: read
+      deployments: read
+      pull-requests: write
+    concurrency:
+      group: showcase-review-links-${{ needs.plan.outputs.target }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Install trusted analysis dependencies without lifecycle scripts
+        run: pnpm install --filter @mapsight/root --frozen-lockfile --ignore-scripts
+      - name: Update reviewer guidance for the deployed PR revision
+        run: node scripts/preview-review-links.mts --write
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_TARGET: ${{ needs.plan.outputs.target }}
+          PREVIEW_SHA: ${{ needs.plan.outputs.sha }}

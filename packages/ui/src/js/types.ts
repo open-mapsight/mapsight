@@ -24,6 +24,7 @@ import type {MapsightUiPlacesData} from "./components/feature-list-sorting/featu
 import type {View} from "./config/constants/app";
 import type {TAG_FILTER, TIME_FILTER} from "./config/constants/controllers";
 import type {MapsightConfig} from "./config/schema";
+import type {HeadingOptions} from "./headings";
 import type {MapsightUiComponents} from "./helpers/components";
 import type {FETCH_JSON_STATUS, FETCH_TEXT_STATUS} from "./store/actions";
 import type {RootStateSlice} from "./store/selectors";
@@ -42,7 +43,7 @@ export type MapsightUiStore = EnhancedStore<RootStateSlice>;
  * plugins will be passed this object and may manipulate it's properties
  */
 export type MapsightUiContext = {
-	/** indicates if the instance has been rendered at least once (available after init) */
+	/** indicates if the instance has committed at least once (available after init) */
 	hasRendered: boolean;
 	/** the container element the instance should be rendered into (available after init) */
 	container: HTMLElement | null;
@@ -64,6 +65,8 @@ export type MapsightUiContext = {
 	storeEnhancer?: StoreEnhancer;
 	/** redux store (available after create) */
 	store?: MapsightUiStore;
+	/** Stable initial snapshot for React hydration, captured before afterCreate plugins. */
+	serverState?: State;
 	/**
 	 * Function to render the app (available after create). Render without waiting for plugins
 	 * (for e.g. waiting on external data).
@@ -102,9 +105,9 @@ export type PluginInstance = {
 	afterInit?: PluginFunction;
 	/** optional plugin to be called after creation */
 	afterCreate?: PluginFunction;
-	/** optional plugin to be called after rendering */
+	/** optional plugin to be called before scheduling rendering */
 	beforeRender?: PluginFunction;
-	/** optional plugin to be called after rendering */
+	/** Called after commit (or renderer return for legacy synchronous renderers). */
 	afterRender?: PluginFunction;
 };
 
@@ -112,9 +115,14 @@ export type PluginDefinition = [string, null | PluginInstance];
 
 export type InternalMapsightUiRendererProps = {
 	store: Store<State>;
+	/** Pass to React-Redux Provider for the lifetime of a hydrated tree. */
+	serverState?: State;
+	/** Call during the renderer invocation, then signal commit with the returned callback. */
+	deferCommit?: () => () => void;
 	components: MapsightUiComponents;
 	appChannelListeners: AppChannelListenerDefinition[];
 	future?: FutureFlags;
+	headings?: HeadingOptions;
 };
 
 export type ExternalMapsightUiRendererProps = {
@@ -219,6 +227,13 @@ export type FullUiState = {
 	}>;
 
 	searchInMap: boolean;
+	/** Set false for SSR-safe search embedding inside a host form. Defaults to true. */
+	searchRenderForm?: boolean;
+	/**
+	 * Opt in to skip links ("Skip to the map / list / search") at the start of
+	 * the instance, shown on keyboard focus. Default false; planned default in v8.
+	 */
+	skipLinks?: boolean;
 	searchQuery: string;
 	searchResult: FeatureSourceState & {
 		status: "error" | "loading" | "success" | null;
@@ -243,6 +258,8 @@ export type FullUiState = {
 	lastListScrollPosition: number;
 
 	featureSelectionInfo: {
+		/** Opt in to trapping Tab focus in the non-modal details region. Default false. */
+		trapFocus?: boolean;
 		stuckHeaderHeight: number;
 		stickyHeader: boolean;
 	};
@@ -273,6 +290,7 @@ export type FullUiState = {
 		detailsInList: boolean;
 		integratedList: boolean;
 		renderAs: string;
+		/** Falsy disables grouping; "auto" uses contextual headings (h3 without the flag). */
 		renderGroupAs: string;
 	};
 	viewToggle: {
@@ -362,6 +380,8 @@ export type FutureFlags = {
 	 * visible label + input (7.x host CSS). This will be the only behavior in v8.
 	 */
 	v8_listSearchButton?: boolean;
+	/** Derive native heading ranks from headings.baseLevel (default 2). Default false in 7.x. */
+	v8_automaticHeadings?: boolean;
 };
 
 export type CreateOptions = {
@@ -372,6 +392,8 @@ export type CreateOptions = {
 	 * Opt into next-major behavior. See Decision 012.
 	 */
 	future?: FutureFlags;
+	/** Page-outline placement and exceptions. Read when future.v8_automaticHeadings is true. */
+	headings?: HeadingOptions;
 
 	// store
 	storeEnhancer?: StoreEnhancer;

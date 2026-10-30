@@ -1,12 +1,22 @@
+@use "../mixins/icon";
+@use "../mixins/surface";
 
 .ms3-tool-overlay {
 	position: relative;
+	@if icon.$themed {
+		// see `.ms3-layer-switcher-overlay`
+		z-index: 1;
+	}
 
 	min-width: 240px;
 	margin-left: 15px;
 
 	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-	background-color: white;
+	@if surface.$themed {
+		background-color: var(--ms3-background-color);
+	} @else {
+		background-color: white;
+	}
 
 	pointer-events: auto;
 	user-select: none;
@@ -33,5 +43,80 @@
 	&__text {
 		margin: 10px 0;
 		padding: 0 6px;
+	}
+
+	// Labelled tool output (e.g. the measured distance), like the share link.
+	&__output {
+		margin: 6px;
+	}
+
+	&__output-label {
+		display: block;
+		margin-bottom: 4px;
+		font-weight: bold;
+	}
+
+	// Focus target of the "back to tool" skip link after the map.
+	&:focus-visible {
+		outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+		outline-offset: 2px;
+	}
+
+	// react-aria-components Disclosure: style [data-expanded] and
+	// [data-focus-visible] like the UI's other RAC parts.
+	&__keyboard-help {
+		margin: 6px 0;
+		padding: 0 6px;
+		font-size: 0.875em;
+	}
+
+	&__keyboard-help-trigger {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		min-height: 24px;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+
+		&::before {
+			content: "";
+			width: 0.45em;
+			height: 0.45em;
+			border-right: 2px solid currentColor;
+			border-bottom: 2px solid currentColor;
+			transform: rotate(-45deg);
+		}
+
+		[data-expanded] > &::before {
+			transform: rotate(45deg);
+		}
+
+		&[data-focus-visible] {
+			outline: 3px solid var(--ms3-focus-ring-color, #005fcc);
+			outline-offset: 2px;
+		}
+	}
+
+	&__keyboard-help-panel {
+		user-select: text;
+
+		p {
+			margin: 4px 0;
+		}
+
+		dl {
+			display: grid;
+			grid-template-columns: auto 1fr;
+			gap: 2px 8px;
+			margin: 0;
+		}
+
+		dd {
+			margin: 0;
+		}
 	}
 }

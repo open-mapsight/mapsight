@@ -5,10 +5,11 @@ import type {
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
 } from "react";
-import {Fragment, memo, useRef} from "react";
+import {Fragment, memo, useId, useRef} from "react";
 
 import {rememberDocumentScrollForSelection} from "../../helpers/document-scroll";
 import getFeatureProperty from "../../helpers/get-feature-property";
+import {shouldDismissOnEscape} from "../../hooks/useOverlayDismiss";
 import type {MapsightUiFeature} from "../../types";
 import FeatureDetailsContent from "../feature-details-content";
 import FeatureListItemHead, {type FeatureListItemHeadProps} from "./head";
@@ -68,9 +69,8 @@ type FeatureListItemLegacyHtmlRowProps = FeatureListItemProps & {
 };
 
 /**
- * @deprecated Pre-OSS list rows that inject CMS/GeoJSON HTML onto the wrapper
- *   and pretend the whole row is a button (`role="button"` + `onClick` on the
- *   `itemAs` host element — same smell as “`<a>` as button”). Prefer typed
+ * @deprecated Pre-OSS list rows that inject CMS/GeoJSON HTML into a
+ *   button-like container (`role="button"` + `onClick`). Prefer typed
  *   list content and FeatureSelectButton. Kept only for host migration; removed
  *   in the next major of `@mapsight/ui`.
  */
@@ -124,8 +124,8 @@ function FeatureListItemLegacyHtmlRow({
 		}
 	};
 
-	// Legacy: selection on the wrapper (no FeatureSelectButton). Middle /
-	// modified clicks still allow a host deep-link if the wrapper is an <a>.
+	// Legacy: selection on the HTML container (no FeatureSelectButton). Middle /
+	// modified clicks still allow links in the injected HTML.
 	const onClick = (event: ReactMouseEvent) => {
 		if (event.button === 1 || event.metaKey || event.ctrlKey) {
 			return;
@@ -164,15 +164,21 @@ function FeatureListItemLegacyHtmlRow({
 					? " focus-visible"
 					: "")
 			}
-			tabIndex={interactive ? -1 : undefined}
-			role={selectable ? "button" : undefined}
-			onPointerDown={
-				selectable ? rememberDocumentScrollForSelection : undefined
-			}
-			onClick={selectable ? onClick : undefined}
-			onKeyDown={selectable ? onKeyDown : undefined}
-			dangerouslySetInnerHTML={{__html: html}}
-		/>
+		>
+			<div
+				className="ms3-list__item__head ms3-list__button"
+				data-ms3-list-nav={interactive ? "" : undefined}
+				tabIndex={interactive ? 0 : undefined}
+				role={interactive ? "button" : undefined}
+				aria-pressed={interactive ? isSelected : undefined}
+				onPointerDown={
+					selectable ? rememberDocumentScrollForSelection : undefined
+				}
+				onClick={selectable ? onClick : undefined}
+				onKeyDown={selectable ? onKeyDown : undefined}
+				dangerouslySetInnerHTML={{__html: html}}
+			/>
+		</T>
 	);
 }
 
@@ -196,11 +202,14 @@ function FeatureListItemStandard({
 		isSelected,
 		isPreselected,
 		isHighlighted,
+		detailsInline,
+		detailsDisclosure,
 		showDetails,
 		scrollOnSelection,
 	} = useFeatureListItemState(feature);
 
 	const ref = useRef<HTMLElement | null>(null);
+	const detailsId = useId();
 
 	useFeatureListItemScrollAndFocus(
 		ref,
@@ -281,20 +290,60 @@ function FeatureListItemStandard({
 	}
 
 	let details: ReactNode = null;
-	if (showDetails) {
+	if (detailsInline) {
 		details = (
-			<PartT className="ms3-list__details">
-				<FeatureDetailsContent feature={feature} />
+			<PartT
+				id={detailsId}
+				className="ms3-list__details"
+				hidden={!showDetails}
+			>
+				{showDetails && <FeatureDetailsContent feature={feature} />}
 			</PartT>
 		);
 	}
 
 	return (
-		<T {...wrapperProps}>
+		<T
+			{...wrapperProps}
+			onKeyDown={(event: ReactKeyboardEvent) => {
+				if (
+					!detailsDisclosure ||
+					!ContentT ||
+					!showDetails ||
+					!deselectFeatures ||
+					!shouldDismissOnEscape(event.nativeEvent, ref.current) ||
+					event.defaultPrevented
+				) {
+					return;
+				}
+				event.preventDefault();
+				event.stopPropagation();
+				deselectFeatures(feature.id, {keyboard: true});
+				ref.current
+					?.querySelector<HTMLElement>("[data-ms3-list-nav]")
+					?.focus({preventScroll: true});
+			}}
+		>
 			{HeadT && (
 				<HeadT
 					feature={feature}
 					isSelected={isSelected}
+					{...(selectOnClick || deselectOnClick
+						? {
+								"aria-pressed":
+									detailsDisclosure && ContentT
+										? undefined
+										: isSelected,
+								"aria-expanded":
+									detailsDisclosure && ContentT
+										? showDetails
+										: undefined,
+								"aria-controls":
+									detailsDisclosure && ContentT
+										? detailsId
+										: undefined,
+							}
+						: {})}
 					isHighlighted={isHighlighted}
 					highlightOnMouse={highlightOnMouse}
 					selectOnClick={selectOnClick}

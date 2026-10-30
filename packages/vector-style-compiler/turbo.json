@@ -1,0 +1,14 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"inputs": ["$TURBO_DEFAULT$", "!**/__tests__/**", "!**/*.test.ts"]
+		},
+		"lint": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build"]
+		},
+		"typecheck": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build"]
+		}
+	}
+}

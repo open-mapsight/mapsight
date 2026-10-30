@@ -35,7 +35,11 @@ export default defineConfig(({command}) => ({
 		emptyOutDir: true,
 		license: true,
 		rolldownOptions: {
-			input: ["index.html"],
+			input: [
+				"index.html",
+				"scenarios/index.html",
+				"scenarios/verwaltung/index.html",
+			],
 			output: {
 				codeSplitting: {
 					groups: [
@@ -54,6 +58,12 @@ export default defineConfig(({command}) => ({
 					],
 				},
 			},
+		},
+	},
+	worker: {
+		format: "iife",
+		rolldownOptions: {
+			output: {entryFileNames: "mock-service-worker.js"},
 		},
 	},
 	server: {

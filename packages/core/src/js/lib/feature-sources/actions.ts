@@ -317,6 +317,7 @@ export const loadSuccess = (
 	controllerName: string,
 	id: string,
 	data: unknown,
+	requestId?: number,
 ) =>
 	async(
 		withPath(
@@ -324,6 +325,7 @@ export const loadSuccess = (
 				type: LOAD_FEATURE_SOURCE_SUCCESS,
 				id: id,
 				data: data,
+				...(requestId === undefined ? {} : {requestId}),
 			},
 			[controllerName],
 		),
@@ -333,6 +335,7 @@ export const loadFailure = (
 	controllerName: string,
 	id: string,
 	error: unknown,
+	requestId?: number,
 ) =>
 	async(
 		withPath(
@@ -340,10 +343,15 @@ export const loadFailure = (
 				type: LOAD_FEATURE_SOURCE_ERROR,
 				id: id,
 				error: error,
+				...(requestId === undefined ? {} : {requestId}),
 			},
 			[controllerName],
 		),
 	);
+
+// A removed/re-added source must not reuse an earlier request number. The
+// sequence belongs to the store, and does not retain stores after disposal.
+const requestSequences = new WeakMap<() => unknown, number>();
 
 export const load = (
 	controllerName: string,
@@ -352,8 +360,9 @@ export const load = (
 ) => {
 	const handleLoad: ThunkAction = (dispatch, getState, extraArgument) => {
 		const state = getState()[controllerName] as FeatureSourcesState;
-		const currentState = state[id] || ({} as FeatureSourceState);
-		const {requestId = 0, isLoading} = currentState || {};
+		const currentState = state?.[id];
+		if (!currentState) return Promise.resolve();
+		const {isLoading} = currentState;
 		if (isLoading && !options?.forceRefresh) {
 			return Promise.resolve(); // already loading
 		}
@@ -364,7 +373,11 @@ export const load = (
 			return Promise.resolve();
 		}
 
-		const nextRequestId = requestId + 1;
+		const nextRequestId = (requestSequences.get(getState) ?? 0) + 1;
+		if (!Number.isSafeInteger(nextRequestId)) {
+			throw new RangeError("Feature source request sequence exhausted");
+		}
+		requestSequences.set(getState, nextRequestId);
 
 		dispatch(
 			withPath(
@@ -388,10 +401,26 @@ export const load = (
 				asFeatureSourceCacheExtra(extraArgument),
 			).then(
 				function handleLoadResolved(data) {
-					dispatch(loadSuccess(controllerName, id, data));
+					try {
+						dispatch(
+							loadSuccess(
+								controllerName,
+								id,
+								data,
+								nextRequestId,
+							),
+						);
+					} catch (err) {
+						dispatch(
+							loadFailure(controllerName, id, err, nextRequestId),
+						);
+						throw err;
+					}
 				},
 				function handleLoadRejected(err) {
-					dispatch(loadFailure(controllerName, id, err));
+					dispatch(
+						loadFailure(controllerName, id, err, nextRequestId),
+					);
 					throw err;
 				},
 			),

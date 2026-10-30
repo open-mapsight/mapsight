@@ -216,14 +216,19 @@ export function effectiveListSortingSelector(
 	);
 }
 
-export const listFilterOptionsSelector = (
-	state: RootStateSlice,
-	featureSourceId?: string,
-) => ({
-	query: listQuerySelector(state),
-	sorting: effectiveListSortingSelector(state, featureSourceId),
-	places: placesWithGeoLocationSelector(state),
-});
+export const listFilterOptionsSelector = createSelector(
+	[
+		listQuerySelector,
+		(state: RootStateSlice, featureSourceId?: string) =>
+			effectiveListSortingSelector(state, featureSourceId),
+		placesWithGeoLocationSelector,
+	],
+	(query, sorting, places) => ({
+		query,
+		sorting,
+		places,
+	}),
+);
 
 export const searchQuerySelector = (state: RootStateSlice) =>
 	state.app.searchQuery;
@@ -240,13 +245,24 @@ export const searchResultFeaturesSelector: Selector<
 	MapsightUiFeature[]
 > = createSelector(searchResultSelector, getSearchResultFeatures);
 
+export const searchRenderFormSelector = (state: RootStateSlice) =>
+	state.app.searchRenderForm !== false;
+
+export const skipLinksSelector = (state: RootStateSlice) =>
+	state.app.skipLinks === true;
+
 export const haveSearchInMapSelector = (state: RootStateSlice) =>
 	state.app.searchInMap;
 export const isEmbeddedMapSelector = (state: RootStateSlice) =>
 	state.app.embeddedMap;
 
+const EMPTY_LIST_UI_OPTIONS = Object.freeze({}) as NonNullable<UiState["list"]>;
+const EMPTY_LIST_SELECTION_BEHAVIOR = Object.freeze({}) as NonNullable<
+	NonNullable<UiState["list"]>["selectionBehavior"]
+>;
+
 export const listUiOptionsSelector = (state: RootStateSlice) =>
-	state.app.list || {};
+	state.app.list || EMPTY_LIST_UI_OPTIONS;
 export const listUiOptionDetailsSelector = (state: RootStateSlice) =>
 	state.app.list?.detailsInList;
 export const listUiOptionIntegratedSelector = (state: RootStateSlice) =>
@@ -255,7 +271,7 @@ export const listUiOptionSelectedOnlySelector = (state: RootStateSlice) =>
 	state.app.list?.showSelectedOnly;
 
 export const listUiOptionSelectionBehaviorSelector = (state: RootStateSlice) =>
-	state.app.list?.selectionBehavior || {};
+	state.app.list?.selectionBehavior || EMPTY_LIST_SELECTION_BEHAVIOR;
 
 export const listUiScrollToItemOnPreselectSelector = (state: RootStateSlice) =>
 	state.app.list?.scrollToItemOnPreselect === true;

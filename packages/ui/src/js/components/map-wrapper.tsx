@@ -4,6 +4,7 @@ import {useInView} from "react-intersection-observer";
 import {useDispatch, useSelector, useStore} from "react-redux";
 
 import {ComponentsContext} from "../helpers/components";
+import scrollBehavior from "../helpers/scroll-behavior";
 import useUpdateMapSizeOnRender from "../hooks/useUpdateMapSizeOnRender";
 import useUpdateMapSizeOnTransitionEnd from "../hooks/useUpdateMapSizeOnTransitionEnd";
 import useUpdateMapSizeOnViewChange from "../hooks/useUpdateMapSizeOnViewChange";
@@ -42,7 +43,7 @@ export default function MapWrapper(props: MapWrapperProps) {
 		useCallback(() => {
 			mapWrapperRef.current?.scrollIntoView({
 				block: "start",
-				behavior: "smooth",
+				behavior: scrollBehavior(),
 			});
 		}, [mapWrapperRef]),
 	);

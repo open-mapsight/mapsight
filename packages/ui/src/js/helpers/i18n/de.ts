@@ -19,13 +19,24 @@ import {
 /*  eslint quote-props: 0 */
 
 const de: Record<string, string> = {
+	// BottomSheet accessibility defaults.
+	"ui.bottom-sheet.resize": "Höhe ändern",
+	"ui.bottom-sheet.snap-value": "Position {position} von {count}",
+	// UE: search status and previously missing shared labels.
+	shareLink: "Link teilen",
+	marker: "Markierung",
+	"ui.search.result.loading": "Suche läuft …",
+	"ui.search.result.count": "{count} Treffer",
+	"ui.search.result.none": "Keine Treffer",
+	"ui.search.result.selected": "{name} ausgewählt",
+
 	open: "öffnen",
 	close: "schließen",
 	reset: "zurücksetzen",
 	show: "anzeigen",
 	from: "von",
-	nextEntry: "Vorheriger Eintrag",
-	prevEntry: "Nächster Eintrag",
+	nextEntry: "Nächster Eintrag",
+	prevEntry: "Vorheriger Eintrag",
 
 	"ui.query-input.reset": "Suche zurücksetzen",
 
@@ -40,7 +51,7 @@ const de: Record<string, string> = {
 	"ui.place-actions.share.copy": "Link kopieren",
 	"ui.place-actions.share.copied": "Kopiert",
 	"ui.place-actions.share.close": "Teilen-Dialog schließen",
-	"ui.place-actions.share.permalink": "Permalink",
+	"ui.place-actions.share.copy-success": "Link kopiert",
 	"ui.place-actions.navigate": "Route",
 	"ui.place-actions.navigate.tooltip":
 		"Zu diesem Ort mit einer anderen App navigieren",
@@ -53,10 +64,13 @@ const de: Record<string, string> = {
 	"ui.place-actions.copy-coords": "Koordinaten kopieren",
 	"ui.place-actions.copy-coords.tooltip": "Diese Koordinaten kopieren",
 	"ui.place-actions.copy-coords.copied": "Kopiert",
+	"ui.place-actions.copy-coords.copy-success": "Koordinaten kopiert",
 	"ui.place-actions.website": "Website",
 	"ui.place-actions.website.tooltip": "Website dieses Ortes öffnen",
 	"ui.place-actions.call": "Anrufen",
 	"ui.place-actions.call.tooltip": "Diesen Ort anrufen",
+	"ui.place-actions.copy-failed":
+		"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
 
 	"ui.feature-details.content-inner.error": "Fehler beim Laden der Details.",
 	"ui.feature-details.content-inner.gotoPage": "Direkt zur Seite springen",
@@ -122,7 +136,7 @@ const de: Record<string, string> = {
 	"ui.map-overlay.search.modal.label": "Suchfunktion",
 	"ui.map-overlay.search.modal.headline": "Suche",
 
-	"ui.map-overlay.logo.copyright": "Diese Kartenanwendung nutzt Mapsight",
+	"ui.map-overlay.logo.copyright": "Erstellt mit Mapsight",
 
 	"ui.region-selector.label": "Gebiet auf Karte zentrieren …",
 
@@ -153,15 +167,26 @@ const de: Record<string, string> = {
 	"ui.map.usage.heading": "Tastaturbedienung der Karte",
 	"ui.map.usage.html":
 		'<dl class="ms3-map-usage">' +
-		'<dt><kbd aria-label="Cursor rechts">→</kbd></dt><dd>nach rechts verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor links">←</kbd></dt><dd>nach links verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor runter">↓</kbd></dt><dd>nach unten verschieben</dd>' +
-		'<dt><kbd aria-label="Cursor hoch">↑</kbd></dt><dd>nach oben verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">→</span><span class="ms3-visuallyhidden">Cursor rechts</span></kbd></dt><dd>nach rechts verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">←</span><span class="ms3-visuallyhidden">Cursor links</span></kbd></dt><dd>nach links verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">↓</span><span class="ms3-visuallyhidden">Cursor runter</span></kbd></dt><dd>nach unten verschieben</dd>' +
+		'<dt><kbd><span aria-hidden="true">↑</span><span class="ms3-visuallyhidden">Cursor hoch</span></kbd></dt><dd>nach oben verschieben</dd>' +
 		"<dt><kbd>+</kbd></dt><dd>hineinzoomen</dd>" +
 		"<dt><kbd>-</kbd></dt><dd>herauszoomen</dd>" +
+		"<dt><kbd>Shift+F10</kbd></dt><dd>Menü am Kartenmittelpunkt öffnen</dd>" +
 		"</dl>",
 	"ui.map.visuallyhidden":
 		"Dieser Bereich der Webseite zeigt eine Landkarte.",
+	"ui.point-input.instructions":
+		"In der fokussierten Karte verschieben die Pfeiltasten die Karte, + und − ändern den Maßstab. Das Fadenkreuz zeigt die Kartenmitte. Eingabe- oder Leertaste oder die Schaltfläche „Kartenmitte übernehmen“ setzen den Punkt dorthin. Erneutes Bestätigen ersetzt ihn.",
+	"ui.point-input.confirm": "Kartenmitte übernehmen",
+	"ui.point-input.help": "Tastaturhilfe",
+	"ui.point-input.close-help": "Tastaturhilfe schließen",
+	"ui.point-input.position": "Kartenmitte (Breitengrad, Längengrad):",
+	"ui.point-input.confirmed":
+		"Position übernommen (Breitengrad, Längengrad):",
+	"ui.map.label": "Interaktive Karte",
+	"ui.map.roledescription": "Karte",
 
 	"ui.wrapper.overlay.fullscreen": "Karte im Vollbild",
 	"ui.wrapper.overlay.mapOnly": "Karte",
@@ -190,6 +215,18 @@ const de: Record<string, string> = {
 
 	"ui.user-geo-location-button.label": "Zum eigenen Standort springen",
 	"ui.user-geo-location-button.ariaLabel": "Zum eigenen Standort springen",
+	"ui.user-geo-location-button.requesting": "Standort wird ermittelt …",
+	"ui.user-geo-location-button.error":
+		"Standort konnte nicht ermittelt werden.",
+
+	// List chrome accessibility.
+	"ui.pagination.label": "Seitennavigation",
+	"ui.pagination.jumpForward": "Mehrere Seiten vorwärts blättern",
+	"ui.pagination.jumpBackward": "Mehrere Seiten zurück blättern",
+	"ui.pagination.status": "Seite {n} von {total}",
+	"ui.feature-list.filter.status": "{n} von {total} Einträgen",
+	"ui.feature-list.filter.empty": "Keine Einträge",
+	"ui.feature-list.cycling.status": "Station {n} von {total}: {name}",
 
 	"ui.pagination.nextPage": ">",
 	"ui.pagination.prevPage": "<",
@@ -209,10 +246,38 @@ const de: Record<string, string> = {
 	"ui.map-point.copied": "Koordinaten kopiert",
 
 	"ui.share-position-link.title": "Ort teilen",
+	"ui.share-position-link.shareTitle": "Ort auf der Karte",
+	"ui.share-position-link.shareButtonLabel": "Link teilen",
 	"ui.share-position-link.instructions":
-		"Klicken Sie auf die Karte um einen Ort zu teilen.",
-	"ui.share-position-link.shareTitle": "Markierten Ort teilen",
-	"ui.share-position-link.shareButtonLabel": "Markierten Ort teilen",
+		"Teilen Sie die Kartenmitte oder klicken Sie auf die Karte, um einen Ort festzulegen.",
+	"ui.share-position-link.instructions-marked":
+		"Klicken Sie erneut auf die Karte, um den Ort zu ändern.",
+	"ui.share-position-link.link-center": "Link zur Kartenmitte",
+	"ui.share-position-link.link-marked": "Link zum markierten Ort",
+	"ui.share-position-link.remove-marker": "Markierung entfernen",
+	"ui.share-position-link.keyboard.select":
+		"Ort in der Kartenmitte festlegen",
+	"ui.share-position-link.keyboard.remove": "Markierung entfernen",
+
+	"ui.tool-overlay.keyboard-help": "Tastaturbedienung",
+	"ui.tool-overlay.keyboard-help.focus": "Bei fokussierter Karte:",
+	"ui.skip-links.map": "Zur Karte springen",
+	"ui.skip-links.list": "Zur Liste springen",
+	"ui.skip-links.search": "Zur Suche springen",
+	"ui.tool-overlay.to-map": "Zur Karte springen",
+	"ui.tool-overlay.back-to-tool": "Zurück zu „{name}“",
+	"ui.tool-overlay.keyboard.pan": "Karte verschieben",
+	"ui.keys.space": "Leertaste",
+	"ui.keys.enter": "Eingabe",
+	"ui.keys.backspace": "Rücktaste",
+	"ui.keys.arrows": "Pfeiltasten",
+
+	"ui.link-share.input": "Link zum Teilen",
+
+	"ui.measure-distance.finish": "Fertig",
+	"ui.measure-distance.keyboard.add": "Punkt in der Kartenmitte setzen",
+	"ui.measure-distance.keyboard.finish": "Strecke beenden (ab zwei Punkten)",
+	"ui.measure-distance.keyboard.remove": "Letzten Punkt entfernen",
 };
 
 export default de;

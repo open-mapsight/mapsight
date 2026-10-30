@@ -54,14 +54,19 @@
 	}
 
 	.ms3-layer-switcher-container {
-		min-width: 60vw;
+		min-width: min(60vw, 100%);
+		max-width: 100%;
 	}
 
-	.ms3-layer-switcher__button {
+	.ms3-layer-switcher__button,
+	.ms3-layer-switcher__entry__text-button {
 		padding: 7px;
+		overflow-wrap: anywhere;
+		white-space: normal;
 	}
 
 	.ms3-layer-switcher__entry__label {
 		font-size: 110%;
+		overflow-wrap: anywhere;
 	}
 }

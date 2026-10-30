@@ -209,7 +209,11 @@ function createCssCustomData(customCssProperties: IdeCssProperty[]) {
 				...(property.docUrl
 					? [
 							{
-								name: "OpenLayers style docs",
+								name:
+									new URL(property.docUrl).hostname ===
+									"openlayers.org"
+										? "OpenLayers style docs"
+										: "Mapsight geometry docs",
 								url: property.docUrl,
 							},
 						]

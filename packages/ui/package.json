@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ui",
 	"description": "Mapsight UI for map based web applications using React and Redux",
-	"version": "7.6.0",
+	"version": "7.11.0",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
@@ -20,30 +20,34 @@
 		"lodash": "catalog:",
 		"ol": "catalog:",
 		"proj4": "catalog:",
-		"react-aria": "^3.52.0",
-		"react-aria-components": "^1.21.0",
+		"react-aria": "^3.53.1",
+		"react-aria-components": "^1.22.1",
 		"react-intersection-observer": "^11.0.1",
 		"react-modal": "^3.16.3",
-		"react-paginate": "^8.3.0",
 		"react-redux": "catalog:",
 		"redux-batched-actions": "catalog:",
 		"redux-thunk": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@tanstack/react-query": "^5.102.4",
+		"@tanstack/react-query": "^5.105.0",
 		"@testing-library/react": "^16.3.3",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@types/react-modal": "^3.16.3",
-		"chokidar": "^5.0.0",
+		"chokidar": "^6.0.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"sass": "1.106.1",
 		"svgo": "^4.1.0",
 		"vitest": "catalog:"
 	},
 	"exports": {
+		"./headings": {
+			"types": "./dist/headings/index.d.ts",
+			"default": "./dist/headings/index.js"
+		},
 		"./*": {
 			"types": "./dist/*.d.ts",
 			"default": "./dist/*.js"
@@ -166,6 +170,10 @@
 			"types": "./dist/components/tag-switcher/index.d.ts",
 			"default": "./dist/components/tag-switcher/index.js"
 		},
+		"./components/point-input": {
+			"types": "./dist/components/point-input/index.d.ts",
+			"default": "./dist/components/point-input/index.js"
+		},
 		"./components/contexts": {
 			"types": "./dist/components/contexts.d.ts",
 			"default": "./dist/components/contexts.js"
@@ -179,9 +187,10 @@
 		"dist",
 		"src/scss"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"@tanstack/react-query": "^5.102.4",
+		"@tanstack/react-query": "^5.105.0",
 		"react": "catalog:",
 		"react-dom": "catalog:"
 	},
@@ -191,12 +200,14 @@
 		}
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/ui"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup --parallel build:images build:modules",
-		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/",
-		"build:modules": "tsc",
+		"build:images": "mkdirp dist/img/mapsight-ui && svgo --multipass --quiet -rf ./src/img/mapsight-ui/ -o ./dist/img/mapsight-ui/ && cp ./src/img/attribution/*.svg ./dist/img/mapsight-ui/",
+		"build:modules": "tsc6",
 		"build:setup": "mkdirp dist",
 		"clean": "rimraf dist/*",
 		"clean-build": "run-s clean build",
@@ -205,6 +216,6 @@
 		"typecheck": "tsc --noEmit",
 		"watch": "run-s build:modules watch:build",
 		"watch:build": "run-p watch:build:*",
-		"watch:build:modules": "tsc --watch"
+		"watch:build:modules": "tsc6 --watch"
 	}
 }

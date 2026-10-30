@@ -147,7 +147,9 @@ async function settleAllOrThrow<T>(
 ): Promise<T[]> {
 	const results = await Promise.allSettled(tasks);
 	const failures = results.flatMap((result, index) =>
-		result.status === "rejected" ? [{index, reason: result.reason}] : [],
+		result.status === "rejected"
+			? [{index, reason: result.reason as unknown}]
+			: [],
 	);
 
 	if (failures.length > 0) {
@@ -254,6 +256,52 @@ function prepareStarterPackageJson(
 	writeFileSync(packageJsonPath, `${JSON.stringify(next, null, "\t")}\n`);
 }
 
+async function checkPublicUiProps(
+	starterDir: string,
+	prefix: string,
+): Promise<void> {
+	const fixtureDir = path.join(starterDir, ".type-contracts");
+	mkdirSync(fixtureDir);
+	writeFileSync(
+		path.join(fixtureDir, "connected-props.ts"),
+		`import type {ComponentProps} from "react";
+import type FeatureListCycling from "@mapsight/ui/components/feature-list-cycling/index";
+
+type Props = ComponentProps<typeof FeatureListCycling>;
+export const injectedProps: Pick<Props, "context" | "store"> = {
+	context: undefined,
+	store: undefined,
+};
+`,
+	);
+	writeFileSync(
+		path.join(fixtureDir, "tsconfig.json"),
+		JSON.stringify({
+			compilerOptions: {
+				target: "ES2024",
+				module: "ESNext",
+				moduleResolution: "Bundler",
+				types: ["react"],
+				strict: true,
+				exactOptionalPropertyTypes: true,
+				esModuleInterop: true,
+				skipLibCheck: true,
+				noEmit: true,
+				incremental: false,
+			},
+			include: ["connected-props.ts"],
+		}),
+	);
+	await run(
+		"npm",
+		["exec", "--", "tsc", "--project", ".type-contracts/tsconfig.json"],
+		{
+			cwd: starterDir,
+			logPrefix: prefix,
+		},
+	);
+}
+
 async function smokeStarter(
 	starter: (typeof starters)[number],
 	workspaceDir: string,
@@ -275,6 +323,10 @@ async function smokeStarter(
 		cwd: starterDir,
 		logPrefix: prefix,
 	});
+	// Check the packed declaration contract once, using the starter's native compiler.
+	if (starter === "mapsight-host-starter") {
+		await checkPublicUiProps(starterDir, prefix);
+	}
 	console.log(`${prefix}done`);
 }
 

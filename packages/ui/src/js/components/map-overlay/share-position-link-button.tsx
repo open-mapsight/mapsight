@@ -1,25 +1,34 @@
-import {Fragment, useCallback, useEffect, useMemo} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
+import {useDispatch, useSelector, useStore} from "react-redux";
 
 import {createSelector} from "@reduxjs/toolkit";
 
 import {removeAllFeatures} from "@mapsight/core/lib/feature-sources/actions";
 import {createFilteredFeatureSourceSelector} from "@mapsight/core/lib/feature-sources/selectors";
+import type {MapController} from "@mapsight/core/lib/map/controller";
+import type {EnhancedStore} from "@mapsight/core/types";
 
 import {FEATURE_SOURCES, MAP} from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
 import useControllableState from "../../hooks/useControllableState";
+import {lonLatFromMapCoordinate} from "../../plugins/browser/marked-point";
 import {
 	createActivateAction,
 	createDeactivateAction,
 	formatLinkMarkerHash,
 } from "../../plugins/browser/share-position-link";
 import LinkShare from "../link-share";
+import ToolKeyboardHelp from "./tool-keyboard-help";
 import ToolOverlay from "./tool-overlay";
 
-/*
- TODO: aria? abort on escape key press?
- */
 type SharePositionLinkButtonProps = {
 	pluginName?: string;
 	opened?: boolean;
@@ -62,16 +71,46 @@ const SharePositionLinkButton = ({
 		[pluginName],
 	);
 
+	const store = useStore() as EnhancedStore;
+	const keyboardDrawing = useSelector(
+		(state: {
+			map?: {
+				interactions?: Record<
+					string,
+					{options?: {keyboardTool?: string}}
+				>;
+			};
+		}) =>
+			state.map?.interactions?.[`${pluginName}_drawInteraction`]?.options
+				?.keyboardTool === pluginName,
+	);
 	const dispatch = useDispatch();
 	const feature = useSelector(featureSelector);
 
-	const coords =
+	// Without a marked place the link shares the map centre, following the map.
+	const [center, setCenter] = useState<{lon: number; lat: number} | null>(
+		null,
+	);
+	useEffect(() => {
+		if (!isOpened) return;
+		const map = (store.getController(MAP) as MapController).getMap();
+		if (!map) return;
+		const update = () => {
+			const viewCenter = map.getView().getCenter();
+			setCenter(viewCenter ? lonLatFromMapCoordinate(viewCenter) : null);
+		};
+		update();
+		map.on("moveend", update);
+		return () => map.un("moveend", update);
+	}, [isOpened, store]);
+
+	const markedCoords =
 		feature?.geometry?.type === "Point"
 			? feature.geometry.coordinates
 			: undefined;
 	const shareUrl = useMemo(() => {
-		const lat = coords?.[1];
-		const lon = coords?.[0];
+		const lat = markedCoords ? markedCoords[1] : center?.lat;
+		const lon = markedCoords ? markedCoords[0] : center?.lon;
 		if (typeof lat === "number" && typeof lon === "number") {
 			const url = new URL(location.href);
 			url.protocol = "https:";
@@ -80,7 +119,7 @@ const SharePositionLinkButton = ({
 		}
 
 		return null;
-	}, [coords]);
+	}, [markedCoords, center]);
 
 	const toggle = useCallback(() => {
 		setIsOpened(!isOpened);
@@ -94,10 +133,20 @@ const SharePositionLinkButton = ({
 		dispatch(isOpened ? activate : deactivate);
 	}, [dispatch, deactivate, isOpened, activate]);
 
+	// The plugin stops drawing after a marked place; keep it on while the tool
+	// is open so another click moves the place.
+	useEffect(() => {
+		if (isOpened && feature) dispatch(activate);
+	}, [dispatch, activate, isOpened, feature]);
+
+	const overlayId = useId();
+	const triggerRef = useRef<HTMLButtonElement>(null);
+
 	const closeAndReset = useCallback(
 		function () {
 			dispatch(resetAction);
 			close();
+			triggerRef.current?.focus();
 		},
 		[close, dispatch, resetAction],
 	);
@@ -105,9 +154,12 @@ const SharePositionLinkButton = ({
 	return (
 		<Fragment>
 			<button
+				ref={triggerRef}
 				className="ms3-map-overlay__button ms3-map-overlay__button--with-icon ms3-map-overlay__button--share-link"
 				type="button"
 				onClick={toggle}
+				aria-expanded={isOpened}
+				aria-controls={isOpened ? overlayId : undefined}
 			>
 				<span className="ms3-map-overlay__button__label">
 					{translate("ui.share-position-link.title")}
@@ -116,21 +168,64 @@ const SharePositionLinkButton = ({
 
 			{isOpened && (
 				<ToolOverlay
+					id={overlayId}
 					label={translate("ui.share-position-link.title")}
 					onClose={closeAndReset}
-					text={translate("ui.share-position-link.instructions")}
+					mapJump={keyboardDrawing}
+					text={translate(
+						feature
+							? "ui.share-position-link.instructions-marked"
+							: "ui.share-position-link.instructions",
+					)}
 				>
+					<LinkShare
+						label={translate(
+							feature
+								? "ui.share-position-link.link-marked"
+								: "ui.share-position-link.link-center",
+						)}
+						url={shareUrl}
+						title={translate("ui.share-position-link.shareTitle")}
+						buttonLabel={translate(
+							"ui.share-position-link.shareButtonLabel",
+						)}
+						onFinished={close}
+						onError={undefined}
+					/>
 					{feature && (
-						<LinkShare
-							url={shareUrl}
-							title={translate(
-								"ui.share-position-link.shareTitle",
-							)}
-							buttonLabel={translate(
-								"ui.share-position-link.shareButtonLabel",
-							)}
-							onFinished={close}
-							onError={undefined}
+						<button
+							className="ms3-map-tool-action ms3-map-tool-action--secondary"
+							type="button"
+							onClick={() => dispatch(resetAction)}
+						>
+							{translate("ui.share-position-link.remove-marker")}
+						</button>
+					)}
+					{keyboardDrawing && (
+						<ToolKeyboardHelp
+							items={[
+								{
+									keys: [
+										translate("ui.keys.space"),
+										translate("ui.keys.enter"),
+									],
+									action: translate(
+										"ui.share-position-link.keyboard.select",
+									),
+								},
+								{
+									keys: [translate("ui.keys.backspace")],
+									action: translate(
+										"ui.share-position-link.keyboard.remove",
+									),
+								},
+								{
+									keys: [translate("ui.keys.arrows")],
+									action: translate(
+										"ui.tool-overlay.keyboard.pan",
+									),
+								},
+							]}
 						/>
 					)}
 				</ToolOverlay>

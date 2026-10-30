@@ -6,6 +6,7 @@ import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 
 import {ANIMATE} from "@mapsight/core/lib/map/actions";
 
+import {announceStatus} from "../../helpers/announce-status";
 import {setDocumentLanguage} from "../../helpers/i18n";
 import type {MapsightUiFeature} from "../../types";
 import {
@@ -15,6 +16,8 @@ import {
 import FeaturePlaceActions from "./feature-place-actions";
 import PlaceActions from "./place-actions";
 import type {PlaceActionsConfig} from "./types";
+
+vi.mock("../../helpers/announce-status", () => ({announceStatus: vi.fn()}));
 
 vi.mock("../popover-dialog", () => ({
 	default: function MockPopover({
@@ -100,6 +103,7 @@ describe("PlaceActions", () => {
 
 	afterEach(() => {
 		cleanup();
+		vi.clearAllMocks();
 		setDocumentLanguage("de");
 		vi.unstubAllGlobals();
 	});
@@ -246,6 +250,7 @@ describe("PlaceActions", () => {
 
 		fireEvent.click(screen.getByRole("button", {name: "Link kopieren"}));
 		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith("Link kopiert");
 			expect(writeText).toHaveBeenCalledWith(
 				"https://example.de/plan?feature=schlosspark",
 			);
@@ -326,6 +331,41 @@ describe("PlaceActions", () => {
 			}),
 		);
 		expect(onScrollToMap).toHaveBeenCalledTimes(1);
+	});
+
+	it("fits the feature up to the configured zoom limit", () => {
+		const store = configureStore({
+			reducer: {
+				app: (state = {mapIsOutOfViewport: false}) => state,
+			},
+		});
+		const dispatch = vi.spyOn(store, "dispatch");
+
+		render(
+			<Provider store={store}>
+				<FeaturePlaceActions
+					feature={feature()}
+					config={{
+						permalink: () => null,
+						navigation: {fromGeometry: false},
+						showOnMap: {maxZoom: 20},
+					}}
+				/>
+			</Provider>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Diesen Ort auf der Karte zeigen",
+			}),
+		);
+
+		expect(dispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: ANIMATE,
+				options: expect.objectContaining({maxZoom: 20}),
+			}),
+		);
 	});
 
 	it("centers the feature without scrolling when the map is on-screen", () => {
@@ -429,7 +469,7 @@ describe("PlaceActions", () => {
 		).toBeTruthy();
 	});
 
-	it("keeps a permalink anchor in the document for share", () => {
+	it("exposes only the share button until its dialog opens", () => {
 		render(
 			<PlaceActions.Root
 				feature={feature()}
@@ -442,12 +482,46 @@ describe("PlaceActions", () => {
 			</PlaceActions.Root>,
 		);
 
-		const permalink = screen.getByRole("link", {
-			name: "Permalink",
-			hidden: true,
+		expect(
+			screen.getByRole("button", {name: "Diesen Ort teilen"}),
+		).toBeTruthy();
+		expect(
+			screen
+				.getByRole("navigation")
+				.querySelector(".ms3-place-actions__share > a"),
+		).toBeNull();
+	});
+
+	it("announces coordinate copy failure and success", async () => {
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			clipboard: {
+				writeText: vi
+					.fn()
+					.mockRejectedValueOnce(new Error("denied"))
+					.mockResolvedValueOnce(undefined),
+			},
 		});
-		expect(permalink.getAttribute("href")).toBe(
-			"https://example.de/plan?feature=schlosspark",
+		render(
+			<PlaceActions.Root
+				feature={feature()}
+				config={{...isolated, copyCoords: true}}
+			>
+				<PlaceActions.CopyCoords />
+			</PlaceActions.Root>,
 		);
+		const copy = screen.getByRole("button", {
+			name: "Diese Koordinaten kopieren",
+		});
+		fireEvent.click(copy);
+		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith(
+				"Kopieren fehlgeschlagen. Bitte kopieren Sie den Text manuell.",
+			);
+		});
+		fireEvent.click(copy);
+		await vi.waitFor(() => {
+			expect(announceStatus).toHaveBeenCalledWith("Koordinaten kopiert");
+		});
 	});
 });

@@ -1,5 +1,6 @@
 @use "breakpoint-sass/stylesheets/breakpoint";
 @use "../variables";
+@use "../mixins/reduced-motion";
 
 .ms3-list-cycling-box {
 	display: flex;
@@ -78,6 +79,7 @@
 			z-index: 1;
 			opacity: 0;
 			transition: opacity var(--ms3-transition-fast) var(--ms3-easing-default);
+			@include reduced-motion.respect-reduced-motion;
 		}
 
 		&::before {

@@ -1,10 +1,12 @@
 import type {Type as GeometryType} from "ol/geom/Geometry";
 import type Geometry from "ol/geom/Geometry";
 import LineString from "ol/geom/LineString";
+import MultiPolygon from "ol/geom/MultiPolygon";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 
 import type {INTERMEDIATE_FILTER, RING_FILTER, VERTICES_FILTER} from "../index";
+import extrudeGeometry, {type ExtrusionPart} from "./extrusion";
 import getLSSegmentVertices from "./getLineStringSegmentVerticesWithRotation";
 import getPolygonSegmentVertices from "./getPolygonRingSegmentVerticesWithRotation";
 
@@ -44,15 +46,43 @@ export type Derivation =
 	| "segmentEnd"
 	| "segmentEnds"
 	| "intermediateSegmentEnd"
-	| "intermediateSegmentEnds";
+	| "intermediateSegmentEnds"
+	| "extrusionRoof"
+	| "extrusionLitWalls"
+	| "extrusionShadedWalls";
+
+export type DerivationOptions = {
+	/** Height of `extrusion*` derivations in map units (`extrusion-height`). */
+	extrusionHeight?: number;
+};
+
+const EXTRUSION_PARTS: Partial<Record<string, ExtrusionPart>> = {
+	extrusionRoof: "roof",
+	extrusionLitWalls: "litWalls",
+	extrusionShadedWalls: "shadedWalls",
+};
 
 export default function deriveGeometriesFromBase(
 	base: Geometry,
 	derivation: Derivation | GeometryType | null = null,
+	{extrusionHeight = 0}: DerivationOptions = {},
 ): Array<GeometryWithMeta> {
 	// early return for common case
 	if (derivation === null) {
 		return [[base, {}]];
+	}
+
+	const extrusionPart = EXTRUSION_PARTS[derivation];
+	if (extrusionPart) {
+		// Points, lines and flat blocks have no walls; their roof is the base.
+		if (
+			!(base instanceof Polygon || base instanceof MultiPolygon) ||
+			!Number.isFinite(extrusionHeight) ||
+			extrusionHeight <= 0
+		) {
+			return extrusionPart === "roof" ? [[base, {}]] : [];
+		}
+		return [[extrudeGeometry(base, extrusionHeight, extrusionPart), {}]];
 	}
 
 	if (base instanceof LineString) {

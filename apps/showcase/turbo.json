@@ -1,0 +1,35 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"env": ["VITE_SHOWCASE_OSM_TILE_URL"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/configs/vite-workspace-dev.mts"
+			]
+		},
+		"build:mapsightStyle": {
+			"dependsOn": [
+				"@mapsight/vector-style-compiler#build",
+				"@mapsight/traffic-style#build"
+			],
+			"inputs": ["src/vector-styles/**", "package.json"],
+			"outputs": ["src/generated/mapsight-vector-styles/**"],
+			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+		},
+		"lint": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build:mapsightStyle"],
+			"inputs": [
+				"$TURBO_EXTENDS$",
+				"$TURBO_ROOT$/configs/vite-workspace-dev.mts"
+			]
+		},
+		"typecheck": {
+			"dependsOn": ["$TURBO_EXTENDS$", "build:mapsightStyle"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/configs/vite-workspace-dev.mts"
+			]
+		}
+	}
+}

@@ -264,6 +264,43 @@ describe("MapPointContextMenu", () => {
 		mapTarget.remove();
 	});
 
+	it("opens the keyboard menu at the view centre, not the last pointer position", async () => {
+		const mapTarget = document.createElement("div");
+		mapTarget.tabIndex = 0;
+		document.body.append(mapTarget);
+		const store = createStore(mapTarget);
+		Object.assign(store, {
+			getController: () => ({
+				getMap: () => ({
+					getTargetElement: () => mapTarget,
+					getEventCoordinate: () => [10, 52],
+					getPixelFromCoordinate: () => [100, 100],
+					getView: () => ({getCenter: () => [11, 53]}),
+				}),
+			}),
+		});
+		const writeText = vi.fn().mockResolvedValue(undefined);
+		vi.stubGlobal("navigator", {
+			...window.navigator,
+			clipboard: {writeText},
+		});
+		render(
+			<Provider store={store}>
+				<MapPointContextMenu />
+			</Provider>,
+		);
+		fireEvent.pointerMove(mapTarget, {clientX: 10, clientY: 20});
+		mapTarget.focus();
+		fireEvent.keyDown(mapTarget, {key: "F10", shiftKey: true});
+		fireEvent.click(
+			screen.getByRole("menuitem", {name: "Koordinaten kopieren"}),
+		);
+		await vi.waitFor(() => {
+			expect(writeText).toHaveBeenCalledWith("53.000000, 11.000000");
+		});
+		mapTarget.remove();
+	});
+
 	it("builds origin URLs for from-here", () => {
 		expect(originNavHref("google", 10.52, 52.26)).toBe(
 			"https://www.google.com/maps/dir/?api=1&origin=52.26,10.52",

@@ -1,9 +1,7 @@
 import type {HTMLAttributes, ReactElement, RefAttributes} from "react";
-import {
-	Tooltip as AriaTooltip,
-	Focusable,
-	TooltipTrigger,
-} from "react-aria-components";
+import {cloneElement, useRef} from "react";
+import {mergeProps, mergeRefs, useFocusable} from "react-aria";
+import {Tooltip as AriaTooltip, TooltipTrigger} from "react-aria-components";
 
 export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
@@ -21,6 +19,18 @@ export type TooltipProps = {
 	shouldFlip?: boolean;
 };
 
+function TooltipTarget({children}: {children: TooltipTriggerElement}) {
+	const ref = useRef<HTMLElement>(null);
+	const {focusableProps} = useFocusable({}, ref);
+	return cloneElement(children, {
+		...mergeProps(focusableProps, children.props),
+		// Group containers (e.g. the region list) must not become extra Tab stops.
+		// Native controls retain their normal focusability and explicit indices.
+		tabIndex: children.props.tabIndex,
+		ref: mergeRefs(ref, children.props.ref),
+	});
+}
+
 /** Visible hover/focus tooltip. Accessible name stays on the control. */
 export default function Tooltip({
 	text,
@@ -31,7 +41,7 @@ export default function Tooltip({
 }: TooltipProps): ReactElement {
 	return (
 		<TooltipTrigger delay={350} closeDelay={80}>
-			<Focusable>{children as never}</Focusable>
+			<TooltipTarget>{children}</TooltipTarget>
 			<AriaTooltip
 				placement={placement}
 				offset={7}

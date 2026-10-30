@@ -3,11 +3,9 @@ import de from "./de";
 import en from "./en";
 
 const DEFAULT_LANGUAGE = "de";
-let documentLanguage =
-	(typeof document !== "undefined" &&
-		document.documentElement &&
-		document.documentElement.lang) ||
-	DEFAULT_LANGUAGE;
+// Never derive first-render text from the browser document or runtime locale.
+// Hosts choose the same language on both sides via the lang plugin or setter.
+let documentLanguage = DEFAULT_LANGUAGE;
 
 const DICTIONARY: Record<string, Record<string, string>> = {de, en};
 
@@ -52,6 +50,10 @@ export function translate(
 ): string {
 	return (
 		DICTIONARY[language]?.[key] ??
+		DICTIONARY[language.toLowerCase().replaceAll("_", "-")]?.[key] ??
+		DICTIONARY[
+			language.toLowerCase().split(/[-_]/)[0] ?? DEFAULT_LANGUAGE
+		]?.[key] ??
 		DICTIONARY[DEFAULT_LANGUAGE]?.[key] ??
 		key
 	);

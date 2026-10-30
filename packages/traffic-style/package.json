@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/traffic-style",
 	"description": "Mapsight Traffic Style",
-	"version": "5.5.1",
+	"version": "5.5.4",
 	"type": "module",
 	"bin": {
 		"traffic-composable-icons": "scripts/traffic-composable-icons.js",
@@ -13,12 +13,12 @@
 		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/lib-js": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
-		"chokidar": "^5.0.0",
-		"fs-extra": "^11.4.0",
-		"lru-cache": "^11.5.2",
+		"chokidar": "^6.0.0",
+		"fs-extra": "^11.4.1",
+		"lru-cache": "^11.5.3",
 		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
-		"sharp": "^0.35.4",
+		"sharp": "^0.35.5",
 		"svgo": "^4.1.0",
 		"vinyl": "^3.0.1",
 		"zod": "catalog:"
@@ -26,7 +26,6 @@
 	"devDependencies": {
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@types/fs-extra": "^11.0.4",
-		"@types/markdown-table": "^3.0.0",
 		"@types/node": "catalog:",
 		"markdown-table": "^3.0.4",
 		"vitest": "catalog:"
@@ -61,11 +60,39 @@
 			"default": "./lib/runtime/icon-style.js"
 		}
 	},
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/traffic-style#readme",
 	"imports": {
 		"#icon/*": "./dist/lib/icon/*"
 	},
 	"license": "MIT",
 	"main": "default.js",
+	"mapsight": {
+		"preview": {
+			"generated": [
+				{
+					"inputs": [
+						"src/icons/",
+						"src/meta.json",
+						"scripts/dev/create-meta-json.ts",
+						"scripts/optimize-icons.ts"
+					],
+					"consumers": [
+						"src/lib/icon-meta.ts"
+					]
+				},
+				{
+					"inputs": [
+						"src/pictograms/",
+						"scripts/dev/import-pictograms.ts",
+						"scripts/dev/import-fontawesome.ts"
+					],
+					"outputs": [
+						"src/generated/pictograms/"
+					]
+				}
+			]
+		}
+	},
 	"peerDependencies": {
 		"ol": "catalog:",
 		"react": "catalog:"
@@ -83,7 +110,9 @@
 		"linkDirectory": true
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/traffic-style"
 	},
 	"scripts": {
 		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",

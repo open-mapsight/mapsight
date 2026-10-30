@@ -1,9 +1,20 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../configs/tsconfig-base-app.json",
-	"include": ["src/**/*"],
-	"references": [{"path": "./tsconfig.node.json"}],
+	"include": [
+		"src/**/*",
+		"e2e/**/*.ts",
+		"playwright.config.ts",
+		"vite.config.ts",
+		"vite.count-aggregator-mock.ts",
+		"count-aggregator-mock/**/*.ts",
+		"../../configs/vite-workspace-dev.mts",
+		"a11y.playwright.config.ts",
+		"a11y.spec.ts",
+		"a11y.config.mts"
+	],
 	"compilerOptions": {
+		"noEmit": true,
 		"types": ["@types/node"]
 	}
 }

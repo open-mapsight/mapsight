@@ -182,4 +182,3 @@ src/client.ts, src/lib/*                ← hand-written client + helpers
 ## Related packages
 
 - [`@mapsight/count-aggregator-ui`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/README.md) — React wizard, charts, and embed wrapper
-- [Improvement plan](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/PLAN.md) — phased roadmap for both packages

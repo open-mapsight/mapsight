@@ -30,6 +30,7 @@ import type {Feature as MapsightFeature, State} from "@mapsight/core/types";
 
 import type {MapsightStyleFunction} from "@mapsight/lib-ol/style/styleFunction";
 
+import {osmTileUrl} from "../osm-tile-url.ts";
 import {demoGeoJsonUrl} from "./demo-geojson.ts";
 
 export const VECTOR_WEBGL_FEATURE_SOURCE_ID = "webglComparisonFeatures";
@@ -241,11 +242,11 @@ export const baseMapsightConfig: Partial<State> = {
 	...map(
 		{
 			osm: osm(
-				"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				osmTileUrl,
 				true,
 				metaData(
 					"OSM",
-					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>-Mitwirkende',
+					'© <a href="https://www.openstreetmap.org/copyright" >OpenStreetMap-Mitwirkende</a>',
 					true,
 					false,
 					true,

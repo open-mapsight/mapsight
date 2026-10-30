@@ -10,7 +10,7 @@ Mapsight serves many host types — municipalities, Stadtmarketing, NGOs, commer
 Stakeholders often ask whether Mapsight replaces geoportals, GeoServer, or Google Maps.
 
 We need an explicit **product boundary** for architecture docs, integration guides, and ecosystem
-positioning ([GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md)).
+positioning ([GIS stack choices](../../ecosystem/GIS_STACK_CHOICES.md)).
 
 ## Decision
 
@@ -38,7 +38,7 @@ when **public money** or **municipal basemaps** are involved.
 
 ### Positive
 
-- Clear non-goals in [Principles](PRINCIPLES.md) and integration docs
+- Clear non-goals in [Principles](../PRINCIPLES.md) and integration docs
 - Stakeholder matrix in GIS stack choices without over-promising geoportal parity
 - CIVITAS/Masterportal work framed as **optional tiers**, not roadmap default
 
@@ -57,7 +57,7 @@ when **public money** or **municipal basemaps** are involved.
 
 ## References
 
-- [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md)
-- [Positioning](../ecosystem/POSITIONING.md)
-- [Principles](PRINCIPLES.md)
-- [Ecosystem](ECOSYSTEM.md)
+- [GIS stack choices](../../ecosystem/GIS_STACK_CHOICES.md)
+- [Positioning](../../ecosystem/POSITIONING.md)
+- [Principles](../PRINCIPLES.md)
+- [Ecosystem](../ECOSYSTEM.md)

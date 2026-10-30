@@ -16,26 +16,9 @@ import {
 	listStationTypes,
 	listStations,
 } from "./helpers.js";
+import {createMockFetch} from "./test-helpers.js";
 
 const baseUrl = "https://example.test/msp/public/count-aggregator";
-
-function createMockFetch(handler: (url: string) => unknown): typeof fetch {
-	return vi.fn((input: string | URL | Request) => {
-		const url =
-			typeof input === "string"
-				? input
-				: input instanceof URL
-					? input.toString()
-					: input.url;
-
-		return Promise.resolve({
-			ok: true,
-			status: 200,
-			headers: new Headers({"content-type": "application/json"}),
-			json: () => handler(url),
-		} as Response);
-	});
-}
 
 describe("typed endpoint helpers", () => {
 	afterEach(() => {
@@ -144,6 +127,24 @@ describe("typed endpoint helpers", () => {
 		});
 
 		expect(result.data[0]?.id).toBe(150);
+	});
+
+	it("forwards request option signals to fetch", async () => {
+		const fetchFn = createMockFetch(() => stationListFixture);
+		const client = createCountAggregatorClient(baseUrl, {fetch: fetchFn});
+		const controller = new AbortController();
+
+		await listStations(client, "bicycleSensorTotal", {
+			signal: controller.signal,
+		});
+		await getStationSums(client, "bicycleSensorTotal", 150, {
+			signal: controller.signal,
+		}).catch(() => undefined);
+
+		expect(fetchFn).toHaveBeenCalledTimes(2);
+		for (const [, init] of vi.mocked(fetchFn).mock.calls) {
+			expect(init?.signal).toBe(controller.signal);
+		}
 	});
 
 	it("gets aggregated values with metrics", async () => {

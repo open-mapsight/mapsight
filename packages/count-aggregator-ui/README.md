@@ -248,8 +248,9 @@ Set `locale: "de"` or `locale: "en"` on `CountAggregatorConfig` to choose built-
 from `document.documentElement.lang` with German fallback. Use `translations` for individual label overrides while the
 project keeps the long-term i18n library decision open.
 
+Set `sectionHeadingAs` on `CountAggregatorConfig` to match wizard and chart section headings to the host page outline,
+for example `"h2"` below a page's `h1`. The default remains `"h4"`.
+
 ## Related packages
 
 - [`@mapsight/count-aggregator-api`](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/README.md) — HTTP client and OpenAPI types
-- [API improvement plan](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-api/PLAN.md) — master roadmap
-- [UI execution checklist](https://github.com/open-mapsight/mapsight/blob/main/packages/count-aggregator-ui/PLAN.md) — UI-focused task list

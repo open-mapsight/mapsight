@@ -14,6 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {animate} from "@mapsight/core/lib/map/actions";
 
 import {MAP} from "../../config/constants/controllers";
+import {announceStatus} from "../../helpers/announce-status";
 import {mapExtentFromFeature} from "../../helpers/geo";
 import {translate} from "../../helpers/i18n";
 import {isMapOutOfViewportSelector} from "../../store/selectors";
@@ -161,8 +162,10 @@ function Share({
 		try {
 			await window.navigator.clipboard.writeText(share.href);
 			setCopied(true);
+			announceStatus(translate("ui.place-actions.share.copy-success"));
 		} catch {
 			setCopied(false);
+			announceStatus(translate("ui.place-actions.copy-failed"));
 		}
 	}, [share]);
 
@@ -198,7 +201,6 @@ function Share({
 		translate("ui.place-actions.share.tooltip"),
 		label,
 	);
-	const permalinkLabel = translate("ui.place-actions.share.permalink");
 
 	return (
 		<span className={classNames("ms3-place-actions__share", className)}>
@@ -217,12 +219,6 @@ function Share({
 					{chrome.visible}
 				</T>
 			</PlaceActionTooltip>
-			<a
-				className="ms3-place-actions__permalink ms3-visuallyhidden"
-				href={share.href}
-			>
-				{permalinkLabel}
-			</a>
 			<NativeDialog
 				isOpen={dialogOpen}
 				onClose={closeDialog}
@@ -251,11 +247,15 @@ function Share({
 
 function ShowOnMapButton({
 	feature,
+	maxZoom,
 	as: T = "button",
 	className,
 	label,
 	icon,
-}: PlaceActionPartProps & {feature: MapsightUiFeature}): ReactElement {
+}: PlaceActionPartProps & {
+	feature: MapsightUiFeature;
+	maxZoom: number;
+}): ReactElement {
 	const dispatch = useDispatch();
 	const isMapOutOfViewport = useSelector(isMapOutOfViewportSelector);
 	const dispatchAppChannelEvent = useAppChannelDispatchEvent();
@@ -267,7 +267,7 @@ function ShowOnMapButton({
 				animate(MAP, {
 					bounds,
 					duration: 500,
-					maxZoom: 17,
+					maxZoom,
 					padding: [60, 60, 60, 60],
 				}),
 			);
@@ -275,7 +275,13 @@ function ShowOnMapButton({
 		if (isMapOutOfViewport) {
 			dispatchAppChannelEvent(new Event(APP_EVENT_SCROLL_TO_MAP));
 		}
-	}, [dispatch, dispatchAppChannelEvent, feature, isMapOutOfViewport]);
+	}, [
+		dispatch,
+		dispatchAppChannelEvent,
+		feature,
+		isMapOutOfViewport,
+		maxZoom,
+	]);
 
 	const chrome = actionChrome(
 		translate("ui.place-actions.show-on-map.tooltip"),
@@ -319,8 +325,12 @@ function CopyCoords({
 		try {
 			await window.navigator.clipboard.writeText(copyCoords.text);
 			setCopied(true);
+			announceStatus(
+				translate("ui.place-actions.copy-coords.copy-success"),
+			);
 		} catch {
 			setCopied(false);
+			announceStatus(translate("ui.place-actions.copy-failed"));
 		}
 	}, [copyCoords]);
 
@@ -361,7 +371,13 @@ function ShowOnMap(props: PlaceActionPartProps): ReactElement | null {
 	if (!showOnMap || !ctx) {
 		return null;
 	}
-	return <ShowOnMapButton {...props} feature={ctx.feature} />;
+	return (
+		<ShowOnMapButton
+			{...props}
+			feature={ctx.feature}
+			maxZoom={showOnMap.maxZoom}
+		/>
+	);
 }
 
 function Navigate({

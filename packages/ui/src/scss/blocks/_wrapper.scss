@@ -1,10 +1,24 @@
+@use "../mixins/surface";
+
 .ms3-wrapper {
-	background: white;
+	@if surface.$themed {
+		background: var(--ms3-page-background-color);
+		// Follow the host's `color-scheme` (inherited) unless the host sets
+		// `--ms3-color-scheme`: without the property the declaration is invalid at
+		// computed-value time, which falls back to inheriting.
+		color-scheme: var(--ms3-color-scheme);
+	} @else {
+		background: white;
+	}
 	z-index: var(--ms3-z-index-wrapper);
 
 	&--mapOnly,
 	&--fullscreen {
-		background: white;
+		@if surface.$themed {
+			background: var(--ms3-page-background-color);
+		} @else {
+			background: white;
+		}
 		position: fixed;
 		top: var(--ms3-fullscreen-top);
 		left: 0;
@@ -20,5 +34,15 @@
 		.ms3-marginal {
 			display: none;
 		}
+	}
+}
+
+@if surface.$themed {
+	// Form controls take the text colour of their surface like other text in the
+	// wrapper, instead of the browser's `buttontext`/`fieldtext` (which follows
+	// `color-scheme`, not the `--ms3-*` tokens). No specificity: any component or
+	// host rule wins.
+	:where(.ms3-wrapper) :where(button, input, select, textarea) {
+		color: inherit;
 	}
 }

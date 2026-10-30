@@ -1,0 +1,19 @@
+@use "../variables";
+
+// Themed surfaces (`$ms3-future-v8-themedSurfaces`).
+//
+// Surfaces, text and borders that used fixed light colours take them from the `--ms3-*`
+// colour tokens instead, so a host that sets dark tokens gets dark chrome. The `var()`s resolve
+// on each element, so overrides on `.ms3-wrapper` (or any ancestor) apply.
+// `--ms3-map-control-background-color` and `--ms3-color-scheme` are optional host overrides and
+// are not emitted by `tokens`.
+
+$themed: variables.$ms3-future-v8-themedSurfaces;
+
+// map controls on narrow screens: translucent so the map shows through
+$map-control-background: var(
+	--ms3-map-control-background-color,
+	color-mix(in srgb, var(--ms3-background-color) 90%, transparent)
+);
+// hairline that works on light and dark surfaces
+$hairline: color-mix(in srgb, var(--ms3-foreground-color) 10%, transparent);

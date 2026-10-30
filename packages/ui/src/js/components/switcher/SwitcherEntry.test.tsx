@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 describe("SwitcherEntry exclusive base-layer selection", () => {
-	it("disables the active exclusive button with a cannot-deselect label", () => {
+	it("keeps the checked radio focusable and makes re-selection a no-op", () => {
 		setDocumentLanguage("en");
 		const toggleActive = vi.fn();
 
@@ -24,11 +24,12 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 		);
 
 		const button = screen.getByRole("radio", {
-			name: /Street map, active\. A base map must remain selected\./i,
+			name: "Street map",
 		});
-		expect(button.hasAttribute("disabled")).toBe(true);
+		expect(button.hasAttribute("disabled")).toBe(false);
+		expect(button.tabIndex).toBe(0);
 		expect(button.getAttribute("aria-checked")).toBe("true");
-		expect(button.getAttribute("aria-disabled")).toBe("true");
+		expect(button.getAttribute("aria-disabled")).toBeNull();
 
 		fireEvent.click(button);
 		expect(toggleActive).not.toHaveBeenCalled();
@@ -47,7 +48,7 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 			/>,
 		);
 
-		const button = screen.getByRole("radio", {name: "Aerial, inactive"});
+		const button = screen.getByRole("radio", {name: "Aerial"});
 		expect(button.hasAttribute("disabled")).toBe(false);
 		expect(button.getAttribute("aria-checked")).toBe("false");
 		expect(button.getAttribute("aria-disabled")).toBeNull();
@@ -104,5 +105,50 @@ describe("SwitcherEntry exclusive base-layer selection", () => {
 
 		fireEvent.click(button);
 		expect(toggleActive).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("SwitcherEntry accessible names", () => {
+	it("names both split-mode checkboxes with the layer title and state", () => {
+		const toggleActiveCheckbox = vi.fn();
+		const toggleActiveText = vi.fn();
+
+		render(
+			<SwitcherEntry
+				title="Parking"
+				activeCheckbox
+				activeText={false}
+				toggleActiveCheckbox={toggleActiveCheckbox}
+				toggleActiveText={toggleActiveText}
+			/>,
+		);
+
+		const [visibility, text] = screen.getAllByRole("checkbox");
+		expect(visibility.getAttribute("aria-label")).toBe("Parking, Aktiv");
+		expect(visibility.getAttribute("aria-checked")).toBe("true");
+		expect(text.getAttribute("aria-label")).toBe("Parking, Inaktiv");
+		expect(text.getAttribute("aria-checked")).toBe("false");
+
+		fireEvent.click(visibility);
+		expect(toggleActiveCheckbox).toHaveBeenCalledTimes(1);
+		fireEvent.click(text);
+		expect(toggleActiveText).toHaveBeenCalledTimes(1);
+	});
+
+	it("exposes the joint-mode status icon as a labelled image", () => {
+		setDocumentLanguage("en");
+
+		render(
+			<SwitcherEntry
+				title="Parking"
+				active
+				toggleActive={() => undefined}
+			/>,
+		);
+
+		expect(screen.getByRole("img", {name: "active"})).toBeTruthy();
+		expect(
+			screen.getByRole("checkbox", {name: "Parking, active"}),
+		).toBeTruthy();
 	});
 });

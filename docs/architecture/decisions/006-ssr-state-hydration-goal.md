@@ -13,7 +13,7 @@ without losing GIS state.
 
 - `browserEmbed` reads `data-dehydrated-state` from the container ([
   `packages/ui/src/js/embed/browser.ts`](../../../packages/ui/src/js/embed/browser.ts))
-- Node render entry points ([`packages/ui/src/js/server-handler.js`](../../../packages/ui/src/js/server-handler.js), [
+- Node render entry points ([`packages/ui/src/js/server-handler.ts`](../../../packages/ui/src/js/server-handler.ts), [
   `packages/ui/src/js/embed/node.ts`](../../../packages/ui/src/js/embed/node.ts))
 
 **What worked in production (reference deployment):**
@@ -82,7 +82,7 @@ Infosite/TYPO3 hosts wire it when CMS integration packages open-source.
 ## References
 
 - [`packages/ui/src/js/embed/browser.ts`](../../../packages/ui/src/js/embed/browser.ts)
-- [`packages/ui/src/js/server-handler.js`](../../../packages/ui/src/js/server-handler.js)
+- [`packages/ui/src/js/server-handler.ts`](../../../packages/ui/src/js/server-handler.ts)
 - [`starters/mapsight-next-starter`](../../../starters/mapsight-next-starter) — Next host copy-out template (evaluate,
   not mandate)
 - Planned: [integration/SSR_HYDRATION.md](../../integration/SSR_HYDRATION.md)

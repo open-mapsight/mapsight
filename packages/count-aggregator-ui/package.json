@@ -1,17 +1,17 @@
 {
 	"name": "@mapsight/count-aggregator-ui",
 	"description": "React chart and wizard UI for Mapsight count aggregator applications",
-	"version": "3.1.1",
+	"version": "3.2.1",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/count-aggregator-api": "workspace:^",
 		"@mapsight/traffic-style": "workspace:^",
-		"@tanstack/react-query": "^5.102.4",
+		"@tanstack/react-query": "^5.105.0",
 		"clsx": "^2.1.1",
 		"flatpickr": "^4.6.13",
 		"react-flatpickr": "^4.0.11",
 		"recharts": "^3.10.1",
-		"tailwind-merge": "^3.3.1",
+		"tailwind-merge": "^3.7.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
@@ -21,6 +21,7 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@types/react-flatpickr": "^3.8.11",
+		"@typescript/native": "catalog:",
 		"npm-run-all": "^4.1.5",
 		"react": "catalog:",
 		"react-dom": "catalog:",
@@ -43,16 +44,19 @@
 	"files": [
 		"dist"
 	],
+	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/count-aggregator-ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"@mapsight/ui": "workspace:^",
-		"@tanstack/react-query": "^5.102.4",
+		"@tanstack/react-query": "^5.105.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-select": "^5.10.2"
 	},
 	"repository": {
-		"url": "https://github.com/open-mapsight/mapsight"
+		"type": "git",
+		"url": "https://github.com/open-mapsight/mapsight",
+		"directory": "packages/count-aggregator-ui"
 	},
 	"scripts": {
 		"build": "run-s build:css build:modules",

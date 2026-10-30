@@ -1,5 +1,113 @@
 # @mapsight/showcase
 
+## 0.1.11
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`ab13ef7`, `2270229`, `6f5e113`, `eed3ab3`, `374a3e4`, `2d13e3d`, `957ed95`, `b4d67eb`, `59c334d`]:
+    - `@mapsight/core@14.6.7 → 14.6.8` (patch)
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/count-aggregator-api@1.5.0 → 1.5.1` (patch)
+    - `@mapsight/count-aggregator-ui@3.2.0 → 3.2.1` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
+## 0.1.10
+
+### Patch Changes
+
+- d12ea02: Build the showcase with the Oxc minifier and run accessibility audit targets in parallel while preserving the full baseline checks. Generate vector styles before standalone lint and typecheck tasks.
+- 1ff68dd: Apply the Mapsight brand shell to showcase navigation, footer and landing/legal
+  pages while preserving product UI styling and keeping the frame theme separate.
+- e3dc402: Add a standalone fictional citizen-service scenario using KERN CSS, scoped Mapsight theming and static fixtures. Remove production-specific demo data and disable unavailable static-host place search.
+- a27f576: Add a keyboard point input demo at `/ui/point-input`, with its stored GeoJSON shown below the map and an accessibility-gate scenario that pans and confirms with Enter.
+- 4803ecf: UI surfaces can follow a dark host theme. Set `$ms3-future-v8-themedSurfaces: true` with the other `@mapsight/ui` Sass variables to take the colours that were fixed to light values from the `--ms3-*` tokens: the `.ms3-wrapper` background (`--ms3-page-background-color`), the attribution box, tool overlay, mini legend, link share field, button and icon, list search input, search reset circle, disabled pagination text, marked point coordinates, map point menu border, and the translucent map controls on narrow screens (new optional `--ms3-map-control-background-color`, default `--ms3-background-color` at 90 % opacity). `.ms3-wrapper` follows the page's `color-scheme` unless the host sets the new optional `--ms3-color-scheme`, and buttons, inputs and selects without their own colour inherit the text colour instead of the browser default. The default stays unchanged: without the flag the compiled CSS is identical to before.
+
+    When you opt in: hosts that already set `--ms3-background-color` or `--ms3-page-background-color` to a non-white value see it on these surfaces; form controls that Mapsight does not colour take the inherited text colour instead of `buttontext`/`fieldtext`; and in the default theme four near-duplicate greys change slightly (link share field `#444` on `#f5f5f5` to `#222` on `#f2f2f2`, disabled page and coordinates `#555`/`#5c5c5c` to `#636567`, search reset circle `#eee` to `#f2f2f2`). Dark themes also need a light text colour on the page, or on the wrapper and portaled surfaces, and should set `--ms3-place-actions-fg`, `--ms3-outbound-fg`, `--ms3-focus-ring-color` and `--ms3-attributions-background-color`. See [Themed surfaces and dark host themes](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/README.md#themed-surfaces-and-dark-host-themes-ms3-future-v8-themedsurfaces). The flag becomes the only behaviour in v8.
+
+    The KERN citizen-service scenario enables both themed surfaces and themed icons, replacing its temporary dark-mode overrides with the product flags.
+
+- Updated dependencies [`c1627bd`, `ff3adb5`, `2f975c0`, `a27f576`, `8f0f4b2`, `4803ecf`, `69fc674`]:
+    - `@mapsight/ui@7.9.2 → 7.10.0` (minor)
+    - `@mapsight/core@14.6.6 → 14.6.7` (patch)
+    - `@mapsight/lib-js@3.0.10 → 3.0.11` (patch)
+    - `@mapsight/lib-ol@4.3.1 → 4.3.2` (patch)
+    - `@mapsight/lib-redux@2.2.4 → 2.2.5` (patch)
+
+## 0.1.9
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `@tanstack/react-query` `^5.104.2` → `^5.104.5` (patch)
+
+- 73abd42: Serve deployed basemap tiles through the same-origin tile proxy. Main and PR preview builds set `VITE_SHOWCASE_OSM_TILE_URL` to `/tiles/osm/{z}/{x}/{y}.png`, so visitors' browsers no longer request tiles from tile.openstreetmap.org. Local development keeps direct OSM tiles.
+- Updated dependencies [`4e0a815`, `3ea8162`, `133cf96`, `7a399a1`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/core@14.6.4 → 14.6.5` (patch)
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/count-aggregator-ui@3.1.4 → 3.2.0` (minor)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
+## 0.1.8
+
+### Patch Changes
+
+- 1ea59f1: Guide PR reviewers to affected showcase screens with suggested checks and main comparisons after successful preview deployments. Infer workspace source mappings and validate declarative review guides and generated dependencies in CI.
+- 7a2598e: Support static showcase hosting with a browser mock API for count queries and CSV exports, and publish automatic pull-request previews.
+- Updated dependencies [`0143205`, `8f88cd5`, `65abc99`, `2081daa`, `743286d`, `6dfb922`, `fc68480`, `a02ab12`, `cd3cdf9`, `23fd018`]:
+    - `@mapsight/ui@7.7.0 → 7.8.0` (minor)
+
+## 0.1.7
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@tanstack/react-query` `^5.104.1` → `^5.104.2` (patch)
+
+- Updated dependencies [`dd49f24`, `79652e1`, `96cb6b4`, `37259f5`]:
+    - `@mapsight/count-aggregator-ui@3.1.3 → 3.1.4` (patch)
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+    - `@mapsight/core@14.6.3 → 14.6.4` (patch)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
+## 0.1.6
+
+### Patch Changes
+
+- 8c0076f: Bump dependencies from Dependabot ([#311](https://github.com/open-mapsight/mapsight/pull/311)):
+
+    - `react-router-dom` `^7.18.3` → `^7.18.4` (patch)
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@tanstack/react-query` `^5.102.4` → `^5.103.2` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `@tanstack/react-query` `^5.103.2` → `^5.104.1` (minor)
+
+- Updated dependencies [`45aaead`, `e74d2c8`, `d35cc9f`, `a65a96e`, `43ce343`, `86feccf`, `5980a66`, `63cf309`, `5dba09f`, `6e1146e`, `7dd3752`, `c46c174`, `58a9796`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/core@14.6.2 → 14.6.3` (patch)
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+    - `@mapsight/count-aggregator-ui@3.1.2 → 3.1.3` (patch)
+    - `@mapsight/count-aggregator-api@1.4.0 → 1.5.0` (minor)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+    - `@mapsight/lib-redux@2.2.3 → 2.2.4` (patch)
+
 ## 0.1.5
 
 ### Patch Changes

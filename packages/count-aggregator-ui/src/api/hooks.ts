@@ -31,9 +31,9 @@ const STALE_TIME_MS = 5 * 60 * 1000;
 export function useStationTypesQuery(apiBaseUrl: string) {
 	return useQuery({
 		queryKey: ["count-aggregator", "station-types", apiBaseUrl],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			const client = createCountAggregatorClient(apiBaseUrl);
-			const response = await listStationTypes(client);
+			const response = await listStationTypes(client, {signal});
 			return response.data;
 		},
 		staleTime: STALE_TIME_MS,
@@ -85,9 +85,11 @@ export function useStationsQuery(appId: string) {
 			appConfig.apiBaseUrl,
 			appConfig.stationType,
 		],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await listStations(client, appConfig.stationType);
+			const response = await listStations(client, appConfig.stationType, {
+				signal,
+			});
 			return mapStationList(response);
 		},
 		staleTime: STALE_TIME_MS,
@@ -144,16 +146,20 @@ export function useLastValues(
 			appConfig.stationType,
 			req,
 		],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await getLastValues(client, {
-				type: appConfig.stationType,
-				resolution: req!.resolution,
-				stationIds: req!.stationIds,
-				limit: req!.limit,
-				startDate: req!.startDate,
-				metrics: req!.metrics,
-			});
+			const response = await getLastValues(
+				client,
+				{
+					type: appConfig.stationType,
+					resolution: req!.resolution,
+					stationIds: req!.stationIds,
+					limit: req!.limit,
+					startDate: req!.startDate,
+					metrics: req!.metrics,
+				},
+				{signal},
+			);
 			return mapTimeSeriesMap(response, req!.metrics);
 		},
 		staleTime: STALE_TIME_MS,
@@ -210,16 +216,20 @@ export function useAggregatedValues(
 			appConfig.stationType,
 			req,
 		],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await getValues(client, {
-				type: appConfig.stationType,
-				from: req!.from,
-				to: req!.to,
-				resolution: req!.resolution,
-				stationIds: req!.stationIds,
-				metrics: req!.metrics,
-			});
+			const response = await getValues(
+				client,
+				{
+					type: appConfig.stationType,
+					from: req!.from,
+					to: req!.to,
+					resolution: req!.resolution,
+					stationIds: req!.stationIds,
+					metrics: req!.metrics,
+				},
+				{signal},
+			);
 			return mapTimeSeriesMap(response, req!.metrics);
 		},
 		staleTime: STALE_TIME_MS,
@@ -274,16 +284,20 @@ export function useRawValues(
 			appConfig.stationType,
 			req,
 		],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			const client = createCountAggregatorClient(appConfig.apiBaseUrl);
-			const response = await getRawValues(client, {
-				type: appConfig.stationType,
-				stationIds: req!.stationIds,
-				from: req!.from,
-				to: req!.to,
-				limit: req!.limit,
-				order: req!.order,
-			});
+			const response = await getRawValues(
+				client,
+				{
+					type: appConfig.stationType,
+					stationIds: req!.stationIds,
+					from: req!.from,
+					to: req!.to,
+					limit: req!.limit,
+					order: req!.order,
+				},
+				{signal},
+			);
 			return mapRawValuesMap(response, req!.metric);
 		},
 		staleTime: STALE_TIME_MS,
@@ -310,7 +324,7 @@ export function useTrafficEvents(
 			startDate,
 			endDate,
 		],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			if (eventsEndpoint === undefined) {
 				return {manualEvents: []};
 			}
@@ -319,7 +333,7 @@ export function useTrafficEvents(
 			const endDateStr = dateToYmd(endDate!);
 			const response = await fetch(
 				`${eventsEndpoint}/${startDateStr}/${endDateStr}`,
-				{headers: {Accept: "application/json"}},
+				{headers: {Accept: "application/json"}, signal},
 			);
 
 			if (!response.ok) {
@@ -344,13 +358,14 @@ export function usePresetsQuery(appId: string) {
 
 	return useQuery({
 		queryKey: ["count-aggregator", appId, "presets", presetsEndpoint],
-		queryFn: async () => {
+		queryFn: async ({signal}) => {
 			if (presetsEndpoint === undefined) {
 				return [];
 			}
 
 			const response = await fetch(presetsEndpoint, {
 				headers: {Accept: "application/json"},
+				signal,
 			});
 
 			if (!response.ok) {

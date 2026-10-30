@@ -102,6 +102,10 @@
 	}
 
 	&__details {
+		&[hidden] {
+			display: none;
+		}
+
 		display: block;
 		width: 100%;
 		overflow: auto;

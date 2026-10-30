@@ -9,8 +9,10 @@ import fitToExtent, {
 
 export const DEFAULT_OPTIONS = {...DEFAULT_OPTIONS_BASE};
 
-// TODO: Document keepZoom option!
-// TODO: Document skipIfInView option!
+/**
+ * Fits the view to the feature's extent. See {@link ExtendedFitOptions} for
+ * the `keepZoom` and `skipIfInView` behavior.
+ */
 export default function fitToFeature(
 	map: OlMap,
 	feature: Feature,

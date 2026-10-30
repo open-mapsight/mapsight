@@ -7,20 +7,45 @@ import type {Padding} from "../index";
 import containsExtentWithPadding from "./containsExtentWithPadding";
 
 export type ExtendedFitOptions = FitOptions & {
+	/**
+	 * Keep the current view zoom when fitting: `maxZoom` is clamped to the
+	 * current zoom, so the view may still zoom out to fit the extent but
+	 * never zooms in past where the user already is.
+	 */
 	keepZoom: boolean;
+	/**
+	 * Skip the fit entirely when the extent is already fully visible in the
+	 * current viewport (including `padding`), avoiding needless animation on
+	 * repeated calls.
+	 */
 	skipIfInView: boolean;
 };
 
+/** Default duration of the fit animation, in milliseconds. */
+export const DEFAULT_FIT_DURATION = 300;
+
+/**
+ * Default padding around the fitted extent, in pixels, as
+ * `[top, right, bottom, left]`.
+ */
+export const DEFAULT_FIT_PADDING: Padding = [60, 100, 60, 100];
+
+/** Default `maxZoom` applied when fitting an extent. */
+export const DEFAULT_FIT_MAX_ZOOM = 17;
+
 export const DEFAULT_OPTIONS: ExtendedFitOptions = {
-	duration: 300, // TODO: MAGIC NUMBER!
-	padding: [60, 100, 60, 100], // TODO: MAGIC NUMBER!
-	keepZoom: false, // TODO: Document keepZoom option!
-	maxZoom: 17, // TODO: MAGIC NUMBER!
-	skipIfInView: true, // TODO: Document skipIfInView option!
+	duration: DEFAULT_FIT_DURATION,
+	padding: DEFAULT_FIT_PADDING,
+	keepZoom: false,
+	maxZoom: DEFAULT_FIT_MAX_ZOOM,
+	skipIfInView: true,
 };
 
-// TODO: Document keepZoom option!
-// TODO: Document skipIfInView option!
+/**
+ * Fits the view to the given extent, animating over `duration`. Ignores
+ * non-finite extents. See {@link ExtendedFitOptions} for `keepZoom` and
+ * `skipIfInView`.
+ */
 export default function fitToExtent(
 	map: OlMap,
 	extent: Extent,

@@ -1,0 +1,51 @@
+name: Showcase build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: showcase-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: $/.github/actions/setup/
+      - name: Build showcase and its workspace dependencies
+        env:
+          VITE_SHOWCASE_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
+        run: pnpm turbo build --filter=@mapsight/showcase
+      - name: Verify deployment orchestration
+        run: node --test scripts/preview-deploy.test.mts scripts/preview-review-links.test.mts
+      - name: Validate review guides and generated source dependencies
+        run: node scripts/preview-review-links.mts --check
+      - name: Install browser for static hosting checks
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Verify production showcase without mock server middleware
+        run: pnpm --filter @mapsight/showcase test:e2e
+        env:
+          SHOWCASE_TEST_STATIC: "1"
+          VITE_SHOWCASE_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
+      - name: Upload static showcase
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: showcase-static
+          path: apps/showcase/dist
+          if-no-files-found: error
+          retention-days: 3
+          include-hidden-files: true

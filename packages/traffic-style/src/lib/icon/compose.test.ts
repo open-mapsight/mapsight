@@ -1,7 +1,6 @@
 import {readFile} from "node:fs/promises";
 import {fileURLToPath} from "node:url";
 
-// eslint-disable-next-line import-x/no-named-as-default -- sharp CJS default interop
 import sharp from "sharp";
 import {describe, expect, it} from "vitest";
 

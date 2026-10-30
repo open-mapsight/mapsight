@@ -1,5 +1,99 @@
 # mapsight-vite-spa-starter
 
+## 0.1.9
+
+### Patch Changes
+
+- 374a3e4: Use the native TypeScript 7 compiler for typechecks and library builds while preserving the TypeScript 6 API for existing tools and the UI's public React prop declarations.
+- b4d67eb: Refresh compatible runtime and build dependencies, including React Redux, TanStack Query, Vite, Next.js, and Sass 1.106.1 with its empty-attribute-selector fix. Update transitive build tools to patched versions.
+- Updated dependencies [`6f5e113`, `374a3e4`, `b4d67eb`]:
+    - `@mapsight/ui@7.10.0 → 7.10.1` (patch)
+    - `@mapsight/lib-ol@4.3.2 → 4.3.3` (patch)
+
+## 0.1.8
+
+### Patch Changes
+
+- 133cf96: Bump dependencies from Dependabot ([#396](https://github.com/open-mapsight/mapsight/pull/396)):
+
+    - `react` `^19.3.0` → `^19.3.1` (patch)
+    - `react-dom` `^19.3.0` → `^19.3.1` (patch)
+    - `sass` `^1.105.0` → `1.105.1` (patch)
+
+- Updated dependencies [`4e0a815`, `133cf96`, `7a399a1`, `f96b0e4`, `c823f15`, `926e08f`, `017e11c`, `8ce5ee0`]:
+    - `@mapsight/ui@7.8.0 → 7.9.0` (minor)
+    - `@mapsight/lib-ol@4.3.0 → 4.3.1` (patch)
+    - `@mapsight/traffic-style@5.5.3 → 5.5.4` (patch)
+
+## 0.1.7
+
+### Patch Changes
+
+- dd49f24: Bump dependencies from Dependabot ([#367](https://github.com/open-mapsight/mapsight/pull/367)):
+
+    - `@types/node` `^24.19.1` → `^24.19.2` (patch)
+    - `zod` `^4.6.5` → `^4.6.7` (patch)
+
+- Updated dependencies [`dd49f24`, `79652e1`, `96cb6b4`, `37259f5`]:
+    - `@mapsight/ui@7.6.3 → 7.7.0` (minor)
+    - `@mapsight/lib-ol@4.2.6 → 4.3.0` (minor)
+
+## 0.1.6
+
+### Patch Changes
+
+- 8c0076f: Bump dependencies from Dependabot ([#311](https://github.com/open-mapsight/mapsight/pull/311)):
+
+    - `react-router-dom` `^7.18.3` → `^7.18.4` (patch)
+
+- 86feccf: Bump dependencies from Dependabot ([#315](https://github.com/open-mapsight/mapsight/pull/315)):
+
+    - `vite` `^8.2.2` → `^8.3.0` (minor)
+
+- 5980a66: Bump dependencies from Dependabot ([#316](https://github.com/open-mapsight/mapsight/pull/316)):
+
+    - `@types/node` `^24.13.3` → `^24.13.6` (patch)
+    - `@types/react` `^19.2.18` → `^19.3.0` (minor)
+    - `@types/react-dom` `~19.2.7` → `~19.3.0` (minor)
+    - `react` `^19.2.8` → `^19.3.0` (minor)
+    - `react-dom` `^19.2.8` → `^19.3.0` (minor)
+    - `sass` `^1.104.0` → `^1.105.0` (minor)
+    - `zod` `^4.5.4` → `^4.6.5` (minor)
+
+- 63cf309: Bump dependencies from Dependabot ([#363](https://github.com/open-mapsight/mapsight/pull/363)):
+
+    - `vite` `^8.3.0` → `^8.3.3` (patch)
+
+- d35cc9f: Bump dependencies from Dependabot ([#364](https://github.com/open-mapsight/mapsight/pull/364)):
+
+    - `@types/node` `^24.13.6` → `^24.19.1` (minor)
+    - `ol` `^10.10.0` → `^10.11.0` (minor)
+
+- Updated dependencies [`d35cc9f`, `86feccf`, `5980a66`, `5dba09f`, `6e1146e`, `c46c174`, `58a9796`, `fe64ff0`, `03c85eb`, `72fce5c`, `d45d9eb`, `af0c6ca`, `fbbba81`, `8b718fc`, `e178744`, `758699b`, `1f37dea`, `bd95839`]:
+    - `@mapsight/ui@7.6.2 → 7.6.3` (patch)
+    - `@mapsight/lib-js@3.0.9 → 3.0.10` (patch)
+    - `@mapsight/lib-ol@4.2.5 → 4.2.6` (patch)
+    - `@mapsight/traffic-style@5.5.2 → 5.5.3` (patch)
+
+## 0.1.5
+
+### Patch Changes
+
+- 093b3f0: Bump production dependencies from Dependabot ([#304](https://github.com/open-mapsight/mapsight/pull/304)):
+
+    - `react-aria` `^3.52.0` → `^3.52.1` (patch)
+    - `react-aria-components` `^1.21.0` → `^1.21.1` (patch)
+    - `postcss` `^8.5.26` → `^8.5.28` (patch)
+    - `sass` `^1.103.1` → `^1.104.0` (minor)
+    - `@types/react-dom` `^19.2.5` → `~19.2.7` (patch)
+    - `@playwright/test` `^1.62.1` → `^1.63.0` (minor)
+    - `playwright` `^1.62.1` → `^1.63.0` (minor)
+
+- Updated dependencies [`65e2528`, `093b3f0`]:
+    - `@mapsight/lib-js@3.0.8 → 3.0.9` (patch)
+    - `@mapsight/lib-ol@4.2.4 → 4.2.5` (patch)
+    - `@mapsight/ui@7.6.1 → 7.6.2` (patch)
+
 ## 0.1.4
 
 ### Patch Changes
