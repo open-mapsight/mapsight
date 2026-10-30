@@ -314,7 +314,12 @@ describe("compact feature-source SSR indexes", () => {
 					sourceState(stores[1]!.getState()),
 					"other",
 				),
-			).toBeNull();
+			).toEqual(
+				findFeatureInFeatureSourcesById(
+					sourceState(stores[0]!.getState()),
+					"other",
+				),
+			);
 		},
 	);
 });
