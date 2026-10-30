@@ -134,12 +134,12 @@ describe("feature-source definition invalidation", () => {
 				"featuresKey",
 				"featuresCount",
 				"error",
-				"requestId",
 				"refreshPaused",
 				"dataHistory",
 			] as const)
 				expect(next[key]).toBeUndefined();
 			expect(next.isLoading).toBe(false);
+			expect(next.requestId).toBe(7);
 			expect(next.lastUpdate).toBeNull();
 			expect(next.lastActionType).toBeNull();
 			expect(next.doRefresh).toBe(true);
@@ -444,6 +444,48 @@ describe("feature-source load ownership", () => {
 		await tick();
 		expect(current(store)?.ids).toEqual(["polled"]);
 	});
+
+	it.each(["loaded", "pending success", "pending failure"] as const)(
+		"keeps polling and retrying the new URL without an explicit reload after a %s request",
+		async (previous) => {
+			const {pending, fetch} = deferredFetch();
+			const store = createStore({doRefresh: true, timer: 100});
+			store.dispatch(load(controllerName, sourceId));
+			await tick();
+			if (previous === "loaded") {
+				pending[0]!.resolve(collection("old"));
+				await tick();
+			}
+
+			store.dispatch(
+				merge([controllerName, sourceId], {url: "/new.geojson"}),
+			);
+			if (previous === "pending success")
+				pending[0]!.resolve(collection("retired"));
+			else if (previous === "pending failure")
+				pending[0]!.reject(new Error("retired failure"));
+			await tick();
+			expect(current(store)?.data).toBeNull();
+			expect(current(store)?.error).toBeUndefined();
+			expect(current(store)?.isLoading).toBe(false);
+
+			await tick(100);
+			expect(fetch).toHaveBeenCalledTimes(2);
+			expect(pending[1]?.url).toContain("/new.geojson");
+			const failure = new Error("new URL temporarily unavailable");
+			pending[1]!.reject(failure);
+			await tick();
+			expect(current(store)?.error).toBe(failure);
+
+			await tick(100);
+			expect(fetch).toHaveBeenCalledTimes(3);
+			expect(pending[2]?.url).toContain("/new.geojson");
+			pending[2]!.resolve(collection("polled"));
+			await tick();
+			expect(current(store)?.ids).toEqual(["polled"]);
+			expect(current(store)?.error).toBeUndefined();
+		},
+	);
 
 	it("retires the old refresh timer while the current definition keeps polling", async () => {
 		const {pending, fetch} = deferredFetch();

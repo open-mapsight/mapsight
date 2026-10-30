@@ -15,13 +15,16 @@ data written by a controlled edit, `setData`, or a real generic `set`/`merge` da
 
 Changing a source's type, or an `xhr-json` source's URL, retires its old payload
 and load state together: data, IDs, lookup index, fingerprints, error, loading
-flag, request number, update metadata, refresh pause, and undo/redo history.
+flag, update metadata, refresh pause, and undo/redo history.
 History belongs to the old definition and cannot restore that collection into
 the replacement. `doRefresh`, `timer`, filters, and other configuration are
 retained. Unrelated configuration changes keep existing data and history.
 
 Refresh timers check the current request number before scheduling another load.
-A retired timer can expire, but cannot restart its old definition. The current
+A definition change retains that number so the existing timer can load the
+replacement definition, even when nothing else calls `load`. Clearing the loading
+flag rejects the old completion. An explicit new load assigns a new number and
+retires the previous timer, preventing duplicate polling chains. The current
 source continues its normal polling and error-retry behavior. This does not
 cancel the underlying fetch or remove an otherwise valid URL-keyed document
 cache entry; the request can still populate the existing cache for that URL.
@@ -35,5 +38,7 @@ network work so core owns the full lifecycle.
 Regression tests cover deferred responses in both completion orders, queued
 completions, URL/type replacement, removal/re-addition, forced refresh,
 in-flight deduplication, manual completion compatibility, edits with undo, and
-retired/current refresh timers. Existing cache, HTTP validation, and singleflight
-tests continue to cover the document cache independently.
+retired/current refresh timers, including URL replacement without an explicit
+reload after a completed or still-pending request. Existing cache, HTTP
+validation, and singleflight tests continue to cover the document cache
+independently.

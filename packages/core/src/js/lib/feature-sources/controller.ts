@@ -293,8 +293,9 @@ function reduceUncontrolledFeatureSourceChanges(
 				ids: undefined,
 				featuresById: undefined,
 				error: undefined,
+				// Retire the completion, but keep the token so the existing
+				// refresh timer can load the replacement definition.
 				isLoading: false,
-				requestId: undefined,
 				refreshPaused: undefined,
 				lastUpdate: null,
 				lastActionType: null,
