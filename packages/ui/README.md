@@ -69,6 +69,11 @@ call `props.deferCommit()` before scheduling React and pass the returned callbac
 completion on return. See [SSR and hydration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/SSR_HYDRATION.md#renderer-commit-lifecycle)
 for the contract and migration example.
 
+Server embeds can opt into `compactFeatureSourceIndexes: true` on `nodeEmbed` to
+omit derived lookup indexes from wire JSON. Core restores the indexes before
+hydration. See [Compact SSR state](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/COMPACT_SSR.md)
+for the API and compatibility requirements.
+
 ## SCSS (host builds)
 
 The npm package includes `src/scss/` (variables, reset, default theme partials). Host apps compile their own stylesheet

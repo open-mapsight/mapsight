@@ -125,6 +125,40 @@ describe("feature source selectors", () => {
 		expect(result?.featuresById).toEqual({visible: visibleFeature});
 	});
 
+	it.each(["constructor", "toString", "__proto__"])(
+		"indexes %s in filtered views and keeps the first visible duplicate",
+		(id) => {
+			addFilterFunction("testVisibleOnly", (features) =>
+				features.filter((feature) => feature.properties.visible),
+			);
+			const first = {...visibleFeature, id};
+			const second = {
+				...first,
+				properties: {visible: true, duplicate: true},
+			};
+			const result = createFilteredFeatureSourceSelector(
+				"featureSources",
+				"places",
+			)({
+				featureSources: {
+					places: {
+						...featureSources.places,
+						data: {
+							type: "FeatureCollection",
+							features: [hiddenFeature, first, second],
+						},
+					},
+				},
+				testVisibleOnly: true,
+			} satisfies State);
+			expect(result?.ids).toEqual([id, id]);
+			expect(result?.featuresById?.[id]).toBe(first);
+			expect(findFeatureInFeatureSourcesById({places: result!}, id)).toBe(
+				first,
+			);
+		},
+	);
+
 	it("reuses the previous filtered state when only collection metadata changed", () => {
 		const selector = createFilteredFeatureSourceSelector(
 			"featureSources",

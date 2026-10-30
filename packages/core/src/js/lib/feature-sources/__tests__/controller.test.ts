@@ -115,6 +115,38 @@ describe("FeatureSourcesController", () => {
 		});
 	});
 
+	it.each(["constructor", "toString", "__proto__"])(
+		"indexes %s as an own feature entry and keeps the first duplicate",
+		(id) => {
+			const first = {...sensorFeature, id};
+			const duplicate = {...first, properties: {duplicate: true}};
+			const data = {
+				type: "FeatureCollection" as const,
+				features: [first, duplicate],
+			};
+			const initial = controller.reduce(
+				{smartCity: {...loadedState.smartCity, data}},
+				{type: "initialize"},
+			);
+			const loaded = controller.reduce(loadedState, {
+				type: LOAD_FEATURE_SOURCE_SUCCESS,
+				id: "smartCity",
+				data,
+			});
+			for (const state of [initial, loaded]) {
+				const index = state.smartCity?.featuresById;
+				expect(state.smartCity?.ids).toEqual([id, id]);
+				expect(Object.hasOwn(index!, id)).toBe(true);
+				expect(index?.[id]).toBe(first);
+				expect(Object.keys(index!)).toEqual([id]);
+				const roundTripped = JSON.parse(
+					JSON.stringify(index),
+				) as Record<string, Feature>;
+				expect(roundTripped[id]).toEqual(first);
+			}
+		},
+	);
+
 	it("skips non-object feature entries when indexing loaded data", () => {
 		const state = controller.reduce(loadedState, {
 			type: LOAD_FEATURE_SOURCE_SUCCESS,
