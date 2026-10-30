@@ -1,12 +1,17 @@
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 
-import {ACTION_MERGE, ACTION_SET} from "@/lib/base/reducer";
+import {
+	ACTION_MERGE,
+	ACTION_MERGE_CONFIG,
+	ACTION_SET,
+} from "@/lib/base/reducer";
 import {
 	FEATURE_SOURCE_DATA_ADD_FEATURE,
 	FEATURE_SOURCE_DATA_UNDO,
 	LOAD_FEATURE_SOURCE_SUCCESS,
 } from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
+import * as featuresKey from "@/lib/feature-sources/features-key";
 import type {FeatureSourcesState} from "@/lib/feature-sources/types";
 import type {Feature} from "@/types";
 
@@ -53,6 +58,96 @@ const loadedState = {
 } satisfies FeatureSourcesState;
 
 describe("FeatureSourcesController", () => {
+	it("retains normalized sources and skips fingerprinting for repeated config", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const fingerprint = vi.spyOn(
+			featuresKey,
+			"nextFeatureCollectionFeaturesKey",
+		);
+		try {
+			const next = controller.reduce(initial, {
+				type: ACTION_MERGE_CONFIG,
+				path: [],
+				value: {
+					smartCity: {
+						type: "xhr-json",
+						url: "/smart-city.geojson",
+						filters: [],
+					},
+				},
+			});
+			expect(next).toBe(initial);
+			expect(next.smartCity?.data).toBe(initial.smartCity?.data);
+			expect(next.smartCity?.featuresById).toBe(
+				initial.smartCity?.featuresById,
+			);
+			expect(fingerprint).not.toHaveBeenCalled();
+		} finally {
+			fingerprint.mockRestore();
+		}
+	});
+
+	it("retains data and indexes when config changes filters", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const next = controller.reduce(initial, {
+			type: ACTION_MERGE_CONFIG,
+			path: ["smartCity"],
+			value: {filters: ["tags"]},
+		});
+		expect(next.smartCity?.filters).toEqual(["tags"]);
+		expect(next.smartCity?.data).toBe(initial.smartCity?.data);
+		expect(next.smartCity?.featuresById).toBe(
+			initial.smartCity?.featuresById,
+		);
+		expect(next.smartCity?.ids).toBe(initial.smartCity?.ids);
+		expect(next.smartCity?.featuresKey).toBe(
+			initial.smartCity?.featuresKey,
+		);
+	});
+
+	it.each([{url: "/new.geojson"}, {type: "local"}])(
+		"still invalidates loaded data when loader config changes: %o",
+		(value) => {
+			const initial = controller.reduce(loadedState, {
+				type: "initialize",
+			});
+			const action = {path: ["smartCity"], value};
+			expect(
+				controller.reduce(initial, {
+					type: ACTION_MERGE_CONFIG,
+					...action,
+				}),
+			).toStrictEqual(
+				controller.reduce(initial, {type: ACTION_MERGE, ...action}),
+			);
+			expect(
+				controller.reduce(initial, {
+					type: ACTION_MERGE_CONFIG,
+					...action,
+				}).smartCity?.data,
+			).toBeNull();
+		},
+	);
+
+	it("refreshes fingerprints and indexes for actual config data edits", () => {
+		const initial = controller.reduce(loadedState, {type: "initialize"});
+		const next = controller.reduce(initial, {
+			type: ACTION_MERGE_CONFIG,
+			path: ["smartCity"],
+			value: {data: {features: [{properties: {free: 1}}]}},
+		});
+		expect(next.smartCity?.data?.features?.[0]?.properties).toEqual({
+			free: 1,
+		});
+		expect(next.smartCity?.featuresKey).not.toBe(
+			initial.smartCity?.featuresKey,
+		);
+		expect(next.smartCity?.featuresById?.["sensor-1"]).toBe(
+			next.smartCity?.data?.features?.[0],
+		);
+		expect(initial.smartCity?.data?.features?.[0]?.properties).toEqual({});
+	});
+
 	it("normalizes config-only sources to full runtime state", () => {
 		const state = controller.reduce(
 			{},

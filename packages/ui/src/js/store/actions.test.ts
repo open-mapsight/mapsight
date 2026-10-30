@@ -1,5 +1,9 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {createMapsightStore} from "@mapsight/core";
+import {BaseController} from "@mapsight/core/lib/base/controller";
+import {FeatureSourcesController} from "@mapsight/core/lib/feature-sources/controller";
+
 import {
 	FETCH_JSON_FAILURE,
 	FETCH_JSON_REQUEST,
@@ -9,7 +13,87 @@ import {
 	FETCH_TEXT_SUCCESS,
 	fetchJson,
 	fetchText,
+	resetMapsightCore,
 } from "./actions";
+
+describe("resetMapsightCore", () => {
+	it("clears selections, applies a full layer catalog and retains loaded data", () => {
+		const data = {
+			type: "FeatureCollection",
+			features: [
+				{
+					type: "Feature",
+					id: "charging-1",
+					geometry: null,
+					properties: {},
+				},
+			],
+		};
+		const store = createMapsightStore(
+			{
+				map: new BaseController("map"),
+				featureSelections: new BaseController("featureSelections"),
+				featureSources: new FeatureSourcesController("featureSources"),
+			},
+			{},
+			{
+				map: {
+					layers: {
+						parking: {
+							type: "VectorLayer",
+							options: {visible: true},
+						},
+						charging: {
+							type: "VectorLayer",
+							options: {visible: false},
+						},
+					},
+				},
+				featureSelections: {
+					select: {features: ["parking-1"]},
+					preselect: {features: ["parking-1"]},
+					highlight: {features: ["parking-1"]},
+				},
+				featureSources: {
+					charging: {type: "xhr-json", url: "/charging", data},
+				},
+			},
+		);
+		const initial = store.getState();
+		store.dispatch(
+			resetMapsightCore({
+				map: {
+					layers: {
+						parking: {
+							type: "VectorLayer",
+							options: {visible: false},
+						},
+						charging: {
+							type: "VectorLayer",
+							options: {visible: true},
+						},
+					},
+				},
+				featureSources: {
+					charging: {type: "xhr-json", url: "/charging"},
+				},
+			}),
+		);
+		const next = store.getState();
+		expect(next.featureSelections).toEqual({
+			select: {features: []},
+			preselect: {features: []},
+			highlight: {features: []},
+		});
+		expect(next.map).toMatchObject({
+			layers: {
+				parking: {options: {visible: false}},
+				charging: {options: {visible: true}},
+			},
+		});
+		expect(next.featureSources).toBe(initial.featureSources);
+	});
+});
 
 type TestAction = {type: string; key?: string; url?: string};
 
