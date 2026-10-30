@@ -38,7 +38,7 @@ it.each([
 		);
 		const feature = new Feature({
 			geometry: new Point([0, 0]),
-			mapsightIconId: "wc-accessible/#ffffff/#0e2a4f",
+			mapsightIconId: "toilet-accessible/#ffffff/#0e2a4f",
 			state,
 		});
 		const styles = styleFunction(
@@ -69,11 +69,11 @@ it.each([
 );
 
 it.each([
-	[{}, {mapsightIconId: "wc-accessible"}, 128],
-	[{mapsightIconId: "wc"}, {mapsightIconId: "wc-accessible"}, 80],
+	[{}, {mapsightIconId: "toilet-accessible"}, 128],
+	[{mapsightIconId: "toilet"}, {mapsightIconId: "toilet-accessible"}, 80],
 	[
-		{mapsightIconId: "wc"},
-		{mapsightIconId: "wc-accessible", mapsightIconUse: "force"},
+		{mapsightIconId: "toilet"},
+		{mapsightIconId: "toilet-accessible", mapsightIconUse: "force"},
 		128,
 	],
 ])(

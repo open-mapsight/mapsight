@@ -21,8 +21,8 @@ describe("icon-meta lists", () => {
 		const sprite = listSpriteIconIds();
 
 		expect(composable).toContain("marker");
-		expect(composable).toContain("wc");
-		expect(composable).toContain("wc-accessible");
+		expect(composable).toContain("toilet");
+		expect(composable).toContain("toilet-accessible");
 		expect(composable).toContain("fa-bolt");
 		expect(composable).toContain("p");
 		expect(sprite).not.toContain("marker");

@@ -506,10 +506,10 @@ console.log(`Wrote ${icons.length} Font Awesome pictograms to ${outputPath}`);
 const restroom = {...iconToMarkup(faRestroom), source: "fontawesome"};
 const wheelchair = {...iconToMarkup(faWheelchair), source: "fontawesome"};
 const standardPictograms = [
-	{...restroom, id: "wc", label: {de: "WC", en: "Restroom"}},
+	{...restroom, id: "toilet", label: {de: "Toilette", en: "Toilet"}},
 	{
-		id: "wc-accessible",
-		label: {de: "Barrierefreies WC", en: "Accessible restroom"},
+		id: "toilet-accessible",
+		label: {de: "Barrierefreie Toilette", en: "Accessible toilet"},
 		source: "fontawesome",
 		composition: {layout: "horizontal", glyphs: [restroom, wheelchair]},
 	},

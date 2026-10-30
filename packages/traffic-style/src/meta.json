@@ -1499,19 +1499,19 @@
 			"groups": ["education", "poi", "poi-services"],
 			"render": "composable"
 		},
-		"wc": {
+		"toilet": {
 			"label": {
-				"de": "WC",
-				"en": "Restroom"
+				"de": "Toilette",
+				"en": "Toilet"
 			},
 			"aliases": [],
 			"groups": ["default", "poi"],
 			"render": "composable"
 		},
-		"wc-accessible": {
+		"toilet-accessible": {
 			"label": {
-				"de": "Barrierefreies WC",
-				"en": "Accessible restroom"
+				"de": "Barrierefreie Toilette",
+				"en": "Accessible toilet"
 			},
 			"aliases": [],
 			"groups": ["default", "poi"],

@@ -36,7 +36,7 @@ it.each([
 		);
 		try {
 			const bitmap = await renderIconBitmap({
-				pictogram: "wc-accessible",
+				pictogram: "toilet-accessible",
 				variant,
 			});
 			expect(bitmap).toMatchObject({

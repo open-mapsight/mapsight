@@ -61,7 +61,7 @@ it("keeps a wide icon proportional with default and one-sided size overrides", (
 		[{width: 54}, 54, 34],
 	] as const) {
 		const {container} = render(
-			<MapsightIcon id="wc-accessible" {...props} />,
+			<MapsightIcon id="toilet-accessible" {...props} />,
 		);
 		const image = container.querySelector("img");
 		expect(Number(image?.getAttribute("width"))).toBeCloseTo(width);

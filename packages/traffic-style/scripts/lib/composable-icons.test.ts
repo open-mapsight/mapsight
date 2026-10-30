@@ -64,7 +64,7 @@ describe("composable-icons", () => {
 		const iconIds = new Set(targets.map((target) => target.iconId));
 
 		expect(iconIds.has("museum")).toBe(true);
-		expect(iconIds.has("wc-accessible")).toBe(true);
+		expect(iconIds.has("toilet-accessible")).toBe(true);
 		expect(iconIds.has("fa-route")).toBe(false);
 	});
 
@@ -112,7 +112,7 @@ describe("composable-icons", () => {
 // back into the old square bitmap dimensions.
 it.each([1, 2])("rasterizes wide prebuilt icons at %sx", async (scale) => {
 	const {width, height, buffer} = await renderComposableIconPng(
-		{pictogram: "wc-accessible"},
+		{pictogram: "toilet-accessible"},
 		scale,
 	);
 	expect([width, height]).toEqual([64 * scale, 40 * scale]);

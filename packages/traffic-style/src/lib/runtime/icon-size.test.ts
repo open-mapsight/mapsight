@@ -4,15 +4,19 @@ import {mapsightRuntimeIconSize} from "./icon-size.ts";
 
 it("returns physical dimensions synchronously before a bitmap is cached", () => {
 	expect(
-		mapsightRuntimeIconSize("wc-accessible/#fff/#123", "default", "width"),
+		mapsightRuntimeIconSize(
+			"toilet-accessible/#fff/#123",
+			"default",
+			"width",
+		),
 	).toBe(128);
-	expect(mapsightRuntimeIconSize("wc-accessible", "default", "height")).toBe(
-		80,
-	);
-	expect(mapsightRuntimeIconSize("wc-accessible", "plain", "width")).toBe(
+	expect(
+		mapsightRuntimeIconSize("toilet-accessible", "default", "height"),
+	).toBe(80);
+	expect(mapsightRuntimeIconSize("toilet-accessible", "plain", "width")).toBe(
 		108,
 	);
-	expect(mapsightRuntimeIconSize("wc", "small", "width")).toBe(56);
+	expect(mapsightRuntimeIconSize("toilet", "small", "width")).toBe(56);
 });
 
 it("keeps fallback and text-label dimensions square", () => {

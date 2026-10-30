@@ -408,12 +408,12 @@ while the bitmap is pending. Runtime bitmaps use pixelRatio 2 and default OL sca
 The full rectangle is one image, hit target and declutter unit. Selection uses the
 default variant at any zoom, with an expanded halo for a wider definition.
 
-| `wc-accessible` | Logical size | Raster at 2× |
-| --------------- | ------------ | ------------ |
-| default         | 64×40        | 128×80       |
-| small           | 41×28        | 82×56        |
-| xsmall          | 31×22        | 62×44        |
-| plain           | 54×34        | 108×68       |
+| `toilet-accessible` | Logical size | Raster at 2× |
+| ------------------- | ------------ | ------------ |
+| default             | 64×40        | 128×80       |
+| small               | 41×28        | 82×56        |
+| xsmall              | 31×22        | 62×44        |
+| plain               | 54×34        | 108×68       |
 
 `MapsightIcon` keeps the existing default height of 40 CSS pixels and derives the
 width from the SVG's aspect ratio. A single explicit width or height scales the
@@ -421,24 +421,25 @@ other dimension; two explicit dimensions define a containing box. List icon
 columns accommodate the intrinsic width without shrinking it. Host CSS should
 also preserve the image's aspect ratio and allow the icon column to grow.
 
-### WC migration for hosts
+### Host migration
 
 After updating `@mapsight/traffic-style` and `@mapsight/ui` to a release containing
-this change, use `wc/#f2c14e/#0e2a4f` or `wc-accessible/#ffffff/#0e2a4f` directly as
-`mapsightIconId`. Both are in the standard catalog, including picker metadata and
-prebuilt assets; the optional Font Awesome pack is unnecessary for these ids.
-Rebuild host SCSS with the released vector-style-compiler so the new dimension
-helper is imported (or use the released precompiled traffic style).
+this change, use `toilet/#f2c14e/#0e2a4f` or
+`toilet-accessible/#ffffff/#0e2a4f` directly as `mapsightIconId`. Both are in the
+standard catalog, including picker metadata and prebuilt assets; the optional
+Font Awesome pack is unnecessary for these ids. Rebuild host SCSS with the
+released vector-style-compiler so the new dimension helper is imported (or use
+the released precompiled traffic style).
 
-Remove local registrations of `wc` and the provisional stacked `wc-accessible`;
-otherwise a later local registration will override the standard definitions.
-Existing uppercase `WC` remains a two-letter text label. Migrate that export to
-lowercase `wc` when a pictogram is intended, and then remove any local `WC` alias.
-Other one/two-character labels retain their existing behavior.
+Update existing host data to these ids and remove superseded local registrations
+such as Braunschweig's `wc`, stacked `wc-accessible` and `WC` alias. The standard
+catalog provides no aliases for those ids. All one/two-character labels keep
+their normal text-label behavior, regardless of case.
 
 For Braunschweig, remove only the superseded pictogram-related portion of the UI
 patch after verifying the release. Preserve its independent list-sorting changes
-and any other host pictograms. No host files are changed by this implementation.
+and any other host pictograms. Host data and local registrations are migrated
+separately from this framework change.
 
 Font Awesome Free glyph attribution and license links are shipped in
 `THIRD_PARTY_NOTICES.md` and retained in generated modules/composed SVGs.
