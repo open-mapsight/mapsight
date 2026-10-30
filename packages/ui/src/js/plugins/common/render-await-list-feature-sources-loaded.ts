@@ -7,6 +7,7 @@ import {
 	LOAD_FEATURE_SOURCE_SUCCESS,
 	load,
 } from "@mapsight/core/lib/feature-sources/actions";
+import {hasFeatureSourceLoadError} from "@mapsight/core/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
 
 import get from "@mapsight/lib-js/object/getPath";
@@ -104,20 +105,36 @@ function waitForFeatureSourceLoads(
 	featureSourceIds: string[],
 	loadOptions: LoadOptions,
 ): Promise<void> {
-	if (!featureSourceIds.length) {
+	const sources = context.store?.getState()[FEATURE_SOURCES] as
+		FeatureSourcesState | undefined;
+	const loadableIds = featureSourceIds.filter((id) => {
+		if (!sources || !Object.hasOwn(sources, id)) return false;
+		const source = sources[id];
+		// Disabled/unconfigured lists can retain a default source id. Missing
+		// sources and settled failures produce no new load completion to await.
+		return (
+			source &&
+			(source.isLoading ||
+				loadOptions.forceRefresh ||
+				!hasFeatureSourceLoadError(source))
+		);
+	});
+	if (!loadableIds.length) {
 		return Promise.resolve();
 	}
 
 	return new Promise<void>(function (resolve) {
-		let remaining = [...featureSourceIds];
+		let remaining = [...loadableIds];
 
 		actionWatcher.handler = (action) => {
+			const completedId: unknown = action.id;
 			if (
-				action.type === LOAD_FEATURE_SOURCE_SUCCESS ||
-				action.type === LOAD_FEATURE_SOURCE_ERROR
+				typeof completedId === "string" &&
+				(action.type === LOAD_FEATURE_SOURCE_SUCCESS ||
+					action.type === LOAD_FEATURE_SOURCE_ERROR)
 			) {
-				if (remaining.indexOf(action.id) > -1) {
-					remaining = remaining.filter((f) => f !== action.id);
+				if (remaining.indexOf(completedId) > -1) {
+					remaining = remaining.filter((f) => f !== completedId);
 				}
 
 				if (!remaining.length) {
@@ -127,7 +144,7 @@ function waitForFeatureSourceLoads(
 			}
 		};
 
-		featureSourceIds.forEach((featureSourceId) =>
+		loadableIds.forEach((featureSourceId) =>
 			context.store?.dispatch(
 				async(load(FEATURE_SOURCES, featureSourceId, loadOptions)),
 			),
