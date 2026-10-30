@@ -85,6 +85,7 @@ replacing a pending initial tree before it commits.
   Repeated signals (including StrictMode effect replay) are ignored. A superseded render's signal is ignored.
 - The renderer's return value still becomes `context.renderRef` and is returned by `render()`.
 - `renderAsync()` waits for `beforeRender` plugins, then schedules the renderer; it does **not** await React commit.
+- The list-source await plugin waits only for configured sources that can produce a load completion. An absent default list source or a settled failure cannot block map-only, point-input, or static-map rendering. Configured list/combined data is still loaded for first paint, including when the list shell is disabled; an explicit forced refresh can retry failed sources.
 - Existing renderers that do not call `deferCommit()` retain synchronous completion on return. This is appropriate for
   `renderToString` and legacy synchronous DOM renderers. Existing asynchronous custom renderers must adopt the callback
   contract to defer plugins correctly.
