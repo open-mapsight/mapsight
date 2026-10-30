@@ -683,6 +683,9 @@ importers:
       '@fortawesome/free-solid-svg-icons':
         specifier: ^7.3.1
         version: 7.3.1
+      '@mapsight/lib-js':
+        specifier: workspace:*
+        version: link:../lib-js
       '@mapsight/lib-ol':
         specifier: workspace:*
         version: link:../lib-ol

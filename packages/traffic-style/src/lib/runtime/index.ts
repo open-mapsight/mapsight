@@ -9,3 +9,4 @@ export {
 	onRuntimeIconChange,
 	setRuntimeIconMapRenderCallback,
 } from "./icon-style.ts";
+export {mapsightRuntimeIconSize} from "./icon-size.ts";

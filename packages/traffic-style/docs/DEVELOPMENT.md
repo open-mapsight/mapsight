@@ -28,6 +28,12 @@ For simple POI pictograms, prefer the composable path over sprite baking:
 
 Do **not** add composable icons to the sprite pipeline.
 
+For a horizontal composition, register a definition with `composition` instead of
+packing several glyphs into one square SVG viewBox. See
+[Horizontal compositions](RUNTIME_ICONS.md#horizontal-compositions). Font Awesome
+composites are generated alongside their glyphs by `import-fontawesome.ts` and
+loaded through the existing optional Font Awesome pack.
+
 Optional per-icon default colors in `src/meta.json`:
 
 ```json

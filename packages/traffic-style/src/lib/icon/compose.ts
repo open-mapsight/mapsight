@@ -1,8 +1,6 @@
-import {getPictogram} from "../pictograms/index.ts";
-import type {PictogramDefinition} from "../pictograms/types.ts";
+import type {PictogramGlyph} from "../pictograms/types.ts";
 import type {IconSpec} from "./icon-id.ts";
-import {resolveSpec} from "./resolve.ts";
-import {getTemplate} from "./templates.ts";
+import {getIconLayout} from "./layout.ts";
 
 const DEFAULT_PICTOGRAM_PADDING = 0;
 const FONT_AWESOME_PICTOGRAM_PADDING = 0.1;
@@ -22,7 +20,7 @@ function parseViewBox(viewBox: string): {
 	};
 }
 
-function pictogramPadding(pictogram: PictogramDefinition): number {
+function pictogramPadding(pictogram: PictogramGlyph): number {
 	return (
 		pictogram.padding ??
 		(pictogram.source === "fontawesome"
@@ -44,7 +42,7 @@ function insetSlot(
 }
 
 function renderPictogram(
-	pictogram: PictogramDefinition,
+	pictogram: PictogramGlyph,
 	slot: {x: number; y: number; size: number},
 	color: string,
 	background: string,
@@ -81,21 +79,25 @@ function renderLabel(
 }
 
 export function composeSvg(spec: IconSpec): string {
-	const resolved = resolveSpec(spec);
-	const template = getTemplate(resolved.variant);
-	const hasPictogram = Boolean(resolved.pictogram);
+	const {resolved, template, glyphs} = getIconLayout(spec);
 	const hasLabel = Boolean(resolved.label?.trim());
 
 	let inner = template.renderBackground(resolved.colors);
 
-	if (hasPictogram && resolved.pictogram) {
-		const pictogram = getPictogram(resolved.pictogram);
-		inner += renderPictogram(
-			pictogram,
-			template.contentSlot,
-			resolved.colors.foreground,
-			resolved.colors.background,
-		);
+	if (glyphs.length > 0) {
+		for (const [index, glyph] of glyphs.entries()) {
+			inner += renderPictogram(
+				glyph,
+				{
+					...template.contentSlot,
+					x:
+						template.contentSlot.x +
+						index * template.contentSlot.size,
+				},
+				resolved.colors.foreground,
+				resolved.colors.background,
+			);
+		}
 	} else if (hasLabel && resolved.label) {
 		inner += renderLabel(
 			resolved.label,

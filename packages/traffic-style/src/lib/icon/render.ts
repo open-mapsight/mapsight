@@ -1,8 +1,8 @@
 import {composeSvg} from "./compose.ts";
 import type {IconSpec} from "./icon-id.ts";
+import {getIconLayout} from "./layout.ts";
 import {rasterizeSvg} from "./rasterize.ts";
-import {RUNTIME_ICON_PIXEL_RATIO, resolveSpec} from "./resolve.ts";
-import {getTemplate} from "./templates.ts";
+import {RUNTIME_ICON_PIXEL_RATIO} from "./resolve.ts";
 
 export type RenderedIconBitmap = {
 	dataUrl: string;
@@ -17,8 +17,7 @@ export type RenderedIconBitmap = {
 export async function renderIconBitmap(
 	spec: IconSpec,
 ): Promise<RenderedIconBitmap> {
-	const resolved = resolveSpec(spec);
-	const template = getTemplate(resolved.variant);
+	const {template} = getIconLayout(spec);
 	const svg = composeSvg(spec);
 	const raster = await rasterizeSvg(
 		svg,

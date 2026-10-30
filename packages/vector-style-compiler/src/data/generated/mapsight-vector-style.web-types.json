@@ -587,6 +587,11 @@
 					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
 				},
 				{
+					"name": "mapsightRuntimeIconSize",
+					"description": "Returns the physical width or height of a runtime icon from its catalog definition and variant.",
+					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				},
+				{
 					"name": "replace",
 					"description": "Performs a string replacement while compiling Mapsight vector style values.",
 					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"

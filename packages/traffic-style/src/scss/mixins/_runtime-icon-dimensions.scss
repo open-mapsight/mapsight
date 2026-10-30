@@ -1,19 +1,16 @@
-@use "sass:map";
 @use "../variables";
 
-/// Reset sprite-sheet offset/size so full-image runtime icons render correctly.
+/// Full-image geometry comes from the same definition as SVG and rasterization.
 @mixin runtimeIconDimensions(
 	$variant: variables.$MAPSIGHT_TRAFFIC_STYLE__STATE_DEFAULT,
+	$id: "mapsightIconId"
 ) {
-	$logical-size: map.get(
-		variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_SIZES,
-		$variant
-	);
-	$pixel-size: $logical-size *
-		variables.$MAPSIGHT_TRAFFIC_STYLE__RUNTIME_ICON_PIXEL_RATIO;
-
 	icon-offsetX: 0;
 	icon-offsetY: 0;
-	icon-sizeX: $pixel-size;
-	icon-sizeY: $pixel-size;
+	icon-sizeX: calc(
+		mapsightRuntimeIconSize(attr(#{$id}), "#{$variant}", "width")
+	);
+	icon-sizeY: calc(
+		mapsightRuntimeIconSize(attr(#{$id}), "#{$variant}", "height")
+	);
 }

@@ -5,9 +5,9 @@ import {composeSvg} from "#icon/compose.js";
 import {pickContrastForeground} from "#icon/contrast.js";
 import type {IconColors, IconSpec, IconVariant} from "#icon/icon-id.js";
 import {parseMapsightIcon, resolveMapsightIconSpec} from "#icon/icon-id.js";
+import {getIconLayout} from "#icon/layout.js";
 import {prepareSvgForRasterization} from "#icon/rasterize.js";
 import {resolveSpec} from "#icon/resolve.js";
-import {getTemplate} from "#icon/templates.js";
 import sharp from "sharp";
 import {z} from "zod/v4";
 
@@ -163,8 +163,7 @@ export async function renderComposableIconPng(
 	spec: IconSpec,
 	scale = 1,
 ): Promise<{buffer: Buffer; width: number; height: number}> {
-	const resolved = resolveSpec(spec);
-	const template = getTemplate(resolved.variant);
+	const {template} = getIconLayout(spec);
 	const width = Math.round(template.width * scale);
 	const height = Math.round(template.height * scale);
 	const svg = composeSvg(spec);

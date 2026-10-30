@@ -5,6 +5,7 @@ registerPictograms(trafficStylePictograms);
 
 export type {
 	PictogramDefinition,
+	PictogramGlyph,
 	PictogramPack,
 	PictogramSource,
 } from "./types.ts";

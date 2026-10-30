@@ -78,11 +78,18 @@ plugin; feature lists compose SVG icons synchronously (SSR-safe). Map markers st
 
 `markerCaption` draws bigger outlined text **below** the icon on `#features` (not clusters). Optional `markerCaptionColor` and `markerCaptionHalo` set fill and outline; defaults are the traffic-style text colors. Captions share a style part (`.iconCaption`) so they can sit next to a side `title` label. Hidden on spread features except highlight/select.
 
-Optional Font Awesome pictograms (`fa-*` ids):
+Font Awesome pictograms (`fa-*` ids) are opt-in:
 
 ```ts
 import "@mapsight/traffic-style/pictograms-fontawesome";
 ```
+
+Use `fa-restroom` for a restroom or
+`fa-restroom+fa-wheelchair/#ffffff/#0e2a4f` for an accessible restroom with two
+full-sized glyphs inside one compact wide frame. The composite is a registered
+catalog ID; `+` does not introduce expression parsing. Dimensions come from the
+catalog definition. See [horizontal compositions and host migration](docs/RUNTIME_ICONS.md#horizontal-compositions)
+and [third-party icon attribution](THIRD_PARTY_NOTICES.md).
 
 Need different colors, zoom thresholds, or style partials? See
 [Customize the style](#customize-the-style) below.
