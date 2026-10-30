@@ -246,6 +246,18 @@ describe("compact feature-source SSR indexes", () => {
 		expect(compact?.places?.featuresById?.duplicate?.properties.title).toBe(
 			"7",
 		);
+		for (const sources of [legacy, compact]) {
+			for (const id of ["__proto__", "constructor", "toString"]) {
+				const index = features.findIndex((entry) => entry.id === id);
+				expect(
+					sources.places?.featuresById?.[id]?.properties.title,
+				).toBe(String(index));
+				expect(
+					findFeatureInFeatureSourcesById(sources, id)?.properties
+						.title,
+				).toBe(String(index));
+			}
+		}
 		expect(state.featureSources.places.ids).toEqual(["stale"]);
 	});
 

@@ -119,7 +119,7 @@ function getIdsFromData(data: FeatureSourceState["data"]) {
 
 function getFeaturesByIdFromData(data: FeatureSourceState["data"]) {
 	const features: unknown = data?.features;
-	const featuresById: Record<FeatureId, Feature> = {};
+	const featuresById = Object.create(null) as Record<FeatureId, Feature>;
 	for (const feature of Array.isArray(features) ? features : []) {
 		if (isFeatureEntry(feature)) {
 			featuresById[feature.id] ??= feature;

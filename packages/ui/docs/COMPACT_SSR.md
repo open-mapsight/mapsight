@@ -29,8 +29,15 @@ controller must supply equivalent normalization before enabling compaction.
 
 There is no new envelope or version marker: this is ordinary state JSON with two
 optional derived fields omitted. Full snapshots and client-only mounts continue
-to work. Compatibility is covered with core 14.6.8 and the matching UI build;
-hosts should validate their deployed client before enabling the server option.
+to work. The browser requires `@mapsight/core` >= 14.3.0, which introduced index
+normalization during store initialization. Compatibility is tested with core
+14.6.8 and the matching UI build. Deploy a compatible client before enabling the
+server option, accounting for older cached browser bundles. Hosts should validate
+their deployed client before enabling compaction.
+
+The accompanying core patch also fixes lookup entries for IDs such as
+`constructor`, `toString`, and `__proto__` in both full and compact snapshots.
+Update core as well when relying on those IDs.
 
 ## What is retained
 

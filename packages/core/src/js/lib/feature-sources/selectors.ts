@@ -37,7 +37,7 @@ function getFeatureIds(features: Feature[]) {
 }
 
 function getFeaturesById(features: Feature[]) {
-	const featuresById: Record<FeatureId, Feature> = {};
+	const featuresById = Object.create(null) as Record<FeatureId, Feature>;
 	for (const feature of features) {
 		featuresById[feature.id] ??= feature;
 	}
