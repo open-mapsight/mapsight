@@ -446,15 +446,14 @@ uses the usual marker fallback. Rebuild host SCSS with the released
 vector-style-compiler so the new dimension helper is imported (or use the
 released precompiled traffic style). For CLI subsets, include `--pack fontawesome`.
 
-Update existing host data to these ids and remove superseded local registrations
-such as Braunschweig's `wc`, stacked `wc-accessible` and `WC` alias. These local
-ids have no aliases in the catalog. All one/two-character labels keep their normal
-text-label behavior, regardless of case.
+Update existing host data to these ids and remove superseded host-local
+registrations. Custom host ids have no automatic aliases in the catalog. All
+one/two-character labels keep their normal text-label behavior, regardless of
+case.
 
-For Braunschweig, remove only the superseded pictogram-related portion of the UI
-patch after verifying the release. Preserve its independent list-sorting changes
-and any other host pictograms. Host data and local registrations are migrated
-separately from this framework change.
+After verifying the release, remove only customizations superseded by the catalog
+icons. Preserve unrelated host behavior and any other host pictograms. Migrate
+host data and local registrations separately from the framework upgrade.
 
 Font Awesome Free glyph attribution and license links are shipped in
 `THIRD_PARTY_NOTICES.md` and retained in generated modules/composed SVGs.
