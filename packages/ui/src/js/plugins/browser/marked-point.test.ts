@@ -50,7 +50,7 @@ describe("markedPointCoordsHtml", () => {
 		expect(html.match(/ms3-marked-point-coords__line/g)).toHaveLength(3);
 		expect(html).toContain("52.260000, 10.520000");
 		expect(html).toContain("52.26000° N, 10.52000° E");
-		expect(html).not.toContain("38100");
+		expect(html).not.toContain("12345");
 	});
 });
 
@@ -65,9 +65,9 @@ describe("isMarkedPointFeature", () => {
 				properties: {mapsightMarkedPoint: true},
 			}),
 		).toBe(true);
-		expect(isMarkedPointFeature({id: "schlosspark", properties: {}})).toBe(
-			false,
-		);
+		expect(
+			isMarkedPointFeature({id: "ordinary-feature", properties: {}}),
+		).toBe(false);
 	});
 });
 
@@ -89,15 +89,15 @@ describe("createMarkedPointFeature", () => {
 
 	it("keeps the address in listInformation and coords in the details HTML", () => {
 		const feature = createMarkedPointFeature(10.52, 52.26, {
-			name: "Burgplatz 2",
-			listInformation: "38100 Braunschweig",
+			name: "Example Street 2",
+			listInformation: "12345 Example Town",
 		});
 
-		expect(feature.properties?.listInformation).toBe("38100 Braunschweig");
+		expect(feature.properties?.listInformation).toBe("12345 Example Town");
 		expect(feature.properties?.description).toContain(
 			"52.260000, 10.520000",
 		);
-		expect(feature.properties?.description).not.toContain("38100");
+		expect(feature.properties?.description).not.toContain("12345");
 	});
 });
 
