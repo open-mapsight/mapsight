@@ -520,7 +520,7 @@ test("comments provide exact deployed revision, comparable paths and mock-data c
 	assert.ok(body.includes(`${origin}/icons/catalog`));
 	assert.ok(
 		body.includes(
-			"[Compare](https://showcase.open-mapsight.org/icons/catalog)",
+			"[Compare](https://preview.open-mapsight.org/icons/catalog)",
 		),
 	);
 	assert.match(body, /New screen/);

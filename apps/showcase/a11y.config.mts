@@ -1,6 +1,6 @@
 /**
  * Accessibility audit of the showcase demos, i.e. @mapsight/ui and
- * @mapsight/count-aggregator-ui, plus standalone scenario host pages.
+ * @mapsight/count-aggregator-ui.
  *
  *   pnpm --filter @mapsight/showcase build && pnpm --filter @mapsight/showcase start
  *   node packages/a11y-audit/src/cli.ts run --config apps/showcase/a11y.config.mts \
@@ -35,22 +35,6 @@ const config: AuditConfig = {
 		},
 	],
 	targets: [
-		{
-			id: "scenarios",
-			title: "Scenario overview",
-			url: "/scenarios/index.html",
-			root: "body",
-			readySelector: "h1",
-			features: [],
-		},
-		{
-			id: "verwaltung",
-			title: "Fictional citizen services",
-			url: "/scenarios/verwaltung/index.html",
-			root: "body",
-			readySelector: ".ms3-list__item",
-			features: ["map", "list", "details", "filters"],
-		},
 		{
 			id: "ui-full",
 			title: "Full UI (map, list, search, layers, details)",

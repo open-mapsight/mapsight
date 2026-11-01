@@ -64,14 +64,6 @@
 			"label": "Headless count aggregator",
 			"check": "Select a station and choose Load daily values; check the returned rows.",
 			"note": "Count-aggregator demos use local mock data."
-		},
-		"ImprintPage": {
-			"label": "Imprint",
-			"check": "Read the legal details and follow the links."
-		},
-		"PrivacyPage": {
-			"label": "Privacy",
-			"check": "Read the privacy text and follow the links."
 		}
 	},
 	"scenarios": {

@@ -22,7 +22,7 @@ export {
 const REPOSITORY = "open-mapsight/mapsight";
 const MARKER = "<!-- mapsight-preview-review-links -->";
 const BOT = "github-actions[bot]";
-const MAIN = "https://showcase.open-mapsight.org";
+const MAIN = "https://preview.open-mapsight.org";
 
 interface Pull {
 	state: string;

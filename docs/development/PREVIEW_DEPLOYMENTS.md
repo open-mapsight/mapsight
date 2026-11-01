@@ -1,6 +1,11 @@
 # Showcase deployments
 
-- Latest `main`: <https://showcase.open-mapsight.org>
+`apps/showcase` is the unbranded developer harness: technical demos, the icon
+editor, the count aggregator, e2e tests and the accessibility audit. The curated
+public showcase at <https://showcase.open-mapsight.org> is built separately from
+the published npm packages and is not deployed from this repository.
+
+- Latest `main`: <https://preview.open-mapsight.org>
 - Pull request 123: `https://pr-123.preview.open-mapsight.org`
 
 Every PR builds the showcase and its workspace dependencies in `Showcase build`.
@@ -133,7 +138,7 @@ The `showcase-previews` GitHub environment is restricted to `main` and contains:
 | Variable | `PREVIEW_HOST`        | SSH hostname or address                                           |
 | Variable | `PREVIEW_USER`        | Restricted deployment account                                     |
 | Variable | `PREVIEW_BASE_DOMAIN` | `preview.open-mapsight.org`                                       |
-| Variable | `SHOWCASE_HOST`       | `showcase.open-mapsight.org`                                      |
+| Variable | `SHOWCASE_HOST`       | `preview.open-mapsight.org` (deployment URL of latest `main`)     |
 
 Cloudflare/DNS credentials are managed on the host for certificate renewal and
 are not needed by GitHub Actions. The receiver and web-server setup are maintained
