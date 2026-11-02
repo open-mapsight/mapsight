@@ -1,6 +1,6 @@
-# Showcase deployments
+# Developer demo deployments
 
-`apps/showcase` is the unbranded developer harness: technical demos, the icon
+`apps/demos` is the developer demo app: technical demos, the icon
 editor, the count aggregator, e2e tests and the accessibility audit. The curated
 public showcase at <https://showcase.open-mapsight.org> is built separately from
 the published npm packages and is not deployed from this repository.
@@ -8,7 +8,7 @@ the published npm packages and is not deployed from this repository.
 - Latest `main`: <https://preview.open-mapsight.org>
 - Pull request 123: `https://pr-123.preview.open-mapsight.org`
 
-Every PR builds the showcase and its workspace dependencies in `Showcase build`.
+Every PR builds the demo app and its workspace dependencies in `Showcase build`.
 PRs targeting `main`, including forks and drafts, and native stack layers whose
 stack targets `main` are eligible for deployment. Each layer's preview includes
 the changes below it, so the top PR previews the complete stack. Unstacked PRs
@@ -21,7 +21,7 @@ inactive. Reopening and pushing rebuilds the preview. A daily cleanup reconciles
 missed close events. GitHub deployment statuses and the deployment job summary
 provide clickable URLs. After a successful PR deployment, one **Mapsight review
 links** comment points reviewers to affected screens, suggests interactions to
-check, and links to the same routes on the deployed `main` showcase. Later
+check, and links to the same routes on the deployed `main` demos. Later
 deployments update that comment. Closing the PR removes it.
 
 The build receives no deployment secrets. `Showcase deployment` always checks out
@@ -36,7 +36,7 @@ artifact and explicit server routes; arbitrary server runtimes are not enabled.
 The count-aggregator mock API runs in a service worker in production. It shares
 the resolver used by Vite during development and synthesizes JSON/CSV responses
 only for the local mock API. It does not cache or intercept other requests. Thus
-the entire showcase is deployable to ordinary static hosting.
+the demo app is deployable to ordinary static hosting.
 
 ## Reviewer guidance
 
@@ -57,7 +57,7 @@ application changes. Nearby consumers take priority; at most six screens are
 shown, or three representative screens for a shared application change.
 
 Human review instructions are editorial data in
-[`apps/showcase/preview-guides.json`](../../apps/showcase/preview-guides.json),
+[`apps/demos/preview-guides.json`](../../apps/demos/preview-guides.json),
 referenced by `mapsight.preview.guides` in the app manifest. Guides are keyed by
 mounted **component names**, not URLs. Changing a route's URL therefore requires
 no corresponding bot edit. Each page can name scenarios, defined by actual
@@ -66,7 +66,11 @@ dependencies to identify relevant scenarios. `sample` selects representative
 pages; `note` supplies context such as mock data. `deprioritize` identifies shared
 modules whose impact is a fallback when the diff has more specific evidence.
 A new page gets its component name and a generic check even before a guide is
-written. Older PRs without metadata use the trusted checkout's metadata while
+written. Both `@mapsight/demos` and the legacy `@mapsight/showcase` package are recognized,
+including when trusted metadata and PR sources use different app directories.
+The trusted analyzer on `main` must include this compatibility before its review-link
+job can analyze renamed PR heads; static preview deployment remains independent.
+Older PRs without metadata use the trusted checkout's metadata while
 retaining their own source, exports and TypeScript configuration.
 
 Generated code and runtime-only relationships use declarative dependency edges
@@ -84,12 +88,12 @@ in the **owning package's** `mapsight.preview.generated` manifest field:
 are connected to their actual importing modules, even when generated files are
 not tracked. `tools` names workspace dependencies whose code also affects those
 outputs. For runtime relationships without an import edge, `consumers` names
-existing modules instead of generated outputs. The showcase's mock worker and
+existing modules instead of generated outputs. The demo app's mock worker and
 traffic-style's generated icon assets use these declarations. There is no
 special list of vector-style or icon packages, and the bot does not try to
 interpret arbitrary shell build scripts.
 
-`node scripts/preview-review-links.mts --check` runs during showcase CI. It fails
+`node scripts/preview-review-links.mts --check` runs during demos CI. It fails
 when a guide names an unmounted component, a scenario module stops resolving or
 is no longer imported by its page, a shared-module reference breaks, or a generated
 input/consumer/tool disappears or an output is no longer consumed. A route rename
@@ -103,7 +107,7 @@ impact; runtime-generated imports and dynamic route definitions can be missed.
 Opt-in features may require additional demo configuration described by the PR
 author. Current main is a moving comparison, not a snapshot of the PR's base.
 Docs-only, test-only and unsupported server/starter changes get no comment;
-obsolete guidance is removed if later changes no longer affect showcase screens.
+obsolete guidance is removed if later changes no longer affect demo screens.
 
 The comment job executes trusted orchestration and installs its TypeScript
 parser from `main` with lifecycle scripts disabled. PR source is never checked
@@ -129,6 +133,16 @@ also refreshes its review comment.
 
 ## Repository setup
 
+The workflow files and names (`showcase-build.yml` / `Showcase build` and
+`showcase-deploy.yml` / `Showcase deployment`), `showcase-static` artifact,
+concurrency groups, `showcase` main deployment environment, and `showcase-previews`
+GitHub environment retain their existing identifiers for deployment compatibility.
+Privileged jobs run from `main`, so a renamed PR must still produce the workflow
+and artifact expected by the currently deployed orchestration. `SHOWCASE_HOST` is
+also retained as the existing GitHub variable; it now points to the developer
+demos, not the curated showcase. These are legacy deployment identifiers, not app
+or package names.
+
 The `showcase-previews` GitHub environment is restricted to `main` and contains:
 
 | Kind     | Name                  | Purpose                                                           |
@@ -153,17 +167,17 @@ a superseded build never overwrites the current PR or main revision.
 Run `node --test scripts/preview-deploy.test.mts scripts/preview-review-links.test.mts`
 for deployment target selection, package discovery, metadata drift, screen impact
 analysis and comment lifecycle checks. Also run `node scripts/preview-review-links.mts --check`.
-After building, serve `apps/showcase/dist` with an ordinary static server with SPA
-fallback and run `SHOWCASE_TEST_URL=http://localhost:PORT pnpm --filter
-@mapsight/showcase test:e2e`. This exercises JSON results and CSV exports without
+After building, serve `apps/demos/dist` with an ordinary static server with SPA
+fallback and run `DEMOS_TEST_URL=http://localhost:PORT pnpm --filter
+@mapsight/demos test:e2e`. This exercises JSON results and CSV exports without
 Vite's mock middleware. The deployment job also checks the served revision over
 HTTPS at `/__preview.json`.
 
 ## Same-origin basemap tiles
 
-The unprivileged build sets public `VITE_SHOWCASE_OSM_TILE_URL` to
+The unprivileged build sets public `VITE_DEMOS_OSM_TILE_URL` to
 `/tiles/osm/{z}/{x}/{y}.png` for main and PR artifacts. Turbo includes it in the
-showcase build cache key. Without the variable, local builds use direct OSM.
+demos build cache key. Without the variable, local builds use direct OSM.
 No secret or deployment permission is added to fork builds. Each preview host
 serves `/tiles/*` through the shared, restricted PHP tile cache; PR artifacts
 cannot configure that service. Install and verify the infra proxy and Caddy route

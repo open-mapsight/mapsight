@@ -15,7 +15,7 @@ was checked against the installed package sources.
 > stays in the collapsed panel after closing; the audit scenario `select-and-close` now catches it).
 > CR-UI-005 did not reproduce there: Tab leaves the details panel after its last control. The
 > generic findings were also confirmed by running `@mapsight/a11y-audit` on the showcase
-> (`apps/showcase/a11y.config.mts`).
+> (`apps/demos/a11y.config.mts`).
 
 ## Summary
 

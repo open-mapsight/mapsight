@@ -26,26 +26,26 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - uses: $/.github/actions/setup/
-      - name: Build showcase and its workspace dependencies
+      - name: Build demos and their workspace dependencies
         env:
-          VITE_SHOWCASE_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
-        run: pnpm turbo build --filter=@mapsight/showcase
+          VITE_DEMOS_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
+        run: pnpm turbo build --filter=@mapsight/demos
       - name: Verify deployment orchestration
         run: node --test scripts/preview-deploy.test.mts scripts/preview-review-links.test.mts
       - name: Validate review guides and generated source dependencies
         run: node scripts/preview-review-links.mts --check
       - name: Install browser for static hosting checks
         run: pnpm exec playwright install --with-deps chromium
-      - name: Verify production showcase without mock server middleware
-        run: pnpm --filter @mapsight/showcase test:e2e
+      - name: Verify production demos without mock server middleware
+        run: pnpm --filter @mapsight/demos test:e2e
         env:
-          SHOWCASE_TEST_STATIC: "1"
-          VITE_SHOWCASE_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
-      - name: Upload static showcase
+          DEMOS_TEST_STATIC: "1"
+          VITE_DEMOS_OSM_TILE_URL: /tiles/osm/{z}/{x}/{y}.png
+      - name: Upload static demos
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: showcase-static
-          path: apps/showcase/dist
+          path: apps/demos/dist
           if-no-files-found: error
           retention-days: 3
           include-hidden-files: true

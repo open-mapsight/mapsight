@@ -14,8 +14,8 @@ From the repository root, with Node 24, pnpm, OpenSSL, and Playwright Chromium:
 
 ```bash
 pnpm exec turbo build --filter=@mapsight/traffic-style
-pnpm --filter @mapsight/showcase exec playwright install chromium
-pnpm --filter @mapsight/showcase bench:icons \
+pnpm --filter @mapsight/demos exec playwright install chromium
+pnpm --filter @mapsight/demos bench:icons \
   --repeats 5 --frames 30 --out tmp/icon-rendering.json
 ```
 

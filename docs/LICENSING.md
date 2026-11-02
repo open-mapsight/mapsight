@@ -16,7 +16,7 @@ Includes:
 
 - `@mapsight/core`, `@mapsight/ui`, `@mapsight/traffic-style`, and other public npm packages
 - `@mapsight/vite-host-embed`, `@mapsight/vite-count-aggregator-embed`, count-aggregator packages
-- Demo apps (`apps/showcase`, `apps/vector-editor`), copy-out starters, and public documentation
+- Demo apps (`apps/demos`, `apps/vector-editor`), copy-out starters, and public documentation
 
 Full text: [LICENSE](../LICENSE) at repository root.
 

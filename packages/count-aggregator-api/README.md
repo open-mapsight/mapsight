@@ -168,7 +168,7 @@ Deployments expose the public count-aggregator API under this pattern:
 | OpenAPI JSON     | `…/openapi.json`                                           |
 | Interactive docs | `…/docs`                                                   |
 
-Replace `<tenant>.example.tld` with your deployment host. For a runnable local demo with mocked responses, see the [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase).
+Replace `<tenant>.example.tld` with your deployment host. For a runnable local demo with mocked responses, see the [developer demos](https://github.com/open-mapsight/mapsight/tree/main/apps/demos).
 
 ## Architecture
 

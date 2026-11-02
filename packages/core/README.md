@@ -10,7 +10,7 @@ See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/
 
 Most apps use `@mapsight/ui` `create()`, which wires core internally. To use core directly, instantiate the store and controllers from the package exports (see Redux docs below).
 
-For a full working example with default styles, start with [`apps/showcase`](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) or the [`@mapsight/traffic-style`](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md) quick start.
+For a full working example with default styles, start with [`apps/demos`](https://github.com/open-mapsight/mapsight/tree/main/apps/demos) or the [`@mapsight/traffic-style`](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md) quick start.
 
 ## Documentation
 

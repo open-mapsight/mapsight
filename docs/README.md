@@ -79,7 +79,7 @@ Maintainer deployments currently exercise:
 | [TILE_PROXY.md](integration/TILE_PROXY.md)                               | Basemap tile proxy                             |
 | [DATA_BACKEND.md](integration/DATA_BACKEND.md)                           | Optional host data platform                    |
 | [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)                         | Dehydrated state contract                      |
-| [REACT_SPA.md](integration/REACT_SPA.md)                                 | Vite SPA starter + showcase feature demo       |
+| [REACT_SPA.md](integration/REACT_SPA.md)                                 | Vite SPA starter + UI feature demos            |
 | [NEXTJS.md](integration/NEXTJS.md)                                       | Next.js starter pattern                        |
 
 **TYPO3:** **Pending** dedicated guide — same mental model as [CMS_PHP.md](integration/CMS_PHP.md).
@@ -112,7 +112,7 @@ Maintainer deployments currently exercise:
 
 | App           | Path                                          | Use for                    |
 | ------------- | --------------------------------------------- | -------------------------- |
-| Showcase      | [`apps/showcase`](../apps/showcase)           | React Router SPA, UI demos |
+| Demos         | [`apps/demos`](../apps/demos)                 | React Router SPA, UI demos |
 | Vector editor | [`apps/vector-editor`](../apps/vector-editor) | GeoJSON editing            |
 
 ## Copy-out starters

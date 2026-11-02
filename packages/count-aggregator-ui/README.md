@@ -139,9 +139,9 @@ Main exports include `CountAggregatorShell`, `CountAggregatorWizard`, `TimeSerie
 The `/headless` entry also exports `CountAggregatorProvider`, `createStationTypeAppsConfig`, and chart data helpers
 (`prepareChartValues`, `mapTimeSeriesToChartPoints`) for custom UIs that do not use the styled wizard.
 
-**Runnable example:** showcase
-[`/count-aggregator/headless`](https://github.com/open-mapsight/mapsight/blob/main/apps/showcase/src/count-aggregator/count-aggregator-headless-page.tsx)
-(mock API via `pnpm --filter @mapsight/showcase dev`).
+**Runnable example:** headless demo
+[`/count-aggregator/headless`](https://github.com/open-mapsight/mapsight/blob/main/apps/demos/src/count-aggregator/count-aggregator-headless-page.tsx)
+(mock API via `pnpm --filter @mapsight/demos dev`).
 
 ## CMS app-shell embed
 
@@ -168,12 +168,12 @@ Mark the paste-ready region in your HTML entry with `<!-- mapsight:snippet:start
 
 ## Run the demo locally
 
-The [Mapsight showcase](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) app includes a stepped `bicycleSensorTotal` wizard backed by a **mock API** — no live tenant or `.env` secrets.
+The [developer demos](https://github.com/open-mapsight/mapsight/tree/main/apps/demos) app includes a stepped `bicycleSensorTotal` wizard backed by a **mock API** — no live tenant or `.env` secrets.
 
 ```bash
 # from repo root
 pnpm install
-pnpm --filter @mapsight/showcase dev
+pnpm --filter @mapsight/demos dev
 ```
 
 Open [http://localhost:5173/count-aggregator](http://localhost:5173/count-aggregator) for the styled wizard, or
@@ -181,13 +181,13 @@ Open [http://localhost:5173/count-aggregator](http://localhost:5173/count-aggreg
 custom UI using only the `/headless` entry (default Vite port).
 
 The dev server serves JSON and CSV from `/mock/msp/public/count-aggregator`, reusing fixtures from
-`@mapsight/count-aggregator-api`. Implementation: `apps/showcase/count-aggregator-mock/` and
-`apps/showcase/src/count-aggregator/`.
+`@mapsight/count-aggregator-api`. Implementation: `apps/demos/count-aggregator-mock/` and
+`apps/demos/src/count-aggregator/`.
 
 For package development with live rebuilds:
 
 ```bash
-pnpm --filter @mapsight/showcase dev:linked
+pnpm --filter @mapsight/demos dev:linked
 ```
 
 ## Smart-city metrics
@@ -200,10 +200,10 @@ feature-detail panels via placeholder markup. These use the same API base URL pa
 
 ```bash
 pnpm --filter @mapsight/count-aggregator-ui test
-pnpm --filter @mapsight/showcase test:e2e
+pnpm --filter @mapsight/demos test:e2e
 ```
 
-Current unit coverage focuses on feature-details metrics helpers, date utilities, API mappers, chart data preparation, and metric widget config. The showcase e2e opens the mock count-aggregator demo, selects a station in the stepped wizard, advances to the result step, and asserts the chart/CSV path.
+Current unit coverage focuses on feature-details metrics helpers, date utilities, API mappers, chart data preparation, and metric widget config. The demos e2e suite opens the mock count-aggregator demo, selects a station in the stepped wizard, advances to the result step, and asserts the chart/CSV path.
 
 ## Configuration
 

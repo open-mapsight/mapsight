@@ -88,7 +88,7 @@ Mapsight is a framework for building web applications with OpenLayers and React.
 <td>Vector editor for creating and editing vector features exported as GeoJSON.</td>
 </tr>
 <tr>
-<td><nobr>💡 <strong><code>showcase</code></strong></nobr><br><nobr><a href="apps/showcase">README</a></nobr></td>
+<td><nobr>💡 <strong><code>demos</code></strong></nobr><br><nobr><a href="apps/demos">README</a></nobr></td>
 <td>Developer demos — UI demos, icon catalog, and runtime icons, built from <code>main</code>: <a href="https://preview.open-mapsight.org">developer demos</a>. Curated examples: <a href="https://showcase.open-mapsight.org">Mapsight showcase</a>.</td>
 </tr>
 </tbody>

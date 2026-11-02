@@ -8,16 +8,12 @@ import {
 	PreviewProject,
 	type ReviewLink,
 	type Sources,
+	demoRoutes,
 	reviewLinks,
 	runtimeFile,
-	showcaseRoutes,
 } from "./preview-project.mts";
 
-export {
-	reviewLinks,
-	runtimeImports,
-	showcaseRoutes,
-} from "./preview-project.mts";
+export {reviewLinks, runtimeImports, demoRoutes} from "./preview-project.mts";
 
 const REPOSITORY = "open-mapsight/mapsight";
 const MARKER = "<!-- mapsight-preview-review-links -->";
@@ -70,9 +66,9 @@ export function renderReview(
 		MARKER,
 		"### 🤖 Mapsight review links",
 		"",
-		`Preview for \`${sha.slice(0, 7)}\` · [Open showcase](${origin})`,
+		`Preview for \`${sha.slice(0, 7)}\` · [Open demos](${origin})`,
 		"",
-		"Suggested starting points from the changed files and their showcase consumers:",
+		"Suggested starting points from the changed files and their demo consumers:",
 		"",
 		"| Screen | PR preview | Current main | Suggested check |",
 		"| --- | --- | --- | --- |",
@@ -286,9 +282,9 @@ export async function updateReview(options: {
 	if (!links.length && files.length !== pull.changed_files)
 		return "Skipped incomplete changed-file list; kept existing guidance";
 	const main = await options.liveSha(MAIN);
-	if (!main) throw new Error("The main showcase revision is unavailable");
+	if (!main) throw new Error("The main demos revision is unavailable");
 	const mainPaths = new Set(
-		showcaseRoutes(options.sources(main), options.metadata).map(
+		demoRoutes(options.sources(main), options.metadata).map(
 			(route) => route.path,
 		),
 	);
@@ -301,8 +297,7 @@ export async function updateReview(options: {
 				files.length !== pull.changed_files,
 			)
 		: "";
-	if (!write)
-		return body || "No showcase screens affected; no comment needed";
+	if (!write) return body || "No demo screens affected; no comment needed";
 	// Recheck mutable state after the analysis and just before touching discussion.
 	const current = await api<Pull>(`/pulls/${number}`);
 	if (
@@ -320,7 +315,7 @@ export async function updateReview(options: {
 	if (!body) {
 		for (const comment of latest)
 			await api(`/issues/comments/${comment.id}`, "DELETE");
-		return "No showcase screens affected; removed obsolete review links";
+		return "No demo screens affected; removed obsolete review links";
 	}
 	if (!existing) await api(`/issues/${number}/comments`, "POST", {body});
 	else if (existing.body !== body)

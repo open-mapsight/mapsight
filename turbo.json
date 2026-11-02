@@ -12,7 +12,7 @@
 				"$TURBO_ROOT$/eslint.config.mts",
 				"$TURBO_ROOT$/tsconfig.json"
 			],
-			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+			"env": ["!VITE_DEMOS_OSM_TILE_URL"]
 		},
 		"clean": {},
 		"build": {
@@ -25,7 +25,7 @@
 				"public/img/mapsight**",
 				"src/generated/**"
 			],
-			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+			"env": ["!VITE_DEMOS_OSM_TILE_URL"]
 		},
 		"mapsight-host-starter#build": {
 			"dependsOn": [
@@ -84,13 +84,13 @@
 			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [],
-			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+			"env": ["!VITE_DEMOS_OSM_TILE_URL"]
 		},
 		"typecheck": {
 			"outputLogs": "new-only",
 			"dependsOn": ["^build"],
 			"outputs": [],
-			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+			"env": ["!VITE_DEMOS_OSM_TILE_URL"]
 		},
 		"mapsight-host-starter#typecheck": {
 			"dependsOn": [

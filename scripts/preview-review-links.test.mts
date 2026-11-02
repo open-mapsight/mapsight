@@ -4,10 +4,10 @@ import {test} from "node:test";
 import {PreviewProject} from "./preview-project.mts";
 import {
 	type GitHub,
+	demoRoutes,
 	renderReview,
 	reviewLinks,
 	runtimeImports,
-	showcaseRoutes,
 	updateReview,
 } from "./preview-review-links.mts";
 
@@ -19,9 +19,9 @@ const marker = "<!-- mapsight-preview-review-links -->";
 function sources(): Map<string, string> {
 	return new Map([
 		[
-			"apps/showcase/package.json",
+			"apps/demos/package.json",
 			JSON.stringify({
-				name: "@mapsight/showcase",
+				name: "@mapsight/demos",
 				mapsight: {
 					preview: {
 						guides: "guides.json",
@@ -38,7 +38,7 @@ function sources(): Map<string, string> {
 			}),
 		],
 		[
-			"apps/showcase/guides.json",
+			"apps/demos/guides.json",
 			JSON.stringify({
 				router: "src/app.tsx",
 				pages: {
@@ -65,12 +65,12 @@ function sources(): Map<string, string> {
 			}),
 		],
 		[
-			"apps/showcase/src/index.html",
+			"apps/demos/src/index.html",
 			`<script src="./main.tsx"></script><link href="./global.css"><link href="./msui.scss">`,
 		],
-		["apps/showcase/src/main.tsx", "import './app.tsx';"],
-		["apps/showcase/src/global.css", "body {}"],
-		["apps/showcase/src/mock-service-worker.ts", "export {}"],
+		["apps/demos/src/main.tsx", "import './app.tsx';"],
+		["apps/demos/src/global.css", "body {}"],
+		["apps/demos/src/mock-service-worker.ts", "export {}"],
 		[
 			"packages/ui/tsconfig.json",
 			JSON.stringify({
@@ -107,7 +107,7 @@ function sources(): Map<string, string> {
 		["packages/traffic-style/src/lib/icon-meta.ts", "export {}"],
 		["packages/traffic-style/src/icons/bus.svg", "<svg/>"],
 		[
-			"apps/showcase/src/app.tsx",
+			"apps/demos/src/app.tsx",
 			`
 			import {FullPage} from './pages/full.tsx';
 			import {CatalogPage} from './icons/catalog-page.tsx';
@@ -123,20 +123,20 @@ function sources(): Map<string, string> {
 			</Route></Routes>`,
 		],
 		[
-			"apps/showcase/src/pages/full.tsx",
+			"apps/demos/src/pages/full.tsx",
 			`import App from '@mapsight/ui/components/app';`,
 		],
 		[
-			"apps/showcase/src/pages/landing.tsx",
+			"apps/demos/src/pages/landing.tsx",
 			`import {FullPage} from './full.tsx';`,
 		],
 		[
-			"apps/showcase/src/icons/catalog-page.tsx",
+			"apps/demos/src/icons/catalog-page.tsx",
 			`import './grid.tsx'; import './styles.css'; import '@mapsight/traffic-style/icon-meta';`,
 		],
-		["apps/showcase/src/icons/grid.tsx", "export {}"],
-		["apps/showcase/src/icons/styles.css", "body {}"],
-		["apps/showcase/src/count-aggregator/headless.tsx", "export {}"],
+		["apps/demos/src/icons/grid.tsx", "export {}"],
+		["apps/demos/src/icons/styles.css", "body {}"],
+		["apps/demos/src/count-aggregator/headless.tsx", "export {}"],
 		[
 			"packages/ui/package.json",
 			JSON.stringify({
@@ -181,7 +181,7 @@ test("runtime imports include barrels, literal dynamic imports, CSS and assets b
 
 test("routes come from literal mounted pages; redirects and unresolved parameters are omitted", () => {
 	assert.deepEqual(
-		showcaseRoutes(sources()).map((route) => route.path),
+		demoRoutes(sources()).map((route) => route.path),
 		["/", "/ui/full", "/icons/catalog", "/count-aggregator/headless"],
 	);
 });
@@ -190,13 +190,13 @@ test("route validation rejects long invalid paths and repeated leading slashes",
 	for (const route of [`ui/${"-".repeat(10_000)}?`, "//another-host"]) {
 		const src = sources();
 		src.set(
-			"apps/showcase/src/app.tsx",
+			"apps/demos/src/app.tsx",
 			src
-				.get("apps/showcase/src/app.tsx")!
+				.get("apps/demos/src/app.tsx")!
 				.replace('path="ui/full"', `path="${route}"`),
 		);
 		assert.deepEqual(
-			showcaseRoutes(src).map((route) => route.path),
+			demoRoutes(src).map((route) => route.path),
 			["/", "/icons/catalog", "/count-aggregator/headless"],
 		);
 	}
@@ -236,7 +236,7 @@ test("new workspace packages, inherited emit roots, publish directories and alia
 		"extensions/new-kit/library/detail.ts",
 		"export const changed = 1;",
 	);
-	src.set("apps/showcase/src/icons/grid.tsx", "import '@example/new-kit';");
+	src.set("apps/demos/src/icons/grid.tsx", "import '@example/new-kit';");
 	assert.deepEqual(
 		reviewLinks(src, [
 			{filename: "extensions/new-kit/library/detail.ts"},
@@ -261,10 +261,7 @@ test("generated outputs connect new asset packages to actual consumers without c
 	);
 	src.set("assets/other-pack/entry.ts", "export * from './built/icons.js';");
 	src.set("assets/other-pack/artwork/new.svg", "<svg/>");
-	src.set(
-		"apps/showcase/src/icons/grid.tsx",
-		"import '@example/other-pack';",
-	);
+	src.set("apps/demos/src/icons/grid.tsx", "import '@example/other-pack';");
 	const project = new PreviewProject(src);
 	project.validate();
 	assert.deepEqual(
@@ -278,9 +275,9 @@ test("generated outputs connect new asset packages to actual consumers without c
 test("guide labels and scenarios follow a renamed URL without a second route-path edit", () => {
 	const src = sources();
 	src.set(
-		"apps/showcase/src/app.tsx",
+		"apps/demos/src/app.tsx",
 		src
-			.get("apps/showcase/src/app.tsx")!
+			.get("apps/demos/src/app.tsx")!
 			.replace('path="ui/full"', 'path="examples/list"'),
 	);
 	new PreviewProject(src).validate();
@@ -295,13 +292,13 @@ test("guide labels and scenarios follow a renamed URL without a second route-pat
 test("validation fails on stale guide components, scenarios, generated inputs, outputs and consumers", () => {
 	for (const mutate of [
 		(src: Map<string, string>) =>
-			src.set("apps/showcase/src/app.tsx", "export {}"),
+			src.set("apps/demos/src/app.tsx", "export {}"),
 		(src: Map<string, string>) =>
 			src.delete("packages/ui/src/js/components/feature-list/index.tsx"),
 		(src: Map<string, string>) =>
 			src.delete("packages/traffic-style/src/icons/bus.svg"),
 		(src: Map<string, string>) =>
-			src.delete("apps/showcase/src/count-aggregator/headless.tsx"),
+			src.delete("apps/demos/src/count-aggregator/headless.tsx"),
 		(src: Map<string, string>) =>
 			src.set(
 				"packages/traffic-style/package.json",
@@ -333,10 +330,10 @@ test("older PR snapshots use trusted review metadata while preserving their own 
 	const metadata = sources();
 	const old = sources();
 	old.set(
-		"apps/showcase/package.json",
-		JSON.stringify({name: "@mapsight/showcase"}),
+		"apps/demos/package.json",
+		JSON.stringify({name: "@mapsight/demos"}),
 	);
-	old.delete("apps/showcase/guides.json");
+	old.delete("apps/demos/guides.json");
 	const links = reviewLinks(
 		old,
 		[{filename: "packages/ui/src/js/components/feature-list/index.tsx"}],
@@ -344,6 +341,48 @@ test("older PR snapshots use trusted review metadata while preserving their own 
 	);
 	assert.equal(links[0]!.label, "Full UI");
 	assert.match(links[0]!.check, /arrow keys/);
+});
+
+test("review analysis spans the app rename and inherits metadata across directories", () => {
+	const current = sources();
+	const legacy = new Map(
+		[...current].map(([file, source]) => [
+			file.replace(/^apps\/demos\//, "apps/showcase/"),
+			source.replaceAll("@mapsight/demos", "@mapsight/showcase"),
+		]),
+	);
+	for (const [snapshot, metadata, directory, name] of [
+		[legacy, current, "apps/showcase", "@mapsight/showcase"],
+		[current, legacy, "apps/demos", "@mapsight/demos"],
+	] as const) {
+		const src = new Map(snapshot);
+		src.set(`${directory}/package.json`, JSON.stringify({name}));
+		src.delete(`${directory}/guides.json`);
+		const project = new PreviewProject(src, undefined, metadata);
+		project.validate();
+		assert.deepEqual(
+			project.routes.map((route) => route.path),
+			["/", "/ui/full", "/icons/catalog", "/count-aggregator/headless"],
+		);
+		const [link] = reviewLinks(
+			src,
+			[
+				{
+					filename:
+						"packages/ui/src/js/components/feature-list/index.tsx",
+				},
+			],
+			metadata,
+		);
+		assert.equal(link!.label, "Full UI");
+		assert.match(link!.check, /arrow keys/);
+		const [mockLink] = reviewLinks(
+			src,
+			[{filename: `${directory}/src/mock-service-worker.ts`}],
+			metadata,
+		);
+		assert.equal(mockLink!.path, "/count-aggregator/headless");
+	}
 });
 
 test("workspace exports trace a component to its screen and stop before the landing page", () => {
@@ -364,7 +403,7 @@ test("workspace exports trace a component to its screen and stop before the land
 test("Sass partials, exact workspace subpaths and core aliases resolve to their consumers", () => {
 	const src = sources();
 	src.set(
-		"apps/showcase/src/msui.scss",
+		"apps/demos/src/msui.scss",
 		'@use "~@mapsight/ui/src/scss/default";',
 	);
 	src.set("packages/ui/src/scss/_default.scss", '@use "blocks/list";');
@@ -420,28 +459,26 @@ test("Sass partials, exact workspace subpaths and core aliases resolve to their 
 
 test("renames use their current filename and shared changes have a bounded representative sample", () => {
 	const src = sources();
-	src.set("apps/showcase/src/icons/renamed.tsx", "export {};");
-	src.set("apps/showcase/src/icons/grid.tsx", "import './renamed.tsx';");
+	src.set("apps/demos/src/icons/renamed.tsx", "export {};");
+	src.set("apps/demos/src/icons/grid.tsx", "import './renamed.tsx';");
 	assert.deepEqual(
 		reviewLinks(src, [
 			{
-				filename: "apps/showcase/src/icons/renamed.tsx",
-				previous_filename: "apps/showcase/src/icons/old.tsx",
+				filename: "apps/demos/src/icons/renamed.tsx",
+				previous_filename: "apps/demos/src/icons/old.tsx",
 			},
 		]).map((link) => link.path),
 		["/icons/catalog"],
 	);
-	const shared = reviewLinks(src, [
-		{filename: "apps/showcase/src/global.css"},
-	]);
+	const shared = reviewLinks(src, [{filename: "apps/demos/src/global.css"}]);
 	assert.ok(shared.length <= 3);
 	assert.ok(shared.every((link) => link.distance === 100));
 });
 
 test("direct and independent changes both get links without filling unrelated screens", () => {
 	const links = reviewLinks(sources(), [
-		{filename: "apps/showcase/src/icons/grid.tsx"},
-		{filename: "apps/showcase/src/count-aggregator/headless.tsx"},
+		{filename: "apps/demos/src/icons/grid.tsx"},
+		{filename: "apps/demos/src/count-aggregator/headless.tsx"},
 	]);
 	assert.deepEqual(
 		links.map((link) => link.path),
@@ -467,7 +504,7 @@ test("specific UI changes take priority over locale-only impact on unrelated scr
 		"export const text = 'Name';",
 	);
 	src.set(
-		"apps/showcase/src/icons/grid.tsx",
+		"apps/demos/src/icons/grid.tsx",
 		"import '@mapsight/ui/helpers/i18n/en';",
 	);
 	const links = reviewLinks(src, [
@@ -489,12 +526,12 @@ test("generated icons and service worker changes link only to available relevant
 	);
 	assert.deepEqual(
 		reviewLinks(sources(), [
-			{filename: "apps/showcase/src/mock-service-worker.ts"},
+			{filename: "apps/demos/src/mock-service-worker.ts"},
 		]).map((link) => link.path),
 		["/count-aggregator/headless"],
 	);
 	const withoutCatalog = sources();
-	withoutCatalog.delete("apps/showcase/src/icons/catalog-page.tsx");
+	withoutCatalog.delete("apps/demos/src/icons/catalog-page.tsx");
 	assert.deepEqual(
 		reviewLinks(withoutCatalog, [
 			{filename: "packages/traffic-style/src/icons/bus.svg"},
@@ -505,8 +542,8 @@ test("generated icons and service worker changes link only to available relevant
 
 test("comments provide exact deployed revision, comparable paths and mock-data context", () => {
 	const links = reviewLinks(sources(), [
-		{filename: "apps/showcase/src/icons/grid.tsx"},
-		{filename: "apps/showcase/src/count-aggregator/headless.tsx"},
+		{filename: "apps/demos/src/icons/grid.tsx"},
+		{filename: "apps/demos/src/count-aggregator/headless.tsx"},
 	]);
 	const body = renderReview(
 		123,
@@ -547,7 +584,7 @@ function harness() {
 		liveSha: sha as string | undefined,
 		status: "success",
 		url: origin,
-		files: [{filename: "apps/showcase/src/icons/grid.tsx"}],
+		files: [{filename: "apps/demos/src/icons/grid.tsx"}],
 		comments: [] as FakeComment[],
 		writes: [] as {endpoint: string; method: string; body: unknown}[],
 	};
@@ -689,7 +726,7 @@ test("a new head, PR closure or changed live preview during analysis prevents a 
 	}
 });
 
-test("closed PRs and changes with no showcase coverage remove only obsolete marked comments", async () => {
+test("closed PRs and changes with no demo coverage remove only obsolete marked comments", async () => {
 	for (const closed of [true, false]) {
 		const {state, options} = harness();
 		state.comments = [own(1), own(2, "Other discussion")];

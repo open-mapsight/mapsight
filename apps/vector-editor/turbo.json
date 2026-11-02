@@ -8,7 +8,7 @@
 			],
 			"inputs": ["src/mapsight/**", "package.json"],
 			"outputs": ["src/generated/mapsight-vector-styles/**"],
-			"env": ["!VITE_SHOWCASE_OSM_TILE_URL"]
+			"env": ["!VITE_DEMOS_OSM_TILE_URL"]
 		},
 		"lint": {
 			"dependsOn": ["$TURBO_EXTENDS$", "build:mapsightStyle"]
