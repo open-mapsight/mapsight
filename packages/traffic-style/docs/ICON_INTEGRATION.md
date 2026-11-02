@@ -28,7 +28,11 @@ Features reference icons with a compact `mapsightIconId` string:
 }
 ```
 
-Format: `pictogramOrLabel[/background[/foreground]]`. Variant (`default` / `small` / `xsmall` / `plain`) comes from zoom
+Format: `pictogramOrLabel[/background[/foreground[/border]]]`. Traditional traffic
+and parking signs support independent overrides, such as `baustelle///#2266cc`
+for the border only; omitted sign colors retain their original values. See
+[traditional signs](ICON_CATALOG.md#traditional-traffic-and-parking-signs).
+Variant (`default` / `small` / `xsmall` / `plain`) comes from zoom
 rules in SCSS, not from the id string.
 
 ---

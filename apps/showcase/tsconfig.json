@@ -11,7 +11,8 @@
 		"../../configs/vite-workspace-dev.mts",
 		"a11y.playwright.config.ts",
 		"a11y.spec.ts",
-		"a11y.config.mts"
+		"a11y.config.mts",
+		"bench/**/*"
 	],
 	"compilerOptions": {
 		"noEmit": true,

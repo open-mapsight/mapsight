@@ -1,5 +1,18 @@
 # @mapsight/vector-style-compiler
 
+## 13.2.0
+
+### Minor Changes
+
+- a648019: Add the compact `fa-restroom+fa-wheelchair` composite to the existing optional Font Awesome pictogram pack, reusing its restroom and wheelchair glyphs. Support horizontal compositions with one shared frame and full-sized glyphs across all variants. Carry independent bitmap dimensions through runtime styles, OpenLayers and proportional UI/list rendering; preserve existing square icons and compact text labels. Include the runtime dimension helper in compiler imports and IDE metadata.
+
+    Convert computed circle radii to numbers before constructing OpenLayers selection halos. Declare traffic-style’s direct lib-js dependency used by its precompiled style.
+
+### Patch Changes
+
+- Updated dependencies [`a648019`]:
+    - `@mapsight/lib-ol@4.3.3 → 4.3.4` (patch)
+
 ## 13.1.3
 
 ### Patch Changes

@@ -1,0 +1,1686 @@
+{
+	"date": "2026-10-30T16:44:13.649Z",
+	"chromium": "156.0.8078.4",
+	"cpu": "AMD Ryzen 5 3600XT 6-Core Processor",
+	"cpus": 12,
+	"viewport": [1280, 960],
+	"dpr": 2,
+	"profiles": [
+		{
+			"name": "desktop",
+			"cpu": 1,
+			"latency": 0,
+			"down": -1
+		},
+		{
+			"name": "mobile-simulated",
+			"cpu": 4,
+			"latency": 80,
+			"down": 200000
+		}
+	],
+	"repeats": 5,
+	"spriteBytes": 27009,
+	"pngBytes": {
+		"ampel": 1946,
+		"baustelle": 2030,
+		"behindertenparken": 1460,
+		"breitenbeschraenkung": 2056,
+		"busparkplatz": 1345,
+		"cam": 1173,
+		"einbahnstrasse": 1708,
+		"fahrbahnverengung": 1932,
+		"gegenverkehr": 1977,
+		"hoehenbeschraenkung": 2035,
+		"lkwsperrung": 1967,
+		"meldung": 1974,
+		"motorradstellplatz": 1580,
+		"parkflaeche": 1016,
+		"parkhaus": 1278,
+		"pundr": 1283,
+		"stau": 1991,
+		"tiefgarage": 963,
+		"tonnage": 1864,
+		"umleitung": 906,
+		"vollsperrung": 1894
+	},
+	"framesPerRun": 30,
+	"totalSamples": 240,
+	"assetBaseline": "Legacy default asset build before authored compositions became the default build input.",
+	"timingScope": "After shared JavaScript boot. OpenLayers canvas renderer, no declutter; simulated CPU/network, not a real phone.",
+	"rawSha256": "ac658f306f4d22ee2bcb20bfa1860e3bdcfa5ab649f9caa9ab9f9c4105f0b01a",
+	"groups": [
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 36.3,
+				"min": 35.8,
+				"max": 42.4
+			},
+			"allIconsMs": {
+				"median": 36.3,
+				"min": 35.8,
+				"max": 42.4
+			},
+			"panMedianMs": {
+				"median": 2.9,
+				"min": 2.9,
+				"max": 3.0
+			},
+			"panP95Ms": {
+				"median": 4.5,
+				"min": 4.2,
+				"max": 4.9
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 20.8,
+				"min": 19.9,
+				"max": 22.1
+			},
+			"allIconsMs": {
+				"median": 20.8,
+				"min": 19.9,
+				"max": 22.1
+			},
+			"panMedianMs": {
+				"median": 2.55,
+				"min": 2.5,
+				"max": 2.7
+			},
+			"panP95Ms": {
+				"median": 4,
+				"min": 3.6,
+				"max": 4.1
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 39.3,
+				"min": 32.3,
+				"max": 44.8
+			},
+			"allIconsMs": {
+				"median": 39.3,
+				"min": 32.3,
+				"max": 44.8
+			},
+			"panMedianMs": {
+				"median": 3.0,
+				"min": 2.9,
+				"max": 3.0
+			},
+			"panP95Ms": {
+				"median": 4.3,
+				"min": 4.2,
+				"max": 5.1
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 1,
+			"imageBytes": 1946
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 14.4,
+				"min": 13.8,
+				"max": 14.6
+			},
+			"allIconsMs": {
+				"median": 14.4,
+				"min": 13.8,
+				"max": 14.7
+			},
+			"panMedianMs": {
+				"median": 2.5,
+				"min": 2.5,
+				"max": 2.55
+			},
+			"panP95Ms": {
+				"median": 3.9,
+				"min": 3.7,
+				"max": 4.1
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 35.8,
+				"min": 34,
+				"max": 38.6
+			},
+			"allIconsMs": {
+				"median": 35.8,
+				"min": 34,
+				"max": 38.7
+			},
+			"panMedianMs": {
+				"median": 6.1,
+				"min": 6.0,
+				"max": 6.25
+			},
+			"panP95Ms": {
+				"median": 8.1,
+				"min": 7.6,
+				"max": 10.1
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 49.9,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 20.9,
+				"min": 16,
+				"max": 26.4
+			},
+			"allIconsMs": {
+				"median": 20.9,
+				"min": 16,
+				"max": 26.4
+			},
+			"panMedianMs": {
+				"median": 5.7,
+				"min": 5.6,
+				"max": 5.75
+			},
+			"panP95Ms": {
+				"median": 8.2,
+				"min": 7.3,
+				"max": 9.1
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 49.9,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 82.9,
+				"min": 81.8,
+				"max": 96.4
+			},
+			"allIconsMs": {
+				"median": 82.9,
+				"min": 81.8,
+				"max": 96.4
+			},
+			"panMedianMs": {
+				"median": 2.7,
+				"min": 2.6,
+				"max": 2.7
+			},
+			"panP95Ms": {
+				"median": 3.6,
+				"min": 3.5,
+				"max": 4
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 14.2,
+				"min": 13.4,
+				"max": 14.6
+			},
+			"allIconsMs": {
+				"median": 14.2,
+				"min": 13.4,
+				"max": 14.6
+			},
+			"panMedianMs": {
+				"median": 2.5,
+				"min": 2.45,
+				"max": 2.7
+			},
+			"panP95Ms": {
+				"median": 4.3,
+				"min": 3.4,
+				"max": 5
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 37.8,
+				"min": 36.2,
+				"max": 42.7
+			},
+			"allIconsMs": {
+				"median": 37.8,
+				"min": 36.2,
+				"max": 42.7
+			},
+			"panMedianMs": {
+				"median": 2.9,
+				"min": 2.8,
+				"max": 3.1
+			},
+			"panP95Ms": {
+				"median": 4.2,
+				"min": 4.1,
+				"max": 4.8
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 21.6,
+				"min": 13.5,
+				"max": 22
+			},
+			"allIconsMs": {
+				"median": 21.6,
+				"min": 13.5,
+				"max": 22
+			},
+			"panMedianMs": {
+				"median": 2.55,
+				"min": 2.5,
+				"max": 2.75
+			},
+			"panP95Ms": {
+				"median": 3.9,
+				"min": 3.5,
+				"max": 4.1
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 36.1,
+				"min": 28.5,
+				"max": 49
+			},
+			"allIconsMs": {
+				"median": 70,
+				"min": 48.7,
+				"max": 72.6
+			},
+			"panMedianMs": {
+				"median": 3.0,
+				"min": 2.9,
+				"max": 3.6
+			},
+			"panP95Ms": {
+				"median": 4.4,
+				"min": 4.2,
+				"max": 4.8
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 21,
+			"imageBytes": 34378
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 15.3,
+				"min": 13.9,
+				"max": 18.6
+			},
+			"allIconsMs": {
+				"median": 15.3,
+				"min": 13.9,
+				"max": 18.7
+			},
+			"panMedianMs": {
+				"median": 2.6,
+				"min": 2.5,
+				"max": 2.65
+			},
+			"panP95Ms": {
+				"median": 3.8,
+				"min": 3.4,
+				"max": 4.1
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 51,
+				"min": 50.5,
+				"max": 53.1
+			},
+			"allIconsMs": {
+				"median": 51,
+				"min": 50.5,
+				"max": 53.1
+			},
+			"panMedianMs": {
+				"median": 6.65,
+				"min": 6.0,
+				"max": 6.75
+			},
+			"panP95Ms": {
+				"median": 8.4,
+				"min": 8.1,
+				"max": 9.3
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 22.5,
+				"min": 17.4,
+				"max": 26.2
+			},
+			"allIconsMs": {
+				"median": 22.5,
+				"min": 17.4,
+				"max": 26.2
+			},
+			"panMedianMs": {
+				"median": 6.1,
+				"min": 5.65,
+				"max": 6.35
+			},
+			"panP95Ms": {
+				"median": 8.1,
+				"min": 7.1,
+				"max": 8.3
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 116.1,
+				"min": 111.8,
+				"max": 119.7
+			},
+			"allIconsMs": {
+				"median": 116.1,
+				"min": 111.8,
+				"max": 119.7
+			},
+			"panMedianMs": {
+				"median": 2.8,
+				"min": 2.75,
+				"max": 3.0
+			},
+			"panP95Ms": {
+				"median": 3.9,
+				"min": 3.7,
+				"max": 4.3
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 14.6,
+				"min": 14.3,
+				"max": 15
+			},
+			"allIconsMs": {
+				"median": 14.6,
+				"min": 14.3,
+				"max": 15
+			},
+			"panMedianMs": {
+				"median": 2.5,
+				"min": 2.5,
+				"max": 2.6
+			},
+			"panP95Ms": {
+				"median": 3.9,
+				"min": 3.8,
+				"max": 4.2
+			},
+			"intervalMedianMs": {
+				"median": 16.7,
+				"min": 16.7,
+				"max": 16.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 96,
+				"min": 90.3,
+				"max": 103
+			},
+			"allIconsMs": {
+				"median": 96,
+				"min": 90.3,
+				"max": 103
+			},
+			"panMedianMs": {
+				"median": 36.8,
+				"min": 34.8,
+				"max": 37.6
+			},
+			"panP95Ms": {
+				"median": 42.1,
+				"min": 37.6,
+				"max": 44.6
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 47.6,
+				"min": 46.3,
+				"max": 50.1
+			},
+			"allIconsMs": {
+				"median": 47.6,
+				"min": 46.3,
+				"max": 50.1
+			},
+			"panMedianMs": {
+				"median": 34.35,
+				"min": 32.65,
+				"max": 36.05
+			},
+			"panP95Ms": {
+				"median": 39.7,
+				"min": 37.3,
+				"max": 41.2
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 60.1,
+				"min": 47.1,
+				"max": 85.9
+			},
+			"allIconsMs": {
+				"median": 119.4,
+				"min": 85.9,
+				"max": 128.1
+			},
+			"panMedianMs": {
+				"median": 24.65,
+				"min": 24.15,
+				"max": 25.45
+			},
+			"panP95Ms": {
+				"median": 29.2,
+				"min": 27.7,
+				"max": 30.2
+			},
+			"intervalMedianMs": {
+				"median": 33.3,
+				"min": 33.3,
+				"max": 33.3
+			},
+			"imageRequests": 21,
+			"imageBytes": 34378
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 37,
+				"min": 32.9,
+				"max": 37.7
+			},
+			"allIconsMs": {
+				"median": 37,
+				"min": 32.9,
+				"max": 37.7
+			},
+			"panMedianMs": {
+				"median": 24.15,
+				"min": 22.95,
+				"max": 25.05
+			},
+			"panP95Ms": {
+				"median": 28.9,
+				"min": 27.2,
+				"max": 30.8
+			},
+			"intervalMedianMs": {
+				"median": 33.3,
+				"min": 33.3,
+				"max": 33.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 240.4,
+				"min": 227.9,
+				"max": 246.7
+			},
+			"allIconsMs": {
+				"median": 240.4,
+				"min": 228,
+				"max": 246.7
+			},
+			"panMedianMs": {
+				"median": 174.75,
+				"min": 160.9,
+				"max": 178.7
+			},
+			"panP95Ms": {
+				"median": 183.8,
+				"min": 179,
+				"max": 184.1
+			},
+			"intervalMedianMs": {
+				"median": 233.3,
+				"min": 216.6,
+				"max": 233.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 196.3,
+				"min": 177.5,
+				"max": 216.1
+			},
+			"allIconsMs": {
+				"median": 196.3,
+				"min": 177.5,
+				"max": 216.1
+			},
+			"panMedianMs": {
+				"median": 174.35,
+				"min": 160.15,
+				"max": 175.45
+			},
+			"panP95Ms": {
+				"median": 177.6,
+				"min": 175.5,
+				"max": 198.9
+			},
+			"intervalMedianMs": {
+				"median": 233.3,
+				"min": 216.7,
+				"max": 233.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 181.6,
+				"min": 177.8,
+				"max": 187.8
+			},
+			"allIconsMs": {
+				"median": 181.6,
+				"min": 177.8,
+				"max": 187.8
+			},
+			"panMedianMs": {
+				"median": 25.3,
+				"min": 23.85,
+				"max": 26.45
+			},
+			"panP95Ms": {
+				"median": 30.8,
+				"min": 28.7,
+				"max": 31
+			},
+			"intervalMedianMs": {
+				"median": 33.3,
+				"min": 33.3,
+				"max": 33.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "desktop",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 35.7,
+				"min": 33.7,
+				"max": 40.4
+			},
+			"allIconsMs": {
+				"median": 35.7,
+				"min": 33.7,
+				"max": 40.4
+			},
+			"panMedianMs": {
+				"median": 23.45,
+				"min": 21.95,
+				"max": 25.1
+			},
+			"panP95Ms": {
+				"median": 28.9,
+				"min": 25.7,
+				"max": 31.2
+			},
+			"intervalMedianMs": {
+				"median": 33.3,
+				"min": 33.3,
+				"max": 33.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 348,
+				"min": 345.8,
+				"max": 396
+			},
+			"allIconsMs": {
+				"median": 348,
+				"min": 345.9,
+				"max": 396
+			},
+			"panMedianMs": {
+				"median": 11.9,
+				"min": 11.4,
+				"max": 12.15
+			},
+			"panP95Ms": {
+				"median": 19,
+				"min": 17.2,
+				"max": 19.9
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 56.2,
+				"min": 52.1,
+				"max": 61.4
+			},
+			"allIconsMs": {
+				"median": 56.2,
+				"min": 52.1,
+				"max": 61.4
+			},
+			"panMedianMs": {
+				"median": 10.5,
+				"min": 9.75,
+				"max": 10.9
+			},
+			"panP95Ms": {
+				"median": 14.4,
+				"min": 13.7,
+				"max": 16.8
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50.1
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 210,
+				"min": 198.9,
+				"max": 222.2
+			},
+			"allIconsMs": {
+				"median": 210,
+				"min": 198.9,
+				"max": 222.2
+			},
+			"panMedianMs": {
+				"median": 11.65,
+				"min": 11.0,
+				"max": 11.75
+			},
+			"panP95Ms": {
+				"median": 17,
+				"min": 16.7,
+				"max": 17.7
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.4,
+				"max": 33.4
+			},
+			"imageRequests": 1,
+			"imageBytes": 1946
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 58.8,
+				"min": 55.9,
+				"max": 62.6
+			},
+			"allIconsMs": {
+				"median": 58.8,
+				"min": 55.9,
+				"max": 62.6
+			},
+			"panMedianMs": {
+				"median": 10.3,
+				"min": 10.2,
+				"max": 10.7
+			},
+			"panP95Ms": {
+				"median": 16,
+				"min": 15,
+				"max": 16.7
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.4,
+				"max": 33.4
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 130,
+				"min": 122.6,
+				"max": 133.6
+			},
+			"allIconsMs": {
+				"median": 130,
+				"min": 122.6,
+				"max": 134.4
+			},
+			"panMedianMs": {
+				"median": 23.6,
+				"min": 23.0,
+				"max": 24.8
+			},
+			"panP95Ms": {
+				"median": 29.2,
+				"min": 28,
+				"max": 30.7
+			},
+			"intervalMedianMs": {
+				"median": 183.3,
+				"min": 166.7,
+				"max": 183.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 64.3,
+				"min": 63.7,
+				"max": 67.5
+			},
+			"allIconsMs": {
+				"median": 64.3,
+				"min": 63.7,
+				"max": 67.5
+			},
+			"panMedianMs": {
+				"median": 21.95,
+				"min": 20.8,
+				"max": 23.1
+			},
+			"panP95Ms": {
+				"median": 26,
+				"min": 24,
+				"max": 30.8
+			},
+			"intervalMedianMs": {
+				"median": 166.7,
+				"min": 166.7,
+				"max": 183.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 309.1,
+				"min": 282.5,
+				"max": 324.6
+			},
+			"allIconsMs": {
+				"median": 309.1,
+				"min": 282.5,
+				"max": 324.6
+			},
+			"panMedianMs": {
+				"median": 10.9,
+				"min": 10.8,
+				"max": 12.7
+			},
+			"panP95Ms": {
+				"median": 15.8,
+				"min": 15.4,
+				"max": 17.5
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.3,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 1,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 52,
+				"min": 51.3,
+				"max": 59.5
+			},
+			"allIconsMs": {
+				"median": 52,
+				"min": 51.3,
+				"max": 59.6
+			},
+			"panMedianMs": {
+				"median": 9.75,
+				"min": 9.65,
+				"max": 10.9
+			},
+			"panP95Ms": {
+				"median": 14.3,
+				"min": 12.9,
+				"max": 19
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.3,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 344.5,
+				"min": 335.1,
+				"max": 353.7
+			},
+			"allIconsMs": {
+				"median": 344.5,
+				"min": 335.1,
+				"max": 353.7
+			},
+			"panMedianMs": {
+				"median": 11.65,
+				"min": 10.75,
+				"max": 12.85
+			},
+			"panP95Ms": {
+				"median": 18.2,
+				"min": 15.7,
+				"max": 18.8
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50.1
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 57.7,
+				"min": 52,
+				"max": 60.5
+			},
+			"allIconsMs": {
+				"median": 57.8,
+				"min": 52,
+				"max": 60.5
+			},
+			"panMedianMs": {
+				"median": 9.85,
+				"min": 9.55,
+				"max": 10.45
+			},
+			"panP95Ms": {
+				"median": 16,
+				"min": 14.5,
+				"max": 16.5
+			},
+			"intervalMedianMs": {
+				"median": 50,
+				"min": 50,
+				"max": 50
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 195.4,
+				"min": 192.4,
+				"max": 203.6
+			},
+			"allIconsMs": {
+				"median": 415.6,
+				"min": 396.4,
+				"max": 420.4
+			},
+			"panMedianMs": {
+				"median": 11.9,
+				"min": 11.45,
+				"max": 12.15
+			},
+			"panP95Ms": {
+				"median": 16.8,
+				"min": 15.6,
+				"max": 17.1
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.4,
+				"max": 33.4
+			},
+			"imageRequests": 21,
+			"imageBytes": 34378
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 55.5,
+				"min": 50,
+				"max": 56.5
+			},
+			"allIconsMs": {
+				"median": 55.5,
+				"min": 50,
+				"max": 56.5
+			},
+			"panMedianMs": {
+				"median": 9.9,
+				"min": 9.75,
+				"max": 10.55
+			},
+			"panP95Ms": {
+				"median": 16.4,
+				"min": 14.3,
+				"max": 17.5
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.4,
+				"max": 33.4
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 197.9,
+				"min": 181.6,
+				"max": 212.8
+			},
+			"allIconsMs": {
+				"median": 197.9,
+				"min": 181.6,
+				"max": 212.8
+			},
+			"panMedianMs": {
+				"median": 25.4,
+				"min": 24.6,
+				"max": 26.1
+			},
+			"panP95Ms": {
+				"median": 31.9,
+				"min": 31.4,
+				"max": 33.8
+			},
+			"intervalMedianMs": {
+				"median": 200.1,
+				"min": 200,
+				"max": 216.6
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 70.1,
+				"min": 65.7,
+				"max": 103.3
+			},
+			"allIconsMs": {
+				"median": 70.1,
+				"min": 65.7,
+				"max": 103.3
+			},
+			"panMedianMs": {
+				"median": 23.6,
+				"min": 22.55,
+				"max": 24.15
+			},
+			"panP95Ms": {
+				"median": 30.1,
+				"min": 27,
+				"max": 33.3
+			},
+			"intervalMedianMs": {
+				"median": 200,
+				"min": 200,
+				"max": 216.6
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 451.4,
+				"min": 433.6,
+				"max": 478
+			},
+			"allIconsMs": {
+				"median": 451.4,
+				"min": 433.6,
+				"max": 478
+			},
+			"panMedianMs": {
+				"median": 11.85,
+				"min": 11.4,
+				"max": 12.25
+			},
+			"panP95Ms": {
+				"median": 17.6,
+				"min": 16.5,
+				"max": 18.1
+			},
+			"intervalMedianMs": {
+				"median": 33.4,
+				"min": 33.4,
+				"max": 33.4
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 1000,
+			"unique": 21,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 56.6,
+				"min": 52.3,
+				"max": 60.7
+			},
+			"allIconsMs": {
+				"median": 56.6,
+				"min": 52.3,
+				"max": 60.7
+			},
+			"panMedianMs": {
+				"median": 10.75,
+				"min": 9.9,
+				"max": 11.15
+			},
+			"panP95Ms": {
+				"median": 18,
+				"min": 17,
+				"max": 18.6
+			},
+			"intervalMedianMs": {
+				"median": 49.9,
+				"min": 33.4,
+				"max": 49.9
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 557.4,
+				"min": 549.3,
+				"max": 585.6
+			},
+			"allIconsMs": {
+				"median": 557.4,
+				"min": 549.4,
+				"max": 585.6
+			},
+			"panMedianMs": {
+				"median": 141.95,
+				"min": 139.85,
+				"max": 148.4
+			},
+			"panP95Ms": {
+				"median": 164.3,
+				"min": 162.2,
+				"max": 192.5
+			},
+			"intervalMedianMs": {
+				"median": 183.4,
+				"min": 183.3,
+				"max": 200
+			},
+			"imageRequests": 1,
+			"imageBytes": 27009
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "sprite",
+			"firstIconsMs": {
+				"median": 186.1,
+				"min": 181.5,
+				"max": 240.7
+			},
+			"allIconsMs": {
+				"median": 186.1,
+				"min": 181.5,
+				"max": 240.7
+			},
+			"panMedianMs": {
+				"median": 141.8,
+				"min": 131.85,
+				"max": 148.75
+			},
+			"panP95Ms": {
+				"median": 161.8,
+				"min": 148,
+				"max": 170
+			},
+			"intervalMedianMs": {
+				"median": 183.4,
+				"min": 183.3,
+				"max": 200
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 261.9,
+				"min": 244.1,
+				"max": 274.3
+			},
+			"allIconsMs": {
+				"median": 692.2,
+				"min": 653.6,
+				"max": 707.8
+			},
+			"panMedianMs": {
+				"median": 98.25,
+				"min": 94.35,
+				"max": 99.1
+			},
+			"panP95Ms": {
+				"median": 118.1,
+				"min": 115.9,
+				"max": 120.9
+			},
+			"intervalMedianMs": {
+				"median": 133.2,
+				"min": 116.7,
+				"max": 133.3
+			},
+			"imageRequests": 21,
+			"imageBytes": 34378
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "png",
+			"firstIconsMs": {
+				"median": 165.9,
+				"min": 146.4,
+				"max": 178.1
+			},
+			"allIconsMs": {
+				"median": 166,
+				"min": 146.4,
+				"max": 178.1
+			},
+			"panMedianMs": {
+				"median": 92.35,
+				"min": 90.9,
+				"max": 95.8
+			},
+			"panP95Ms": {
+				"median": 104.6,
+				"min": 102,
+				"max": 112.7
+			},
+			"intervalMedianMs": {
+				"median": 116.7,
+				"min": 116.7,
+				"max": 116.7
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 965.2,
+				"min": 892.4,
+				"max": 1026.1
+			},
+			"allIconsMs": {
+				"median": 965.2,
+				"min": 892.4,
+				"max": 1026.1
+			},
+			"panMedianMs": {
+				"median": 678.25,
+				"min": 667.15,
+				"max": 731.2
+			},
+			"panP95Ms": {
+				"median": 784.9,
+				"min": 767.2,
+				"max": 885.9
+			},
+			"intervalMedianMs": {
+				"median": 900,
+				"min": 883.3,
+				"max": 966.6
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "svg",
+			"firstIconsMs": {
+				"median": 720.6,
+				"min": 694.3,
+				"max": 761.4
+			},
+			"allIconsMs": {
+				"median": 720.6,
+				"min": 694.7,
+				"max": 761.4
+			},
+			"panMedianMs": {
+				"median": 685.45,
+				"min": 668.75,
+				"max": 698.1
+			},
+			"panP95Ms": {
+				"median": 758.5,
+				"min": 743,
+				"max": 781.2
+			},
+			"intervalMedianMs": {
+				"median": 900,
+				"min": 883.4,
+				"max": 933.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": false,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 687.8,
+				"min": 680.7,
+				"max": 763.7
+			},
+			"allIconsMs": {
+				"median": 687.9,
+				"min": 680.7,
+				"max": 763.7
+			},
+			"panMedianMs": {
+				"median": 97.75,
+				"min": 95.55,
+				"max": 103.2
+			},
+			"panP95Ms": {
+				"median": 115.8,
+				"min": 106.7,
+				"max": 121
+			},
+			"intervalMedianMs": {
+				"median": 116.7,
+				"min": 116.7,
+				"max": 133.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		},
+		{
+			"profile": "mobile-simulated",
+			"count": 5000,
+			"unique": 21,
+			"warm": true,
+			"mode": "runtime",
+			"firstIconsMs": {
+				"median": 153.9,
+				"min": 149.3,
+				"max": 163
+			},
+			"allIconsMs": {
+				"median": 153.9,
+				"min": 149.3,
+				"max": 163
+			},
+			"panMedianMs": {
+				"median": 97.7,
+				"min": 90.7,
+				"max": 98.75
+			},
+			"panP95Ms": {
+				"median": 111.4,
+				"min": 108.1,
+				"max": 124.3
+			},
+			"intervalMedianMs": {
+				"median": 133.3,
+				"min": 116.7,
+				"max": 133.3
+			},
+			"imageRequests": 0,
+			"imageBytes": 0
+		}
+	]
+}

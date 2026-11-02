@@ -8,11 +8,7 @@ const WORKSPACE_DIRS = ["packages", "apps"] as const;
 const TEST_FILE_PATTERN = /\.(test|spec)\.(ts|tsx)$/;
 
 /** Packages not yet on the unified tsconfig pattern (see docs/development/STANDARDS.md). */
-const ALLOWLIST = new Set([
-	"@mapsight/count-aggregator-api",
-	"@mapsight/traffic-style",
-	"@mapsight/ui",
-]);
+const ALLOWLIST = new Set(["@mapsight/count-aggregator-api", "@mapsight/ui"]);
 
 type WorkspacePackage = {
 	dir: string;
