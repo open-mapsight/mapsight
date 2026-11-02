@@ -57,17 +57,11 @@ export async function mapChecks(context: CheckContext): Promise<void> {
 				!element.closest(".ol-control") &&
 				api.isVisible(element),
 		);
-		const rect = viewport.getBoundingClientRect();
 		return {
 			info: api.describe(viewport),
 			ancestors,
 			focusMark: candidates[0] ? api.mark(candidates[0]) : null,
-			rect: {
-				x: rect.x,
-				y: rect.y,
-				width: rect.width,
-				height: rect.height,
-			},
+			viewportMark: api.mark(viewport),
 		};
 	});
 	if (!map) {
@@ -107,11 +101,21 @@ export async function mapChecks(context: CheckContext): Promise<void> {
 		(api.byMark(mark) as HTMLElement | null)?.focus();
 	}, map.focusMark);
 	await settle(page, 1200);
+	// Focusing can scroll the document (especially an editorial host page).
+	// Measure the viewport now; the pre-focus rectangle can point at unrelated
+	// static content, producing either a false failure or an unjudged check.
+	const rect = await page.evaluate((mark) => {
+		const viewport = window.__mapsightA11y!.byMark(mark);
+		if (!viewport) return null;
+		const box = viewport.getBoundingClientRect();
+		return {x: box.x, y: box.y, width: box.width, height: box.height};
+	}, map.viewportMark);
+	if (!rect) return;
 	const clip = {
-		x: map.rect.x + map.rect.width / 4,
-		y: map.rect.y + map.rect.height / 4,
-		width: map.rect.width / 2,
-		height: map.rect.height / 2,
+		x: rect.x + rect.width / 4,
+		y: rect.y + rect.height / 4,
+		width: rect.width / 2,
+		height: rect.height / 2,
 	};
 	const first = await clipShot(page, clip, 0);
 	await settle(page, 600);
