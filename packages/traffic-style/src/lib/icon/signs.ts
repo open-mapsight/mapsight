@@ -1,5 +1,6 @@
 import type {IconColors, IconVariant} from "./icon-id.ts";
 import {signs} from "./signs/catalog.ts";
+import {applySignColors} from "./signs/definition.ts";
 
 export function hasSignIcon(id: string): boolean {
 	return Object.hasOwn(signs, id);
@@ -21,7 +22,7 @@ export function composeSignMarkup(
 	if (!hasSignIcon(id)) {
 		return null;
 	}
-	return signs[id]![variant]({
+	return applySignColors(signs[id]![variant], {
 		background: escapeColor(colors.background),
 		foreground: escapeColor(colors.foreground),
 		border: escapeColor(colors.border),

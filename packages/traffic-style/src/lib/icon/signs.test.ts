@@ -11,6 +11,7 @@ import {
 	parseMapsightIcon,
 	resolveMapsightIconSpec,
 } from "./icon-id.ts";
+import {applySignColors} from "./signs/definition.ts";
 import {uiIconSrc} from "./ui-icon-src.ts";
 
 const variants: IconVariant[] = ["default", "small", "xsmall", "plain"];
@@ -33,6 +34,24 @@ async function rasterize(svg: string) {
 }
 
 describe("traditional signs", () => {
+	it("uses explicit paint bindings instead of inferring roles from matching colors", () => {
+		const markup =
+			'<path data-sign-fill="foreground" fill="#fff"/><path fill="#fff"/><path stroke="#fff" data-sign-stroke="border"/>';
+		expect(
+			applySignColors(markup, {foreground: "#123456", border: "#987654"}),
+		).toBe(
+			'<path fill="#123456"/><path fill="#fff"/><path stroke="#987654"/>',
+		);
+	});
+	it("keeps literal asset defaults for omitted paint overrides", () => {
+		expect(
+			applySignColors(
+				'<path fill="#b80707" data-sign-fill="background"/>',
+				{},
+			),
+		).toBe('<path fill="#b80707"/>');
+	});
+
 	it.each([
 		["default", 40],
 		["small", 28],

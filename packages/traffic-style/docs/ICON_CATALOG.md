@@ -77,9 +77,16 @@ Signs without a separate band ignore `border`; a symbol-free `vollsperrung`
 ignores `foreground`.
 
 The compositions use explicit, repository-owned SVG bases and symbols in
-`src/lib/icon/signs/frames.ts` and `src/lib/icon/signs/symbols.ts`, assembled in
-`catalog.ts`. Edit those files directly; no importer, palette inference, or design
-file is required. Each size retains its optical adjustments and existing parking
+`src/signs/bases/` and `src/signs/glyphs/`, assembled by the explicit
+`src/lib/icon/signs/catalog.ts`. Each component has a standalone SVG for every
+size, with literal default paints and explicit `data-sign-fill` /
+`data-sign-stroke` bindings (`background`, `foreground`, or `border`). Paints
+without a binding remain fixed, even when their literal color matches a bound
+paint. Edit those SVGs directly; no design file or color inference is required.
+`build:sign-artwork` only serializes these authored assets into a JavaScript
+module for browser/Node use. It does not extract components from legacy icons or
+read an external design export. The published package also includes the source
+SVGs under `src/signs/`. Each size retains its optical adjustments and existing parking
 fallbacks. The old `src/icons/` SVGs remain compatibility assets and raster parity
 fixtures. Package builds emit the sign defaults from these same compositions
 after the legacy asset pass, so editing a composition also updates the default

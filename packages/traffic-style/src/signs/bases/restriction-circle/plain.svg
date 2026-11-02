@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none" fill-rule="evenodd">
+<circle cx="17" cy="17" r="11" fill="#fff" data-sign-fill="background"/>
+<circle cx="17" cy="17" r="8.75" fill="#fff" data-sign-fill="background" stroke="#b80707" data-sign-stroke="border" stroke-linejoin="square" stroke-width="2.5"/>
+<circle cx="17" cy="17" r="10.5" stroke="#fff"/>
+</svg>
