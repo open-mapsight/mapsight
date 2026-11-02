@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" fill-rule="evenodd">
+<g transform="translate(-5 -7)">
+<path fill="#fff" data-sign-fill="background" stroke="#fff" d="m10.134 14.908-1.06.089v-2.001l1.06-.362v-1.64h.83v2.277l-.83.32zm2.71-3.914v1.64l1.082.32v2.043h-.993v-1.36l-.894-.366v-2.277h.806z"/>
+<path fill="#000" data-sign-fill="foreground" d="m10.134 14.908-1.06.089v-2.001l1.06-.362v-1.64h.83v2.277l-.83.32zm2.71-3.914v1.64l1.082.32v2.043h-.993v-1.36l-.894-.366v-2.277h.806z"/>
+</g>
+</svg>

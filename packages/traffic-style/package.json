@@ -89,6 +89,15 @@
 					"outputs": [
 						"src/generated/pictograms/"
 					]
+				},
+				{
+					"inputs": [
+						"src/signs/",
+						"scripts/dev/build-sign-artwork.ts"
+					],
+					"outputs": [
+						"src/generated/sign-artwork.ts"
+					]
 				}
 			]
 		}
@@ -115,7 +124,7 @@
 		"directory": "packages/traffic-style"
 	},
 	"scripts": {
-		"build": "npm-run-all build:setup build:pictograms build:meta --parallel build:scripts build:icons build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
+		"build": "npm-run-all build:setup build:pictograms build:meta build:icons --parallel build:scripts build:composable-icons build:docs --sequential build:icon-sprites build:styles copy",
 		"build:composable-icons": "run-p build:composable-icons:*",
 		"build:composable-icons:1x": "node scripts/dev/build-composable-icons.ts --scale 1",
 		"build:composable-icons:2x": "node scripts/dev/build-composable-icons.ts --scale 2",
@@ -130,18 +139,19 @@
 		"build:icons:2x": "node scripts/optimize-icons.ts --target png --scale 2 --src ./src/icons/ --dest ./dist/img/mapsight-icons-2x/",
 		"build:icons:svg": "node scripts/optimize-icons.ts --target svg --src ./src/icons/ --dest ./dist/img/mapsight-icons-svg/",
 		"build:meta": "node scripts/dev/create-meta-json.ts ./src/meta.json ./src/icons/ > dist/meta.json",
-		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:pictograms:modules",
+		"build:pictograms": "run-s build:pictograms:traffic-style build:pictograms:fontawesome build:sign-artwork build:pictograms:modules",
 		"build:pictograms:fontawesome": "node scripts/dev/import-fontawesome.ts",
 		"build:pictograms:modules": "tsc --project tsconfig.lib.json",
 		"build:pictograms:traffic-style": "node scripts/dev/import-pictograms.ts",
 		"build:scripts": "rimraf dist/scripts && tsc --project tsconfig.scripts.json",
 		"build:setup": "mkdirp dist/docs && mkdirp dist/img",
+		"build:sign-artwork": "node scripts/dev/build-sign-artwork.ts",
 		"build:styles": "vector-style-compiler src/scss/default.scss --output tmp/mapsight-vector-styles --name default && cp tmp/mapsight-vector-styles/default.js dist && cp tmp/mapsight-vector-styles/default.css dist",
 		"clean": "rimraf tmp/* dist/*",
 		"clean-build": "run-s clean build",
 		"copy": "run-p copy:src copy:misc",
 		"copy:misc": "node scripts/dev/write-dist-package.json.ts && cp README.md THIRD_PARTY_NOTICES.md base.scss full.scss dist/",
-		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/",
+		"copy:src": "mkdirp dist/src; cp -r src/scss dist/src/ && cp -r src/signs dist/src/",
 		"lint": "eslint scripts scripts/dev src/lib/icon src/lib/runtime",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.lib.json",

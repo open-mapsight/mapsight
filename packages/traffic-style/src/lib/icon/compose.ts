@@ -1,6 +1,7 @@
 import type {PictogramGlyph} from "../pictograms/types.ts";
 import type {IconSpec} from "./icon-id.ts";
 import {getIconLayout} from "./layout.ts";
+import {composeSignMarkup} from "./signs.ts";
 
 const DEFAULT_PICTOGRAM_PADDING = 0;
 const FONT_AWESOME_PICTOGRAM_PADDING = 0.1;
@@ -82,9 +83,12 @@ export function composeSvg(spec: IconSpec): string {
 	const {resolved, template, glyphs} = getIconLayout(spec);
 	const hasLabel = Boolean(resolved.label?.trim());
 
-	let inner = template.renderBackground(resolved.colors);
+	const signMarkup = resolved.pictogram
+		? composeSignMarkup(resolved.pictogram, resolved.variant, spec.colors)
+		: null;
+	let inner = signMarkup ?? template.renderBackground(resolved.colors);
 
-	if (glyphs.length > 0) {
+	if (signMarkup === null && glyphs.length > 0) {
 		for (const [index, glyph] of glyphs.entries()) {
 			inner += renderPictogram(
 				glyph,
@@ -98,7 +102,7 @@ export function composeSvg(spec: IconSpec): string {
 				resolved.colors.background,
 			);
 		}
-	} else if (hasLabel && resolved.label) {
+	} else if (signMarkup === null && hasLabel && resolved.label) {
 		inner += renderLabel(
 			resolved.label,
 			template.textAnchor,

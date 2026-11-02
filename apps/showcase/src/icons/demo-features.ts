@@ -74,6 +74,27 @@ export const demoMapFeatures: DemoMapFeature[] = [
 		coordinates: [10.526, 52.259],
 		mapsightIconId: "fa-school/#1d4ed8/#ffffff",
 	},
+	{
+		id: "baustelle-colored",
+		title: "Construction (custom colors)",
+		kind: "runtime-colored",
+		coordinates: [10.516, 52.262],
+		mapsightIconId: "baustelle/#ffffcc/#333333/#2266cc",
+	},
+	{
+		id: "lkwsperrung-colored",
+		title: "Truck restriction (custom border)",
+		kind: "runtime-colored",
+		coordinates: [10.538, 52.271],
+		mapsightIconId: "lkwsperrung///#2266cc",
+	},
+	{
+		id: "ampel-colored",
+		title: "Traffic lights (custom background)",
+		kind: "runtime-colored",
+		coordinates: [10.514, 52.271],
+		mapsightIconId: "ampel/#ffffcc",
+	},
 ];
 
 export const demoIconKindLabels: Record<DemoIconKind, string> = {

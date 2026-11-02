@@ -1,6 +1,9 @@
 import type {IconColors, IconSpec} from "./icon-id.ts";
 
-export type RequiredIconColors = Required<IconColors>;
+export type RequiredIconColors = Required<
+	Pick<IconColors, "background" | "foreground">
+> &
+	Pick<IconColors, "border">;
 
 export type ResolvedIconSpec = Required<Pick<IconSpec, "variant">> &
 	IconSpec & {
