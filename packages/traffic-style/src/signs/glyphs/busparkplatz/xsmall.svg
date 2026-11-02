@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" fill-rule="evenodd">
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" fill-rule="evenodd">
+<g transform="translate(-5 -5)">
 <path fill="#fff" data-sign-fill="foreground" d="M11.466 9c1.201.16 1.5 2.018-.032 2.36h-.74v1.633H10V9Zm-.09.592h-.683v1.169h.732c.658-.31.57-.935-.05-1.169Z"/>
+</g>
 </svg>

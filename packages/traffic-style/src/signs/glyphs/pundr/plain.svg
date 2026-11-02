@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none" fill-rule="evenodd">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" fill-rule="evenodd">
+<g transform="translate(-5 -5)">
 <path fill="#fff" data-sign-fill="foreground" d="m19.288 12.008 3.3.01c2.902.868 2.633 4.675.497 5.634l1.957 4.423h-1.56L21.64 17.75h-1.018v4.33l-1.333-.003v-10.07Zm3.023 1.402h-1.69v2.982h1.762c1.285-.635 1.545-2.423-.072-2.982m-5.465 2.957-.001 1.545h1.546v1l-1.546-.001v1.546h-1V18.91H14.3v-1h1.545v-1.544h1ZM12.404 12c2.79.404 3.485 5.084-.074 5.948h-1.72v4.114H9v-10.06Zm-.21 1.492H10.61v2.946h1.7c1.529-.78 1.322-2.357-.115-2.946Z"/>
 <path fill="#f8f8f8" data-sign-fill="foreground" d="M9 8h16v1.417H9zm0 16.58h16v1.417H9z"/>
+</g>
 </svg>

@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" fill-rule="evenodd">
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" fill-rule="evenodd">
+<g transform="translate(-5 -7)">
 <path fill="#fff" data-sign-fill="background" d="M9.675 9.736h3.673V11H9.675z"/>
 <path fill="#3aaa35" d="M11.492 13.927c.657 0 1.189.272 1.189.608s-.532.608-1.189.608c-.656 0-1.188-.272-1.188-.608s.532-.608 1.188-.608"/>
 <path fill="#f39200" d="M11.492 11.926c.657 0 1.189.272 1.189.608s-.532.608-1.189.608c-.656 0-1.188-.272-1.188-.608s.532-.608 1.188-.608"/>
 <path fill="#d92400" d="M11.492 9.894c.657 0 1.189.273 1.189.608 0 .336-.532.608-1.189.608-.656 0-1.188-.272-1.188-.608s.532-.608 1.188-.608"/>
+</g>
 </svg>

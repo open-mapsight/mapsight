@@ -78,7 +78,11 @@ ignores `foreground`.
 
 The compositions use explicit, repository-owned SVG bases and symbols in
 `src/signs/bases/` and `src/signs/glyphs/`, assembled by the explicit
-`src/lib/icon/signs/catalog.ts`. Each component has a standalone SVG for every
+`src/signs/compositions.json` (loaded by `src/lib/icon/signs/catalog.ts`). Glyphs
+share padded artboards within each variant; fixed per-variant placement
+rectangles in that metadata put them precisely inside each base. Local optical
+alignment stays in the glyph artwork. The build never computes ink bounds or
+auto-centers symbols. Each component has a standalone SVG for every
 size, with literal default paints and explicit `data-sign-fill` /
 `data-sign-stroke` bindings (`background`, `foreground`, or `border`). Paints
 without a binding remain fixed, even when their literal color matches a bound

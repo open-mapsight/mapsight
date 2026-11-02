@@ -3,6 +3,7 @@ import {readFile} from "node:fs/promises";
 import sharp from "sharp";
 import {describe, expect, it} from "vitest";
 
+import {signGlyphs} from "../../generated/sign-artwork.ts";
 import meta from "../../meta.json" with {type: "json"};
 import {mapsightRuntimeIconSize} from "../runtime/icon-size.ts";
 import {composeSvg} from "./compose.ts";
@@ -11,7 +12,7 @@ import {
 	parseMapsightIcon,
 	resolveMapsightIconSpec,
 } from "./icon-id.ts";
-import {applySignColors} from "./signs/definition.ts";
+import {applySignColors, combineArtwork} from "./signs/definition.ts";
 import {uiIconSrc} from "./ui-icon-src.ts";
 
 const variants: IconVariant[] = ["default", "small", "xsmall", "plain"];
@@ -29,11 +30,67 @@ const signIds = Object.entries(icons)
 	)
 	.map(([id]) => id);
 
-async function rasterize(svg: string) {
-	return sharp(Buffer.from(svg)).ensureAlpha().raw().toBuffer();
+async function rasterize(svg: string, scale = 1) {
+	return sharp(Buffer.from(svg), {density: 72 * scale})
+		.ensureAlpha()
+		.raw()
+		.toBuffer();
 }
 
 describe("traditional signs", () => {
+	it("keeps a shared optical artboard for every glyph of a size, rather than cropping to ink", () => {
+		for (const glyph of Object.values(signGlyphs)) {
+			for (const [variant, size] of Object.entries({
+				default: 24,
+				small: 16,
+				xsmall: 12,
+				plain: 24,
+			})) {
+				expect(glyph[variant as IconVariant]).toMatchObject({
+					viewBox: `0 0 ${size} ${size}`,
+					width: size,
+					height: size,
+				});
+			}
+		}
+	});
+	it("places the same padded glyph at exact coordinates using composition metadata", async () => {
+		const svg = {
+			viewBox: "0 0 4 4",
+			width: 4,
+			height: 4,
+			markup: '<rect x="1" y="1" width="2" height="2" fill="#000"/>',
+		};
+		const baseSvg = {
+			...svg,
+			markup: '<rect width="8" height="8" fill="#fff"/>',
+		};
+		const glyph = {default: svg, small: svg, xsmall: svg, plain: svg};
+		const base = {
+			default: baseSvg,
+			small: baseSvg,
+			xsmall: baseSvg,
+			plain: baseSvg,
+		};
+		const at = (x: number, y: number) => ({
+			default: {x, y, width: 4, height: 4},
+			small: {x, y, width: 4, height: 4},
+			xsmall: {x, y, width: 4, height: 4},
+			plain: {x, y, width: 4, height: 4},
+		});
+		const draw = async (x: number, y: number) =>
+			rasterize(
+				`<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8">${combineArtwork(base, glyph, at(x, y)).default}</svg>`,
+			);
+		const first = await draw(1, 1);
+		const second = await draw(2, 3);
+		const pixel = (data: Buffer, x: number, y: number) => [
+			...data.subarray((y * 8 + x) * 4, (y * 8 + x) * 4 + 4),
+		];
+		expect(pixel(first, 2, 2)).toEqual([0, 0, 0, 255]);
+		expect(pixel(second, 2, 2)).toEqual([255, 255, 255, 255]);
+		expect(pixel(second, 3, 4)).toEqual([0, 0, 0, 255]);
+	});
 	it("uses explicit paint bindings instead of inferring roles from matching colors", () => {
 		const markup =
 			'<path data-sign-fill="foreground" fill="#fff"/><path fill="#fff"/><path stroke="#fff" data-sign-stroke="border"/>';
@@ -97,10 +154,12 @@ describe("traditional signs", () => {
 				}
 				const spec = resolveMapsightIconSpec(id, variant)!;
 				expect(spec.pictogram).toBe(id);
-				expect(
-					await rasterize(composeSvg(spec)),
-					`${id}-${variant}`,
-				).toEqual(await rasterize(source));
+				for (const scale of [1, 2]) {
+					expect(
+						await rasterize(composeSvg(spec), scale),
+						`${id}-${variant}@${scale}x`,
+					).toEqual(await rasterize(source, scale));
+				}
 			}
 		},
 	);
@@ -172,7 +231,7 @@ describe("traditional signs", () => {
 			expect(svg).toBe(
 				composeSvg({...parseMapsightIcon(id)!, variant: "plain"}),
 			);
-			expect(svg).not.toContain('<g transform="translate(');
+			expect(svg).not.toContain("scale(");
 			if (id.startsWith("vollsperrung/")) {
 				expect(svg).toContain('stroke="#987654"');
 				expect(svg).not.toContain("#123456");

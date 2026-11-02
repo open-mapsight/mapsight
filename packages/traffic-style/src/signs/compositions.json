@@ -1,0 +1,161 @@
+{
+	"placements": {
+		"warning": {
+			"default": {
+				"x": 8,
+				"y": 11,
+				"width": 24,
+				"height": 24
+			},
+			"small": {
+				"x": 6,
+				"y": 8,
+				"width": 16,
+				"height": 16
+			},
+			"xsmall": {
+				"x": 5,
+				"y": 7,
+				"width": 12,
+				"height": 12
+			},
+			"plain": {
+				"x": 5,
+				"y": 8,
+				"width": 24,
+				"height": 24
+			}
+		},
+		"centered": {
+			"default": {
+				"x": 8,
+				"y": 8,
+				"width": 24,
+				"height": 24
+			},
+			"small": {
+				"x": 6,
+				"y": 6,
+				"width": 16,
+				"height": 16
+			},
+			"xsmall": {
+				"x": 5,
+				"y": 5,
+				"width": 12,
+				"height": 12
+			},
+			"plain": {
+				"x": 5,
+				"y": 5,
+				"width": 24,
+				"height": 24
+			}
+		}
+	},
+	"icons": {
+		"ampel": {
+			"base": "warning-triangle",
+			"glyph": "ampel",
+			"placement": "warning"
+		},
+		"baustelle": {
+			"base": "warning-triangle",
+			"glyph": "baustelle",
+			"placement": "warning"
+		},
+		"fahrbahnverengung": {
+			"base": "warning-triangle",
+			"glyph": "fahrbahnverengung",
+			"placement": "warning"
+		},
+		"gegenverkehr": {
+			"base": "warning-triangle",
+			"glyph": "gegenverkehr",
+			"placement": "warning"
+		},
+		"meldung": {
+			"base": "warning-triangle",
+			"glyph": "meldung",
+			"placement": "warning"
+		},
+		"stau": {
+			"base": "warning-triangle",
+			"glyph": "stau",
+			"placement": "warning"
+		},
+		"hoehenbeschraenkung": {
+			"base": "restriction-circle",
+			"glyph": "hoehenbeschraenkung",
+			"placement": "centered"
+		},
+		"lkwsperrung": {
+			"base": "restriction-circle",
+			"glyph": "lkwsperrung",
+			"placement": "centered"
+		},
+		"tonnage": {
+			"base": "restriction-circle",
+			"glyph": "tonnage",
+			"placement": "centered"
+		},
+		"vollsperrung": {
+			"base": "restriction-circle"
+		},
+		"parkflaeche": {
+			"base": "parking-base",
+			"glyph": "parkflaeche",
+			"placement": "centered"
+		},
+		"behindertenparken": {
+			"base": "parking-base",
+			"glyph": "behindertenparken",
+			"placement": "centered"
+		},
+		"busparkplatz": {
+			"base": "parking-base",
+			"glyph": "busparkplatz",
+			"placement": "centered"
+		},
+		"cam": {
+			"base": "parking-base",
+			"glyph": "cam",
+			"placement": "centered"
+		},
+		"motorradstellplatz": {
+			"base": "parking-base",
+			"glyph": "motorradstellplatz",
+			"placement": "centered"
+		},
+		"parkhaus": {
+			"base": "parking-base",
+			"glyph": "parkhaus",
+			"placement": "centered"
+		},
+		"pundr": {
+			"base": "parking-base",
+			"glyph": "pundr",
+			"placement": "centered"
+		},
+		"tiefgarage": {
+			"base": "parking-base",
+			"glyph": "tiefgarage",
+			"placement": "centered"
+		},
+		"einbahnstrasse": {
+			"base": "filled-circle",
+			"glyph": "einbahnstrasse",
+			"placement": "centered"
+		},
+		"umleitung": {
+			"base": "detour-base",
+			"glyph": "umleitung",
+			"placement": "centered"
+		},
+		"breitenbeschraenkung": {
+			"base": "horizontal-restriction-circle",
+			"glyph": "breitenbeschraenkung",
+			"placement": "centered"
+		}
+	}
+}
