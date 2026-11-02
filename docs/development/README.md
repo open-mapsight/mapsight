@@ -12,3 +12,5 @@ Maintainer and contributor documentation for working on the Mapsight monorepo.
 | [Showcase deployments](PREVIEW_DEPLOYMENTS.md)      | Automatic PR previews, cleanup, and deployment setup |
 
 [Feature-list selection subscriptions](FEATURE_LIST_SELECTION_PERFORMANCE.md) documents the bounded row-render fix and controlled local measurements.
+
+[Feature-list view subscriptions](FEATURE_LIST_VIEW_SUBSCRIPTIONS.md) describes shared view observations, compatibility and callback measurements.

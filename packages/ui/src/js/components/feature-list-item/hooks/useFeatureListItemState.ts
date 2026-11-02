@@ -1,8 +1,13 @@
-import {useMemo} from "react";
-import {useSelector} from "react-redux";
+import {useCallback, useContext, useMemo, useSyncExternalStore} from "react";
+import {
+	ReactReduxContext,
+	type ReactReduxContextValue,
+	useSelector,
+} from "react-redux";
 
+import type {RootStateSlice} from "../../../store/selectors";
 import {isViewMobile, viewSelector} from "../../../store/selectors";
-import type {MapsightUiFeature} from "../../../types";
+import type {MapsightUiFeature, MapsightUiView} from "../../../types";
 import {useFeatureListContext} from "../../feature-list/context";
 import {
 	createIsHighlightedSelector,
@@ -12,6 +17,36 @@ import {
 } from "./feature-list-item-selection-selectors";
 
 const noSelectionSelector = () => false;
+const unsubscribeNothing = () => {};
+const subscribeToNoChanges = () => unsubscribeNothing;
+
+function useFeatureListView(contextView: MapsightUiView | undefined) {
+	const reduxContext = useContext(
+		ReactReduxContext,
+	) as ReactReduxContextValue<RootStateSlice> | null;
+	if (!reduxContext) {
+		throw new Error("Feature list rows require a React-Redux Provider");
+	}
+	const {store, subscription, getServerState} = reduxContext;
+	const getSnapshot = useCallback(
+		() => contextView ?? viewSelector(store.getState()),
+		[contextView, store],
+	);
+	const getServerSnapshot = useCallback(
+		() => contextView ?? viewSelector((getServerState ?? store.getState)()),
+		[contextView, getServerState, store],
+	);
+
+	// Keep old custom contexts and direct hook callers responsive, with the
+	// same nested ordering and hydration snapshot as React-Redux selectors.
+	return useSyncExternalStore(
+		contextView === undefined
+			? subscription.addNestedSub
+			: subscribeToNoChanges,
+		getSnapshot,
+		getServerSnapshot,
+	);
+}
 
 export default function useFeatureListItemState(
 	feature: MapsightUiFeature,
@@ -19,9 +54,8 @@ export default function useFeatureListItemState(
 	// by default; built-in rows only need it for selected-only visibility.
 	{observeGlobalSelection = true}: {observeGlobalSelection?: boolean} = {},
 ) {
-	const view = useSelector(viewSelector);
-	const isMobile = isViewMobile(view);
 	const {
+		view: contextView,
 		listUiOptions: {
 			selectionBehavior,
 			showSelectedOnly,
@@ -31,6 +65,8 @@ export default function useFeatureListItemState(
 			highlightOnMouse,
 		},
 	} = useFeatureListContext();
+	const view = useFeatureListView(contextView);
+	const isMobile = isViewMobile(view);
 
 	const isSelected = useSelector(createIsSelectedSelector(feature.id));
 	const isPreselected = useSelector(createIsPreselectedSelector(feature.id));
