@@ -15,7 +15,7 @@ tree has **not** completed a formal WCAG audit.
 | Focus management in modals/overlays  | Implemented restoration/inert handling; **React Aria** FocusScope for details/sheets; host journeys still need acceptance. See [Decision 007](architecture/decisions/007-ui-styling-strategy.md#primitive-preference-for-new--migrated-ui-chrome) |
 | Colour contrast                      | Partial — host themes via CSS can help or harm; hard-coded package UI (e.g. count-aggregator-ui) must meet AA itself                                                                                                                              |
 | Focus indicators                     | Partial — keyboard-reachable controls in `@mapsight/ui` base SCSS use `:focus-visible` rings; station selection also has a keyboard focus ring; host acceptance remains                                                                           |
-| Automated a11y checks                | Available: [`@mapsight/a11y-audit`](../packages/a11y-audit/README.md) (axe-core + keyboard, dialog, map, language, text-spacing, reflow checks); showcase CI uses a committed baseline and rejects new serious failures or execution errors       |
+| Automated a11y checks                | Available: [`@mapsight/a11y-audit`](../packages/a11y-audit/README.md) (axe-core + keyboard, dialog, map, language, text-spacing, reflow checks); demos CI uses a committed baseline and rejects new serious failures or execution errors          |
 
 ---
 
@@ -60,7 +60,7 @@ Real open work:
 - Production rollout and a production audit after package/host adoption are **not verified**.
   A successful local SSR harness or test-system audit does not establish production acceptance.
 
-See the [showcase audit baseline and rerun instructions](../apps/showcase/A11Y.md) for current
+See the [demos audit baseline and rerun instructions](../apps/demos/A11Y.md) for current
 remaining automated findings and the CI gate. Manual checks remain untested unless a named
 tester records their results; automation does not establish WCAG conformance.
 
@@ -78,7 +78,7 @@ non-modal regions, and full-page audit requirements.
 1. Public accessibility status
 2. Inventory of UI components vs WCAG criteria
 3. Prefer **custom → `react-aria` hooks → `react-aria-components` / shadcn Aria recipes** for new chrome and overlay work ([Decision 007](architecture/decisions/007-ui-styling-strategy.md#primitive-preference-for-new--migrated-ui-chrome))
-4. Maintain the showcase CI baseline and extend host-specific automated/manual coverage
+4. Maintain the demos CI baseline and extend host-specific automated/manual coverage
 5. Published conformance target once audit completes
 
 Reusable overlay shells (`NativeDialog`, `PopoverDialog`, `BottomSheet`) are tracked

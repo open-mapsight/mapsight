@@ -18,7 +18,7 @@ See each starter’s README for deploy paths, snippet patterns, and customizatio
 | [`mapsight-next-starter`](mapsight-next-starter/)         | **WIP**  | [NEXTJS.md](../docs/integration/NEXTJS.md)                                                                   | `next start` + map mount   |
 | [`mapsight-vite-spa-starter`](mapsight-vite-spa-starter/) | **WIP**  | [REACT_SPA.md](../docs/integration/REACT_SPA.md)                                                             | `vite preview` + map mount |
 
-[`apps/showcase`](../apps/showcase) remains the rich React Router reference for **features**; the Vite SPA starter is
+[`apps/demos`](../apps/demos) remains the rich React Router reference for **features**; the Vite SPA starter is
 the **minimal copy-out** reference.
 
 ---

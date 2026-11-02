@@ -4,7 +4,7 @@ Status: benchmark-only prototype; no production preload policy is installed.
 
 ```bash
 pnpm exec turbo build --filter=@mapsight/traffic-style
-pnpm --filter @mapsight/showcase bench:icons --suite preload \
+pnpm --filter @mapsight/demos bench:icons --suite preload \
   --repeats 5 --out tmp/icon-preloading.json
 ```
 

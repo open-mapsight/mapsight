@@ -79,12 +79,12 @@ package checks and their build prerequisites:
 pnpm --filter @mapsight/ui exec vitest run src/js/components/hint-tooltip.test.tsx
 pnpm verify --filter=@mapsight/ui
 pnpm verify '--filter=...[origin/main]'
-pnpm turbo run lint typecheck --filter=@mapsight/showcase
+pnpm turbo run lint typecheck --filter=@mapsight/demos
 ```
 
 Pass Vitest file filters directly through `exec vitest run`. An extra `--` passed
 through a package script can cause the full suite to run instead. Turbo prepares
-the showcase and vector editor's generated styles before lint/typecheck, and builds
+the demos and vector editor's generated styles before lint/typecheck, and builds
 the vector-style compiler before checking its CLI import of `dist/cli.js`.
 Traffic-style checks also wait for its generated pictograms and compiled icon modules.
 
@@ -121,8 +121,8 @@ Run `pnpm verify --filter=@mapsight/<package>` once to prepare prerequisites
 before running individual test files.
 Turbo shares its local cache between worktrees; avoid
 `clean-build` during normal iteration. Shared TypeScript/ESLint configs are cache
-inputs. The showcase tile URL is excluded from automatic `VITE_*` inference in
-other tasks and included in the showcase build hash. Keep full
+inputs. The demos tile URL is excluded from automatic `VITE_*` inference in
+other tasks and included in the demos build hash. Keep full
 CI coverage when adding local shortcuts; a file-only ESLint cache does not track
 changes to imported types.
 

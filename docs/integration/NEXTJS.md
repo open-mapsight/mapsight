@@ -17,7 +17,7 @@ full-stack map pages).
 - Client-side map mount in a `"use client"` component
 
 It is a **minimal copy-out template**, not a production CMS replacement. For richer UI demos, use [
-`apps/showcase`](../../apps/showcase).
+`apps/demos`](../../apps/demos).
 
 ---
 

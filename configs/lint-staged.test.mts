@@ -78,11 +78,11 @@ describe("lint-staged config", () => {
 				"/repo/packages/core/src/a.ts",
 				"/repo/packages/core/src/b.ts",
 				"/repo/packages/ui/src/c.tsx",
-				"/repo/apps/showcase/src/demo.ts",
+				"/repo/apps/demos/src/demo.ts",
 				"/repo/scripts/check.mts",
 			]),
 			[
-				"pnpm turbo run typecheck --concurrency=4 --output-logs=new-only --filter=./packages/core --filter=./packages/ui --filter=./apps/showcase",
+				"pnpm turbo run typecheck --concurrency=4 --output-logs=new-only --filter=./packages/core --filter=./packages/ui --filter=./apps/demos",
 			],
 		);
 	});

@@ -67,7 +67,7 @@ test("closed, superseded, or unrelated builds cannot select a preview", () => {
 	);
 });
 
-test("the showcase accepts only a successful build of the current main commit", () => {
+test("main accepts only a successful build of the current main commit", () => {
 	const main = {
 		...run,
 		event: "push",

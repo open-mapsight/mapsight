@@ -3,7 +3,7 @@
 **Copy-out template:** [`starters/mapsight-vite-spa-starter`](../../starters/mapsight-vite-spa-starter) — minimal Vite +
 React Router SPA with one map route and semver `@mapsight/*` pins.
 
-**Feature demo:** [`apps/showcase`](../../apps/showcase) — richer UI surface (icon catalog, count-aggregator, TanStack
+**Feature demo:** [`apps/demos`](../../apps/demos) — richer UI surface (icon catalog, count-aggregator, TanStack
 Query) for contributors exploring package capabilities.
 
 Use this when Mapsight is the **primary frontend** (demo apps, internal tools, standalone dashboards) rather than a CMS
@@ -18,7 +18,7 @@ HTML snippet.
 | Editorial paste-in placements        | Developer-owned routes and layout      |
 | Shared lib build + inline config     | Single app bundle or code-split routes |
 | Host CMS owns chrome                 | App owns chrome (nav, footer)          |
-| Primary municipal communicative maps | Demos, showcases, count-aggregator lab |
+| Primary municipal communicative maps | Demo apps, count-aggregator lab        |
 
 Many production **communicative** maps use CMS embeds; SPAs prove package integration and support contributor
 development.
@@ -27,7 +27,7 @@ development.
 
 ## Stack
 
-| Piece       | Choice in vite-spa starter        | Showcase extras                        |
+| Piece       | Choice in vite-spa starter        | Demos extras                           |
 | ----------- | --------------------------------- | -------------------------------------- |
 | Bundler     | Vite                              | Same                                   |
 | Routing     | React Router 7                    | Same                                   |
@@ -47,7 +47,7 @@ development.
    `package.json` scripts).
 4. **Assets** — copy `@mapsight/traffic-style` image dirs to `public/img/` for map icons (`mapsight-icons*`). UI chrome
    icons (`mapsight-ui/*`) resolve from `@mapsight/ui` through SCSS (`$ms3-iconPath: "~@mapsight/ui/dist/img/"`) and are
-   emitted as bundler assets — see [`apps/showcase/src/msui.scss`](../../apps/showcase/src/msui.scss). Set
+   emitted as bundler assets — see [`apps/demos/src/msui.scss`](../../apps/demos/src/msui.scss). Set
    `$ms3-future-v8-themedIcons: true` to colour them from the `--ms3-*` tokens
    ([themed chrome icons](../../packages/ui/README.md#themed-chrome-icons-ms3-future-v8-themedicons)).
 
@@ -64,7 +64,7 @@ it to establish the first rank beneath each host heading. See [Heading hierarchy
 
 ## Count Aggregator demo
 
-Showcase includes a count-aggregator page wired to a **local mock API** (`vite.count-aggregator-mock.ts`) so
+The demo app includes a count-aggregator page wired to a **local mock API** (`vite.count-aggregator-mock.ts`) so
 contributors can exercise `@mapsight/count-aggregator-ui` without a live platform. Replace mock base URL with host
 platform public API in production apps.
 
@@ -101,8 +101,8 @@ npm run build
 ```bash
 pnpm --filter mapsight-vite-spa-starter dev
 pnpm --filter mapsight-vite-spa-starter build
-pnpm --filter @mapsight/showcase dev
-pnpm --filter @mapsight/showcase build
+pnpm --filter @mapsight/demos dev
+pnpm --filter @mapsight/demos build
 ```
 
 Run typecheck/lint via turbo from root: `pnpm typecheck`, `pnpm lint`.

@@ -216,7 +216,7 @@ function queryResultToView<T>(query: UseQueryResult<T>): AsyncStatusView<T> {
 | `@mapsight/ui/react-query`  | Optional peer                         |
 
 Demo apps without Query must not require it. Apps that already use Query
-(e.g. `@mapsight/count-aggregator-ui`, showcase) import the adapter subpath.
+(e.g. `@mapsight/count-aggregator-ui`, demos) import the adapter subpath.
 
 ## Customization
 
