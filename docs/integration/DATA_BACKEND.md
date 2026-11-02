@@ -70,7 +70,7 @@ Configure the API base URL in host app env — never hardcode customer domains i
 3. Publish **public** API routes separately from authenticated admin routes.
 4. Build count-aggregator UI into CMS snippet or SPA; point `@mapsight/count-aggregator-api` at public base URL.
 
-Showcase app includes a **mock API** for local development without a live platform.
+The demo app includes a **mock API** for local development without a live platform.
 
 ---
 

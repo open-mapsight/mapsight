@@ -48,7 +48,7 @@ Playwright E2E goal.
 
 **Configuration:** single serializable Redux tree per embed; GeoJSON-first feature sources; OGC layers as map layers.
 
-**Integration model:** CMS HTML snippets, SPAs (`starters/mapsight-vite-spa-starter`, feature demos in `apps/showcase`),
+**Integration model:** CMS HTML snippets, SPAs (`starters/mapsight-vite-spa-starter`, feature demos in `apps/demos`),
 Next (`starters/mapsight-next-starter`); optional SSR hydration; site transitions via `mergeAll` / `resetMapsightCore`.
 
 **Strengths:** CMS-native embeds, **host-native theming** (map UI matches surrounding site —

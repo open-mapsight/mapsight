@@ -57,4 +57,4 @@ lerna-debug.log*
 
 # Local closeout evidence and generated accessibility reports
 /.scratch/
-/apps/showcase/a11y-report/
+/apps/demos/a11y-report/

@@ -371,11 +371,11 @@ async function publish(): Promise<void> {
 		return;
 	}
 	const domain = required("PREVIEW_BASE_DOMAIN");
-	const showcase = required("SHOWCASE_HOST");
-	if (![domain, showcase].every((host) => /^[a-z0-9.-]+$/.test(host))) {
+	const mainHost = required("SHOWCASE_HOST");
+	if (![domain, mainHost].every((host) => /^[a-z0-9.-]+$/.test(host))) {
 		throw new Error("Invalid preview hostname");
 	}
-	const url = `https://${request.target === "main" ? showcase : `${request.target}.${domain}`}`;
+	const url = `https://${request.target === "main" ? mainHost : `${request.target}.${domain}`}`;
 	const deployment = await api<{id: number}>("/deployments", {
 		ref: request.sha,
 		environment: environment(request.target),
@@ -384,7 +384,7 @@ async function publish(): Promise<void> {
 		transient_environment: request.target !== "main",
 		production_environment: request.target === "main",
 		payload: {target: request.target, run_id: request.run_id},
-		description: "Static Mapsight showcase",
+		description: "Static developer demos",
 	});
 	const status = (state: string, description: string) =>
 		api(`/deployments/${deployment.id}/statuses`, {
@@ -395,7 +395,7 @@ async function publish(): Promise<void> {
 			log_url: `${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
 		});
 	try {
-		await status("in_progress", "Uploading static showcase");
+		await status("in_progress", "Uploading static demos");
 		const result = await receive(request);
 		if (result.status !== "deployed") {
 			await status("inactive", "Build superseded or pull request closed");
@@ -408,7 +408,7 @@ async function publish(): Promise<void> {
 		if (!response.ok || metadata.sha !== request.sha) {
 			throw new Error("Published revision failed the HTTPS smoke test");
 		}
-		await status("success", "Showcase is ready");
+		await status("success", "Demos are ready");
 		if (process.env.GITHUB_STEP_SUMMARY) {
 			appendFileSync(
 				process.env.GITHUB_STEP_SUMMARY,

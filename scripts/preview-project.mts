@@ -237,9 +237,38 @@ export class PreviewProject {
 	readonly shells = new Set<string>();
 	constructor(
 		sources: Sources,
-		appName = "@mapsight/showcase",
+		appName?: string,
 		metadata: Sources = sources,
 	) {
+		// Deployed main and older PRs can still use the app's previous package name.
+		const appNames = appName
+			? [appName]
+			: ["@mapsight/demos", "@mapsight/showcase"];
+		const appDirectory = (snapshot: Sources) => {
+			const file = [...snapshot].find(
+				([file, source]) =>
+					/(?:^|\/)package\.json$/.test(file) &&
+					appNames.includes(
+						(JSON.parse(source) as Manifest).name ?? "",
+					),
+			)?.[0];
+			return file ? path.dirname(file) : undefined;
+		};
+		const directory = appDirectory(sources);
+		const metadataDirectory = appDirectory(metadata);
+		if (directory && metadataDirectory && directory !== metadataDirectory) {
+			metadata = new Map(
+				[...metadata].map(([file, source]) => [
+					within(file, metadataDirectory)
+						? relative(
+								directory,
+								path.relative(metadataDirectory, file),
+							)
+						: file,
+					source,
+				]),
+			);
+		}
 		this.sources = sources;
 		this.packages = [...sources]
 			.filter(([file]) => /(?:^|\/)package\.json$/.test(file))
@@ -253,10 +282,15 @@ export class PreviewProject {
 					).mapsight;
 				return {directory: path.dirname(file), manifest};
 			});
-		const app = this.packages.find(
-			(item) => item.manifest.name === appName,
-		);
-		if (!app) throw new Error(`Preview app package not found: ${appName}`);
+		const app = appNames
+			.map((name) =>
+				this.packages.find((item) => item.manifest.name === name),
+			)
+			.find(Boolean);
+		if (!app)
+			throw new Error(
+				`Preview app package not found: ${appNames.join(", ")}`,
+			);
 		this.app = app;
 		this.configs = [...sources.keys()]
 			.filter((file) => /(?:^|\/)tsconfig(?:\.[^/]+)?\.json$/.test(file))
@@ -744,7 +778,7 @@ export class PreviewProject {
 	}
 }
 
-export function showcaseRoutes(sources: Sources, metadata?: Sources): Route[] {
+export function demoRoutes(sources: Sources, metadata?: Sources): Route[] {
 	return new PreviewProject(sources, undefined, metadata).routes;
 }
 

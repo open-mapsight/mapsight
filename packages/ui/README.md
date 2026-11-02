@@ -27,9 +27,9 @@ create(document.getElementById("map"), styleFunction, mapsightConfig);
 ```
 
 Copy a working config from [
-`apps/showcase/src/ui-demos/full-config.tsx`](https://github.com/open-mapsight/mapsight/blob/main/apps/showcase/src/ui-demos/full-config.tsx).
+`apps/demos/src/ui-demos/full-config.tsx`](https://github.com/open-mapsight/mapsight/blob/main/apps/demos/src/ui-demos/full-config.tsx).
 
-Runnable apps: [`apps/showcase`](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase) (full UI demo) and [
+Runnable apps: [`apps/demos`](https://github.com/open-mapsight/mapsight/tree/main/apps/demos) (full UI demo) and [
 `starters/mapsight-host-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-host-starter) (
 host embed), [
 `starters/mapsight-next-starter`](https://github.com/open-mapsight/mapsight/tree/main/starters/mapsight-next-starter) (
@@ -79,7 +79,7 @@ for the API and compatibility requirements.
 The npm package includes `src/scss/` (variables, reset, default theme partials). Host apps compile their own stylesheet
 with Sass. Point `$ms3-iconPath` at `@mapsight/ui/dist/img/` so your bundler resolves UI chrome icons (`mapsight-ui/*`)
 as assets (Vite/Webpack `~` alias — see starters and [
-`apps/showcase`](https://github.com/open-mapsight/mapsight/tree/main/apps/showcase)):
+`apps/demos`](https://github.com/open-mapsight/mapsight/tree/main/apps/demos)):
 
 ```scss
 @use "@mapsight/ui/src/scss/variables" with (

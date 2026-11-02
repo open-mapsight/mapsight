@@ -359,7 +359,7 @@ jobs:
         shell: bash
 
   accessibility:
-    name: Showcase accessibility
+    name: Demos accessibility
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -376,18 +376,18 @@ jobs:
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Build showcase and audit
-        run: pnpm turbo run build --filter=@mapsight/showcase --filter=@mapsight/a11y-audit
+      - name: Build demos and audit
+        run: pnpm turbo run build --filter=@mapsight/demos --filter=@mapsight/a11y-audit
 
       - name: Check accessibility against baseline
-        run: pnpm --filter @mapsight/showcase test:a11y
+        run: pnpm --filter @mapsight/demos test:a11y
 
       - name: Upload accessibility evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: showcase-accessibility
-          path: apps/showcase/a11y-report
+          name: demos-accessibility
+          path: apps/demos/a11y-report
           if-no-files-found: warn
           retention-days: 14
 

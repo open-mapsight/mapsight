@@ -182,7 +182,7 @@ In development, invalid config logs a Zod warning; production behaviour is host-
 
 | Example                | Location                                                        |
 | ---------------------- | --------------------------------------------------------------- |
-| Rich demo config       | `apps/showcase/src/ui-demos/full-config.tsx`                    |
+| Rich demo config       | `apps/demos/src/ui-demos/full-config.tsx`                       |
 | Minimal test fixtures  | `packages/ui/src/js/config/__tests__/mapsight-config.test.ts`   |
 | Host embed inline JSON | `starters/mapsight-host-starter` → `dist/snippets/` after build |
 
