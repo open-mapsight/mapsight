@@ -340,6 +340,32 @@ type CombinedFeatureSourceBinding = {
 	unsubscribe: () => void;
 };
 
+function createCombinedSourceEqualityCompare() {
+	let previousEqualValue: unknown;
+	let nextEqualValue: unknown;
+
+	return (previousValue: unknown, nextValue: unknown) => {
+		if (previousValue === nextValue) {
+			previousEqualValue = nextEqualValue = undefined;
+			return true;
+		}
+		if (
+			previousValue === previousEqualValue &&
+			nextValue === nextEqualValue
+		) {
+			return true;
+		}
+
+		// The observer retains its last notified value after an equal write,
+		// while the selector caches the replacement result. Reuse that pair's
+		// equality until either immutable result changes.
+		const equal = isEqual(previousValue, nextValue);
+		previousEqualValue = equal ? previousValue : undefined;
+		nextEqualValue = equal ? nextValue : undefined;
+		return equal;
+	};
+}
+
 export class FeatureSourcesController extends BaseController {
 	#combinedFeatureSourceBindings = new Map<
 		string,
@@ -431,7 +457,7 @@ export class FeatureSourcesController extends BaseController {
 					),
 				);
 			},
-			isEqual,
+			createCombinedSourceEqualityCompare(),
 		);
 	}
 

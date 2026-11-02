@@ -12,3 +12,5 @@ Maintainer and contributor documentation for working on the Mapsight monorepo.
 | [Showcase deployments](PREVIEW_DEPLOYMENTS.md)      | Automatic PR previews, cleanup, and deployment setup |
 
 [Feature-list selection subscriptions](FEATURE_LIST_SELECTION_PERFORMANCE.md) documents the bounded row-render fix and controlled local measurements.
+
+[Combined-source observation](COMBINED_SOURCE_OBSERVATION.md) explains equal-replacement comparison caching and its regression coverage.
