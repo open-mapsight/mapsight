@@ -1,5 +1,20 @@
 # @mapsight/ui
 
+## 7.12.0
+
+### Minor Changes
+
+- a648019: Add the compact `fa-restroom+fa-wheelchair` composite to the existing optional Font Awesome pictogram pack, reusing its restroom and wheelchair glyphs. Support horizontal compositions with one shared frame and full-sized glyphs across all variants. Carry independent bitmap dimensions through runtime styles, OpenLayers and proportional UI/list rendering; preserve existing square icons and compact text labels. Include the runtime dimension helper in compiler imports and IDE metadata.
+
+    Convert computed circle radii to numbers before constructing OpenLayers selection halos. Declare traffic-style’s direct lib-js dependency used by its precompiled style.
+
+### Patch Changes
+
+- df7869a: Avoid rerendering unrelated standard and legacy feature-list rows when selection starts or clears with `showSelectedOnly` disabled. Preserve selected-only visibility and the existing global selection result for direct hook callers.
+- Updated dependencies [`a648019`]:
+    - `@mapsight/traffic-style@5.5.4 → 5.6.0` (minor)
+    - `@mapsight/lib-ol@4.3.3 → 4.3.4` (patch)
+
 ## 7.11.0
 
 ### Minor Changes
