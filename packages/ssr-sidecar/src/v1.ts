@@ -1,10 +1,15 @@
 /**
  * SSR API v1 types (erasable). POST /v1/render → { v, html, state, pageMeta, meta }.
+ * POST /v1/og → image/png, or a NOT_FOUND error.
  */
 import type {PlacePageMeta, SsrRequestBody} from "./render.ts";
 
 export type SsrV1ErrorCode =
-	"VALIDATION" | "BODY_TOO_LARGE" | "RENDER_FAILED" | "RENDER_TIMEOUT";
+	| "VALIDATION"
+	| "BODY_TOO_LARGE"
+	| "RENDER_FAILED"
+	| "RENDER_TIMEOUT"
+	| "NOT_FOUND";
 
 export type SsrV1Success = {
 	v: 1;

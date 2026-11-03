@@ -17,6 +17,7 @@ The current dist-tag is **`beta`**.
 | ------ | ------------ | -------------------------------------------- |
 | `GET`  | `/health`    | `ok`                                         |
 | `POST` | `/v1/render` | JSON `{ v: 1, html, state, pageMeta, meta }` |
+| `POST` | `/v1/og`     | `image/png` of the request's place           |
 | `POST` | `/purge`     | JSON `string[]` of deleted cache keys        |
 
 There is no `POST /render`. Unknown routes return `404`.
@@ -33,7 +34,14 @@ There is no `POST /render`. Unknown routes return `404`.
 ```
 
 Errors are `{ v: 1, error: { code, message } }` with `VALIDATION`,
-`BODY_TOO_LARGE`, `RENDER_FAILED`, or `RENDER_TIMEOUT`.
+`BODY_TOO_LARGE`, `RENDER_FAILED`, `RENDER_TIMEOUT`, or `NOT_FOUND`.
+
+`POST /v1/og` takes the same body as `/v1/render` and answers with the PNG
+the product module's `renderOgImage(body)` returns for the `?feature=` on
+`options.requestUrl`, or `404 NOT_FOUND` when there is no renderer or it returns
+null or an empty card. Hosts call it from their own public Open Graph
+endpoint, which keeps the sidecar off public ingress, and serve their static
+card on `404`.
 
 `POST /purge` accepts `{ "urls": ["https://…/file.geojson"] }` or `{}` / no
 `urls` to clear all.
@@ -64,14 +72,14 @@ The stub module at `/app/dist/render.js` is the default when nothing is mounted.
 
 ## Environment
 
-| Variable                                  | Role                                                                           |
-| ----------------------------------------- | ------------------------------------------------------------------------------ |
-| `MAPSIGHT_SSR_HOST`                       | Bind address (default `0.0.0.0`)                                               |
-| `MAPSIGHT_SSR_PORT`                       | Bind port (default `4123`)                                                     |
-| `MAPSIGHT_SSR_MODULE`                     | ESM module exporting `render()` (and optionally `renderEnvelope()`, `purge()`) |
-| `MAPSIGHT_SSR_AWAIT_TIMEOUT_MS`           | Read by the product module, not this server                                    |
-| `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` | Installed via `http.setGlobalProxyFromEnv`                                     |
-| `MAPSIGHT_SSR_HTTP_ORIGINS`               | Comma hosts rewritten `https` → `http` for hairpin fetches                     |
+| Variable                                  | Role                                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `MAPSIGHT_SSR_HOST`                       | Bind address (default `0.0.0.0`)                                                                  |
+| `MAPSIGHT_SSR_PORT`                       | Bind port (default `4123`)                                                                        |
+| `MAPSIGHT_SSR_MODULE`                     | ESM module exporting `render()` (and optionally `renderEnvelope()`, `renderOgImage()`, `purge()`) |
+| `MAPSIGHT_SSR_AWAIT_TIMEOUT_MS`           | Read by the product module, not this server                                                       |
+| `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` | Installed via `http.setGlobalProxyFromEnv`                                                        |
+| `MAPSIGHT_SSR_HTTP_ORIGINS`               | Comma hosts rewritten `https` → `http` for hairpin fetches                                        |
 
 ## Develop
 
