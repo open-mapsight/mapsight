@@ -1,5 +1,11 @@
 # @mapsight/ssr-sidecar
 
+## 0.2.0
+
+### Minor Changes
+
+- a97daea: Add `POST /v1/og`: the product module's `renderOgImage(body)` as an `image/png` response, `404 NOT_FOUND` when there is no card
+
 ## 0.1.2
 
 ### Patch Changes
