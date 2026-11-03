@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {render, renderEnvelope} from "./render.ts";
+import {render, renderEnvelope, renderOgImage} from "./render.ts";
 
 describe("render", () => {
 	it("requires containerId", () => {
@@ -33,5 +33,18 @@ describe("renderEnvelope", () => {
 		});
 		expect(envelope.pageMeta).toBeNull();
 		expect(envelope.html).toContain('id="mapsight-embed-1"');
+	});
+});
+
+describe("renderOgImage", () => {
+	it("has no card in the stub", async () => {
+		expect(
+			await renderOgImage({
+				options: {
+					containerId: "mapsight-embed-1",
+					requestUrl: "/?feature=1",
+				},
+			}),
+		).toBeNull();
 	});
 });

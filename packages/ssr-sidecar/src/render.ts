@@ -9,6 +9,7 @@
  *
  * `render()` returns an HTML fragment with data-dehydrated-state.
  * `renderEnvelope()` is the same fragment plus pageMeta (null in this stub).
+ * `renderOgImage()` is the PNG of the request's place (null in this stub).
  * `/v1/render` also accepts `{ html, state }` from the module.
  */
 
@@ -87,6 +88,17 @@ export function renderEnvelope(body: SsrRequestBody): Promise<SsrEnvelope> {
 /** Product module clears xhr-json documents. Stub has no process cache. */
 export function purge(_urls?: string[]): Promise<string[]> {
 	return Promise.resolve([]);
+}
+
+/**
+ * Product module renders the Open Graph card of `options.requestUrl`'s
+ * `?feature=` as PNG bytes; null means the host serves its static card.
+ * Stub has no cards.
+ */
+export function renderOgImage(
+	_body: SsrRequestBody,
+): Promise<Uint8Array | null> {
+	return Promise.resolve(null);
 }
 
 function escapeAttr(value: string): string {

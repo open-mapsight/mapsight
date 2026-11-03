@@ -161,8 +161,10 @@ lists Bun/framework alternatives as open for other hosts).
 
 Published process: [`@mapsight/ssr-sidecar`](../../packages/ssr-sidecar/README.md)
 and `ghcr.io/open-mapsight/ssr-sidecar`. Public HTTP surface is `GET /health`,
-`POST /v1/render` (JSON `{ v: 1, html, state, pageMeta, meta }`), and
-`POST /purge`. There is no `POST /render`. Hosts pull the image and bind-mount
+`POST /v1/render` (JSON `{ v: 1, html, state, pageMeta, meta }`),
+`POST /v1/og` (the place's Open Graph card as `image/png`, `404` without one;
+hosts proxy it from their own public endpoint), and `POST /purge`. There is no
+`POST /render`. Hosts pull the image and bind-mount
 their `render.js`; the image does not bake a host bundle.
 
 ---

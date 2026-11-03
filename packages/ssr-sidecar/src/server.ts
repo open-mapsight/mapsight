@@ -6,7 +6,8 @@
  *   MAPSIGHT_SSR_PORT (default 4123)
  *   MAPSIGHT_SSR_MODULE — ESM module exporting render(body)
  *     (sync string, Promise<string>, or { html, state }; this server always awaits)
- *     and optionally renderEnvelope(body) → { html, pageMeta } and purge(urls?)
+ *     and optionally renderEnvelope(body) → { html, pageMeta },
+ *     renderOgImage(body) → PNG bytes | null, and purge(urls?)
  *   MAPSIGHT_SSR_AWAIT_TIMEOUT_MS — read by the product module (not this server);
  *     keep the host HTTP timeout above that budget
  *   HTTP_PROXY / HTTPS_PROXY / NO_PROXY — http.setGlobalProxyFromEnv (all fetch)
@@ -15,6 +16,7 @@
  * Routes:
  *   GET  /health
  *   POST /v1/render  → JSON { v, html, state, pageMeta, meta }
+ *   POST /v1/og      → image/png of the request's place, 404 without a card
  *   POST /purge      → JSON string[] of deleted cache keys
  */
 import http from "node:http";
@@ -57,6 +59,10 @@ type RenderEnvelopeFn = (
 	body: SsrRequestBody,
 ) => SsrEnvelope | Promise<SsrEnvelope>;
 
+type RenderOgImageFn = (
+	body: SsrRequestBody,
+) => Uint8Array | null | Promise<Uint8Array | null>;
+
 const maxBodyBytes = 256 * 1024;
 
 export function defaultRenderModulePath(): string {
@@ -79,6 +85,7 @@ export async function startSsrSidecar(
 	const loaded = (await import(pathToFileURL(modulePath).href)) as {
 		render?: RenderFn;
 		renderEnvelope?: RenderEnvelopeFn;
+		renderOgImage?: RenderOgImageFn;
 		purge?: PurgeFn;
 	};
 	const loadedRender = loaded.render;
@@ -94,6 +101,14 @@ export async function startSsrSidecar(
 	if (renderEnvelope === undefined) {
 		console.warn(
 			"ssr: MAPSIGHT_SSR_MODULE has no renderEnvelope(); pageMeta stays null",
+		);
+	}
+	const loadedOgImage = loaded.renderOgImage;
+	const renderOgImage: RenderOgImageFn | undefined =
+		typeof loadedOgImage === "function" ? loadedOgImage : undefined;
+	if (renderOgImage === undefined) {
+		console.warn(
+			"ssr: MAPSIGHT_SSR_MODULE has no renderOgImage(); POST /v1/og answers 404",
 		);
 	}
 	const loadedPurge = loaded.purge;
@@ -210,6 +225,79 @@ export async function startSsrSidecar(
 		}
 	}
 
+	async function handleOgImage(
+		req: IncomingMessage,
+		res: ServerResponse,
+	): Promise<void> {
+		let requestId: string | undefined;
+		try {
+			requestId = readRequestToken(
+				headerValue(req, "x-request-id"),
+				"X-Request-Id",
+			);
+			const assetVersion = readRequestToken(
+				headerValue(req, "x-mapsight-asset-version"),
+				"X-Mapsight-Asset-Version",
+			);
+			const raw = await readBody(req, maxBodyBytes);
+			let parsed: unknown;
+			try {
+				parsed = JSON.parse(raw);
+			} catch {
+				writeV1Error(res, 400, "VALIDATION", "invalid JSON", requestId);
+				return;
+			}
+			if (!isJsonObject(parsed)) {
+				writeV1Error(
+					res,
+					400,
+					"VALIDATION",
+					"render request must be a JSON object",
+					requestId,
+				);
+				return;
+			}
+			const body = parsed as SsrRequestBody;
+			const bodyRequestId = readRequestToken(body.requestId, "requestId");
+			const bodyAssetVersion = readRequestToken(
+				body.assetVersion,
+				"assetVersion",
+			);
+			if (requestId && bodyRequestId === undefined) {
+				body.requestId = requestId;
+			}
+			if (assetVersion && bodyAssetVersion === undefined) {
+				body.assetVersion = assetVersion;
+			}
+			const responseRequestId = body.requestId ?? requestId;
+			const png =
+				renderOgImage === undefined ? null : await renderOgImage(body);
+			if (png === null || png.byteLength === 0) {
+				writeV1Error(
+					res,
+					404,
+					"NOT_FOUND",
+					renderOgImage === undefined
+						? "module has no renderOgImage()"
+						: "no og image for this request",
+					responseRequestId,
+				);
+				return;
+			}
+			res.writeHead(200, {
+				"Content-Type": "image/png",
+				"Content-Length": png.byteLength,
+				...(responseRequestId
+					? {"X-Request-Id": responseRequestId}
+					: {}),
+			});
+			res.end(Buffer.from(png.buffer, png.byteOffset, png.byteLength));
+		} catch (error) {
+			const {status, code, message} = classifyError(error);
+			writeV1Error(res, status, code, message, requestId);
+		}
+	}
+
 	const server = http.createServer((req, res) => {
 		void handleRequest(req, res);
 	});
@@ -227,6 +315,11 @@ export async function startSsrSidecar(
 
 		if (req.method === "POST" && url === "/v1/render") {
 			await handleV1(req, res);
+			return;
+		}
+
+		if (req.method === "POST" && url === "/v1/og") {
+			await handleOgImage(req, res);
 			return;
 		}
 
@@ -265,7 +358,9 @@ function writeV1Error(
 	requestId?: string,
 ): void {
 	const payload: SsrV1Error = {v: 1, error: {code, message}};
-	console.error("ssr v1:", code, message);
+	if (code !== "NOT_FOUND") {
+		console.error("ssr v1:", code, message);
+	}
 	res.writeHead(status, {
 		"Content-Type": "application/json; charset=utf-8",
 		...(requestId ? {"X-Request-Id": requestId} : {}),

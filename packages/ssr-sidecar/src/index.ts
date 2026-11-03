@@ -4,7 +4,7 @@ export {
 	type SsrSidecarListen,
 	type SsrSidecarOptions,
 } from "./server.ts";
-export {purge, render, renderEnvelope} from "./render.ts";
+export {purge, render, renderEnvelope, renderOgImage} from "./render.ts";
 export type {PlacePageMeta, SsrEnvelope, SsrRequestBody} from "./render.ts";
 export {
 	extractStateFromFragment,

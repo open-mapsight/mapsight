@@ -491,6 +491,11 @@ jobs:
             -X POST http://127.0.0.1:4123/render)"
           test "$render_code" = "404"
 
+          og="$(curl -s -X POST http://127.0.0.1:4123/v1/og \
+            -H 'content-type: application/json' \
+            -d '{"preset":"test","options":{"containerId":"mapsight-embed-1","requestUrl":"/?feature=1"}}')"
+          echo "$og" | grep -q '"NOT_FOUND"'
+
           unknown_code="$(curl -s -o /dev/null -w '%{http_code}' \
             http://127.0.0.1:4123/foo)"
           test "$unknown_code" = "404"
