@@ -1,5 +1,18 @@
 # @mapsight/demos
 
+## 0.2.0
+
+### Minor Changes
+
+- 466fb6c: Rename the developer harness to `apps/demos` / `@mapsight/demos`, with the visible title “Developer demos”. Update workspace commands, CI, preview analysis and documentation to use the new name. The brand shell’s Mapsight marks, fonts and tokens, the KERN citizen-service scenario and the operator's imprint and privacy pages are removed; the curated, branded showcase is now built separately from the published packages and served at showcase.open-mapsight.org. Latest `main` is published at preview.open-mapsight.org, and the footer links to the project website's legal notice and privacy policy. Technical demos, the icon editor, the count aggregator, the fictional demo fixtures and the static search hygiene are unchanged.
+
+### Patch Changes
+
+- Updated dependencies [`4f27c44`, `1960566`, `67cd997`, `e5e27f2`]:
+    - `@mapsight/core@14.7.0 → 14.7.1` (patch)
+    - `@mapsight/ui@7.12.0 → 7.12.1` (patch)
+    - `@mapsight/traffic-style@5.6.0 → 5.7.0` (minor)
+
 ## 0.1.11
 
 ### Patch Changes

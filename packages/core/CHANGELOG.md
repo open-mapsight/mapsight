@@ -1,5 +1,12 @@
 # @mapsight/core
 
+## 14.7.1
+
+### Patch Changes
+
+- 4f27c44: Avoid repeatedly comparing unchanged combined-source results after a member is replaced with equal feature data. Combined sources still retain their previous data for equal replacements and update when member contents, errors, or bindings change.
+- 1960566: Remove the unused minimatch runtime dependency.
+
 ## 14.7.0
 
 ### Minor Changes

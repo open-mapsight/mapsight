@@ -1,5 +1,14 @@
 # @mapsight/ui
 
+## 7.12.1
+
+### Patch Changes
+
+- 67cd997: Share the feature list's existing view observation with its rows instead of observing the same view in every row. Custom list contexts that omit the shared view keep their existing responsive behavior and server-state hydration.
+- Updated dependencies [`4f27c44`, `1960566`, `e5e27f2`]:
+    - `@mapsight/core@14.7.0 → 14.7.1` (patch)
+    - `@mapsight/traffic-style@5.6.0 → 5.7.0` (minor)
+
 ## 7.12.0
 
 ### Minor Changes

@@ -6,8 +6,8 @@
 	"dependencies": {
 		"@mapsight/lib-js": "^3.0.11",
 		"@mapsight/lib-ol": "^4.3.4",
-		"@mapsight/traffic-style": "^5.6.0",
-		"@mapsight/ui": "^7.12.0",
+		"@mapsight/traffic-style": "^5.7.0",
+		"@mapsight/ui": "^7.12.1",
 		"breakpoint-sass": "^3.0.0",
 		"hint.css": "^3.0.0",
 		"next": "^16.4.3",
@@ -18,7 +18,7 @@
 		"zod": "^4.6.7"
 	},
 	"devDependencies": {
-		"@mapsight/vector-style-compiler": "^13.2.0",
+		"@mapsight/vector-style-compiler": "^13.2.1",
 		"@tailwindcss/postcss": "^4.3.3",
 		"@types/node": "^24.19.2",
 		"@types/react": "^19.3.0",

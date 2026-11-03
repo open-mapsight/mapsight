@@ -1,5 +1,13 @@
 # @mapsight/vector-style-compiler
 
+## 13.2.1
+
+### Patch Changes
+
+- 1960566: Update the pinned Sass dependency to 1.107.1, retaining the empty-attribute-selector fix.
+- Updated dependencies [`4f27c44`, `1960566`]:
+    - `@mapsight/core@14.7.0 → 14.7.1` (patch)
+
 ## 13.2.0
 
 ### Minor Changes
