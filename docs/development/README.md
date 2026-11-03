@@ -13,4 +13,6 @@ Maintainer and contributor documentation for working on the Mapsight monorepo.
 
 [Feature-list selection subscriptions](FEATURE_LIST_SELECTION_PERFORMANCE.md) documents the bounded row-render fix and controlled local measurements.
 
+[Feature-list view subscriptions](FEATURE_LIST_VIEW_SUBSCRIPTIONS.md) describes shared view observations, compatibility and callback measurements.
+
 [Combined-source observation](COMBINED_SOURCE_OBSERVATION.md) explains equal-replacement comparison caching and its regression coverage.

@@ -1,12 +1,12 @@
 import {Provider} from "react-redux";
 
 import {configureStore} from "@reduxjs/toolkit";
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, expect, it, vi} from "vitest";
 
 import {deselectAll} from "@mapsight/core/lib/feature-selections/actions";
 
-import {VIEW_DESKTOP} from "../../config/constants/app";
+import {VIEW_DESKTOP, VIEW_MOBILE} from "../../config/constants/app";
 import {FEATURE_SELECTIONS} from "../../config/constants/controllers";
 import {useFeatureListContext} from "./context";
 import FeatureList from "./index";
@@ -56,3 +56,53 @@ it.each([undefined, "preselect"] as const)(
 		);
 	},
 );
+
+it("shares its existing view read without changing context on unrelated updates", () => {
+	const initialState = {
+		app: {view: VIEW_DESKTOP, list: {}, counter: 0},
+	};
+	const store = configureStore({
+		reducer: (
+			state: typeof initialState = initialState,
+			action: {type: string},
+		) => {
+			if (action.type === "unrelated") {
+				return {
+					...state,
+					app: {...state.app, counter: state.app.counter + 1},
+				};
+			}
+			if (action.type === "mobile") {
+				return {...state, app: {...state.app, view: VIEW_MOBILE}};
+			}
+			return state;
+		},
+	});
+	const contexts: ReturnType<typeof useFeatureListContext>[] = [];
+	function Content() {
+		const context = useFeatureListContext();
+		contexts.push(context);
+		return <output>{context.view}</output>;
+	}
+	render(
+		<Provider store={store}>
+			<FeatureList
+				contentAs={Content}
+				headerAs={() => null}
+				footerAs={() => null}
+				autoloadFeatureSource={false}
+			/>
+		</Provider>,
+	);
+	expect(contexts).toHaveLength(1);
+	expect(contexts[0].view).toBe(VIEW_DESKTOP);
+	act(() => {
+		store.dispatch({type: "unrelated"});
+	});
+	expect(contexts).toHaveLength(1);
+	act(() => {
+		store.dispatch({type: "mobile"});
+	});
+	expect(contexts).toHaveLength(2);
+	expect(contexts[1].view).toBe(VIEW_MOBILE);
+});

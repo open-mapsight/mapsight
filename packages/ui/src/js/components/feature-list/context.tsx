@@ -1,7 +1,7 @@
 import type {ComponentType, ElementType, PropsWithChildren} from "react";
 import {createContext, useContext} from "react";
 
-import type {FullUiState} from "../../types";
+import type {FullUiState, MapsightUiView} from "../../types";
 import type {
 	FeatureListItemDistanceLabelProps,
 	SelectFeatureHandler,
@@ -20,6 +20,8 @@ export type FeatureListItemContextProps = {
 export type FeatureListContextValue = {
 	state: Omit<FeatureListStateProps, "listUiOptions">;
 	listUiOptions: Partial<FullUiState["list"]>;
+	/** Shared by built-in rows; older custom providers may omit it. */
+	view?: MapsightUiView;
 	enableKeyboardControl: boolean;
 	showFeatureListInfo: boolean;
 	selectFeature: SelectFeatureHandler;

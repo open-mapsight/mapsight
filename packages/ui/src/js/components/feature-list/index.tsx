@@ -205,6 +205,7 @@ function FeatureListInner(
 		(): FeatureListContextValue => ({
 			state: state,
 			listUiOptions: listUiOptions,
+			view,
 			enableKeyboardControl: enableKeyboardControl,
 			showFeatureListInfo: showFeatureListInfo,
 			selectFeature: selectFeature,
@@ -219,6 +220,7 @@ function FeatureListInner(
 			showFeatureListInfo,
 			state,
 			itemProps,
+			view,
 		],
 	);
 
