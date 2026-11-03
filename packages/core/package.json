@@ -10,7 +10,6 @@
 		"@reduxjs/toolkit": "catalog:",
 		"eventemitter3": "^5.0.4",
 		"lodash": "catalog:",
-		"minimatch": "^10.2.6",
 		"redux-batched-actions": "catalog:",
 		"zod": "catalog:"
 	},
@@ -28,7 +27,7 @@
 		"ol-mapbox-style": "^13.8.0",
 		"playwright": "catalog:",
 		"proj4": "catalog:",
-		"tsc-alias": "^1.9.9",
+		"tsc-alias": "^1.9.10",
 		"typescript": "catalog:",
 		"vite": "^8.3.5",
 		"vitest": "catalog:"
