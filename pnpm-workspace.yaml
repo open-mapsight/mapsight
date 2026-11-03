@@ -41,7 +41,7 @@ minimumReleaseAgeExclude:
   - postcss@8.5.10
 overrides:
   # Keep workspace Sass builds on the tested empty-attribute-selector fix.
-  sass: 1.106.1
+  sass: 1.107.1
   axios@<1.18.0: ^1.18.0
   brace-expansion@<1.1.21: ^1.1.21
   brace-expansion@>=2.0.0 <2.1.7: ^2.1.7

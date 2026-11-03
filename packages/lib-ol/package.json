@@ -10,7 +10,7 @@
 		"ol": "catalog:"
 	},
 	"devDependencies": {
-		"tsc-alias": "^1.9.9",
+		"tsc-alias": "^1.9.10",
 		"vitest": "catalog:"
 	},
 	"exports": {
