@@ -1,73 +1,36 @@
 #!/usr/bin/env node
 import {mkdir, writeFile} from "node:fs/promises";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
+import { fileURLToPath } from "node:url";
 
-import {
-	faBaby,
-	faBabyCarriage,
-	faBicycle,
-	faBiking,
-	faBolt,
-	faBoxesPacking,
-	faBridgeWater,
-	faBuilding,
-	faBus,
-	faCampground,
-	faCar,
-	faChair,
-	faChargingStation,
-	faCloudRain,
-	faCloudShowersWater,
-	faCloudSun,
-	faCloudSunRain,
-	faDog,
-	faDroplet,
-	faDumpster,
-	faFaucetDrip,
-	faFlagCheckered,
-	faGasPump,
-	faGlassWaterDroplet,
-	faHandHoldingDroplet,
-	faHeartCircleBolt,
-	faHippo,
-	faHospital,
-	faInfo,
-	faKey,
-	faLeaf,
-	faLocationDot,
-	faMugHot,
-	faPersonBiking,
-	faPersonShelter,
-	faPersonWalking,
-	faPlugCircleBolt,
-	faRecycle,
-	faRestroom,
-	faRoute,
-	faSchool,
-	faSeedling,
-	faShoePrints,
-	faSkullCrossbones,
-	faSnowflake,
-	faTemperatureHigh,
-	faTemperatureLow,
-	faTowerBroadcast,
-	faTree,
-	faTruck,
-	faTruckFast,
-	faTruckRampBox,
-	faUmbrella,
-	faUsers,
-	faUtensils,
-	faVanShuttle,
-	faWarehouse,
-	faWater,
-	faWaterLadder,
-	faWheelchair,
-	faWifi,
-	faWrench,
-} from "@fortawesome/free-solid-svg-icons";
-import type {IconDefinition} from "@fortawesome/free-solid-svg-icons";
+
+
+import { faBaby, faBabyCarriage, faBicycle, faBiking, faBolt, faBoxesPacking, faBridgeWater, faBuilding, faBus, faCampground, faCar, faChair, faChargingStation, faCloudRain, faCloudShowersWater, faCloudSun, faCloudSunRain, faCrow, faDog, faDroplet, faDumpster, faFaucetDrip, faFlagCheckered, faFrog, faGasPump, faGlassWaterDroplet, faHandHoldingDroplet, faHeartCircleBolt, faHelicopter, faHippo, faHospital, faInfo, faKey, faLeaf, faLocationDot, faMugHot, faPersonBiking, faPersonShelter, faPersonSkating, faPersonWalking, faPlugCircleBolt, faRecycle, faRestroom, faRoute, faSchool, faSeedling, faShoePrints, faSkullCrossbones, faSnowflake, faTemperatureHigh, faTemperatureLow, faTowerBroadcast, faTree, faTruck, faTruckFast, faTruckRampBox, faUmbrella, faUsers, faUtensils, faVanShuttle, faWarehouse, faWater, faWaterLadder, faWheelchair, faWifi, faWrench } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const outputPath = path.resolve(
@@ -83,6 +46,30 @@ type FaIconEntry = {
 };
 
 const icons: FaIconEntry[] = [
+	{
+		exportName: "faPersonSkating",
+		id: "fa-person-skating",
+		label: {de: "Person Skating", en: "Person Skating"},
+		icon: faPersonSkating,
+	},
+	{
+		exportName: "faHelicopter",
+		id: "fa-helicopter",
+		label: {de: "Hubschrauber", en: "Helicopter"},
+		icon: faHelicopter,
+	},
+	{
+		exportName: "faCrow",
+		id: "fa-crow",
+		label: {de: "Rabe", en: "Crow"},
+		icon: faCrow,
+	},
+	{
+		exportName: "faFrog",
+		id: "fa-frog",
+		label: {de: "Frosch", en: "Frog"},
+		icon: faFrog,
+	},
 	{
 		exportName: "faSchool",
 		id: "fa-school",
