@@ -27,7 +27,7 @@
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@types/fs-extra": "^11.0.4",
 		"@types/node": "catalog:",
-		"markdown-table": "^3.0.4",
+		"markdown-table": "^3.1.0",
 		"vitest": "catalog:"
 	},
 	"exports": {
