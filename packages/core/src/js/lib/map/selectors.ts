@@ -1,3 +1,6 @@
+import type {Extent} from "ol/extent";
+import {getForViewAndSize} from "ol/extent";
+
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
 import isEqual from "lodash/isEqual";
@@ -11,7 +14,7 @@ import type {
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
 import type {FeatureInteractionName} from "@/lib/map/lib/WithFeatureInteractions";
-import type {LayerState, MapState} from "@/lib/map/types";
+import type {LayerState, MapState, MapViewState} from "@/lib/map/types";
 import {isVectorFeatureSource} from "@/lib/map/types";
 import type {State} from "@/types";
 
@@ -109,6 +112,40 @@ export const makeFeatureSourceFromLayerIdSelector = (
 	);
 
 export const mapSizeSelector = (state: MapState) => state.size;
+
+/** The view state, or `undefined` while the map has no view state yet. */
+export const viewSelector = (state: MapState): MapViewState | undefined =>
+	state.view;
+export const viewCenterSelector = (state: MapState) => state.view?.center;
+/** Rounded zoom level. Use {@link viewResolutionSelector} for the exact value. */
+export const viewZoomSelector = (state: MapState) => state.view?.zoom;
+/** Rotation in radians; 0 when the view was never rotated. */
+export const viewRotationSelector = (state: MapState) =>
+	state.view?.rotation ?? 0;
+export const viewResolutionSelector = (state: MapState) =>
+	state.view?.resolution;
+
+/**
+ * Visible extent `[minX, minY, maxX, maxY]` in view projection units, derived
+ * from center, resolution, rotation and map size. `undefined` while center,
+ * resolution or size are missing, for example before the map is mounted.
+ * Keeps its reference while the extent is unchanged.
+ */
+export const viewExtentSelector: Selector<MapState, Extent | undefined> =
+	createSelector(
+		[
+			viewCenterSelector,
+			viewResolutionSelector,
+			viewRotationSelector,
+			mapSizeSelector,
+		],
+		(center, resolution, rotation, size) =>
+			center && resolution !== undefined && size
+				? getForViewAndSize(center, resolution, rotation, size)
+				: undefined,
+		{memoizeOptions: {resultEqualityCheck: isEqual}},
+	);
+
 export const viewportAnchorSelector = (state: MapState) => state.viewportAnchor;
 
 // die tatsächlich von OpenLayer gerenderten Layer. wenn ein Layer mit option.visible grundsätzlich aktiv ist, aber an der angezeigten Stelle nichts beiträgt, ist er hier nicht verzeichnet.

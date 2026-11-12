@@ -137,6 +137,33 @@ Layer definitions use the **ol-proxy `Description`** shape: `{ type, options?, m
 
 ---
 
+## Reading state
+
+Host code reads state through selectors and hooks. **State paths and fields without a selector below are internal and may change without notice** — do not read `state.map.view.center`, `source.dataHistory` and the like directly. If you need a field that has no selector, ask for one.
+
+Map selectors (`@mapsight/core/lib/map/selectors`) take the map slice (`state[controllerName]`). Feature-source selectors (`@mapsight/core/lib/feature-sources/selectors`) take one source state, except the `find…` lookups (all sources of the slice) and the `create…`/`make…FromLayerId` factories (full state). Selection selectors take the full state.
+
+| Area                       | Selectors                                                                                                                                         | Hook (`@mapsight/ui/hooks/<name>`)                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Map view                   | `viewSelector`, `viewCenterSelector`, `viewZoomSelector`, `viewRotationSelector`, `viewResolutionSelector`, `viewExtentSelector` (visible extent) | `useMapView`, `useMapZoom` (`zoom`, `zoomIn`, `zoomOut`) |
+| Map size and anchor        | `mapSizeSelector`, `viewportAnchorSelector`                                                                                                       |                                                          |
+| Layers                     | `layersSelector`, `makeLayerTitleSelector`, `makeLayerVisibleSelector`, `layerIdsIntegratedSwitcherSelector`, `layerIdsExternalSwitcherSelector`  | `useLayerVisibility` (`[visible, setVisible]`)           |
+| Rendered layers            | `visibleLayersSelector`                                                                                                                           |                                                          |
+| Attributions and legends   | `layerAttributionsSelector`, `visibleLayerAttributionsSelector`, `layersWithLegendsSelector`, `visibleLayersWithLegendsSelector`                  | `useVisibleLayerAttributions`                            |
+| Feature source status      | `getFeatureSourceStatus`, `hasFeatureSourceLoadError`, `getFeatureSourceError`, `hasFeatureSourceLocalEdits`, `canUndo`, `canRedo`                |                                                          |
+| Feature source data/lookup | `getSourceData`, `getAllFeatures`, `hasFeatureSourceFeatureId`, `findFeatureSourceIdForFeatureId`, `findFeatureInFeatureSourcesById`              |                                                          |
+| Feature source of a layer  | `makeFeatureSourceFromLayerIdSelector`, `createFilteredFeatureSourceSelector`                                                                     |                                                          |
+| Selections                 | `createFeatureSelectionSelector`, `createAllFeatureIdsSelector` (`@mapsight/core/lib/feature-selections/selectors`)                               |                                                          |
+
+The hooks take the controller name as optional last argument, defaulting to the one in `@mapsight/ui/config/constants/controllers`. A few details:
+
+- `viewZoomSelector` is the rounded zoom level; derive exact positions from `viewResolutionSelector`.
+- `viewRotationSelector` is 0 for a view that was never rotated. `viewExtentSelector` is `undefined` until center, resolution and map size are known, and keeps its reference while the extent is unchanged.
+- `hasFeatureSourceLocalEdits` is `true` when the data was changed by editing (add, update or remove features) after it was loaded or set as a whole; with `enableHistory`, undoing all edits makes it `false` again.
+- `hasFeatureSourceFeatureId` looks at the source state it is given, so pass a filtered source to ask about visible features only.
+
+---
+
 ## Controllers
 
 `BaseController` (`packages/core/src/js/lib/base/controller.ts`) is the foundation.

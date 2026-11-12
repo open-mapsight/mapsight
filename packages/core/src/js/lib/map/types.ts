@@ -1,3 +1,4 @@
+import type {Coordinate} from "ol/coordinate";
 import type OlLayer from "ol/layer/Layer";
 
 import type {OptionValue, Options} from "@/lib/helpers/schema";
@@ -56,10 +57,33 @@ export function getVectorFeatureSource(
 	return source;
 }
 
+/**
+ * View state of a map controller. The fields below are the ones the map
+ * controller keeps in sync with the OpenLayers view; other keys are options
+ * passed to the view on creation (for example `maxZoom` or `extent`).
+ * Read it through the selectors in `@mapsight/core/lib/map/selectors`.
+ *
+ * `rotation` is only written for non-zero values, so treat a missing value as 0.
+ */
+export interface MapViewState {
+	[key: string]: unknown;
+	/** Center in view projection coordinates. */
+	center?: Coordinate;
+	/** Rounded zoom level; use `resolution` for the exact value. */
+	zoom?: number;
+	/** Map units per pixel in view projection. */
+	resolution?: number;
+	/** Rotation in radians, clockwise. */
+	rotation?: number;
+	minResolution?: number;
+	maxResolution?: number;
+}
+
 export interface MapState {
 	[key: string]: unknown;
 	layers: Record<string, LayerState>;
 	size: [number, number];
+	view?: MapViewState;
 	viewportAnchor?: ViewportAnchor;
 	visibleLayers?: string[];
 }

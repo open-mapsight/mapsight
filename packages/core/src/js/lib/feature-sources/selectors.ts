@@ -59,6 +59,29 @@ export const canUndo = (source: FeatureSourceState) =>
 export const canRedo = (source: FeatureSourceState) =>
 	!!(source.dataHistory?.future && source.dataHistory.future.length > 0);
 
+/**
+ * Whether the source data was changed locally, for example by adding, updating
+ * or removing features, after it was loaded.
+ *
+ * The controller records the cause of each data write in `lastActionType`:
+ * `null` for untouched data, `"DATA_LOADED"` for data that was loaded or
+ * pushed in as a whole, and the action name for any edit. Undo and redo restore
+ * the value of the state they return to, so undoing every edit reports `false`
+ * again (only if `enableHistory` is set). The flag stays `true` while a reload
+ * is in flight and until it succeeds; a failed reload keeps the edited data.
+ */
+export const hasFeatureSourceLocalEdits = (source: FeatureSourceState) =>
+	source.lastActionType != null && source.lastActionType !== "DATA_LOADED";
+
+/**
+ * Whether the source contains a feature with the given id. Checks the `ids`
+ * index of the given state, so a filtered source only reports its visible features.
+ */
+export const hasFeatureSourceFeatureId = (
+	source: FeatureSourceState,
+	featureId: FeatureId,
+) => !!source.ids?.includes(featureId);
+
 export const hasFeatureSourceLoadError = (
 	featureSource: FeatureSourceState | undefined,
 ) => featureSource?.error != null;
