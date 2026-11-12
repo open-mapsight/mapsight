@@ -15,6 +15,11 @@ import type {Action, ActionOrThunk, BatchedAction} from "@/types";
 export const ASYNC_ACTION_FLAG = "MAPSIGHT_ASYNC_ACTION";
 export const CONTROLLED_ACTION_FLAG = "MAPSIGHT_CONTROLLED_ACTION";
 export const QUIET_ACTION_FLAG = "MAPSIGHT_QUIET_ACTION";
+/**
+ * Marks the `set(path, undefined)` action created by `unset`, so a store with
+ * the `v15_unsetRemovesKey` future flag can tell it from a plain `set`.
+ */
+export const UNSET_ACTION_FLAG = "MAPSIGHT_UNSET_ACTION";
 
 export const STATE_PATH_KEY = "path";
 
@@ -157,10 +162,27 @@ export function addTo(path: ActionPath | null, element: unknown) {
 
 export const addToAll = allKeys(addTo);
 
+/**
+ * Set the value at `path` to `undefined`.
+ *
+ * By default the key stays in the state with an `undefined` value. A store
+ * created with the `v15_unsetRemovesKey` future flag deletes the key instead
+ * when its parent is a plain object (like `removeKey`). Array elements stay
+ * in place as `undefined` in both modes. The action is an ordinary `set` with
+ * a marker in `meta`, so without the flag it behaves exactly like
+ * `set(path, undefined)`.
+ */
 export function unset(path: ActionPath | null) {
 	throwOnEmptyPath(path);
 
-	return set(path, undefined);
+	return withPath(
+		{
+			type: ACTION_SET,
+			value: undefined,
+			meta: {[UNSET_ACTION_FLAG]: true},
+		},
+		path,
+	);
 }
 
 /**

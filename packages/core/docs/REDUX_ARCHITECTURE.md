@@ -175,15 +175,15 @@ Each mixin’s `init()` registers `getAndObserveUncontrolled` handlers that diff
 
 Generic mutation API in `packages/core/src/js/lib/base/actions.ts`:
 
-| Function                    | Effect                            |
-| --------------------------- | --------------------------------- |
-| `set(path, value)`          | Replace value at path             |
-| `merge(path, value)`        | Shallow-merge object at path      |
-| `addTo(path, element)`      | Append to array at path           |
-| `removeFrom(path, element)` | Remove from array at path         |
-| `removeKey(path)`           | Delete object key at path         |
-| `unset(path)`               | `set(path, undefined)`; key stays |
-| `setAll` / `mergeAll` / …   | Batch variant over object keys    |
+| Function                    | Effect                                                                   |
+| --------------------------- | ------------------------------------------------------------------------ |
+| `set(path, value)`          | Replace value at path                                                    |
+| `merge(path, value)`        | Shallow-merge object at path                                             |
+| `addTo(path, element)`      | Append to array at path                                                  |
+| `removeFrom(path, element)` | Remove from array at path                                                |
+| `removeKey(path)`           | Delete object key at path                                                |
+| `unset(path)`               | `set(path, undefined)`; key stays, or deleted with `v15_unsetRemovesKey` |
+| `setAll` / `mergeAll` / …   | Batch variant over object keys                                           |
 
 Paths are arrays: `["map", "layers", "foo", "options", "visible"]`.
 
@@ -197,6 +197,15 @@ Actions use generic types: `MAPSIGHT_SET`, `MAPSIGHT_MERGE`, etc. The path lives
 - Otherwise → ignore (return previous state).
 
 This lets one action type work across all slices without slice-specific action creators.
+
+### Future flags
+
+`createMapsightStore(…, {future})` takes per-store opt-ins to the next major's behavior (booleans, `true` = next major,
+see [Decision 012](../../../docs/architecture/decisions/012-future-flags-for-next-major-ui.md)). The flag is read in the
+reducer that `createMapsightStore` builds for each controller, after the path routing above: with
+`v15_unsetRemovesKey`, an `unset` action whose parent is a plain object is handed to `controller.reduce` as a
+`MAPSIGHT_REMOVE_KEY` action. Everything else (array parents, missing parents, plain `set`) is passed on unchanged,
+and without the flag the action is never touched. See the [action guide](./ACTION_GUIDE.md).
 
 ### Immutability
 
@@ -215,6 +224,7 @@ This lets one action type work across all slices without slice-specific action c
 | Controlled | `MAPSIGHT_CONTROLLED_ACTION` | “This update came from OL, don’t sync back to OL.” Skipped by `observeUncontrolled`.                   |
 | Async      | `MAPSIGHT_ASYNC_ACTION`      | Queue dispatch to avoid dispatch-during-dispatch. Often wraps thunks that dispatch controlled actions. |
 | Quiet      | `MAPSIGHT_QUIET_ACTION`      | Hide from Redux DevTools (high-frequency updates like zoom).                                           |
+| Unset      | `MAPSIGHT_UNSET_ACTION`      | Set by `unset(path)` on its `MAPSIGHT_SET` action. Only read by stores with `v15_unsetRemovesKey`.     |
 
 Helpers: `controlled(action)`, `async(action)`, `quiet(action)` — recursively applied inside batched actions. See [Batched actions caveat](#batched-actions-caveat-redux-batched-actions) below for why that recursion matters.
 

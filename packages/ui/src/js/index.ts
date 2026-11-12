@@ -241,18 +241,24 @@ export function create(
 		),
 		context.initialState,
 		context.storeEnhancer,
-		context.createOptions.featureSourceCache
-			? {
-					extraArgument: {
-						featureSourceCache:
-							context.createOptions.featureSourceCache,
-						featureSourceRevision:
-							context.createOptions.featureSourceRevision,
-						featureSourceCacheTtl:
-							context.createOptions.featureSourceCacheTtl,
-					},
-				}
-			: {},
+		{
+			...(context.createOptions.featureSourceCache
+				? {
+						extraArgument: {
+							featureSourceCache:
+								context.createOptions.featureSourceCache,
+							featureSourceRevision:
+								context.createOptions.featureSourceRevision,
+							featureSourceCacheTtl:
+								context.createOptions.featureSourceCacheTtl,
+						},
+					}
+				: {}),
+			future: {
+				v15_unsetRemovesKey:
+					context.createOptions.future?.v8_unsetRemovesKey === true,
+			},
+		},
 	);
 
 	// Redux updates replace this snapshot; never recapture it from a live store

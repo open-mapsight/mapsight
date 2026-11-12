@@ -2,6 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import {createMapsightStore} from "@/index";
 import {set, unset} from "@/lib/base/actions";
+import type {FutureFlags} from "@/lib/base/future";
 import {ACTION_REMOVE_KEY} from "@/lib/base/reducer";
 import {
 	addFeature,
@@ -51,7 +52,7 @@ const collection = (...ids: string[]): FeatureSourceData => ({
 	features: ids.map(feature),
 });
 
-function createStore() {
+function createStore(future?: FutureFlags) {
 	return createMapsightStore(
 		{[controllerName]: new FeatureSourcesController(controllerName)},
 		{},
@@ -65,6 +66,8 @@ function createStore() {
 				},
 			},
 		},
+		null,
+		{future},
 	);
 }
 type TestStore = ReturnType<typeof createStore>;
@@ -260,5 +263,54 @@ describe("feature source selectors with undefined entries", () => {
 				items: {type: "local", data: collection("a1")},
 			} as unknown as FeatureSourcesState),
 		).toBeGreaterThan(0);
+	});
+});
+
+describe("unset of a feature source with the unsetRemovesKey future flag", () => {
+	const future: FutureFlags = {v15_unsetRemovesKey: true};
+
+	it("removes the source like removeFeatureSource", async () => {
+		const viaUnset = createStore(future);
+		const viaRemove = createStore(future);
+		await vi.runAllTimersAsync();
+		const otherBefore = sources(viaUnset).other;
+
+		viaUnset.dispatch(unset([controllerName, "items"]));
+		viaRemove.dispatch(removeFeatureSource(controllerName, "items"));
+		await vi.runAllTimersAsync();
+
+		expect("items" in sources(viaUnset)).toBe(false);
+		expect(sources(viaUnset).other).toBe(otherBefore);
+		expect(sources(viaUnset)).toEqual(sources(viaRemove));
+	});
+
+	it("keeps later actions working", async () => {
+		const store = createStore(future);
+		await vi.runAllTimersAsync();
+
+		expect(() => {
+			store.dispatch(unset([controllerName, "items"]));
+			store.dispatch(unset([controllerName, "combined"]));
+			store.dispatch(setData(controllerName, "items", collection("a2")));
+			store.dispatch(setData(controllerName, "other", collection("b2")));
+			store.dispatch(load(controllerName, "items"));
+			store.dispatch(set([controllerName, "extra"], {type: "local"}));
+		}).not.toThrow();
+		await vi.runAllTimersAsync();
+
+		expect(Object.keys(sources(store)).sort()).toEqual(["extra", "other"]);
+		expect(sources(store).other?.data?.features?.map((f) => f.id)).toEqual([
+			"b2",
+		]);
+	});
+
+	it("does nothing for a source that does not exist", async () => {
+		const store = createStore(future);
+		await vi.runAllTimersAsync();
+		const state = store.getState();
+
+		store.dispatch(unset([controllerName, "missing"]));
+
+		expect(store.getState()).toBe(state);
 	});
 });

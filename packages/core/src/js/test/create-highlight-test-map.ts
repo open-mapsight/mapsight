@@ -10,6 +10,7 @@ import Style from "ol/style/Style";
 
 import {createMapsightStore} from "@/index";
 import type {BaseController} from "@/lib/base/controller";
+import type {FutureFlags} from "@/lib/base/future";
 import {FeatureSelectionsController} from "@/lib/feature-selections/controller";
 import {setData} from "@/lib/feature-sources/actions";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
@@ -39,6 +40,8 @@ export type CreateHighlightTestMapOptions = {
 	getHitMode?: () => HitMode;
 	/** Mount target; creates and appends a div when omitted. */
 	mountTarget?: HTMLElement;
+	/** Future flags of the store. */
+	future?: FutureFlags;
 	/**
 	 * Put this FeatureCollection on the POI source before store/map init.
 	 * Used to reproduce SSR hydrate (data already in Redux, no later setData).
@@ -67,6 +70,7 @@ export function createHighlightTestMap(
 		getHitMode = () => "empty",
 		mountTarget,
 		hydrateFeatureCollection,
+		future,
 	} = options;
 
 	const mapController = new MapController("map");
@@ -170,6 +174,8 @@ export function createHighlightTestMap(
 		controllers as unknown as Record<string, BaseController>,
 		{},
 		initialState,
+		null,
+		{future},
 	);
 
 	const target = (mountTarget ??

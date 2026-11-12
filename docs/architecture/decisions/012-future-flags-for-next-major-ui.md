@@ -17,7 +17,8 @@ We needed a host-facing switch that:
 - Does not look like a permanent product setting
 - Does not require a remote/experiment flag system
 
-`@mapsight/ui` is on the 7.x line, so the next major is v8.
+`@mapsight/ui` is on the 7.x line, so the next major is v8. `@mapsight/core` is on the 14.x line (next major v15)
+and has the same need, see below.
 
 ## Decision
 
@@ -51,6 +52,18 @@ Current flags:
   hosts set the flag to use the ARIA `Tooltip` now.
 - `v8_listSearchButton`: list text search keeps a visible label + input by default (7.x host CSS); hosts set
   the flag to expand from a labeled button. That chrome becomes the only path in v8.
+
+- `v8_unsetRemovesKey`: `unset(path)` keeps the key in the state with an `undefined` value by default (which does
+  not survive serialisation and contradicts the state types); hosts set the flag to delete the key of a plain object
+  parent instead. Array elements and a plain `set(path, undefined)` do not change. The ui flag is forwarded to the
+  core flag below.
+
+`@mapsight/core` has a `future` option on `createMapsightStore` with the same contract, set per store and named for
+core's next major (`v15_*`). `@mapsight/ui` forwards the matching ui flags to it, so a ui host only sets the `v8_*`
+key; a host that creates the core store itself uses the core key:
+
+- `v15_unsetRemovesKey`: the core behavior behind `v8_unsetRemovesKey`. See the
+  [action guide](../../../packages/core/docs/ACTION_GUIDE.md).
 
 Behavior that lives only in the SCSS uses a Sass variable with the same contract, configured with the other
 `@mapsight/ui` variables: `$ms3-future-v8-{behavior}: false !default`.
@@ -93,5 +106,6 @@ Do **not** add a `"none"` / density option to this bag. Future flags are not a g
 ## References
 
 - [CreateOptions](../../../packages/ui/src/js/types.ts)
+- [Core `future` option](../../../packages/core/src/js/lib/base/future.ts)
 - [React Router — future flags](https://reactrouter.com/upgrading/future)
 - Hint.css deprecation (first consumer): leftover `ms3-hint--*` vs [`packages/ui/src/js/components/tooltip.tsx`](../../../packages/ui/src/js/components/tooltip.tsx)
