@@ -84,6 +84,19 @@ describe("useFeatureSourceLoadState", () => {
 		expect(result.current).toBe("ok");
 	});
 
+	it("only looks at own entries, so prototype-like ids are not sources", () => {
+		const view = setup({}, "constructor");
+		expect(view.result.current).toBe("missing");
+		const proto = setup({}, "__proto__");
+		expect(proto.result.current).toBe("missing");
+
+		const own = setup(
+			JSON.parse('{"__proto__": {"data": null}}') as Sources,
+			"__proto__",
+		);
+		expect(own.result.current).toBe("idle");
+	});
+
 	it("does not re-render when only the data changes", () => {
 		const view = setup({places: {data: {features: []}}}, "places");
 		const before = view.renders.length;

@@ -10,6 +10,7 @@ import type {
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
 import {
+	type FeatureSourceStoreLike,
 	whenFeatureSourceSettled,
 	whenFeatureSourcesSettled,
 } from "@/lib/feature-sources/when-settled";
@@ -496,7 +497,37 @@ describe("whenFeatureSourcesSettled", () => {
 			expect(result.value?.sources).toEqual({places: "error"});
 		});
 
-		it("counts a request that is already in flight", async () => {
+		it("does not settle on a request that is already in flight", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				places: xhrSource("/a.geojson", {data: collection("old")}),
+			});
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			expect(sourceOf(store, "places")?.isLoading).toBe(true);
+			const result = track(
+				whenFeatureSourcesSettled(store, controllerName, ["places"], {
+					...next,
+					timeoutMs: 1000,
+				}),
+			);
+			pending[0]!.resolve(collection("fresh"));
+			await tick();
+			// The request that was running at call time does not count, only a
+			// request that starts afterwards does.
+			expect(sourceOf(store, "places")?.isLoading).toBe(false);
+			expect(result.done).toBe(false);
+
+			await tick(1000);
+			expect(result.value).toEqual({
+				status: "timeout",
+				sources: {places: "loading"},
+			});
+		});
+
+		it("settles on a request that starts after a request that was in flight", async () => {
 			const {pending} = deferredFetch();
 			const store = createStore({
 				places: xhrSource("/a.geojson", {data: collection("old")}),
@@ -513,9 +544,215 @@ describe("whenFeatureSourcesSettled", () => {
 					next,
 				),
 			);
-			pending[0]!.resolve(collection("fresh"));
+			pending[0]!.resolve(collection("first"));
+			await tick();
+			expect(result.done).toBe(false);
+
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			expect(result.done).toBe(false);
+			pending[1]!.resolve(collection("second"));
 			await tick();
 			expect(result.value?.status).toBe("settled");
+			expect(sourceOf(store, "places")?.ids).toEqual(["second"]);
+		});
+
+		it("does not settle on the request that completes before a queued refresh starts", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				places: xhrSource("/a.geojson", {data: collection("old")}),
+			});
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			expect(sourceOf(store, "places")?.isLoading).toBe(true);
+
+			// A forced refresh is dispatched, but it only starts on the next
+			// queue run. The wait is requested right behind it.
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["places"],
+					next,
+				),
+			);
+			// The first request completes before the queued refresh starts.
+			pending[0]!.resolve(collection("first"));
+			await tick(0);
+			expect(sourceOf(store, "places")?.ids).toEqual(["first"]);
+			expect(sourceOf(store, "places")?.isLoading).toBe(false);
+			expect(result.done).toBe(false);
+
+			await tick();
+			expect(sourceOf(store, "places")?.isLoading).toBe(true);
+			expect(result.done).toBe(false);
+
+			pending[1]!.resolve(collection("second"));
+			await tick();
+			expect(result.value).toEqual({
+				status: "settled",
+				sources: {places: "ok"},
+			});
+			expect(sourceOf(store, "places")?.ids).toEqual(["second"]);
+		});
+
+		it("settles on a forced refresh that supersedes a pending request", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				places: xhrSource("/a.geojson", {data: collection("old")}),
+			});
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			const first = sourceOf(store, "places")?.requestId;
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["places"],
+					next,
+				),
+			);
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			expect(sourceOf(store, "places")?.requestId).not.toBe(first);
+			expect(pending).toHaveLength(2);
+
+			// The superseded request completes late; the reducer drops it.
+			pending[0]!.resolve(collection("superseded"));
+			await tick();
+			expect(sourceOf(store, "places")?.ids).toEqual(["old"]);
+			expect(result.done).toBe(false);
+
+			pending[1]!.resolve(collection("fresh"));
+			await tick();
+			expect(result.value?.status).toBe("settled");
+			expect(sourceOf(store, "places")?.ids).toEqual(["fresh"]);
+		});
+
+		it("settles on a failing forced refresh that supersedes a pending request", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				places: xhrSource("/a.geojson", {data: collection("old")}),
+			});
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["places"],
+					next,
+				),
+			);
+			store.dispatch(
+				load(controllerName, "places", {forceRefresh: true}),
+			);
+			await tick();
+
+			pending[0]!.resolve(collection("superseded"));
+			await tick();
+			expect(result.done).toBe(false);
+			pending[1]!.reject(new Error("down"));
+			await tick();
+			expect(result.value).toEqual({
+				status: "settled",
+				sources: {places: "error"},
+			});
+		});
+
+		it("does not count a source that was removed and re-added as having started", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				a: xhrSource("/a.geojson", {data: collection("old-a")}),
+				b: xhrSource("/b.geojson", {data: collection("old-b")}),
+			});
+			store.dispatch(load(controllerName, "a", {forceRefresh: true}));
+			store.dispatch(load(controllerName, "b", {forceRefresh: true}));
+			const result = track(
+				whenFeatureSourcesSettled(store, controllerName, ["a", "b"], {
+					...next,
+					timeoutMs: 60_000,
+				}),
+			);
+			await tick();
+			pending[0]!.resolve(collection("a"));
+			await tick();
+			expect(typeof sourceOf(store, "a")?.requestId).toBe("number");
+			expect(result.done).toBe(false);
+
+			// "a" is replaced by a static source that never had a request.
+			const b = sourceOf(store, "b");
+			store.dispatch(set([controllerName], {b}));
+			store.dispatch(
+				set([controllerName], {
+					a: {type: "noop", data: collection("static")},
+					b,
+				}),
+			);
+			pending[1]!.resolve(collection("b"));
+			await tick();
+
+			expect(sourceOf(store, "b")?.ids).toEqual(["b"]);
+			expect(result.done).toBe(false);
+			await tick(60_000);
+			expect(result.value).toEqual({
+				status: "timeout",
+				sources: {a: "loading", b: "ok"},
+			});
+		});
+
+		it("counts a request of a re-added source that starts after the call", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				a: xhrSource("/a.geojson", {data: collection("old-a")}),
+				b: xhrSource("/b.geojson", {data: collection("old-b")}),
+			});
+			store.dispatch(load(controllerName, "a", {forceRefresh: true}));
+			store.dispatch(load(controllerName, "b", {forceRefresh: true}));
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["a", "b"],
+					next,
+				),
+			);
+			await tick();
+			pending[0]!.resolve(collection("a"));
+			await tick();
+
+			const b = sourceOf(store, "b");
+			store.dispatch(set([controllerName], {b}));
+			store.dispatch(
+				set([controllerName], {a: xhrSource("/a2.geojson"), b}),
+			);
+			pending[1]!.resolve(collection("b"));
+			await tick();
+			expect(result.done).toBe(false);
+
+			store.dispatch(load(controllerName, "a"));
+			await tick();
+			expect(sourceOf(store, "a")?.isLoading).toBe(true);
+			expect(result.done).toBe(false);
+			pending[2]!.resolve(collection("a2"));
+			await tick();
+			expect(result.value).toEqual({
+				status: "settled",
+				sources: {a: "ok", b: "ok"},
+			});
 		});
 
 		it("keeps waiting for a load that never starts, until the timeout", async () => {
@@ -544,6 +781,276 @@ describe("whenFeatureSourcesSettled", () => {
 					next,
 				),
 			).resolves.toEqual({status: "settled", sources: {x: "missing"}});
+		});
+	});
+});
+
+describe("whenFeatureSourcesSettled edge cases", () => {
+	type FakeStore = FeatureSourceStoreLike & {
+		replace(sources: FeatureSourcesState): void;
+	};
+	/** A store with plain state, for inputs the real reducers do not need to handle. */
+	function fakeStore(sources: object): FakeStore {
+		let state: Record<string, unknown> = {[controllerName]: sources};
+		const listeners = new Set<() => void>();
+		return {
+			getState: () => state,
+			subscribe(listener) {
+				listeners.add(listener);
+				return () => listeners.delete(listener);
+			},
+			replace(next) {
+				state = {[controllerName]: next};
+				[...listeners].forEach((listener) => listener());
+			},
+		};
+	}
+	/** An object with an own property of that name, even for `__proto__`. */
+	const own = (key: string, value: unknown): FeatureSourcesState =>
+		JSON.parse(
+			`{${JSON.stringify(key)}: ${JSON.stringify(value)}}`,
+		) as FeatureSourcesState;
+
+	describe("changes while the condition runs for the first time", () => {
+		it("notices a state change made by the first call", async () => {
+			const store = createStore({places: {type: "noop"}});
+			let calls = 0;
+			const result = track(
+				whenFeatureSourcesSettled(store, controllerName, ["places"], {
+					timeoutMs: 1000,
+					isSettled: (states) => {
+						calls++;
+						if (calls === 1) {
+							store.dispatch(
+								setData(
+									controllerName,
+									"places",
+									collection("a"),
+								),
+							);
+							return false;
+						}
+						return states.places === "ok";
+					},
+				}),
+			);
+
+			await tick(1000);
+			expect(result.value).toEqual({
+				status: "settled",
+				sources: {places: "ok"},
+			});
+			expect(calls).toBe(2);
+			expect(vi.getTimerCount()).toBe(0);
+		});
+
+		it("notices an abort raised by the first call", async () => {
+			const store = createStore({places: {type: "noop"}});
+			const controller = new AbortController();
+			const result = track(
+				whenFeatureSourcesSettled(store, controllerName, ["places"], {
+					signal: controller.signal,
+					timeoutMs: 1000,
+					isSettled: () => {
+						controller.abort();
+						return false;
+					},
+				}),
+			);
+
+			await tick(1000);
+			expect(result.value).toEqual({
+				status: "aborted",
+				sources: {places: "idle"},
+			});
+			expect(vi.getTimerCount()).toBe(0);
+		});
+
+		it("does not run the condition re-entrantly", async () => {
+			const store = createStore({places: {type: "noop"}});
+			let depth = 0;
+			let maxDepth = 0;
+			let calls = 0;
+			const result = track(
+				whenFeatureSourcesSettled(store, controllerName, ["places"], {
+					timeoutMs: 1000,
+					isSettled: (states) => {
+						depth++;
+						maxDepth = Math.max(maxDepth, depth);
+						calls++;
+						if (calls <= 2) {
+							store.dispatch(
+								setData(
+									controllerName,
+									"places",
+									collection(`v${calls}`),
+								),
+							);
+						}
+						depth--;
+						return calls > 2 && states.places === "ok";
+					},
+				}),
+			);
+
+			await tick(1000);
+			expect(result.value?.status).toBe("settled");
+			expect(maxDepth).toBe(1);
+		});
+	});
+
+	describe("ids that look like object properties", () => {
+		it("waits for an idle source with the id __proto__", async () => {
+			const store = fakeStore(
+				own("__proto__", {type: "noop", data: null}),
+			);
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["__proto__"],
+					{
+						timeoutMs: 1000,
+					},
+				),
+			);
+			await tick(0);
+			expect(result.done).toBe(false);
+
+			store.replace(
+				own("__proto__", {type: "noop", data: collection("a")}),
+			);
+			await tick(0);
+			expect(result.value?.status).toBe("settled");
+			expect(Object.keys(result.value!.sources)).toEqual(["__proto__"]);
+			expect(result.value!.sources["__proto__"]).toBe("ok");
+		});
+
+		it("reports ids that only exist on the prototype chain as missing", async () => {
+			const store = fakeStore({});
+			const result = await whenFeatureSourcesSettled(
+				store,
+				controllerName,
+				["constructor", "toString", "__proto__"],
+			);
+			expect(result.status).toBe("settled");
+			expect(Object.keys(result.sources)).toEqual([
+				"constructor",
+				"toString",
+				"__proto__",
+			]);
+			expect(Object.values(result.sources)).toEqual([
+				"missing",
+				"missing",
+				"missing",
+			]);
+		});
+
+		it("returns the state of a __proto__ source from the single-source form", async () => {
+			const store = fakeStore(
+				own("__proto__", {type: "noop", data: null}),
+			);
+			const result = track(
+				whenFeatureSourceSettled(store, controllerName, "__proto__", {
+					timeoutMs: 100,
+				}),
+			);
+			await tick(100);
+			expect(result.value).toEqual({status: "timeout", state: "idle"});
+		});
+	});
+
+	describe("lists of ids", () => {
+		it("resolves settled for an empty list without subscribing", async () => {
+			const store = createStore();
+			const subscribe = vi.spyOn(store, "subscribe");
+			const isSettled = vi.fn(() => false);
+			await expect(
+				whenFeatureSourcesSettled(store, controllerName, [], {
+					isSettled,
+				}),
+			).resolves.toEqual({status: "settled", sources: {}});
+			expect(subscribe).not.toHaveBeenCalled();
+			expect(isSettled).not.toHaveBeenCalled();
+		});
+
+		it("lets an aborted signal win over an empty list", async () => {
+			await expect(
+				whenFeatureSourcesSettled(createStore(), controllerName, [], {
+					signal: AbortSignal.abort(),
+				}),
+			).resolves.toEqual({status: "aborted", sources: {}});
+		});
+
+		it("treats duplicate ids as one source", async () => {
+			const {pending} = deferredFetch();
+			const store = createStore({
+				a: xhrSource("/a.geojson"),
+				b: {type: "noop", data: collection("b")},
+			});
+			store.dispatch(load(controllerName, "a"));
+			const seen: string[][] = [];
+			const result = track(
+				whenFeatureSourcesSettled(
+					store,
+					controllerName,
+					["a", "b", "a"],
+					{
+						isSettled: (states) => {
+							seen.push(Object.keys(states));
+							return Object.values(states).every(
+								(state) => state === "ok",
+							);
+						},
+					},
+				),
+			);
+			await tick();
+			pending[0]!.resolve(collection("a"));
+			await tick();
+
+			expect(result.value).toEqual({
+				status: "settled",
+				sources: {a: "ok", b: "ok"},
+			});
+			expect(Object.keys(result.value!.sources)).toEqual(["a", "b"]);
+			expect(seen.every((keys) => keys.join() === "a,b")).toBe(true);
+		});
+	});
+
+	describe("a store that notifies while subscribing", () => {
+		it("releases everything when the wait ends inside subscribe", async () => {
+			let sources: object = {places: {type: "noop", data: null}};
+			const unsubscribe = vi.fn();
+			const store: FeatureSourceStoreLike = {
+				getState: () => ({[controllerName]: sources}),
+				subscribe(listener) {
+					sources = {places: {type: "noop", data: collection("a")}};
+					listener();
+					return unsubscribe;
+				},
+			};
+			const signal = new AbortController().signal;
+			const addListener = vi.spyOn(signal, "addEventListener");
+			const removeListener = vi.spyOn(signal, "removeEventListener");
+
+			const result = await whenFeatureSourcesSettled(
+				store,
+				controllerName,
+				["places"],
+				{signal, timeoutMs: 60_000},
+			);
+
+			expect(result).toEqual({
+				status: "settled",
+				sources: {places: "ok"},
+			});
+			expect(unsubscribe).toHaveBeenCalledTimes(1);
+			expect(vi.getTimerCount()).toBe(0);
+			// Either never added, or added and removed again.
+			expect(addListener.mock.calls.length).toBe(
+				removeListener.mock.calls.length,
+			);
 		});
 	});
 });

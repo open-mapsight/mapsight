@@ -30,11 +30,19 @@ export type WhenFeatureSourcesSettledOptions = {
 	 * `"next-completion"` waits for a request that starts after this call and
 	 * ends, instead of accepting the current state. Use it after
 	 * `load(..., {forceRefresh: true})` for a source that already has data.
-	 * Until a source has started such a request it is reported as `loading`
-	 * (a `missing` source stays `missing`). A request already in flight when
-	 * the call is made counts as well. If no request ever starts, for example
-	 * because a source with an `error` was loaded without `forceRefresh`, only
-	 * `timeoutMs` or `signal` end the wait.
+	 *
+	 * A source counts as having started such a request once its `requestId`
+	 * is a number that differs from the one it had at the time of the call. A
+	 * request that is already in flight at the call does not count, and neither
+	 * does the completion of a request that was queued or running earlier: to
+	 * wait for whatever is pending right now, use the default condition. Until a
+	 * source has started a request it is reported as `loading` (a `missing`
+	 * source stays `missing`). A source that is removed and added again is
+	 * treated as a new source and has to start its own request.
+	 *
+	 * If no request ever starts, for example because a source with an `error`
+	 * was loaded without `forceRefresh`, only `timeoutMs` or `signal` end the
+	 * wait.
 	 */
 	after?: "next-completion";
 };
@@ -55,6 +63,13 @@ const isSettledByDefault = (states: Record<string, FeatureSourceLoadState>) =>
 		(state) => state === "ok" || state === "error" || state === "missing",
 	);
 
+const createDictionary = () =>
+	Object.create(null) as Record<string, FeatureSourceLoadState>;
+
+/** A request number that the controller assigned. Anything else is no request. */
+const isRequestId = (value: unknown): value is number =>
+	typeof value === "number" && Number.isFinite(value);
+
 /**
  * Resolves once the listed feature sources have settled. The returned promise
  * never rejects.
@@ -72,8 +87,14 @@ const isSettledByDefault = (states: Record<string, FeatureSourceLoadState>) =>
  * (`doRefresh` + `timer`) settles on its data, not on its timer.
  *
  * If the condition already holds, the promise resolves immediately (as a
- * promise). A signal that is already aborted wins over that. The store
- * subscription, timer and abort listener are always released.
+ * promise). A signal that is already aborted wins over that. An empty id list
+ * has nothing to wait for and resolves as `settled` without calling
+ * `isSettled`. Duplicate ids are waited for once. The store subscription,
+ * timer and abort listener are always released.
+ *
+ * The result lists every id once, in the order given. It is a plain object
+ * without a prototype, so any id is safe as a key, including `__proto__`.
+ * Ids are looked up as own properties of the controller's state.
  *
  * @param store any store with `getState` and `subscribe`
  * @param controllerName name of the feature sources controller, usually `featureSources`
@@ -88,23 +109,40 @@ export function whenFeatureSourcesSettled(
 ): Promise<FeatureSourcesSettledResult> {
 	const {signal, timeoutMs, isSettled = isSettledByDefault, after} = options;
 
+	const uniqueIds = [...new Set(ids)];
+
 	return new Promise((resolve) => {
 		let finished = false;
 		// Released exactly once when the wait ends, whatever ends it.
 		const cleanups: Array<() => void> = [];
 		let lastSources: Array<FeatureSourceState | undefined> | undefined;
-		let lastStates: Record<string, FeatureSourceLoadState> = {};
+		let lastStates = createDictionary();
 
-		// For `after`: request number seen at the first read, and the ids that
-		// have started a request since (or were loading from the beginning).
-		let baseline: Array<number | undefined> | undefined;
+		// For `after`: the request number each present source had when it was
+		// first seen, and the ids that have started a request since. A source
+		// that appears later (or again, after it was gone) has no baseline: any
+		// request it shows was started after the call.
+		const baselines = new Map<string, number | undefined>();
 		const started = new Set<string>();
+		let firstRead = true;
+
+		// Cleanup that is registered after the wait ended runs at once.
+		function onCleanup(cleanup: () => void) {
+			if (finished) {
+				cleanup();
+			} else {
+				cleanups.push(cleanup);
+			}
+		}
 
 		function read() {
-			const all = (store.getState() as Record<string, unknown>)[
-				controllerName
-			] as FeatureSourcesState | undefined;
-			const sources = ids.map((id) => all?.[id]);
+			const root = store.getState() as
+				Record<string, unknown> | undefined;
+			const all = root?.[controllerName] as
+				FeatureSourcesState | undefined;
+			const sources = uniqueIds.map((id) =>
+				all && Object.hasOwn(all, id) ? all[id] : undefined,
+			);
 			if (
 				lastSources &&
 				sources.every((source, index) => source === lastSources![index])
@@ -112,24 +150,37 @@ export function whenFeatureSourcesSettled(
 				return lastStates;
 			}
 
-			baseline ??= sources.map((source) => source?.requestId);
-			const states: Record<string, FeatureSourceLoadState> = {};
-			ids.forEach((id, index) => {
+			const states = createDictionary();
+			uniqueIds.forEach((id, index) => {
 				const source = sources[index];
 				let state = getFeatureSourceLoadState(source);
-				if (after === "next-completion" && source) {
-					if (
-						source.isLoading ||
-						source.requestId !== baseline![index]
-					) {
-						started.add(id);
-					}
-					if (!started.has(id)) {
-						state = "loading";
+				if (after === "next-completion") {
+					if (!source) {
+						baselines.delete(id);
+						started.delete(id);
+					} else {
+						if (!baselines.has(id)) {
+							baselines.set(
+								id,
+								firstRead && isRequestId(source.requestId)
+									? source.requestId
+									: undefined,
+							);
+						}
+						if (
+							isRequestId(source.requestId) &&
+							source.requestId !== baselines.get(id)
+						) {
+							started.add(id);
+						}
+						if (!started.has(id)) {
+							state = "loading";
+						}
 					}
 				}
 				states[id] = state;
 			});
+			firstRead = false;
 			lastSources = sources;
 			lastStates = states;
 			return states;
@@ -140,13 +191,43 @@ export function whenFeatureSourcesSettled(
 				return;
 			}
 			finished = true;
-			cleanups.forEach((cleanup) => cleanup());
-			resolve({status, sources: read()});
+			const result = read();
+			cleanups.splice(0).forEach((cleanup) => cleanup());
+			resolve({status, sources: result});
 		}
 
+		// The condition is user code. It may change the store or abort the
+		// signal, so a change that arrives while it runs is not lost and it is
+		// never called re-entrantly.
+		let checking = false;
+		let changedWhileChecking = false;
 		function check() {
-			if (!finished && isSettled(read())) {
-				finish("settled");
+			if (finished) {
+				return;
+			}
+			if (checking) {
+				changedWhileChecking = true;
+				return;
+			}
+			checking = true;
+			try {
+				do {
+					changedWhileChecking = false;
+					const settled = isSettled(read());
+					if (finished) {
+						return;
+					}
+					if (signal?.aborted) {
+						finish("aborted");
+						return;
+					}
+					if (settled && !changedWhileChecking) {
+						finish("settled");
+						return;
+					}
+				} while (changedWhileChecking);
+			} finally {
+				checking = false;
 			}
 		}
 
@@ -158,20 +239,26 @@ export function whenFeatureSourcesSettled(
 			finish("aborted");
 			return;
 		}
-		if (isSettled(read())) {
+		if (uniqueIds.length === 0) {
 			finish("settled");
 			return;
 		}
 
-		cleanups.push(store.subscribe(check));
+		// Take the baseline, then subscribe before any user code runs.
+		read();
+		onCleanup(store.subscribe(check));
+		if (finished) {
+			return;
+		}
 		if (signal) {
 			signal.addEventListener("abort", onAbort, {once: true});
-			cleanups.push(() => signal.removeEventListener("abort", onAbort));
+			onCleanup(() => signal.removeEventListener("abort", onAbort));
 		}
 		if (timeoutMs !== undefined) {
 			const timer = setTimeout(() => finish("timeout"), timeoutMs);
-			cleanups.push(() => clearTimeout(timer));
+			onCleanup(() => clearTimeout(timer));
 		}
+		check();
 	});
 }
 

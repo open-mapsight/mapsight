@@ -17,9 +17,11 @@ export default function useFeatureSourceLoadState(
 	id: string,
 	controllerName: string = FEATURE_SOURCES,
 ): FeatureSourceLoadState {
-	return useSelector((state: Record<string, unknown>) =>
-		getFeatureSourceLoadState(
-			(state[controllerName] as FeatureSourcesState | undefined)?.[id],
-		),
-	);
+	return useSelector((state: Record<string, unknown>) => {
+		const sources = state[controllerName] as
+			FeatureSourcesState | undefined;
+		return getFeatureSourceLoadState(
+			sources && Object.hasOwn(sources, id) ? sources[id] : undefined,
+		);
+	});
 }

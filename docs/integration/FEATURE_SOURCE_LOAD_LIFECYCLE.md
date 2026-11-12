@@ -100,11 +100,25 @@ Options:
 - `after: "next-completion"` waits for a request that starts after the call and
   ends. Use it after `load(..., {forceRefresh: true})` for a source that already
   has data, because the old data would settle the default condition before the
-  queued load has started. Until a request has started, the source is reported
-  as `loading`. Comparing `lastUpdate` instead does not work, since a failed
-  refresh does not change it. If no request starts (a load without
-  `forceRefresh` on a source with an error is skipped), only `timeoutMs` or
-  `signal` end the wait, so set one of them.
+  queued load has started. A source counts as started once its `requestId` is a
+  number that differs from the one it had when you called the helper. So a
+  request that is already in flight at the call does not count, and neither does
+  the completion of an earlier request that finishes before your refresh starts.
+  To wait for whatever is pending right now, use the default condition instead.
+  A forced refresh that replaces a pending request counts; the replaced request's
+  late completion is dropped by the store. Until a request has started, the
+  source is reported as `loading`. A source that is removed and added again is a
+  new source and has to start its own request, so re-adding one with static data
+  never counts. Comparing `lastUpdate` instead does not work, since a failed
+  refresh does not change it. If no request starts (a load without `forceRefresh`
+  on a source with an error is skipped), only `timeoutMs` or `signal` end the
+  wait, so set one of them.
+
+`sources` lists every id once, in the order given, in an object without a
+prototype, so ids such as `__proto__` are safe. Duplicate ids are waited for
+once, and an empty list resolves as `settled` at once without calling
+`isSettled`. The condition may change the store or abort the signal; the wait
+notices both, and the condition is never called re-entrantly.
 
 The helper subscribes only while waiting; it unsubscribes, clears its timer and
 removes the abort listener when it finishes. `combined` sources have data once the
