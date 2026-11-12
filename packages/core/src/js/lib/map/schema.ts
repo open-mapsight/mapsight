@@ -12,7 +12,21 @@ export const layerMetaDataSchema = z.looseObject({
 	title: z.string().optional(),
 	group: z.string().optional(),
 	isBaseLayer: z.boolean().optional(),
+	/**
+	 * Attribution for the layer. The `@mapsight/ui` chrome renders it as HTML
+	 * today and as plain text once `future.v8_attributionText` is enabled (the
+	 * only behavior in the next major). Use `dangerouslySetAttributionHtml` for
+	 * markup.
+	 */
 	attribution: z.string().optional(),
+	/**
+	 * Attribution that the `@mapsight/ui` chrome always renders as HTML, with or
+	 * without `future.v8_attributionText`. Must only contain trusted content. If
+	 * a layer sets both fields, the chrome renders this one; `attribution` stays
+	 * the plain-text form for consumers that render text. An empty string counts
+	 * as not set, like an empty `attribution`.
+	 */
+	dangerouslySetAttributionHtml: z.string().optional(),
 	legend: z.string().optional(),
 	miniLegend: z.string().optional(),
 	/** Optional thumbnail URL for compact base-layer entries in the layer switcher. */

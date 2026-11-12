@@ -47,6 +47,9 @@ Current flags:
 - `v8_automaticHeadings`: derive native heading ranks from `headings.baseLevel` (default 2) and actual titled
   sections. Without the flag, historical heading elements remain. The permanent `headings` preferences stay
   separate from this adoption switch. See [Decision 014](014-automatic-ui-headings.md).
+- `v8_attributionText`: `metaData.attribution` renders as HTML by default; hosts set the flag to render it as plain
+  text. Markup moves to `metaData.dangerouslySetAttributionHtml`, which is always rendered as HTML and wins when both
+  are set. Plain text becomes the only path for `attribution` in v8.
 - `v8_ariaControlTooltip`: leftover hint.css call sites (today: RegionSelector) keep CSS tooltips by default;
   hosts set the flag to use the ARIA `Tooltip` now.
 - `v8_listSearchButton`: list text search keeps a visible label + input by default (7.x host CSS); hosts set
