@@ -15,7 +15,15 @@ See [CMS_PHP](CMS_PHP.md).
 	"map": {
 		"layers": {
 			"base": {
-				"type": "OSM"
+				"type": "TileLayer",
+				"options": {
+					"source": {
+						"type": "OsmSource",
+						"options": {
+							"url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+						}
+					}
+				}
 			}
 		}
 	}
@@ -62,6 +70,21 @@ Loader helpers live in `@mapsight/ui/config/feature/sources` (`xhrJson`, `plain`
 **Basemap** (OSM, XYZ, WMS raster) and **thematic** vector layers are separate concerns. Basemap
 patterns: [Ecosystem § basemaps](../architecture/ECOSYSTEM.md). GeoServer **overlay**
 WMS/WFS: [OGC_LAYERS](OGC_LAYERS.md) — not the same as XYZ basemap / tile-proxy.
+
+#### Draw order
+
+Each layer is added to an OpenLayers layer group. The group is named by the top-level `group` of the layer definition,
+else by `metaData.group`, else `"default"`. Groups are created the first time a layer needs them, in the order the
+layers are processed, and are not removed when their last layer is removed.
+
+OpenLayers flattens all groups into one list (group by group, layers in the order they were added to their group) and
+sorts it by `options.zIndex`. Layers without a `zIndex` count as `0`. The sort is stable, so layers with equal
+`zIndex` keep the group and insertion order; group order therefore only decides between layers with the same
+`zIndex`. A layer with a higher `zIndex` is drawn above one with a lower value, regardless of its group.
+
+Selection and highlight overlays are drawn with the fixed `zIndex` `1000` (`Z_INDEX_OVERLAY` in
+`@mapsight/core`), so keep host layers below that value. Set `options.zIndex` explicitly whenever order matters
+instead of relying on the order of the `layers` object.
 
 ### `list`
 

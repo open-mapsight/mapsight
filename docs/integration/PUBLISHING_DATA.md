@@ -26,6 +26,9 @@ Hand off using the checklist at the end of this page.
 
 - Valid GeoJSON per [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946)
 - Prefer `FeatureCollection` with stable feature `id` (property or Feature `id`)
+- Feature ids must be **unique across all feature sources of one Mapsight instance** and should be **strings**.
+  Selections store only feature ids, and the lookup returns the first source that contains the id. If datasets number
+  their features independently, prefix the ids per source in the data pipeline (for example `poi-17`, `event-17`).
 - Coordinates in **longitude, latitude** order for EPSG:4326
 
 ### Properties for Mapsight UI

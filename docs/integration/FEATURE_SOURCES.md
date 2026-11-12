@@ -10,6 +10,16 @@ outputs). For pulp deployment shape, see [PULP.md](PULP.md).
 
 ---
 
+## Feature ids
+
+Feature ids must be unique across all feature sources of one Mapsight instance and should be strings. Feature
+selections store only ids (`packages/core/src/js/lib/feature-selections/selectors.ts`), and
+`findFeatureSourceIdForFeatureId` resolves an id to the first source that lists it (a `combined` source only if no
+other source does). When datasets number features independently, prefix the ids per source in the data pipeline. See
+[Publishing data](PUBLISHING_DATA.md).
+
+---
+
 ## Opt-in via `create()` / store extra argument
 
 Pass a `FeatureSourceCache` implementation through UI `createOptions` (forwarded

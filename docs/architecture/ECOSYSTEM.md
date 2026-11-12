@@ -78,7 +78,7 @@ GeoJSON** and a direct or host-provided basemap URL — no geoportal, no pulp, n
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------ |
 | **[mapsight](https://github.com/open-mapsight/mapsight)** (this monorepo) | GIS **frontend framework** — `@mapsight/core`, `@mapsight/ui`, styles, count-aggregator packages             | React, Redux, OpenLayers, pnpm |
 | **[mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp)**       | **Geo/traffic ETL** — stream-based PHP transforms (Concert, TIC, KML→GeoJSON, etc.)                          | PHP, Composer                  |
-| **[tile-proxy](https://github.com/open-mapsight/mapsight-pulp)**          | **Basemap tile proxy** — cache and transform XYZ tiles in front of OSM, basemap.de, municipal tile endpoints | PHP, Composer                  |
+| **[tile-proxy](https://github.com/open-mapsight/tile-proxy)**             | **Basemap tile proxy** — cache and transform XYZ tiles in front of OSM, basemap.de, municipal tile endpoints | PHP, Composer                  |
 
 ### Host-operated (not in open-mapsight org today)
 
@@ -96,12 +96,12 @@ GeoJSON** and a direct or host-provided basemap URL — no geoportal, no pulp, n
 Mapsight **does not ship a basemap**. The host configures basemap layers in embed or app config (OpenLayers XYZ, WMS,
 etc.).
 
-| Pattern                                                             | Description                                                                                             | When to use                                                                                                                                                                      |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A. [tile-proxy](https://github.com/open-mapsight/mapsight-pulp)** | Service at e.g. `/tiles/{prefix}/{z}/{x}/{y}.png` — caches and optionally transforms upstream XYZ tiles | **Common in production** — same-origin URL, caching, branding/desaturation, reduced direct browser load on third parties. See [integration guide](../integration/TILE_PROXY.md). |
-| **B. Direct XYZ**                                                   | Browser loads tiles from public URL in config                                                           | Development, low traffic; respect [OSM](https://www.openstreetmap.org/copyright) / [basemap.de](https://basemap.de) **terms, attribution, and rate limits**                      |
-| **C. GeoServer WMS**                                                | Raster basemap as OGC layer from municipal GeoServer                                                    | When the geo department already publishes an official city basemap                                                                                                               |
-| **D. Municipal tile server**                                        | Internal XYZ/WMTS from GIS infrastructure, often **fronted by A**                                       | Survey-aligned basemap; proxy adds cache and stable public URL                                                                                                                   |
+| Pattern                                                          | Description                                                                                             | When to use                                                                                                                                                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. [tile-proxy](https://github.com/open-mapsight/tile-proxy)** | Service at e.g. `/tiles/{prefix}/{z}/{x}/{y}.png` — caches and optionally transforms upstream XYZ tiles | **Common in production** — same-origin URL, caching, branding/desaturation, reduced direct browser load on third parties. See [integration guide](../integration/TILE_PROXY.md). |
+| **B. Direct XYZ**                                                | Browser loads tiles from public URL in config                                                           | Development, low traffic; respect [OSM](https://www.openstreetmap.org/copyright) / [basemap.de](https://basemap.de) **terms, attribution, and rate limits**                      |
+| **C. GeoServer WMS**                                             | Raster basemap as OGC layer from municipal GeoServer                                                    | When the geo department already publishes an official city basemap                                                                                                               |
+| **D. Municipal tile server**                                     | Internal XYZ/WMTS from GIS infrastructure, often **fronted by A**                                       | Survey-aligned basemap; proxy adds cache and stable public URL                                                                                                                   |
 
 **Basemap vs overlays:** The basemap provides **context** (streets, topography). **Thematic layers** (GeoJSON, WMS
 overlays, vector features) sit on top. GeoServer often serves both; configure them as separate layer entries.
@@ -130,7 +130,7 @@ back-office tools.
 - [Principles](PRINCIPLES.md) — scope, composable UI, non-goals
 - [@mapsight/core → Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md) — declarative GIS runtime
 - [mapsight-pulp](https://github.com/open-mapsight/mapsight-pulp) — PHP companion monorepo
-- [tile-proxy](https://github.com/open-mapsight/mapsight-pulp) — basemap
+- [tile-proxy](https://github.com/open-mapsight/tile-proxy) — basemap
   proxy; [integration guide](../integration/TILE_PROXY.md)
 
 - [GIS stack choices](../ecosystem/GIS_STACK_CHOICES.md) — stakeholders and product channels
