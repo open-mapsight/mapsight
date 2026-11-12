@@ -2,7 +2,7 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import type RegularShape from "ol/style/RegularShape";
 
-import {expect, it} from "vitest";
+import {describe, expect, it} from "vitest";
 
 import compile from "../src/js/index.ts";
 import {loadStyleModule} from "./helpers/loadStyleModule.ts";
@@ -98,3 +98,43 @@ it.each(["*", ".group", "#style"])(
 		).toThrow(/Cannot negate/);
 	},
 );
+
+describe("generated module helpers", () => {
+	const feature = () =>
+		new Feature({geometry: new Point([0, 0]), path: {to: {value: "a"}}});
+
+	it("does not import from @mapsight/lib-js", () => {
+		const output = compile(`* {
+			text-text: replace("a", "e", attr(path-to-value));
+			stroke-width: calc(attr(path-to-width) + 1);
+		}`);
+		expect(output).not.toContain("@mapsight/lib-js");
+	});
+
+	it("resolves nested feature property paths without lib-js", async () => {
+		const output = compile(`* { text-text: attr(path-to-value); }`);
+		expect(output).toContain("const get =");
+		expect(output).not.toContain("const replace =");
+		const style = await loadStyleModule(output);
+		const [result] = style({}, feature());
+		expect(result?.getText()?.getText()).toBe("a");
+		// Missing intermediate segments resolve to undefined without throwing.
+		const [missing] = style({}, new Feature(new Point([0, 0])));
+		expect(missing?.getText()?.getText()).toBe("undefined");
+	});
+
+	it("evaluates replace() without lib-js", async () => {
+		const output = compile(`* { text-text: replace("a", "e", "hallo"); }`);
+		expect(output).toContain("const replace =");
+		expect(output).not.toContain("const get =");
+		const style = await loadStyleModule(output);
+		const [result] = style({}, feature());
+		expect(result?.getText()?.getText()).toBe("hello");
+	});
+
+	it("emits no helpers for styles that use neither", () => {
+		const output = compile(`* { stroke-width: 2; }`);
+		expect(output).not.toContain("const get =");
+		expect(output).not.toContain("const replace =");
+	});
+});

@@ -1,10 +1,39 @@
-import get from "@mapsight/lib-js/object/getPath";
-import replace from "@mapsight/lib-js/string/replaceRegex";
 import createCachedStyleFunction from "@mapsight/lib-ol/style/createCachedStyleFunction";
 /* imports-start: */
 import __vectorStyle_circle from "ol/style/Circle";
 
 /* :imports-end */
+
+/* helper-get-start: */
+/**
+ * @param {unknown} object
+ * @param {Array<string|number>} path
+ * @returns {unknown}
+ */
+const get = (object, path) => {
+	/** @type {unknown} */
+	let current = object;
+	for (const key of path) {
+		if (current === null || current === undefined) {
+			return undefined;
+		}
+		current = /** @type {Record<string | number, unknown>} */ (current)[
+			key
+		];
+	}
+	return current;
+};
+/* :helper-get-end */
+/* helper-replace-start: */
+/**
+ * @param {string} search
+ * @param {string} replacement
+ * @param {string} subject
+ * @returns {string}
+ */
+const replace = (search, replacement, subject) =>
+	subject.replace(new RegExp(search, "g"), replacement);
+/* :helper-replace-end */
 
 /** @type {(value: unknown) => string} */
 const createHash = /* @__PURE__ */ (value) =>
