@@ -79,7 +79,31 @@ export const descriptionSchema = z.looseObject({
 	metaData: layerMetaDataSchema.optional(),
 });
 
-export const layerConfigSchema = descriptionSchema;
+/** A `MapboxVectorLayer` whose `options.source` is a string instead of a source description. */
+function hasMapboxStyleSourceInSourceOption(layer: unknown): boolean {
+	// Runs on values that already failed the object schema (see `when` below),
+	// so nothing about the shape can be assumed.
+	if (typeof layer !== "object" || layer === null) {
+		return false;
+	}
+	const {type, options} = layer as {type?: unknown; options?: unknown};
+	return (
+		type === "MapboxVectorLayer" &&
+		typeof options === "object" &&
+		options !== null &&
+		typeof (options as {source?: unknown}).source === "string"
+	);
+}
+
+export const layerConfigSchema = descriptionSchema.refine(
+	(layer) => !hasMapboxStyleSourceInSourceOption(layer),
+	{
+		path: ["options", "source"],
+		error: '"options.source" is reserved for a source description ({type, options}). Name the style source of a MapboxVectorLayer with "options.sourceId" instead.',
+		// Also run when the source union already failed, to supersede its generic message.
+		when: () => true,
+	},
+);
 
 export const mapConfigSchema = z
 	.looseObject({
