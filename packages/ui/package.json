@@ -16,7 +16,6 @@
 		"flatpickr": "^4.6.13",
 		"focus-trap-react": "^12.0.3",
 		"hint.css": "^3.0.0",
-		"jsdom": "catalog:",
 		"lodash": "catalog:",
 		"ol": "catalog:",
 		"proj4": "catalog:",
@@ -37,6 +36,7 @@
 		"@types/react-dom": "catalog:",
 		"@types/react-modal": "^3.16.3",
 		"chokidar": "^6.0.0",
+		"jsdom": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"sass": "1.107.1",
@@ -191,11 +191,15 @@
 	"license": "MIT",
 	"peerDependencies": {
 		"@tanstack/react-query": "^5.105.0",
+		"jsdom": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"
 	},
 	"peerDependenciesMeta": {
 		"@tanstack/react-query": {
+			"optional": true
+		},
+		"jsdom": {
 			"optional": true
 		}
 	},
