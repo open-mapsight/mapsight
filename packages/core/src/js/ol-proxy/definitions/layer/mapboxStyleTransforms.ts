@@ -1,9 +1,16 @@
 /**
  * Browser-side counterpart of the tile-proxy `setLayerProperties` style
  * transform. It rewrites layers of a Mapbox / MapLibre style document without
- * touching its sources, so the same transform list works in the proxy and in
- * the browser.
+ * touching its sources. It follows the proxy's transform format but is not a
+ * full implementation: only `setLayerProperties` is supported, and input is
+ * validated more strictly (non-object entries, unknown fields, wrong value
+ * types and `__proto__` property names are errors, where the proxy skips or
+ * accepts them).
  */
+
+/** Plain JSON value; transforms are JSON data, so they also fit ol-proxy options. */
+export type JsonValue =
+	string | number | boolean | null | JsonValue[] | {[key: string]: JsonValue};
 
 /**
  * Layer selector. Fields combine with AND, values within a field with OR. An
@@ -27,9 +34,9 @@ export type MapboxStyleLayerSelector = {
  * (`null` removes them). Expressions are copied verbatim.
  */
 export type MapboxStyleLayerProperties = {
-	paint?: Record<string, unknown>;
-	layout?: Record<string, unknown>;
-	filter?: unknown;
+	paint?: Record<string, JsonValue>;
+	layout?: Record<string, JsonValue>;
+	filter?: JsonValue[] | boolean | null;
 	minzoom?: number | null;
 	maxzoom?: number | null;
 };
@@ -212,26 +219,14 @@ function applyProperties(
 	}
 }
 
-/**
- * Applies `setLayerProperties` transforms to a style document and returns the
- * result as a new document; `style` and `transforms` are not modified.
- * Transforms run in order. Sources are never changed.
- *
- * All transforms are validated before the style is touched. An invalid
- * transform (non-object, unsupported `op`, unknown selector field or
- * property, wrong value types) throws an error naming its index.
- */
-export function applyMapboxStyleTransforms<T extends MapboxStyleDocument>(
-	style: T,
-	transforms: readonly MapboxStyleTransform[],
-): T {
+function parseTransforms(transforms: unknown): ValidSetLayerProperties[] {
 	if (!Array.isArray(transforms)) {
 		throw new Error(
 			`Invalid style transforms: expected an array, got ${describe(transforms)}`,
 		);
 	}
 
-	const validated = transforms.map((transform: unknown, index) => {
+	return transforms.map((transform: unknown, index) => {
 		const fail = (message: string): never => {
 			throw new Error(
 				`Invalid style transform at index ${index}: ${message}`,
@@ -247,6 +242,31 @@ export function applyMapboxStyleTransforms<T extends MapboxStyleDocument>(
 		}
 		return validateSetLayerProperties(transform, fail);
 	});
+}
+
+/**
+ * Validates a transform list without applying it and throws an error naming
+ * the offending index. Anything but an array (e.g. a single transform object)
+ * is rejected.
+ */
+export function validateMapboxStyleTransforms(transforms: unknown): void {
+	parseTransforms(transforms);
+}
+
+/**
+ * Applies `setLayerProperties` transforms to a style document and returns the
+ * result as a new document; `style` and `transforms` are not modified.
+ * Transforms run in order. Sources are never changed.
+ *
+ * All transforms are validated before the style is touched. An invalid
+ * transform (non-object, unsupported `op`, unknown selector field or
+ * property, wrong value types) throws an error naming its index.
+ */
+export function applyMapboxStyleTransforms<T extends MapboxStyleDocument>(
+	style: T,
+	transforms: readonly MapboxStyleTransform[],
+): T {
+	const validated = parseTransforms(transforms);
 
 	const result = structuredClone(style);
 	if (!Array.isArray(result.layers)) {

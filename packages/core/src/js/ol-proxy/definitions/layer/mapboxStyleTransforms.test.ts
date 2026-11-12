@@ -1,5 +1,7 @@
 import {describe, expect, it} from "vitest";
 
+import type {LayerConfig} from "@/lib/map/schema";
+
 import {
 	type MapboxStyleDocument,
 	type MapboxStyleTransform,
@@ -387,5 +389,46 @@ describe("applyMapboxStyleTransforms validation", () => {
 			]),
 		).toThrow(/index 1/);
 		expect(style).toEqual(createStyle());
+	});
+});
+
+describe("MapboxStyleTransform types", () => {
+	it("can be used in typed layer configuration", () => {
+		// Compile-time check (`pnpm typecheck`): transforms must be assignable to
+		// the JSON-compatible ol-proxy option bag.
+		const transforms: MapboxStyleTransform[] = [
+			{
+				op: "setLayerProperties",
+				selector: {sourceLayers: ["water"], types: ["fill"]},
+				properties: {
+					paint: {
+						"fill-color": [
+							"interpolate",
+							["linear"],
+							["zoom"],
+							5,
+							"#fff",
+							10,
+							"#00f",
+						],
+						"fill-pattern": null,
+					},
+					layout: {visibility: "none"},
+					filter: ["==", ["get", "class"], "lake"],
+					minzoom: 4,
+					maxzoom: null,
+				},
+			},
+			{op: "setLayerProperties", properties: {filter: false}},
+		];
+		const layer: LayerConfig = {
+			type: "MapboxVectorLayer",
+			options: {
+				styleUrl: "/styles/base.json",
+				styleTransforms: transforms,
+			},
+		};
+
+		expect(layer.options?.styleTransforms).toEqual(transforms);
 	});
 });

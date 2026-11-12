@@ -161,7 +161,7 @@ one recreates the layer.
 
 | Option            | Meaning                                                                                                                                                                                      |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `styleUrl`        | URL of the Mapbox/MapLibre style document. Relative sprite, glyph and source URLs inside the style resolve against it.                                                                       |
+| `styleUrl`        | URL of the Mapbox/MapLibre style document. Relative sprite and source URLs inside the style resolve against it.                                                                              |
 | `styleTransforms` | Optional list of `setLayerProperties` transforms applied in the browser, see [below](#transforming-the-style-in-the-browser).                                                                |
 | `sourceId`        | Id of the style source whose layers this layer draws. Defaults to the first vector source. Not `options.source`: that key is reserved for ol-proxy source descriptions.                      |
 | `layers`          | Array of style layer ids to draw instead of the whole source. All must use the same source; takes precedence over `sourceId`.                                                                |
@@ -176,8 +176,8 @@ passed to the OpenLayers vector tile layer.
 
 #### Transforming the style in the browser
 
-Instead of rewriting the style document in tile-proxy, a host can apply the same
-`setLayerProperties` transform in the browser with the `styleTransforms` option. This needs no
+Instead of rewriting the style document in tile-proxy, a host can apply `setLayerProperties`
+transforms like the proxy's in the browser with the `styleTransforms` option. This needs no
 server-side support, and each map view can use its own variant of one style:
 
 ```js
@@ -201,21 +201,29 @@ server-side support, and each map view can use its own variant of one style:
 }
 ```
 
-The format and semantics are those of the proxy's `setLayerProperties`
+The format follows the proxy's `setLayerProperties`
 ([README](https://github.com/open-mapsight/tile-proxy#recolouring-and-adjusting-vector-styles)):
 selector fields `ids`, `prefixes`, `sourceLayers` and `types` combine with AND, values within a
 field with OR, and an omitted or empty selector matches all layers. `paint` and `layout` entries
 are merged by name (`null` removes an entry); `filter`, `minzoom` and `maxzoom` are replaced
 (`null` removes them). Expressions are copied verbatim, transforms run in order, and sources
-cannot be changed. Any other `op`, unknown selector fields or properties, and values of the
-wrong type are errors that name the transform's index.
+cannot be changed. The browser implementation is stricter than the proxy:
+
+- Only `setLayerProperties` is supported; any other `op` is an error.
+- A transform list must be a plain JSON array. Non-object entries, unknown transform fields,
+  unknown selector fields or properties, selector values that are not arrays of strings, a
+  non-object `paint` or `layout`, non-numeric `minzoom`/`maxzoom` and a `filter` that is not an
+  array, a boolean or `null` are errors that name the transform's index. The proxy skips or
+  accepts some of these. `__proto__` is rejected as a `paint` or `layout` property name.
+- Everything is validated before the style is changed. Values must be plain JSON.
 
 When `styleTransforms` is set and non-empty, the layer fetches `styleUrl` itself, applies the
 transforms and passes the resulting style to ol-mapbox-style together with the original
-`styleUrl`, so relative sprite, glyph and source URLs still resolve against it. `styleUrl` must
+`styleUrl`, so relative sprite and source URLs still resolve against it. `styleUrl` must
 be an `http(s)` or relative URL (not `mapbox://`). Without transforms ol-mapbox-style loads the
 style as before. A failed fetch or an invalid transform is reported like any other style load
-error. The same function is available as `applyMapboxStyleTransforms` from
+error. Layers with the same resolved `styleUrl` share one pending request, and disposing a layer
+cancels its pending load. The same function is available as `applyMapboxStyleTransforms` from
 `@mapsight/core/ol-proxy/definitions/layer/mapboxStyleTransforms`.
 
 Changing `styleUrl` or `styleTransforms` in the state recreates the layer, which loads the style

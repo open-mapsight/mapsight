@@ -41,7 +41,6 @@ describe("LazyMapboxVectorLayer styleTransforms", () => {
 	const style = {
 		version: 8,
 		sprite: "../sprites/base",
-		glyphs: "fonts/{fontstack}/{range}.pbf",
 		sources: {base: {type: "vector", url: "tiles.json"}},
 		layers: [
 			{id: "bg", type: "background", paint: {"background-color": "#fff"}},
@@ -129,7 +128,7 @@ describe("LazyMapboxVectorLayer styleTransforms", () => {
 		expect(failed).not.toHaveBeenCalled();
 	});
 
-	it("keeps resolving relative style URLs against the original styleUrl", async () => {
+	it("passes the original styleUrl and the untouched relative URLs to ol-mapbox-style", async () => {
 		vi.stubGlobal("location", {href: "https://app.example.org/embed/"});
 		const fetchMock = respondWith({});
 		createLayer({
@@ -138,7 +137,7 @@ describe("LazyMapboxVectorLayer styleTransforms", () => {
 		});
 		await vi.waitFor(() => expect(applyStyle).toHaveBeenCalled());
 
-		// Sprite, glyph and source URLs stay relative inside the style ...
+		// Sprite and source URLs stay relative inside the style ...
 		const [, glStyle, , options] = vi.mocked(applyStyle).mock
 			.calls[0] as unknown as [
 			unknown,
@@ -147,9 +146,9 @@ describe("LazyMapboxVectorLayer styleTransforms", () => {
 			{styleUrl: string},
 		];
 		expect(glStyle.sprite).toBe("../sprites/base");
-		expect(glStyle.glyphs).toBe("fonts/{fontstack}/{range}.pbf");
 		expect(glStyle.sources.base.url).toBe("tiles.json");
-		// ... and ol-mapbox-style resolves them against this URL.
+		// ... and ol-mapbox-style resolves them against this URL (verified
+		// against the real library in LazyMapboxVectorLayer.olms.test.ts).
 		expect(options.styleUrl).toBe("/map-assets/styles/base.json?v=1");
 		expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
 			"https://app.example.org/map-assets/styles/base.json?v=1",
@@ -266,5 +265,230 @@ describe("LazyMapboxVectorLayer styleTransforms", () => {
 		);
 		expect(String(errors[0])).toMatch(/http\(s\) or relative styleUrl/);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		["an object", {op: "setLayerProperties"}],
+		["a string", "setLayerProperties"],
+		["a number", 3],
+	])(
+		"reports %s as styleTransforms as a style load error",
+		async (_name, value) => {
+			const fetchMock = respondWith({});
+			const layer = createLayer({styleTransforms: value as never});
+			const errors: unknown[] = [];
+			layer.on("error", (event) =>
+				errors.push((event as unknown as {error: unknown}).error),
+			);
+
+			await vi.waitFor(() =>
+				expect(layer.getSource()?.getState()).toBe("error"),
+			);
+			expect(String(errors[0])).toMatch(/expected an array/);
+			expect(applyStyle).not.toHaveBeenCalled();
+			expect(fetchMock).not.toHaveBeenCalled();
+		},
+	);
+
+	it("treats null styleTransforms like no transforms", () => {
+		const fetchMock = respondWith({});
+		createLayer({styleTransforms: null as never, background: false});
+
+		expect(fetchMock).not.toHaveBeenCalled();
+		expect(applyStyle).toHaveBeenCalledTimes(1);
+	});
+
+	describe("disposal and shared requests", () => {
+		const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+		// A fetch that stays pending until `respond()` is called, and rejects
+		// with an AbortError when its request is aborted, like the real one.
+		function deferredFetch() {
+			const signals: AbortSignal[] = [];
+			const pending: Array<() => void> = [];
+			const fetchMock = vi.fn(
+				(_input: URL | string, init?: RequestInit) => {
+					const signal = init?.signal as AbortSignal;
+					signals.push(signal);
+					return new Promise<Response>((resolve, reject) => {
+						pending.push(() =>
+							resolve({
+								ok: true,
+								status: 200,
+								json: () =>
+									Promise.resolve(structuredClone(style)),
+							} as Response),
+						);
+						signal?.addEventListener("abort", () =>
+							reject(new DOMException("aborted", "AbortError")),
+						);
+					});
+				},
+			);
+			vi.stubGlobal("fetch", fetchMock);
+			return {
+				fetchMock,
+				signals,
+				respond: () => pending.forEach((respond) => respond()),
+			};
+		}
+
+		function watch(layer: LazyMapboxVectorLayer) {
+			const errors: unknown[] = [];
+			layer.on("error", (event) =>
+				errors.push((event as unknown as {error: unknown}).error),
+			);
+			return errors;
+		}
+
+		it("aborts the style request and stays quiet when disposed while fetching", async () => {
+			const {fetchMock, signals} = deferredFetch();
+			const layer = createLayer({styleTransforms: transforms});
+			const errors = watch(layer);
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+
+			layer.dispose();
+			await flush();
+
+			expect(signals[0]?.aborted).toBe(true);
+			expect(errors).toEqual([]);
+			expect(applyStyle).not.toHaveBeenCalled();
+			expect(layer.getSource()).toBeNull();
+		});
+
+		it("does not apply a style that arrives after disposal", async () => {
+			const fetchMock = respondWith({});
+			const layer = createLayer({styleTransforms: transforms});
+			const vectorSource = layer.getSource();
+			const errors = watch(layer);
+			layer.dispose();
+			await flush();
+
+			expect(applyStyle).not.toHaveBeenCalled();
+			expect(applyBackground).not.toHaveBeenCalled();
+			expect(vectorSource?.getState()).toBe("loading");
+			expect(errors).toEqual([]);
+			expect(fetchMock.mock.calls.length).toBeLessThanOrEqual(1);
+		});
+
+		it("leaves the source alone when ol-mapbox-style finishes after disposal", async () => {
+			let finish!: () => void;
+			vi.mocked(applyStyle).mockReturnValueOnce(
+				new Promise<void>((resolve) => {
+					finish = resolve;
+				}) as never,
+			);
+			const layer = createLayer({background: false});
+			const vectorSource = layer.getSource();
+			const errors = watch(layer);
+
+			layer.dispose();
+			finish();
+			await flush();
+
+			expect(vectorSource?.getState()).toBe("loading");
+			expect(errors).toEqual([]);
+		});
+
+		it("does not start loading a hidden layer that was disposed", async () => {
+			const fetchMock = respondWith({});
+			const layer = createLayer({
+				visible: false,
+				styleTransforms: transforms,
+			});
+			layer.dispose();
+			layer.setVisible(true);
+			await flush();
+
+			expect(fetchMock).not.toHaveBeenCalled();
+			expect(applyStyle).not.toHaveBeenCalled();
+		});
+
+		it("shares one pending request between layers with the same style URL", async () => {
+			const {fetchMock, respond} = deferredFetch();
+			const green = createLayer({
+				styleTransforms: [
+					{
+						op: "setLayerProperties",
+						selector: {ids: ["water"]},
+						properties: {paint: {"fill-color": "#0f0"}},
+					},
+				],
+				background: false,
+			});
+			const red = createLayer({
+				styleTransforms: transforms,
+				background: false,
+			});
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+			await flush();
+			expect(fetchMock).toHaveBeenCalledTimes(1);
+
+			respond();
+			await vi.waitFor(() => {
+				expect(green.getSource()?.getState()).toBe("ready");
+				expect(red.getSource()?.getState()).toBe("ready");
+			});
+
+			const paintOf = (layer: LazyMapboxVectorLayer) => {
+				const call = vi
+					.mocked(applyStyle)
+					.mock.calls.find((c) => c[0] === layer);
+				return (call?.[1] as typeof style).layers[1]?.paint;
+			};
+			expect(paintOf(green)).toEqual({"fill-color": "#0f0"});
+			expect(paintOf(red)).toEqual({"fill-color": "#f00"});
+			expect(fetchMock).toHaveBeenCalledTimes(1);
+
+			// The request is dropped once it settled: no permanent cache.
+			createLayer({styleTransforms: transforms, background: false});
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+			respond();
+			await vi.waitFor(() => expect(applyStyle).toHaveBeenCalledTimes(3));
+		});
+
+		it("keeps a shared request alive while another layer still waits for it", async () => {
+			const {fetchMock, signals, respond} = deferredFetch();
+			const first = createLayer({
+				styleTransforms: transforms,
+				background: false,
+			});
+			const second = createLayer({
+				styleTransforms: transforms,
+				background: false,
+			});
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+			await flush();
+
+			first.dispose();
+			await flush();
+			expect(signals[0]?.aborted).toBe(false);
+
+			respond();
+			await vi.waitFor(() =>
+				expect(second.getSource()?.getState()).toBe("ready"),
+			);
+			expect(first.getSource()).toBeNull();
+			expect(applyStyle).toHaveBeenCalledTimes(1);
+			expect(vi.mocked(applyStyle).mock.calls[0]?.[0]).toBe(second);
+		});
+
+		it("aborts a shared request once every layer waiting for it is disposed", async () => {
+			const {fetchMock, signals} = deferredFetch();
+			const first = createLayer({styleTransforms: transforms});
+			const second = createLayer({styleTransforms: transforms});
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
+			await flush();
+
+			first.dispose();
+			second.dispose();
+			await flush();
+			expect(signals[0]?.aborted).toBe(true);
+
+			// A layer created afterwards starts a fresh request.
+			createLayer({styleTransforms: transforms});
+			await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+			expect(signals[1]?.aborted).toBe(false);
+		});
 	});
 });
