@@ -1,6 +1,8 @@
+import View from "ol/View";
 import {getForViewAndSize} from "ol/extent";
+import {clearUserProjection, useGeographic} from "ol/proj";
 
-import {describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it} from "vitest";
 
 import {
 	viewCenterSelector,
@@ -10,9 +12,9 @@ import {
 	viewSelector,
 	viewZoomSelector,
 } from "@/lib/map/selectors";
-import type {MapState} from "@/lib/map/types";
+import type {MapState, MapViewState} from "@/lib/map/types";
 
-function makeState(view?: MapState["view"], size?: [number, number]) {
+function makeState(view?: MapViewState, size?: [number, number]) {
 	return {layers: {}, size, view} as MapState;
 }
 
@@ -116,5 +118,82 @@ describe("viewExtentSelector", () => {
 		expect(viewExtentSelector(makeState(view, [1024, 768]))).not.toBe(
 			extent,
 		);
+	});
+});
+
+describe("viewExtentSelector against a real view", () => {
+	const size: [number, number] = [800, 600];
+
+	afterEach(() => {
+		clearUserProjection();
+	});
+
+	// The state holds what the map controller reads from the OpenLayers view.
+	function stateOf(view: View) {
+		return makeState(
+			{
+				center: view.getCenter(),
+				resolution: view.getResolution(),
+				rotation: view.getRotation(),
+			},
+			size,
+		);
+	}
+
+	function expectExtent(actual: unknown, expected: number[]) {
+		expect(actual).toHaveLength(4);
+		expected.forEach((value, index) => {
+			expect((actual as number[])[index]).toBeCloseTo(value, 6);
+		});
+	}
+
+	it.each([0, Math.PI / 6])(
+		"matches calculateExtent in view projection coordinates (rotation %d)",
+		(rotation) => {
+			const view = new View({
+				center: [1113194, 6446275],
+				resolution: 38.2,
+				rotation,
+			});
+
+			expectExtent(
+				viewExtentSelector(stateOf(view)),
+				view.calculateExtent(size),
+			);
+		},
+	);
+
+	it.each([0, Math.PI / 6])(
+		"matches calculateExtent in user coordinates (rotation %d)",
+		(rotation) => {
+			useGeographic();
+			const view = new View({
+				center: [10, 51],
+				resolution: 38.2,
+				rotation,
+			});
+			const state = stateOf(view);
+
+			// The center is stored in degrees, the extent is returned in degrees.
+			expect(viewCenterSelector(state)).toEqual([10, 51]);
+			const extent = view.calculateExtent(size);
+			expect(extent[2]! - extent[0]!).toBeLessThan(1);
+			expectExtent(viewExtentSelector(state), extent);
+		},
+	);
+
+	it("follows the user projection being switched on and off", () => {
+		const view = new View({center: [1113194, 6446275], resolution: 38.2});
+		const state = stateOf(view);
+		const projected = viewExtentSelector(state);
+
+		useGeographic();
+		const geographicView = new View({center: [10, 51], resolution: 38.2});
+		const geographic = viewExtentSelector(stateOf(geographicView));
+		expect(geographic).not.toEqual(projected);
+		expectExtent(geographic, geographicView.calculateExtent(size));
+
+		clearUserProjection();
+		expectExtent(viewExtentSelector(state), view.calculateExtent(size));
 	});
 });

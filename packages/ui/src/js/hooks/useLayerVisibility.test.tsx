@@ -98,4 +98,37 @@ describe("useLayerVisibility", () => {
 		expect(storedVisibility(store, "overview", "traffic")).toBe(true);
 		expect(storedVisibility(store, "map", "traffic")).toBe(false);
 	});
+
+	it("is false while the controller slice or its layers do not exist yet", () => {
+		expect(setup("parking", "missing").result.current[0]).toBe(false);
+		expect(
+			setup("parking", "overview", {overview: {}}).result.current[0],
+		).toBe(false);
+	});
+
+	it("follows the slice appearing and the controller name changing", () => {
+		const store = createMapHookStore({
+			map: {layers},
+			overview: {layers: {parking: {options: {visible: false}}}},
+		});
+		const {result, rerender} = renderHook(
+			({name}) => useLayerVisibility("parking", name),
+			{
+				initialProps: {name: "map"},
+				wrapper: ({children}) => (
+					<MapHookProvider store={store}>{children}</MapHookProvider>
+				),
+			},
+		);
+
+		expect(result.current[0]).toBe(true);
+		rerender({name: "overview"});
+		expect(result.current[0]).toBe(false);
+		rerender({name: "later"});
+		expect(result.current[0]).toBe(false);
+		// Writing to a slice that does not exist yet must not throw either.
+		act(() => result.current[1](true));
+		rerender({name: "map"});
+		expect(result.current[0]).toBe(true);
+	});
 });

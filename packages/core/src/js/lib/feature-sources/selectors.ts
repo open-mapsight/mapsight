@@ -75,12 +75,17 @@ export const hasFeatureSourceLocalEdits = (source: FeatureSourceState) =>
 
 /**
  * Whether the source contains a feature with the given id. Checks the `ids`
- * index of the given state, so a filtered source only reports its visible features.
+ * index of the given state, so a filtered source only reports its visible
+ * features. A source without an index, for example one built with
+ * {@link mapFeaturesToFeatureSource}, is checked through its features.
  */
 export const hasFeatureSourceFeatureId = (
 	source: FeatureSourceState,
 	featureId: FeatureId,
-) => !!source.ids?.includes(featureId);
+) =>
+	source.ids
+		? source.ids.includes(featureId)
+		: getAllFeatures(source).some((feature) => feature.id === featureId);
 
 export const hasFeatureSourceLoadError = (
 	featureSource: FeatureSourceState | undefined,

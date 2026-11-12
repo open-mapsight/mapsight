@@ -58,20 +58,24 @@ export function getVectorFeatureSource(
 }
 
 /**
- * View state of a map controller. The fields below are the ones the map
- * controller keeps in sync with the OpenLayers view; other keys are options
- * passed to the view on creation (for example `maxZoom` or `extent`).
- * Read it through the selectors in `@mapsight/core/lib/map/selectors`.
+ * What the view selectors in `@mapsight/core/lib/map/selectors` return for the
+ * view state of a map controller. Read it through those selectors; the state
+ * itself may hold further keys (options for the OpenLayers view such as
+ * `maxZoom` or `extent`) that are not part of this type.
  *
- * `rotation` is only written for non-zero values, so treat a missing value as 0.
+ * `MapState` does not type its `view` with this interface, so plain host
+ * objects and interfaces stay assignable to it.
  */
 export interface MapViewState {
-	[key: string]: unknown;
-	/** Center in view projection coordinates. */
+	/**
+	 * Center as the OpenLayers view reports it: in view projection coordinates
+	 * (EPSG:3857), or in the user projection (for example degrees after
+	 * `useGeographic()` from `ol/proj`) when one is set.
+	 */
 	center?: Coordinate;
 	/** Rounded zoom level; use `resolution` for the exact value. */
 	zoom?: number;
-	/** Map units per pixel in view projection. */
+	/** Map units per pixel in view projection (not in user projection units). */
 	resolution?: number;
 	/** Rotation in radians, clockwise. */
 	rotation?: number;
@@ -83,7 +87,6 @@ export interface MapState {
 	[key: string]: unknown;
 	layers: Record<string, LayerState>;
 	size: [number, number];
-	view?: MapViewState;
 	viewportAnchor?: ViewportAnchor;
 	visibleLayers?: string[];
 }
