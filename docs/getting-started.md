@@ -110,6 +110,7 @@ For count-aggregator CMS pages (full app shell, not lib-mode map embeds), see [
 | ----------------------- | ----------------------------------------------------------------- |
 | Full config anatomy     | [CONFIG_REFERENCE](integration/CONFIG_REFERENCE.md)               |
 | SPA integration         | [REACT_SPA](integration/REACT_SPA.md)                             |
+| Your own interface      | [CUSTOM_INTERFACE](integration/CUSTOM_INTERFACE.md)               |
 | Next.js                 | [NEXTJS](integration/NEXTJS.md)                                   |
 | Municipal data pipeline | [PULP](integration/PULP.md)                                       |
 | Architecture depth      | [Redux architecture](../packages/core/docs/REDUX_ARCHITECTURE.md) |

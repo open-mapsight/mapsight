@@ -12,6 +12,7 @@ self-service integrators. See [Licensing](LICENSING.md).
 | **Evaluating** product fit or procurement | [GIS stack choices](ecosystem/GIS_STACK_CHOICES.md) → [Positioning](ecosystem/POSITIONING.md) → [Licensing](LICENSING.md)                           |
 | **Integrating** a CMS snippet embed       | [Integration overview](integration/OVERVIEW.md) → [CMS embed pattern](integration/CMS_PHP.md) → [Config reference](integration/CONFIG_REFERENCE.md) |
 | **Integrating** a React SPA or Next app   | [Getting started](getting-started.md) → [REACT_SPA](integration/REACT_SPA.md) or [NEXTJS](integration/NEXTJS.md)                                    |
+| **Building** a custom interface           | [Getting started](getting-started.md) → [Bring your own interface](integration/CUSTOM_INTERFACE.md)                                                 |
 | **Publishing** GeoJSON or OGC layers      | [Publishing data](integration/PUBLISHING_DATA.md) → [OGC layers](integration/OGC_LAYERS.md)                                                         |
 | **Pasting** snippets in a CMS (editor)    | [For CMS editors](integration/CMS_EDITORS.md)                                                                                                       |
 | **Contributing** to the monorepo          | [Contributing](development/CONTRIBUTING.md) → [Code of Conduct](../CODE_OF_CONDUCT.md) → [Standards](development/STANDARDS.md)                      |
@@ -81,6 +82,7 @@ Maintainer deployments currently exercise:
 | [SSR_HYDRATION.md](integration/SSR_HYDRATION.md)                         | Dehydrated state contract                      |
 | [REACT_SPA.md](integration/REACT_SPA.md)                                 | Vite SPA starter + UI feature demos            |
 | [NEXTJS.md](integration/NEXTJS.md)                                       | Next.js starter pattern                        |
+| [CUSTOM_INTERFACE.md](integration/CUSTOM_INTERFACE.md)                   | Own interface on `Instance` and `Map`          |
 
 **TYPO3:** **Pending** dedicated guide — same mental model as [CMS_PHP.md](integration/CMS_PHP.md).
 
