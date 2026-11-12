@@ -3,7 +3,7 @@ import type {Coordinate} from "ol/coordinate";
 import type {Extent} from "ol/extent";
 import type {SimpleGeometry} from "ol/geom";
 
-import {set, setAll, unset, withPath} from "@/lib/base/actions";
+import {removeKey, set, setAll, unset, withPath} from "@/lib/base/actions";
 import type {
 	ViewChangeDirection,
 	ViewportAnchor,
@@ -119,6 +119,23 @@ export const setLayerVisibility = (
 	layer: string,
 	visibility: boolean,
 ) => set([controllerName, "layers", layer, "options", "visible"], visibility);
+
+/**
+ * Remove a layer definition from the map state at runtime, deleting its key
+ * from `layers`. The controller then removes the OpenLayers layer from the map.
+ *
+ * Only the layer is removed:
+ * - Its feature source stays in the feature sources state, because a source can
+ *   feed several layers or a feature list. Remove it with `removeFeatureSource`
+ *   once nothing uses it.
+ * - Feature selections (highlight, preselect, select) are not touched. Clear
+ *   them first if they refer to features of this layer.
+ *
+ * Layers whose `metaData.visibleWhenLayerIds` lists the removed layer count it
+ * as hidden and become invisible. Unknown ids are ignored.
+ */
+export const removeLayer = (controllerName: string, layerId: string) =>
+	removeKey([controllerName, "layers", layerId]);
 
 export const setLayerStyle = (
 	controllerName: string,

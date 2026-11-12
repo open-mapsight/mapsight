@@ -5,6 +5,7 @@ import merge from "./merge";
 import mergeConfig from "./merge-config";
 import noop from "./noop";
 import removeFrom from "./remove-from";
+import removeKey from "./remove-key";
 import set from "./set";
 
 const reducers = {
@@ -13,6 +14,7 @@ const reducers = {
 	mergeConfig: mergeConfig,
 	noop: noop,
 	removeFrom: removeFrom,
+	removeKey: removeKey,
 	set: set,
 } satisfies Record<string, Reducer>;
 

@@ -6,6 +6,11 @@ rehydrated request metadata. A pending request suppresses another ordinary load;
 `forceRefresh` starts a newer request. Removing and re-adding the same source does
 not reuse its previous number.
 
+Remove a source with `removeFeatureSource`, which deletes its key. Its refresh
+timer then stops because the source no longer exists, and actions that address
+the removed id later (for example a late `setData`, or an update queued for a
+removed combined source) are ignored instead of recreating it.
+
 The success/error actions produced by `load` carry that number. The
 `FeatureSourcesController` accepts them only while the matching request is still
 loading. This check happens in the reducer because asynchronous dispatch can

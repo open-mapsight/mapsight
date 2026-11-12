@@ -16,6 +16,7 @@ Mapsight has three coexisting action systems. Pick the one that matches your int
 | Switch entire view/module   | `resetMapsightCore`                                        |
 | Animate map, fit to feature | Domain actions in `@mapsight/core/lib/map/actions`         |
 | Load GeoJSON                | `LOAD_FEATURE_SOURCE` family (`load`, …)                   |
+| Remove a layer or source    | `removeLayer`, `removeFeatureSource` (see §7)              |
 | Toggle list/panel/layout    | `@mapsight/ui/store/actions` (`app` slice)                 |
 | OL reported pan/zoom        | Already handled in controllers — don't dispatch from React |
 
@@ -31,7 +32,7 @@ Mapsight has three coexisting action systems. Pick the one that matches your int
 - `merge` / `mergeAll` — the existing deep-merge actions; their behavior is unchanged.
 - `resetMapsightCore(config)` — deselect all features, then `mergeConfigAll(config)` (see §2).
 
-Both merge families keep omitted keys, ignore incoming `undefined` for existing values, and merge arrays **by index**. They do not replace arrays or remove keys. Use `set` for replacement (including removal of object keys) and `removeFrom` to remove an array element. The config family avoids copying loaded GeoJSON omitted from a preset; [configuration merge performance](./CONFIG_MERGE.md) describes its scope and verification.
+Both merge families keep omitted keys, ignore incoming `undefined` for existing values, and merge arrays **by index**. They do not replace arrays or remove keys. Use `set` for replacement, `removeFrom` to remove an array element, and `removeKey(path)` to delete an object key. `unset(path)` only sets the value to `undefined` and leaves the key in place. To remove a layer or feature source at runtime, use the domain actions in §7. The config family avoids copying loaded GeoJSON omitted from a preset; [configuration merge performance](./CONFIG_MERGE.md) describes its scope and verification.
 
 Paths are arrays routed by the first segment (`["map", "layers", id, …]`).
 
@@ -249,13 +250,47 @@ store.dispatch(set(["map", "view", "center"], map.getView().getCenter()));
 
 ---
 
+## 7. Remove a layer or feature source at runtime
+
+**Use:** `removeLayer` from `@mapsight/core/lib/map/actions` and `removeFeatureSource` from `@mapsight/core/lib/feature-sources/actions`. Both delete the key from the state (they are built on `removeKey` from `@mapsight/core/lib/base/actions`). Hosts that add layers and sources at runtime with `set` or `mergeConfig` use them to take a single one away again.
+
+- `removeLayer(controllerName, layerId)` deletes `layers[layerId]` from the map state; the map controller then removes the OpenLayers layer. Layers whose `metaData.visibleWhenLayerIds` lists it become invisible. It does **not** remove the layer's feature source, because a source can feed several layers or the feature list, and it does **not** touch feature selections. Remove the source separately, and clear selections that refer to its features first.
+- `removeFeatureSource(controllerName, id)` deletes the source with its data, load state and history. A load still in flight is ignored when it completes and does not recreate the source, a refreshing source stops refreshing, and combined sources skip the removed member. Layers bound to the source are not removed; they keep the features they already show until they are removed too.
+- Unknown ids are ignored, the state reference stays unchanged.
+- `unset(path)` is **not** meant for this. It keeps the key with an `undefined` value (`"layers" in state` stays true). Core's reducers, controllers and selectors tolerate such entries by skipping them, but they stay in the state.
+
+### Good
+
+```typescript
+import {removeFeatureSource} from "@mapsight/core/lib/feature-sources/actions";
+import {removeLayer} from "@mapsight/core/lib/map/actions";
+
+// Remove a runtime layer first, then the source that only it used
+store.dispatch(removeLayer("map", "poi-layer"));
+store.dispatch(removeFeatureSource("featureSources", "pois"));
+```
+
+### Anti-pattern
+
+```typescript
+import {set, unset} from "@mapsight/core/lib/base/actions";
+
+// ❌ Leaves `poi-layer: undefined` behind in the state
+store.dispatch(unset(["map", "layers", "poi-layer"]));
+
+// ❌ Replacing the whole parent just to drop one key
+store.dispatch(set(["map", "layers"], withoutPoiLayer));
+```
+
+---
+
 ## Cheat sheet: imports
 
-| Package          | Path                          | When                                              |
-| ---------------- | ----------------------------- | ------------------------------------------------- |
-| `@mapsight/core` | `lib/base/actions`            | `set`, `merge`, `mergeAll`, `controlled`, `quiet` |
-| `@mapsight/core` | `lib/map/actions`             | Animate, fit, layer visibility, interactions      |
-| `@mapsight/core` | `lib/feature-sources/actions` | `load`, feature CRUD, undo/redo                   |
-| `@mapsight/ui`   | `store/actions`               | `resetMapsightCore`, layout, list UI, fetch cache |
+| Package          | Path                          | When                                                   |
+| ---------------- | ----------------------------- | ------------------------------------------------------ |
+| `@mapsight/core` | `lib/base/actions`            | `set`, `merge`, `mergeAll`, `controlled`, `quiet`      |
+| `@mapsight/core` | `lib/map/actions`             | Animate, fit, layer visibility, `removeLayer`          |
+| `@mapsight/core` | `lib/feature-sources/actions` | `load`, feature CRUD, undo/redo, `removeFeatureSource` |
+| `@mapsight/ui`   | `store/actions`               | `resetMapsightCore`, layout, list UI, fetch cache      |
 
 When in doubt: **serializable config → path actions; imperative GIS ops → domain actions; chrome/layout → UI actions.**

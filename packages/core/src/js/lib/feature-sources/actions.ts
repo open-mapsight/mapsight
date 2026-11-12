@@ -1,4 +1,4 @@
-import {async, controlled, withPath} from "@/lib/base/actions";
+import {async, controlled, removeKey, withPath} from "@/lib/base/actions";
 import {buildCacheKey} from "@/lib/feature-sources/cache/build-cache-key";
 import {estimateFeatureSourceBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {
@@ -303,6 +303,22 @@ export const setError = (controllerName: string, id: string, error: unknown) =>
 		},
 		[controllerName],
 	);
+
+/**
+ * Remove a feature source from the state at runtime, deleting its key together
+ * with its data, load state and history.
+ *
+ * - A load that is still in flight is ignored when it completes and does not
+ *   recreate the source. A refreshing source stops refreshing.
+ * - Combined sources that list the removed source simply skip it.
+ * - Layers bound to the source are not removed (use `removeLayer` for that);
+ *   they keep the features they already show until they are removed or rebound.
+ * - Feature selections are not touched.
+ *
+ * Unknown ids are ignored.
+ */
+export const removeFeatureSource = (controllerName: string, id: string) =>
+	removeKey([controllerName, id]);
 
 export const pauseRefreshUntilNextLoad = (controllerName: string, id: string) =>
 	withPath(

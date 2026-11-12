@@ -73,7 +73,7 @@ export function getCombinedFeatureSourceBindings(
 ) {
 	return Object.fromEntries(
 		Object.entries(featureSources)
-			.filter(([, source]) => source.type === "combined")
+			.filter(([, source]) => source?.type === "combined")
 			.map(([id, source]) => [id, source.featureSourceNames ?? []]),
 	);
 }

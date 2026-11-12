@@ -177,7 +177,7 @@ export const reduceLayersToLegends = (
 	const entries = Object.entries(layers)
 		.map(([layerId, layer]) =>
 			mapNonNullable(
-				layer.metaData?.legend,
+				layer?.metaData?.legend,
 				(legend) => [layerId, legend] as const,
 			),
 		)
@@ -187,7 +187,7 @@ export const reduceLayersToLegends = (
 
 export const reduceToLayersWithLegends = (layers: MapState["layers"] = {}) => {
 	const entries = Object.entries(layers).filter(
-		([_, layer]) => layer.metaData?.legend,
+		([_, layer]) => layer?.metaData?.legend,
 	);
 	return Object.fromEntries(entries);
 };
