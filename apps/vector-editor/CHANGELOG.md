@@ -1,5 +1,16 @@
 # @mapsight/vector-editor
 
+## 1.2.11
+
+### Patch Changes
+
+- b74b9b7: Bump dependencies from Dependabot ([#461](https://github.com/open-mapsight/mapsight/pull/461)):
+
+    - `@tailwindcss/postcss` `^4.3.3` → `^4.3.4` (patch)
+
+- Updated dependencies [`37abb0e`, `5aeedad`, `457a760`]:
+    - `@mapsight/traffic-style@5.7.0 → 5.7.1` (patch)
+
 ## 1.2.10
 
 ### Patch Changes

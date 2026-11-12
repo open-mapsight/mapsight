@@ -1,5 +1,23 @@
 # @mapsight/demos
 
+## 0.2.1
+
+### Patch Changes
+
+- b74b9b7: Bump dependencies from Dependabot ([#461](https://github.com/open-mapsight/mapsight/pull/461)):
+
+    - `@tailwindcss/vite` `^4.3.3` → `^4.3.4` (patch)
+
+- 37abb0e: Bump dependencies from Dependabot ([#464](https://github.com/open-mapsight/mapsight/pull/464)):
+
+    - `rimraf` `^6.1.3` → `^6.1.4` (patch)
+
+- Updated dependencies [`b74b9b7`, `37abb0e`, `5aeedad`, `e97c0f7`, `457a760`, `02cbd9f`]:
+    - `@mapsight/count-aggregator-ui@3.2.1 → 3.2.2` (patch)
+    - `@mapsight/count-aggregator-api@1.5.1 → 1.5.2` (patch)
+    - `@mapsight/traffic-style@5.7.0 → 5.7.1` (patch)
+    - `@mapsight/ui@7.12.1 → 7.13.0` (minor)
+
 ## 0.2.0
 
 ### Minor Changes
