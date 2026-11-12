@@ -138,6 +138,93 @@ For generic system fonts, use a stack such as `["sans-serif"]` via `setLayerProp
 
 These settings affect initial style loading; recreate the layer to change them at runtime.
 
+#### Registering `MapboxVectorLayer` and its options
+
+`MapboxVectorLayer` is not part of the default ol-proxy definitions. Register it through the
+ol-proxy plugin, and install the optional peer dependency `ol-mapbox-style` in the host
+application:
+
+```js
+import createDefaultPlugins from "@mapsight/ui/plugins/browser-defaults";
+
+import MapboxVectorLayer from "@mapsight/core/ol-proxy/definitions/layer/MapboxVectorLayer";
+
+const plugins = createDefaultPlugins({
+	olProxy: {dependencies: [MapboxVectorLayer]},
+});
+```
+
+(`createOlProxyPlugin` from `@mapsight/ui/plugins/common/ol-proxy` takes the same
+`{dependencies: [MapboxVectorLayer]}` option when you assemble plugins yourself.) The style JSON
+is fetched when the layer first becomes visible. The options below are initial-only; changing
+one recreates the layer.
+
+| Option            | Meaning                                                                                                                                                                                      |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `styleUrl`        | URL of the Mapbox/MapLibre style document. Relative sprite, glyph and source URLs inside the style resolve against it.                                                                       |
+| `styleTransforms` | Optional list of `setLayerProperties` transforms applied in the browser, see [below](#transforming-the-style-in-the-browser).                                                                |
+| `sourceId`        | Id of the style source whose layers this layer draws. Defaults to the first vector source. Not `options.source`: that key is reserved for ol-proxy source descriptions.                      |
+| `layers`          | Array of style layer ids to draw instead of the whole source. All must use the same source; takes precedence over `sourceId`.                                                                |
+| `background`      | By default the style's `background` layer colour becomes the layer background. `false` skips it; any other value is handed to OpenLayers as the layer `background` and replaces the style's. |
+| `accessToken`     | Access token for ol-mapbox-style, e.g. for `mapbox://` URLs. Without it, the last query parameter of `styleUrl` is used as token.                                                            |
+| `declutter`       | Declutter labels and symbols of this layer. Defaults to `true`.                                                                                                                              |
+| `webfonts`        | CSS URL template for web fonts, see above.                                                                                                                                                   |
+
+Rendering options such as `renderMode`, `renderBuffer`, `preload`, `className`, `minZoom`,
+`maxZoom`, `updateWhileAnimating`, `updateWhileInteracting` and `useInterimTilesOnError` are
+passed to the OpenLayers vector tile layer.
+
+#### Transforming the style in the browser
+
+Instead of rewriting the style document in tile-proxy, a host can apply the same
+`setLayerProperties` transform in the browser with the `styleTransforms` option. This needs no
+server-side support, and each map view can use its own variant of one style:
+
+```js
+{
+    type: "MapboxVectorLayer",
+    options: {
+        styleUrl: "/map-assets/styles/base.json",
+        styleTransforms: [
+            {
+                op: "setLayerProperties",
+                selector: {sourceLayers: ["building"], types: ["fill"]},
+                properties: {paint: {"fill-color": "#0071ad", "fill-pattern": null}},
+            },
+            {
+                op: "setLayerProperties",
+                selector: {prefixes: ["poi-"]},
+                properties: {layout: {visibility: "none"}},
+            },
+        ],
+    },
+}
+```
+
+The format and semantics are those of the proxy's `setLayerProperties`
+([README](https://github.com/open-mapsight/tile-proxy#recolouring-and-adjusting-vector-styles)):
+selector fields `ids`, `prefixes`, `sourceLayers` and `types` combine with AND, values within a
+field with OR, and an omitted or empty selector matches all layers. `paint` and `layout` entries
+are merged by name (`null` removes an entry); `filter`, `minzoom` and `maxzoom` are replaced
+(`null` removes them). Expressions are copied verbatim, transforms run in order, and sources
+cannot be changed. Any other `op`, unknown selector fields or properties, and values of the
+wrong type are errors that name the transform's index.
+
+When `styleTransforms` is set and non-empty, the layer fetches `styleUrl` itself, applies the
+transforms and passes the resulting style to ol-mapbox-style together with the original
+`styleUrl`, so relative sprite, glyph and source URLs still resolve against it. `styleUrl` must
+be an `http(s)` or relative URL (not `mapbox://`). Without transforms ol-mapbox-style loads the
+style as before. A failed fetch or an invalid transform is reported like any other style load
+error. The same function is available as `applyMapboxStyleTransforms` from
+`@mapsight/core/ol-proxy/definitions/layer/mapboxStyleTransforms`.
+
+Changing `styleUrl` or `styleTransforms` in the state recreates the layer, which loads the style
+again.
+
+Prefer transforming in the proxy when the variant should apply to all clients and share the
+proxy's cache; transform in the browser when there is no proxy to configure or when different
+views need different variants of the same style.
+
 ---
 
 ## Operations

@@ -6,8 +6,21 @@ import VectorTileSource from "ol/source/VectorTile";
 
 import {applyBackground, applyStyle} from "ol-mapbox-style";
 
+import {
+	type MapboxStyleDocument,
+	type MapboxStyleTransform,
+	applyMapboxStyleTransforms,
+} from "./mapboxStyleTransforms";
+
 export type LazyMapboxVectorLayerOptions = {
 	styleUrl: string;
+	/**
+	 * `setLayerProperties` transforms applied to the style document in the
+	 * browser. When non-empty, the layer fetches `styleUrl` itself (http(s) or
+	 * relative URLs only); relative URLs inside the style still resolve against
+	 * `styleUrl`.
+	 */
+	styleTransforms?: MapboxStyleTransform[];
 	accessToken?: string;
 	/** CSS URL template; style metadata `ol:webfonts` takes precedence. */
 	webfonts?: string;
@@ -34,6 +47,26 @@ export type LazyMapboxVectorLayerOptions = {
 	useInterimTilesOnError?: boolean;
 	properties?: Record<string, unknown>;
 };
+
+async function fetchStyleDocument(
+	styleUrl: string,
+): Promise<MapboxStyleDocument> {
+	const url = new URL(styleUrl, globalThis.location?.href);
+	if (url.protocol !== "http:" && url.protocol !== "https:") {
+		throw new Error(
+			`styleTransforms require an http(s) or relative styleUrl, got "${styleUrl}"`,
+		);
+	}
+
+	const response = await fetch(url, {headers: {Accept: "application/json"}});
+	if (!response.ok) {
+		throw new Error(
+			`Error fetching style ${url.href}: HTTP ${response.status}`,
+		);
+	}
+
+	return (await response.json()) as MapboxStyleDocument;
+}
 
 class StyleLoadErrorEvent extends BaseEvent {
 	error: unknown;
@@ -119,28 +152,60 @@ export default class LazyMapboxVectorLayer extends VectorTileLayer {
 			layers,
 			source: sourceId,
 			background,
+			styleTransforms,
 		} = this.styleOptions;
 		const vectorSource = this.getSource();
 		if (!vectorSource) {
 			return;
 		}
 
-		const promises = [
-			applyStyle(this, styleUrl, layers ?? sourceId, {
-				accessToken: this.accessToken,
-				webfonts: this.styleOptions.webfonts,
-			}),
-		];
+		const wantsBackground =
+			this.getBackground() === undefined && background !== false;
 
-		if (this.getBackground() === undefined && background !== false) {
-			promises.push(
-				applyBackground(this, styleUrl, {
+		let load: Promise<unknown[]>;
+		if (styleTransforms?.length) {
+			// Relative sprite/glyph/source URLs resolve against `styleUrl`, so
+			// it is passed along with the already transformed document.
+			load = fetchStyleDocument(styleUrl).then((document) => {
+				const style = applyMapboxStyleTransforms(
+					document,
+					styleTransforms,
+				);
+				const promises = [
+					applyStyle(this, style, layers ?? sourceId, {
+						accessToken: this.accessToken,
+						webfonts: this.styleOptions.webfonts,
+						styleUrl,
+					}),
+				];
+				if (wantsBackground) {
+					promises.push(
+						applyBackground(this, structuredClone(style), {
+							accessToken: this.accessToken,
+						}),
+					);
+				}
+				return Promise.all(promises);
+			});
+		} else {
+			const promises = [
+				applyStyle(this, styleUrl, layers ?? sourceId, {
 					accessToken: this.accessToken,
+					webfonts: this.styleOptions.webfonts,
 				}),
-			);
+			];
+
+			if (wantsBackground) {
+				promises.push(
+					applyBackground(this, styleUrl, {
+						accessToken: this.accessToken,
+					}),
+				);
+			}
+			load = Promise.all(promises);
 		}
 
-		void Promise.all(promises)
+		void load
 			.then(() => {
 				vectorSource.setState("ready");
 			})
