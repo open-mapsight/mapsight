@@ -10,22 +10,18 @@
 		"traffic-optimize-icons": "scripts/optimize-icons.js"
 	},
 	"dependencies": {
-		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/lib-js": "workspace:^",
 		"@mapsight/lib-ol": "workspace:^",
 		"chokidar": "^6.0.0",
-		"fs-extra": "^11.4.1",
 		"lru-cache": "^11.5.3",
-		"merge-stream": "^2.0.0",
 		"ol": "catalog:",
 		"sharp": "^0.35.5",
 		"svgo": "^4.1.0",
-		"vinyl": "^3.0.1",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/vector-style-compiler": "workspace:^",
-		"@types/fs-extra": "^11.0.4",
 		"@types/node": "catalog:",
 		"markdown-table": "^3.0.4",
 		"vitest": "catalog:"

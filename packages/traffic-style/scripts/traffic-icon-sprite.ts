@@ -4,7 +4,6 @@ import * as path from "node:path";
 import {parseArgs} from "node:util";
 
 import {watch} from "chokidar";
-import * as fse from "fs-extra";
 import sharp from "sharp";
 
 import {buildIconFileGlobs} from "./lib/icon-asset-filter.ts";
@@ -44,6 +43,15 @@ interface Options {
 	overridesPath?: string;
 }
 
+async function pathExists(target: string): Promise<boolean> {
+	try {
+		await fs.access(target);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 async function buildIcons(opts: Options): Promise<void> {
 	const {
 		srcDir,
@@ -59,7 +67,7 @@ async function buildIcons(opts: Options): Promise<void> {
 	} = opts;
 
 	const absMetaPath = path.resolve(metaPath);
-	if (!(await fse.pathExists(absMetaPath))) {
+	if (!(await pathExists(absMetaPath))) {
 		throw new Error(`Missing metadata at ${absMetaPath}`);
 	}
 	const metaDataStr = await fs.readFile(absMetaPath, {encoding: "utf-8"});
@@ -83,20 +91,20 @@ async function buildIcons(opts: Options): Promise<void> {
 	console.log(`Found ${srcFiles.length} icon files matching globs`);
 
 	const tmpDir = path.resolve("./tmp", spriteName);
-	await fse.ensureDir(tmpDir);
+	await fs.mkdir(tmpDir, {recursive: true});
 
 	let copiedCount = 0;
 	for (const srcFile of srcFiles) {
 		const relPath = path.relative(srcDir, srcFile);
 		const destFile = path.join(tmpDir, relPath);
-		await fse.ensureDir(path.dirname(destFile));
+		await fs.mkdir(path.dirname(destFile), {recursive: true});
 
 		const doCopy = async () => {
-			await fse.copy(srcFile, destFile);
+			await fs.copyFile(srcFile, destFile);
 			copiedCount++;
 		};
 
-		if (await fse.pathExists(destFile)) {
+		if (await pathExists(destFile)) {
 			const srcStat = await fs.stat(srcFile);
 			const destStat = await fs.stat(destFile);
 			if (destStat.mtime > srcStat.mtime) {
@@ -120,8 +128,8 @@ async function buildIcons(opts: Options): Promise<void> {
 		for (const ovFile of overrideFiles) {
 			const relPath = path.relative(absOverrides, ovFile);
 			const destFile = path.join(tmpDir, relPath);
-			await fse.ensureDir(path.dirname(destFile));
-			await fse.copy(ovFile, destFile);
+			await fs.mkdir(path.dirname(destFile), {recursive: true});
+			await fs.copyFile(ovFile, destFile);
 		}
 		console.log(`Copied overrides from ${overridesPath}`);
 	}
@@ -172,7 +180,7 @@ async function buildIcons(opts: Options): Promise<void> {
 
 	// SCSS
 	const absScssDir = path.resolve(outputScss);
-	await fse.ensureDir(absScssDir);
+	await fs.mkdir(absScssDir, {recursive: true});
 	const scssFile = path.join(absScssDir, `${spriteName}.scss`);
 	let scssContent = `$${spriteName}: (\n`;
 	for (const item of items) {
@@ -190,7 +198,7 @@ async function buildIcons(opts: Options): Promise<void> {
 
 	// PNG
 	const absImgDir = path.resolve(outputImg);
-	await fse.ensureDir(absImgDir);
+	await fs.mkdir(absImgDir, {recursive: true});
 	const pngFile = path.join(absImgDir, `${spriteName}.png`);
 	const spriteSharp = sharp({
 		create: {
