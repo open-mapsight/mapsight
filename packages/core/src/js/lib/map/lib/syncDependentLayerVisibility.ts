@@ -3,6 +3,7 @@ import type {LayerState} from "@/lib/map/types";
 /**
  * Derive visibility for layers that declare `metaData.visibleWhenLayerIds`.
  * Every listed layer must currently be visible (AND). Missing ids count as off.
+ * Entries that are `undefined` (for example after `unset` of a layer) are skipped.
  */
 export function syncDependentLayerVisibility(
 	layers: Record<string, LayerState>,
@@ -11,7 +12,7 @@ export function syncDependentLayerVisibility(
 	let copied = false;
 
 	for (const [id, layer] of Object.entries(layers)) {
-		const requiredIds = layer.metaData?.visibleWhenLayerIds;
+		const requiredIds = layer?.metaData?.visibleWhenLayerIds;
 		if (!requiredIds?.length) {
 			continue;
 		}

@@ -10,6 +10,7 @@ import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
 import {ACTION_SET} from "@/lib/base/reducer";
 import type {MapController} from "@/lib/map/controller";
+import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
 import type {LayerState, MapState} from "@/lib/map/types";
 import {di, updateProxyObject} from "@/ol-proxy";
 import type {Action, State} from "@/types";
@@ -83,6 +84,14 @@ export default class WithLayers extends WithAnimations {
 						.remove(oldObject);
 					delete this._layers[id];
 					delete this._groups[group]?.layers[id];
+
+					// The source subscribed to the store and the selections on
+					// its own. Release that, or it keeps reacting to state
+					// changes (for example fitting the map) with no layer.
+					const source = oldObject.getSource();
+					if (source instanceof VectorFeatureSource) {
+						source.dispose();
+					}
 				},
 				adder: (layer) => {
 					if (!newDefinition) {

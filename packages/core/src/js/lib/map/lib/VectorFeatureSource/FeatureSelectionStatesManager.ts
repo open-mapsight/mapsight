@@ -91,6 +91,15 @@ export default class FeatureSelectionStatesManager {
 		this._updateConnector();
 	}
 
+	/** Stop observing the feature selections and drop all change listeners. */
+	dispose() {
+		this._connector?.unsubscribe(this._changeHandler);
+		this._connector = null;
+		this._store = null;
+		this._featureSelectionsControllerName = null;
+		this._changeListeners = [];
+	}
+
 	bindToStore(store: EnhancedStore) {
 		this._store = store;
 		this._updateConnector();

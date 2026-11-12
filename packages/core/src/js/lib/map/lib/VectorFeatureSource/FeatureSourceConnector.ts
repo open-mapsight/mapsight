@@ -31,6 +31,7 @@ export default class FeatureSourceConnector {
 	private readonly _format: GeoJSONFormat;
 	private _source: SharedReadonlyVectorFeatureSource | null = null;
 	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
+	private _disposed = false;
 
 	constructor({
 		onUpdate,
@@ -188,6 +189,19 @@ export default class FeatureSourceConnector {
 		this._subscribeFeatureSource();
 	}
 
+	/**
+	 * Release the subscription to the shared feature source and drop the store,
+	 * so that nothing is observed or dispatched any more. Setters called
+	 * afterwards do not subscribe again.
+	 */
+	dispose() {
+		this._disposed = true;
+		this._unsubscribeFeatureSource?.();
+		this._unsubscribeFeatureSource = null;
+		this._source = null;
+		this._store = null;
+	}
+
 	_subscribeFeatureSource() {
 		if (this._unsubscribeFeatureSource) {
 			this._unsubscribeFeatureSource();
@@ -196,6 +210,7 @@ export default class FeatureSourceConnector {
 		}
 
 		if (
+			!this._disposed &&
 			this._id &&
 			this._store &&
 			this._controllerName &&

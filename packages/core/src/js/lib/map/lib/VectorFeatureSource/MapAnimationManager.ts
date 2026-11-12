@@ -88,6 +88,13 @@ export default class MapAnimationManager {
 		);
 	}
 
+	/** Stop observing the map size and release the map controller. */
+	dispose() {
+		this._unsubscribeMapSize?.();
+		this._unsubscribeMapSize = null;
+		this._mapController = null;
+	}
+
 	handleMapSizeChange() {
 		const {keepAllFeaturesInView} = this._options;
 		if (keepAllFeaturesInView) {

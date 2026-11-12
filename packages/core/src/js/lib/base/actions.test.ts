@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 
-import {mergeConfig, mergeConfigAll} from "@/lib/base/actions";
-import {ACTION_MERGE_CONFIG} from "@/lib/base/reducer";
+import {mergeConfig, mergeConfigAll, removeKey} from "@/lib/base/actions";
+import {ACTION_MERGE_CONFIG, ACTION_REMOVE_KEY} from "@/lib/base/reducer";
 
 describe("config merge actions", () => {
 	it("uses the same non-empty path contract as merge", () => {
@@ -24,5 +24,16 @@ describe("config merge actions", () => {
 			mergeConfigAll(["featureSources"], {charging: {filters: []}})
 				.payload,
 		).toEqual([mergeConfig(["featureSources", "charging"], {filters: []})]);
+	});
+});
+
+describe("removeKey", () => {
+	it("targets the last path segment and requires a non-empty path", () => {
+		expect(() => removeKey([])).toThrow("required path is missing");
+		expect(() => removeKey(null)).toThrow("required path is missing");
+		expect(removeKey(["map", "layers", "poi"])).toEqual({
+			type: ACTION_REMOVE_KEY,
+			meta: {path: ["map", "layers", "poi"]},
+		});
 	});
 });

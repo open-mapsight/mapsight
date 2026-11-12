@@ -10,6 +10,7 @@ export const ACTION_ADD_TO = "MAPSIGHT_ADD_TO";
 export const ACTION_MERGE = "MAPSIGHT_MERGE";
 export const ACTION_MERGE_CONFIG = "MAPSIGHT_MERGE_CONFIG";
 export const ACTION_REMOVE_FROM = "MAPSIGHT_REMOVE_FROM";
+export const ACTION_REMOVE_KEY = "MAPSIGHT_REMOVE_KEY";
 
 const reducerMap: Record<string, Reducer> = {
 	[ACTION_NOOP]: reducers.noop,
@@ -18,6 +19,7 @@ const reducerMap: Record<string, Reducer> = {
 	[ACTION_MERGE]: reducers.merge,
 	[ACTION_MERGE_CONFIG]: reducers.mergeConfig,
 	[ACTION_REMOVE_FROM]: reducers.removeFrom,
+	[ACTION_REMOVE_KEY]: reducers.removeKey,
 };
 
 export function baseReducer<TState = State, TAction extends Action = Action>(
