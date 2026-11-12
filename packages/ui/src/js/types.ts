@@ -382,6 +382,13 @@ export type FutureFlags = {
 	v8_listSearchButton?: boolean;
 	/** Derive native heading ranks from headings.baseLevel (default 2). Default false in 7.x. */
 	v8_automaticHeadings?: boolean;
+	/**
+	 * `unset(path)` deletes the key of its parent object from the Redux state
+	 * instead of leaving it there with an `undefined` value (core future flag
+	 * `v15_unsetRemovesKey`). Array elements and plain `set(path, undefined)`
+	 * are unchanged. Default `false`. This will be the only behavior in v8.
+	 */
+	v8_unsetRemovesKey?: boolean;
 };
 
 export type CreateOptions = {

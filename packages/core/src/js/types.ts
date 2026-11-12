@@ -22,6 +22,7 @@ import type {
 	CONTROLLED_ACTION_FLAG,
 	QUIET_ACTION_FLAG,
 	STATE_PATH_KEY,
+	UNSET_ACTION_FLAG,
 } from "@/lib/base/actions";
 import type {BaseController} from "@/lib/base/controller";
 
@@ -33,6 +34,7 @@ export interface ActionMeta {
 	[CONTROLLED_ACTION_FLAG]?: boolean;
 	[QUIET_ACTION_FLAG]?: boolean;
 	[ASYNC_ACTION_FLAG]?: boolean;
+	[UNSET_ACTION_FLAG]?: boolean;
 	[STATE_PATH_KEY]?: ActionPath;
 	sanitized?: boolean;
 }

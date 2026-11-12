@@ -1,5 +1,7 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {set, unset} from "@mapsight/core/lib/base/actions";
+
 import {create} from "./index";
 import type {MapsightUiRendererProps, PluginDefinition} from "./types";
 
@@ -208,5 +210,57 @@ describe("renderer commit lifecycle", () => {
 		commit?.();
 		expect(context.hasRendered).toBe(false);
 		expect(afterRender).not.toHaveBeenCalled();
+	});
+});
+
+describe("future.v8_unsetRemovesKey", () => {
+	const config = {
+		map: {layers: {base: {type: "OSM" as const}}, cursor: "pointer"},
+	};
+
+	function createStore(future?: {v8_unsetRemovesKey?: boolean}) {
+		const context = create(null, vi.fn(), config, {
+			renderer: vi.fn(),
+			validateConfig: false,
+			...(future ? {future} : {}),
+		});
+		if (!context.store) {
+			throw new Error("store missing");
+		}
+		return context.store;
+	}
+	const mapState = (store: ReturnType<typeof createStore>) =>
+		store.getState().map as Record<string, unknown>;
+
+	it("makes unset delete the key in the store of this instance", () => {
+		const store = createStore({v8_unsetRemovesKey: true});
+
+		store.dispatch(unset(["map", "cursor"]));
+
+		expect("cursor" in mapState(store)).toBe(false);
+	});
+
+	it("keeps the key with an undefined value by default", () => {
+		for (const store of [
+			createStore(),
+			createStore({}),
+			createStore({v8_unsetRemovesKey: false}),
+		]) {
+			store.dispatch(unset(["map", "cursor"]));
+
+			expect("cursor" in mapState(store)).toBe(true);
+			expect(mapState(store).cursor).toBeUndefined();
+		}
+	});
+
+	it("keeps a plain set to undefined and works per instance", () => {
+		const on = createStore({v8_unsetRemovesKey: true});
+		const off = createStore();
+
+		on.dispatch(set(["map", "cursor"], undefined));
+		off.dispatch(unset(["map", "cursor"]));
+
+		expect("cursor" in mapState(on)).toBe(true);
+		expect("cursor" in mapState(off)).toBe(true);
 	});
 });

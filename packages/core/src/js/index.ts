@@ -22,9 +22,11 @@ import {
 	STATE_PATH_KEY,
 } from "@/lib/base/actions";
 import type {BaseController} from "@/lib/base/controller";
+import type {FutureFlags} from "@/lib/base/future";
+import {resolveUnsetAction} from "@/lib/base/future";
 import defaultPredicate from "@/redux-devtools/defaultPredicate";
 import defaultSanitizeAction from "@/redux-devtools/defaultSanitizeAction";
-import type {EnhancedStore} from "@/types";
+import type {Action, EnhancedStore} from "@/types";
 
 type StoreOptions = {
 	/**
@@ -37,7 +39,15 @@ type StoreOptions = {
 	 * UI uses this for `featureSourceCache` / `featureSourceRevision`.
 	 */
 	extraArgument?: unknown;
+	/**
+	 * Opt in to the next major's behavior for this store. `true` is the next
+	 * major's behavior now, omitted or `false` is today's behavior. Several
+	 * stores on one page can use different settings. See Decision 012.
+	 */
+	future?: FutureFlags;
 };
+
+export type {FutureFlags};
 
 /**
  * Creates an enhanced redux store, which contains all the state of a mapsight application.
@@ -58,7 +68,8 @@ export function createMapsightStore<
 	appEnhancer: StoreEnhancer | null = null,
 	options: StoreOptions = {},
 ): TStore {
-	const {reduxDevToolsOptions = {}, extraArgument} = options;
+	const {reduxDevToolsOptions = {}, extraArgument, future = {}} = options;
+	const unsetRemovesKey = future.v15_unsetRemovesKey === true;
 
 	/**
 	 * Previous root state, passed as the historic 3rd `globalState` argument to
@@ -73,7 +84,7 @@ export function createMapsightStore<
 	// Get reducers from controllers bound to the controller
 	const coreReducers = mapValues(controllers, (controller, key) =>
 		createFilteredReducerForPath(
-			(state, action) =>
+			(state, action: Action) =>
 				(
 					controller.reduce as (
 						state: unknown,
@@ -81,7 +92,14 @@ export function createMapsightStore<
 						/** @deprecated See createMapsightStore previousRootState. */
 						globalState?: unknown,
 					) => unknown
-				)(state, action, previousRootState),
+				)(
+					state,
+					// the path is relative to the controller state here
+					unsetRemovesKey
+						? resolveUnsetAction(state, action)
+						: action,
+					previousRootState,
+				),
 			key,
 			STATE_PATH_KEY,
 		),
