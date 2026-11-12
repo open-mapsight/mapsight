@@ -142,6 +142,10 @@
 			"types": "./dist/app-channel.d.ts",
 			"default": "./dist/app-channel.js"
 		},
+		"./hooks/useFeatureSourceLoadState": {
+			"types": "./dist/hooks/useFeatureSourceLoadState.d.ts",
+			"default": "./dist/hooks/useFeatureSourceLoadState.js"
+		},
 		"./hooks/useMapViewportSync": {
 			"types": "./dist/hooks/useMapViewportSync.d.ts",
 			"default": "./dist/hooks/useMapViewportSync.js"
