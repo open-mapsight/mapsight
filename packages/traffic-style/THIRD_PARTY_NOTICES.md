@@ -3,7 +3,9 @@
 Font Awesome Free SVG glyphs are by Fonticons, Inc. (https://fontawesome.com),
 licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 See the [Font Awesome Free license](https://fontawesome.com/license/free) and
-`@fortawesome/free-solid-svg-icons/LICENSE.txt` for the upstream notice.
+the `LICENSE.txt` of the `@fortawesome/free-solid-svg-icons` package (a
+development-time source of the glyphs, not installed with this package) for the
+upstream notice.
 
 The registered `fa-restroom+fa-wheelchair` icon combines the existing
 `fa-restroom` and `fa-wheelchair` glyphs in the optional Font Awesome pack.

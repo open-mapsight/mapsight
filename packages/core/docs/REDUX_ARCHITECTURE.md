@@ -112,12 +112,15 @@ Default controller keys (`packages/ui/src/js/config/constants/controllers.ts`):
   size: [width, height],
   layers: {
     "base-osm": {
-      type: "OSM",
-      options: { visible: true },
+      type: "TileLayer",
+      options: {
+        visible: true,
+        source: { type: "OsmSource", options: { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png" } }
+      },
       metaData: { title: "…", isBaseLayer: true, group: "base" }
     },
     "poi-layer": {
-      type: "Vector",
+      type: "VectorLayer",
       options: {
         visible: true,
         source: { type: "VectorFeatureSource", options: { featureSourceId: "pois" } }
@@ -324,7 +327,7 @@ See also: `packages/lib-redux/src/js/flatten-actions.ts` (deep flatten for neste
 2. If type changed or options require reconstruction → create new OL object.
 3. Otherwise → `setOptions` to patch existing object.
 
-The dependency injector (`di`) maps `type: "Vector"` → constructor, `optionMap`, `eventMap`.
+The dependency injector (`di`) maps `type: "VectorLayer"` → constructor, `optionMap`, `eventMap`.
 
 This is the same pattern React uses (declarative description → imperative DOM), but for OpenLayers.
 

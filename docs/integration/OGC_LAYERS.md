@@ -12,19 +12,25 @@ see [Ecosystem § basemaps](../architecture/ECOSYSTEM.md)).
 
 Use when GeoServer (or similar) publishes a raster or map image layer.
 
-Integrator adds a WMS layer in embed config (exact shape depends on preset/helpers). Conceptually:
+Integrator adds a tiled WMS layer in embed config: a `TileLayer` with a `TileWMSSource`:
 
 ```json
 {
 	"map": {
 		"layers": {
 			"city_overlay": {
-				"type": "TileWMS",
+				"type": "TileLayer",
 				"options": {
-					"url": "https://geo.example.org/geoserver/wms",
-					"params": {
-						"LAYERS": "workspace:layer_name",
-						"TILED": true
+					"visible": true,
+					"source": {
+						"type": "TileWMSSource",
+						"options": {
+							"url": "https://geo.example.org/geoserver/wms",
+							"params": {
+								"LAYERS": "workspace:layer_name",
+								"TILED": true
+							}
+						}
 					}
 				}
 			}
@@ -33,7 +39,14 @@ Integrator adds a WMS layer in embed config (exact shape depends on preset/helpe
 }
 ```
 
+The `wms()` helper from `@mapsight/ui/config/map/layers` builds this shape (`wms(url, params, projection, visible,
+metaData, opacity)`).
+
 Confirm layer name, workspace, and supported CRS with the GIS team.
+
+Other source types, for example `XYZSource`, exist as definitions in `@mapsight/core/ol-proxy/definitions/source/*`,
+but only the defaults of the `ol-proxy` plugin are registered. Register further definitions through
+`createOlProxyPlugin({dependencies: [...]})` (see `packages/ui/src/js/plugins/common/ol-proxy.ts`).
 
 ---
 

@@ -3,6 +3,9 @@ import {resolve} from "node:path";
 
 import createHelperImportsFromProgram from "./helpers/createHelperImportsFromProgram.ts";
 import createModulesMapFromDependencies from "./helpers/createModulesMapFromDependencies.ts";
+import findLocalHelpersInProgram, {
+	LOCAL_HELPER_NAMES,
+} from "./helpers/findLocalHelpersInProgram.ts";
 
 export type TemplateArgs<
 	TAdditionalData extends Record<string, unknown> = Record<string, unknown>,
@@ -33,6 +36,15 @@ const replaceTag = (content: string, tag: string, value: string) => {
 	return content.replace(new RegExp(pattern, "g"), () => value);
 };
 
+/** Keeps the content of a tagged region and drops its marker comments. */
+const unwrapTag = (content: string, tag: string) => {
+	const pattern = `\\/\\*\\s*${tag}-start:\\s*\\*\\/\\n?([\\s\\S]*?)\\/\\*\\s*:${tag}-end\\s*\\*\\/\\n?`;
+	return content.replace(
+		new RegExp(pattern, "g"),
+		(_, inner: string) => inner,
+	);
+};
+
 const defaultTemplate = ({
 	__meta,
 	program1,
@@ -42,15 +54,21 @@ const defaultTemplate = ({
 	const {declarationNames, styleProps, styleNames} = __meta;
 	const {map: constructorMap, imports: styleImports} =
 		createModulesMapFromDependencies(declarationNames);
-	const helperImports = createHelperImportsFromProgram(
-		`${program0}\n${program1}\n${program2}`,
-	);
+	const programs = `${program0}\n${program1}\n${program2}`;
+	const helperImports = createHelperImportsFromProgram(programs);
+	const usedHelpers = findLocalHelpersInProgram(programs);
 	const combinedImports = [styleImports, helperImports]
 		.filter(Boolean)
 		.join("\n");
 
 	let result = "// @ts-nocheck\n" + templateSource;
 	result = replaceTag(result, "imports", combinedImports);
+	for (const name of LOCAL_HELPER_NAMES) {
+		const tag = `helper-${name}`;
+		result = usedHelpers.includes(name)
+			? unwrapTag(result, tag)
+			: replaceTag(result, tag, "");
+	}
 	result = replaceTag(result, "constructorMap", constructorMap);
 	result = replaceTag(result, "styleNames", JSON.stringify(styleNames));
 	result = replaceTag(result, "styleProps", JSON.stringify(styleProps));

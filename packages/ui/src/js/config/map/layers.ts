@@ -115,7 +115,7 @@ export function osm(url: string, visible = false, _metaData = {}) {
 export function wms(
 	url: string,
 	params = {},
-	projection: ProjectionLike = "ESPG:3857",
+	projection: ProjectionLike = "EPSG:3857",
 	visible = false,
 	_metaData: LayerMetaData = {},
 	opacity?: number,

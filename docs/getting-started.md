@@ -39,9 +39,14 @@ const mapsightConfig = {
 	map: {
 		layers: {
 			osm: {
-				type: "OSM",
+				type: "TileLayer",
 				options: {
-					url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+					source: {
+						type: "OsmSource",
+						options: {
+							url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+						},
+					},
 				},
 			},
 		},

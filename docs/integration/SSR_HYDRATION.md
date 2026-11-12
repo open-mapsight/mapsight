@@ -156,6 +156,9 @@ Monorepo entry points today:
   POST `options` with `styleFunction`, `baseMapsightConfig`, `containerId` →
   `text/html` fragment
 
+Hosts that run Mapsight on the server through the simulated browser environment
+(`@mapsight/core/env/ssr-simulated-browser`) need `jsdom` in their own dependencies.
+
 **Maintainer CMS path for this phase:** PHP → **Node LTS** sidecar (Decision 006 still
 lists Bun/framework alternatives as open for other hosts).
 
