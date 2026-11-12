@@ -2,12 +2,16 @@ import {fromLonLat, toLonLat} from "ol/proj";
 
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
-import {setLayerVisibility} from "@mapsight/core/lib/map/actions";
+import {ANIMATE, setLayerVisibility} from "@mapsight/core/lib/map/actions";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {LayerState} from "@mapsight/core/lib/map/types";
 
 import {create} from "../../index";
+import type {CreateOptions, PluginDefinition} from "../../types";
 import createOlProxyPlugin from "../common/ol-proxy";
+import createFeatureDeepLinkPlugin from "./feature-deep-link";
+import {markedPointSourceId} from "./marked-point";
+import createSharePositionPlugin from "./share-position-link";
 import createViewPermalinkPlugin, {
 	type AddressAdapter,
 	type Options,
@@ -121,12 +125,123 @@ describe("parseViewParameter / formatViewParameter", () => {
 			}),
 		).toBeNull();
 	});
+
+	it("normalises longitudes of repeated worlds into the accepted range", () => {
+		const lonOf = (lon: number) =>
+			parseViewParameter(
+				formatViewParameter({zoom: 5, lat: 1, lon, rotation: 0}),
+			)?.lon;
+		expect(lonOf(540)).toBe(180);
+		expect(lonOf(-540)).toBe(180);
+		expect(lonOf(190)).toBe(-170);
+		expect(lonOf(-190.5)).toBe(169.5);
+		expect(lonOf(720.25)).toBe(0.25);
+		expect(lonOf(180)).toBe(180);
+		expect(lonOf(-180)).toBe(180);
+		expect(lonOf(0)).toBe(0);
+	});
+
+	it("returns null for values the parser would reject", () => {
+		for (const view of [
+			{zoom: -0.5, lat: 1, lon: 2, rotation: 0},
+			{zoom: 28.5, lat: 1, lon: 2, rotation: 0},
+			{zoom: 5, lat: 90.5, lon: 2, rotation: 0},
+			{zoom: 5, lat: -91, lon: 2, rotation: 0},
+		]) {
+			expect(formatViewParameter(view), JSON.stringify(view)).toBeNull();
+		}
+	});
+
+	it("only produces text the parser accepts (property check)", () => {
+		// Deterministic pseudo-random generator, so failures are reproducible.
+		let seed = 20240607;
+		const random = () => {
+			seed = (seed * 1664525 + 1013904223) % 4294967296;
+			return seed / 4294967296;
+		};
+		const between = (min: number, max: number) =>
+			min + random() * (max - min);
+		const edges = [0, 0.5, 28, -0, 89.999999, 179.999999, 180, 360, 1e6];
+		for (let i = 0; i < 3000; i++) {
+			const view = {
+				zoom: random() < 0.1 ? between(-2, 31) : between(0, 28),
+				lat: random() < 0.1 ? between(-100, 100) : between(-90, 90),
+				lon: random() < 0.5 ? between(-180, 180) : between(-5000, 5000),
+				rotation: between(-2000, 2000),
+			};
+			if (random() < 0.2) {
+				const edge = edges[Math.floor(random() * edges.length)]!;
+				const sign = random() < 0.5 ? -1 : 1;
+				view[(["zoom", "lat", "lon", "rotation"] as const)[i % 4]!] =
+					sign * edge;
+			}
+			const precision = Math.floor(random() * 11);
+			const text = formatViewParameter(view, precision);
+			if (text === null) {
+				// Only unrepresentable zoom or latitude may be refused.
+				expect(
+					view.zoom < 0 ||
+						view.zoom > 28.005 ||
+						Math.abs(view.lat) > 89.5,
+					JSON.stringify(view),
+				).toBe(true);
+				continue;
+			}
+			const parsed = parseViewParameter(text);
+			expect(parsed, `${text} <- ${JSON.stringify(view)}`).not.toBeNull();
+			const expectedLon = ((((view.lon + 180) % 360) + 360) % 360) - 180;
+			const tolerance = 10 ** -precision;
+			const lonDelta = Math.abs(
+				((((parsed!.lon - expectedLon + 180) % 360) + 360) % 360) - 180,
+			);
+			expect(lonDelta, text).toBeLessThanOrEqual(tolerance);
+		}
+	});
 });
 
 describe("parseLayersParameter / formatLayersParameter", () => {
 	it("round-trips ids, including ones with special characters", () => {
-		const ids = ["base", "points of interest", "a,b", "ü/x"];
-		expect(parseLayersParameter(formatLayersParameter(ids))).toEqual(ids);
+		const ids = [
+			"base",
+			"points of interest",
+			"50%",
+			"a&b",
+			"k=v",
+			"x+y",
+			"#1?",
+			"ü/x",
+			"日本",
+		];
+		const text = formatLayersParameter(ids)!;
+		expect(text).not.toMatch(/[&=#? ]/);
+		expect(parseLayersParameter(text)).toEqual(ids);
+	});
+
+	it("decodes the value once as a whole and splits on commas afterwards", () => {
+		for (const text of ["base,parks", "base%2Cparks", "base%2cparks"]) {
+			expect(parseLayersParameter(text), text).toEqual(["base", "parks"]);
+		}
+		// decoded exactly once: the percent sign survives as part of the id
+		expect(parseLayersParameter("a%2520b")).toEqual(["a%20b"]);
+		// query serialisation spells a space as "+"
+		expect(parseLayersParameter("my+layer,x%20y")).toEqual([
+			"my layer",
+			"x y",
+		]);
+	});
+
+	it("cannot represent ids that contain a comma", () => {
+		expect(formatLayersParameter(["a,b"])).toBeNull();
+		expect(formatLayersParameter(["ok", "a,b"])).toBeNull();
+	});
+
+	it("refuses to format lists the parser would reject as too long", () => {
+		const ids = Array.from(
+			{length: 60},
+			(_, i) => `${i}-${"x".repeat(78)}`,
+		);
+		expect(formatLayersParameter(ids.slice(0, 40))).not.toBeNull();
+		expect(formatLayersParameter(ids)).toBeNull();
 	});
 
 	it("distinguishes an empty list from a missing parameter", () => {
@@ -255,6 +370,35 @@ describe("layer tracking", () => {
 			planLayerVisibility(layers, ["pois"], ["pois", "hidden"]),
 		).toEqual([{id: "pois", visible: true}]);
 	});
+
+	it("lets the first listed base layer win and treats the others as not listed", () => {
+		const bases: Record<string, LayerState> = {
+			a: {...layers.base!, options: {visible: true}},
+			b: {...layers.base!, options: {visible: false}},
+			pois: layers.pois!,
+		};
+		const tracked = ["a", "b", "pois"];
+		expect(planLayerVisibility(bases, tracked, ["a", "b", "pois"])).toEqual(
+			[{id: "pois", visible: true}],
+		);
+		expect(planLayerVisibility(bases, tracked, ["pois", "b", "a"])).toEqual(
+			[
+				{id: "a", visible: false},
+				{id: "b", visible: true},
+				{id: "pois", visible: true},
+			],
+		);
+	});
+
+	it("never tracks ids that contain a comma", () => {
+		const commas: Record<string, LayerState> = {
+			"a,b": layers.pois!,
+			ok: layers.pois!,
+		};
+		expect(trackedLayerIds(commas, undefined)).toEqual(["ok"]);
+		expect(trackedLayerIds(commas, ["a,b", "ok"])).toEqual(["ok"]);
+		expect(trackedLayerIds(commas, () => true)).toEqual(["ok"]);
+	});
 });
 
 // ---------------------------------------------------------------------------
@@ -289,13 +433,22 @@ function setup({
 	options = {},
 	layers = defaultLayers(),
 	view = {center: fromLonLat([10, 52]), zoom: 8},
+	historyState = {keep: true},
+	pluginsBefore = [],
+	pluginsAfter = [],
+	createOptions = {},
 }: {
 	url?: string;
 	options?: Options;
 	layers?: Record<string, LayerState>;
 	view?: Record<string, unknown>;
+	historyState?: unknown;
+	/** Plugins listed before / after the permalink plugin. */
+	pluginsBefore?: PluginDefinition[];
+	pluginsAfter?: PluginDefinition[];
+	createOptions?: CreateOptions;
 } = {}) {
-	window.history.replaceState({keep: true}, "", url);
+	window.history.replaceState(historyState, "", url);
 	const plugin = createViewPermalinkPlugin({
 		debounceMs: DEBOUNCE,
 		...options,
@@ -310,8 +463,11 @@ function setup({
 			validateConfig: false,
 			plugins: [
 				["olProxy", createOlProxyPlugin()],
+				...pluginsBefore,
 				["viewPermalink", plugin],
+				...pluginsAfter,
 			],
+			...createOptions,
 		},
 	);
 	const store = context.store!;
@@ -391,6 +547,24 @@ describe("startup restore", () => {
 		expect(s.view.getZoom()).toBe(8);
 	});
 
+	it("applies the link to a view that configures neither centre nor zoom", () => {
+		const s = setup({url: "/page#map=12/48/11", view: {}});
+		const center = toLonLat(s.view.getCenter()!);
+		expect(center[0]).toBeCloseTo(11, 6);
+		expect(center[1]).toBeCloseTo(48, 6);
+		expect(s.view.getZoom()).toBeCloseTo(12, 6);
+	});
+
+	it("applies the link when the live view differs from the configured state", () => {
+		// zoom and resolution configured together: the resolution wins in the
+		// view, so a link to the configured zoom still has to move it
+		const s = setup({
+			url: "/page#map=8/52/10",
+			view: {center: fromLonLat([10, 52]), zoom: 8, resolution: 1000},
+		});
+		expect(s.view.getZoom()).toBeCloseTo(8, 6);
+	});
+
 	it("reads the query string in search mode", () => {
 		const s = setup({
 			url: "/page?x=1&map=9/48/11#map=2/0/0",
@@ -399,12 +573,58 @@ describe("startup restore", () => {
 		expect(s.view.getZoom()).toBeCloseTo(9, 6);
 	});
 
+	it("reads a view whose slashes were percent-encoded by a router", () => {
+		const hash = setup({url: "/page#map=12%2F48%2F11%2F90"});
+		expect(hash.view.getZoom()).toBeCloseTo(12, 6);
+		expect(hash.view.getRotation()).toBeCloseTo(Math.PI / 2, 6);
+		const search = setup({
+			url: "/page?map=9%2F48%2F11",
+			options: {location: "search"},
+		});
+		expect(search.view.getZoom()).toBeCloseTo(9, 6);
+	});
+
 	it("does not touch the view when the view parameter is disabled", () => {
 		const s = setup({
 			url: "/page#map=12/48/11",
 			options: {viewParameter: false},
 		});
 		expect(s.view.getZoom()).toBe(8);
+	});
+
+	it("keeps the hydration snapshot free of the linked view and applies it before mounting", () => {
+		const renderer = vi.fn();
+		const hydrated = (url: string) =>
+			setup({
+				url,
+				createOptions: {reHydratedState: {app: {}}, renderer},
+			});
+		const plain = hydrated("/page");
+		const linked = hydrated("/page#map=12/48/11&layers=parks");
+
+		expect(linked.context.isStateReHydrated).toBe(true);
+		expect(linked.context.serverState).toEqual(plain.context.serverState);
+		const snapshotView = (
+			linked.context.serverState as {
+				map: {view: {zoom: number; center: number[]}};
+			}
+		).map.view;
+		expect(snapshotView.zoom).toBe(8);
+		expect(snapshotView.center).toEqual(fromLonLat([10, 52]));
+
+		// The live state and the map carry the link, before anything is mounted.
+		const liveView = (
+			linked.store.getState() as {map: {view: {zoom: number}}}
+		).map.view;
+		expect(liveView.zoom).toBe(12);
+		expect(linked.visible("parks")).toBe(true);
+		const center = toLonLat(linked.view.getCenter()!);
+		expect(center[0]).toBeCloseTo(11, 6);
+		expect(center[1]).toBeCloseTo(48, 6);
+		expect(linked.view.getZoom()).toBeCloseTo(12, 6);
+		expect(linked.view.getAnimating()).toBe(false);
+		expect(renderer).not.toHaveBeenCalled();
+		expect(linked.context.hasRendered).toBe(false);
 	});
 
 	it("does not write on startup", () => {
@@ -443,10 +663,46 @@ describe("layer restore", () => {
 		expect(s.visible("poi")).toBe(false);
 	});
 
-	it("keeps a single visible base layer when several are listed", () => {
-		const s = setup({url: "/page#layers=baseA,baseB,poi"});
-		const visibleBases = ["baseA", "baseB"].filter((id) => s.visible(id));
-		expect(visibleBases).toEqual(["baseB"]);
+	it("lets the first listed base layer win, whatever is visible now", () => {
+		const visibleBases = (s: Setup) =>
+			["baseA", "baseB"].filter((id) => s.visible(id));
+		const baseBVisible = () => ({
+			...defaultLayers(),
+			baseA: tile(false, {
+				isBaseLayer: true,
+				visibleInLayerSwitcher: true,
+			}),
+			baseB: tile(true, {
+				isBaseLayer: true,
+				visibleInLayerSwitcher: true,
+			}),
+		});
+		for (const [list, expected] of [
+			["baseA,baseB,poi", "baseA"],
+			["baseB,baseA,poi", "baseB"],
+			["poi,baseB,baseA", "baseB"],
+		] as const) {
+			const fromA = setup({url: `/page#layers=${list}`});
+			expect(visibleBases(fromA), `${list} from baseA`).toEqual([
+				expected,
+			]);
+			const fromB = setup({
+				url: `/page#layers=${list}`,
+				layers: baseBVisible(),
+			});
+			expect(visibleBases(fromB), `${list} from baseB`).toEqual([
+				expected,
+			]);
+			expect(fromB.visible("poi"), list).toBe(true);
+		}
+	});
+
+	it("reads a percent-encoded comma as a list separator", () => {
+		const s = setup({url: "/page#layers=baseB%2Cparks"});
+		expect(s.visible("baseB")).toBe(true);
+		expect(s.visible("baseA")).toBe(false);
+		expect(s.visible("parks")).toBe(true);
+		expect(s.visible("poi")).toBe(false);
 	});
 
 	it("hides all tracked layers for an empty list", () => {
@@ -601,6 +857,76 @@ describe("writing", () => {
 		expect(window.location.hash).toContain("map=9/48.12/11.57");
 	});
 
+	it("skips the layers parameter instead of throwing when the list is too long", () => {
+		const longIds = Array.from(
+			{length: 60},
+			(_, i) => `${i}-${"x".repeat(78)}`,
+		);
+		const layers: Record<string, LayerState> = {...defaultLayers()};
+		for (const id of longIds) {
+			layers[id] = tile(false, {visibleInLayerSwitcher: true});
+		}
+		const s = setup({layers});
+		const show = (id: string, visible: boolean) =>
+			s.store.dispatch(setLayerVisibility("map", id, visible) as never);
+		show("parks", true);
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(window.location.hash).toBe(
+			"#map=8/52/10&layers=baseA,poi,parks",
+		);
+
+		// too many visible layers for one parameter: no throw, value untouched
+		for (const id of longIds) {
+			show(id, true);
+		}
+		expect(() => vi.advanceTimersByTime(DEBOUNCE)).not.toThrow();
+		expect(window.location.hash).toBe(
+			"#map=8/52/10&layers=baseA,poi,parks",
+		);
+
+		// the view parameter keeps working meanwhile
+		expect(() => moveView(s, 11, 48, 9)).not.toThrow();
+		expect(window.location.hash).toBe(
+			"#map=9/48/11&layers=baseA,poi,parks",
+		);
+
+		// representable again: the layers parameter follows
+		for (const id of longIds.slice(1)) {
+			show(id, false);
+		}
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "layers")).toBe(
+			`baseA,poi,parks,${longIds[0]}`,
+		);
+	});
+
+	it("never writes ids that contain a comma", () => {
+		const s = setup({
+			layers: {
+				...defaultLayers(),
+				"x,y": tile(true, {visibleInLayerSwitcher: true}),
+			},
+		});
+		moveView(s, 11, 48, 9);
+		expect(window.location.hash).toBe("#map=9/48/11&layers=baseA,poi");
+	});
+
+	it("writes a readable link for a centre in a repeated world", () => {
+		const s = setup();
+		// seven world widths east of the origin: proj4 reports a longitude near 900
+		s.view.setCenter([
+			fromLonLat([180, 0])[0]! * 7,
+			fromLonLat([0, 40])[1]!,
+		]);
+		s.view.setZoom(4);
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
+		const view = parseViewParameter(
+			readAddressParameter(window.location.hash, "map"),
+		);
+		expect(view).not.toBeNull();
+		expect(Math.abs(view!.lon)).toBe(180);
+	});
+
 	it("stops writing after destroy", () => {
 		const s = setup();
 		s.plugin.destroy();
@@ -633,6 +959,59 @@ describe("custom adapter", () => {
 		moveView(s, 12, 49, 13);
 		expect(adapter.writes).toEqual(["#route=1&map=13/49/12&layers=parks"]);
 		expect(window.location.hash).toBe("");
+	});
+
+	it("ignores address changes caused synchronously by its own write", () => {
+		let value = "";
+		const adapter: AddressAdapter = {
+			read: () => value,
+			write(next) {
+				value = next;
+				window.dispatchEvent(new PopStateEvent("popstate"));
+				window.dispatchEvent(new HashChangeEvent("hashchange"));
+			},
+		};
+		const s = setup({options: {adapter}});
+		const dispatch = vi.spyOn(s.store, "dispatch");
+
+		s.view.setCenter(fromLonLat([11.123456789, 48.987654321]));
+		s.view.setZoom(10.1234);
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
+		expect(value).toContain("map=10.12/48.98765/11.12346");
+
+		// the rounded values must not have been applied to the live view
+		s.map.setSize([800, 600]);
+		s.map.dispatchEvent("postrender");
+		const center = toLonLat(s.view.getCenter()!);
+		expect(center[0]).toBeCloseTo(11.123456789, 9);
+		expect(center[1]).toBeCloseTo(48.987654321, 9);
+		expect(s.view.getZoom()).toBeCloseTo(10.1234, 9);
+		expect(
+			dispatch.mock.calls.filter(
+				([action]) => (action as {type?: string}).type === ANIMATE,
+			),
+		).toEqual([]);
+	});
+
+	it("does not re-apply a router's re-spelling of what it wrote", () => {
+		// a router that round-trips the query through URLSearchParams
+		let value = "";
+		const adapter: AddressAdapter = {
+			read: () => value,
+			write(next) {
+				const params = new URLSearchParams(next.replace(/^[?#]/, ""));
+				value = `?${params.toString()}`;
+				window.dispatchEvent(new PopStateEvent("popstate"));
+			},
+		};
+		const s = setup({options: {adapter, location: "search"}});
+		const dispatch = vi.spyOn(s.store, "dispatch");
+		s.store.dispatch(setLayerVisibility("map", "parks", true) as never);
+		dispatch.mockClear();
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(value).toContain("layers=baseA%2Cpoi%2Cparks");
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		expect(dispatch).not.toHaveBeenCalled();
 	});
 
 	it("passes the prefix of the configured location", () => {
@@ -689,6 +1068,48 @@ describe("following address changes", () => {
 		expect(s.visible("poi")).toBe(true);
 	});
 
+	it("drops a pending write when the address changes before the map can render", () => {
+		const s = setup();
+		// the user moves the map: a write is now scheduled
+		s.view.setCenter(fromLonLat([11, 48]));
+		s.view.setZoom(9);
+		vi.advanceTimersByTime(STATE_SYNC);
+
+		// back/forward navigates to another address; the map has no size yet
+		window.history.replaceState(null, "", "/page#map=11/48.5/11.25");
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		vi.advanceTimersByTime(2000);
+
+		expect(window.location.hash).toBe("#map=11/48.5/11.25");
+		const center = toLonLat(s.view.getCenter()!);
+		expect(center[0]).toBeCloseTo(11.25, 6);
+		expect(center[1]).toBeCloseTo(48.5, 6);
+		expect(s.view.getZoom()).toBeCloseTo(11, 6);
+	});
+
+	it("drops a pending layer write when the address changes", () => {
+		const s = setup();
+		s.store.dispatch(setLayerVisibility("map", "parks", true) as never);
+		window.history.replaceState(null, "", "/page#map=11/48.5/11.25");
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		vi.advanceTimersByTime(2000);
+		expect(window.location.hash).toBe("#map=11/48.5/11.25");
+	});
+
+	it("follows a router's re-spelling of the address without applying it", () => {
+		const s = setup({url: "/page?x=1", options: {location: "search"}});
+		moveView(s, 11, 48, 9);
+		const written = window.location.search;
+		const respelled = `?${new URLSearchParams(written).toString()}`;
+		expect(respelled).not.toBe(written);
+		const dispatch = vi.spyOn(s.store, "dispatch");
+		window.history.replaceState(null, "", `/page${respelled}`);
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		vi.advanceTimersByTime(2000);
+		expect(dispatch).not.toHaveBeenCalled();
+		expect(window.location.search).toBe(respelled);
+	});
+
 	it("does not follow when disabled", () => {
 		const s = setup({options: {followAddressChanges: false}});
 		window.history.replaceState(null, "", "/page#layers=parks");
@@ -736,5 +1157,191 @@ describe("following address changes", () => {
 		// the state now equals the address, so nothing needs to be written
 		expect(replace).not.toHaveBeenCalled();
 		expect(window.location.hash).toBe("#layers=baseA,parks");
+	});
+});
+
+describe("router round trips", () => {
+	const specialIds = ["50%", "a&b", "k=v", "my layer", "ü/ö 日本", "x+y"];
+	const specialLayers = (visible: boolean) => ({
+		...defaultLayers(),
+		...Object.fromEntries(
+			specialIds.map((id) => [
+				id,
+				tile(visible, {visibleInLayerSwitcher: true}),
+			]),
+		),
+	});
+
+	for (const location of ["hash", "search"] as const) {
+		const prefix = location === "hash" ? "#" : "?";
+		const current = () =>
+			location === "hash" ? window.location.hash : window.location.search;
+		const roundTrip = (address: string) =>
+			`${prefix}${new URLSearchParams(address.slice(1)).toString()}`;
+
+		it(`restores ids and view from a URLSearchParams re-spelling (${location})`, () => {
+			const writer = setup({
+				layers: specialLayers(true),
+				options: {location},
+			});
+			moveView(writer, 11, 48, 9);
+			const written = current();
+			const respelled = roundTrip(written);
+			expect(respelled).not.toBe(written);
+			// the readable form is what the plugin itself writes
+			expect(written).not.toMatch(/%2[Cc]/);
+			expect(respelled).toContain("%2C");
+
+			for (const address of [written, respelled]) {
+				const reader = setup({
+					url:
+						location === "hash"
+							? `/page${address}`
+							: `/page${address}`,
+					layers: specialLayers(false),
+					options: {location},
+				});
+				for (const id of ["baseA", "poi", ...specialIds]) {
+					expect(reader.visible(id), `${id} from ${address}`).toBe(
+						true,
+					);
+				}
+				expect(reader.view.getZoom(), address).toBeCloseTo(9, 6);
+				const center = toLonLat(reader.view.getCenter()!);
+				expect(center[0], address).toBeCloseTo(11, 5);
+				expect(center[1], address).toBeCloseTo(48, 5);
+			}
+		});
+
+		it(`treats a re-spelled address as unchanged (${location})`, () => {
+			const s = setup({layers: specialLayers(true), options: {location}});
+			moveView(s, 11, 48, 9);
+			const replace = vi.spyOn(window.history, "replaceState");
+			const dispatch = vi.spyOn(s.store, "dispatch");
+			window.history.replaceState(
+				null,
+				"",
+				`/page${roundTrip(current())}`,
+			);
+			replace.mockClear();
+			window.dispatchEvent(new PopStateEvent("popstate"));
+			window.dispatchEvent(new HashChangeEvent("hashchange"));
+			vi.advanceTimersByTime(2000);
+			expect(dispatch).not.toHaveBeenCalled();
+			expect(replace).not.toHaveBeenCalled();
+			for (const id of specialIds) {
+				expect(s.visible(id), id).toBe(true);
+			}
+		});
+	}
+
+	it("does not track ids that contain a comma", () => {
+		const layers = {
+			...defaultLayers(),
+			"x,y": tile(true, {visibleInLayerSwitcher: true}),
+		};
+		const s = setup({url: "/page#layers=", layers});
+		// "x,y" is not tracked, so an empty list leaves it alone
+		expect(s.visible("x,y")).toBe(true);
+		expect(s.visible("poi")).toBe(false);
+	});
+});
+
+describe("with the feature deep-link plugin", () => {
+	const original = {
+		pushState: window.history.pushState,
+		replaceState: window.history.replaceState,
+	};
+	afterEach(() => {
+		// the deep-link plugin patches the global history functions
+		window.history.pushState = original.pushState;
+		window.history.replaceState = original.replaceState;
+	});
+
+	it("address writes neither reselect the feature nor add history entries", () => {
+		const s = setup({
+			url: "/page?feature=x#map=8/52/10",
+			historyState: {featureId: "x"},
+			pluginsAfter: [["featureDeepLink", createFeatureDeepLinkPlugin()]],
+		});
+		s.context.render!();
+		const selections = () =>
+			(s.store.getState() as {featureSelections: unknown})
+				.featureSelections;
+		expect(
+			(selections() as {select?: {features: string[]}} | undefined)
+				?.select?.features,
+		).toEqual(["x"]);
+		const before = selections();
+		const push = vi.spyOn(window.history, "pushState");
+		const length = window.history.length;
+
+		moveView(s, 11, 48, 9);
+
+		expect(push).not.toHaveBeenCalled();
+		expect(window.history.length).toBe(length);
+		expect(window.location.search).toBe("?feature=x");
+		expect(selections()).toBe(before);
+		expect(window.location.hash).toContain("map=9/48/11");
+		expect(window.history.state).toEqual({featureId: "x"});
+	});
+});
+
+describe("with the share position link plugin", () => {
+	const marker = [
+		"sharePosition",
+		createSharePositionPlugin({enableDrawing: false}),
+	] as const;
+	const markerFeatures = (s: Setup) =>
+		(
+			s.store.getState() as {
+				featureSources: Record<
+					string,
+					{data?: {features?: unknown[]}} | undefined
+				>;
+			}
+		).featureSources[markedPointSourceId("sharePositionLink")]?.data
+			?.features ?? [];
+
+	for (const order of ["before", "after"] as const) {
+		it(`keeps the linked view and still places the marker (plugin ${order})`, () => {
+			const s = setup({
+				url: "/page#lm=52/10&map=12/48/11",
+				[order === "before" ? "pluginsBefore" : "pluginsAfter"]: [
+					[
+						"sharePosition",
+						createSharePositionPlugin({enableDrawing: false}),
+					],
+				],
+			});
+			expect(markerFeatures(s)).toHaveLength(1);
+			const center = toLonLat(s.view.getCenter()!);
+			expect(center[0]).toBeCloseTo(11, 6);
+			expect(center[1]).toBeCloseTo(48, 6);
+			expect(s.view.getZoom()).toBeCloseTo(12, 6);
+		});
+	}
+
+	it("still recentres on the marker without a usable view parameter", () => {
+		for (const url of [
+			"/page#lm=52/10",
+			"/page#lm=52/10&map=garbage",
+			"/page#lm=52/10&map=40/1/2",
+		]) {
+			const s = setup({url, pluginsAfter: [[marker[0], marker[1]]]});
+			const center = toLonLat(s.view.getCenter()!);
+			expect(center[0], url).toBeCloseTo(10, 6);
+			expect(center[1], url).toBeCloseTo(52, 6);
+			expect(s.view.getZoom(), url).toBe(16);
+		}
+	});
+
+	it("recentres on the marker when the view parameter is disabled", () => {
+		const s = setup({
+			url: "/page#lm=52/10&map=12/48/11",
+			options: {viewParameter: false},
+			pluginsAfter: [[marker[0], marker[1]]],
+		});
+		expect(s.view.getZoom()).toBe(16);
 	});
 });

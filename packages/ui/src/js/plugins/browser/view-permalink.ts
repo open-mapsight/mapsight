@@ -1,6 +1,7 @@
 import proj4 from "proj4";
 
-import {animate, setLayerVisibility} from "@mapsight/core/lib/map/actions";
+import {merge} from "@mapsight/core/lib/base/actions";
+import {setLayerVisibility} from "@mapsight/core/lib/map/actions";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {LayerState} from "@mapsight/core/lib/map/types";
 import type {EnhancedStore} from "@mapsight/core/types";
@@ -98,7 +99,18 @@ function parseNumber(raw: string | undefined): number | null {
 	return Number.isFinite(value) ? value : null;
 }
 
-/** `zoom/lat/lon[/rotation]` with WGS84 degrees; rotation only when non-zero. */
+/** Longitude of a repeated world mapped into (-180, 180]. */
+function normaliseLongitude(lon: number): number {
+	const degrees = ((((lon + 180) % 360) + 360) % 360) - 180;
+	return degrees === -180 ? 180 : degrees;
+}
+
+/**
+ * `zoom/lat/lon[/rotation]` with WGS84 degrees; rotation only when non-zero.
+ * Longitude and rotation are normalised. Returns `null` for a view the parser
+ * would reject (non-finite numbers, zoom or latitude out of range), so that
+ * everything produced here reads back.
+ */
 export function formatViewParameter(
 	view: ParsedView,
 	precision = 5,
@@ -108,10 +120,19 @@ export function formatViewParameter(
 	) {
 		return null;
 	}
+	const zoom = formatNumber(view.zoom, 2);
+	const lat = formatNumber(view.lat, precision);
+	if (
+		Number(zoom) < 0 ||
+		Number(zoom) > MAX_ZOOM ||
+		Math.abs(Number(lat)) > 90
+	) {
+		return null;
+	}
 	const parts = [
-		formatNumber(view.zoom, 2),
-		formatNumber(view.lat, precision),
-		formatNumber(view.lon, precision),
+		zoom,
+		lat,
+		formatNumber(normaliseLongitude(view.lon), precision),
 	];
 	// Normalise to (-180, 180] so equal orientations serialise equally.
 	let degrees = ((((view.rotation + 180) % 360) + 360) % 360) - 180;
@@ -155,11 +176,42 @@ export function parseViewParameter(
 	return {zoom, lat, lon, rotation};
 }
 
-export function formatLayersParameter(layerIds: string[]): string {
-	return layerIds.map((id) => encodeURIComponent(id)).join(",");
+/**
+ * Percent-decodes a parameter value once, as a whole. `+` is a space, as in
+ * the query serialisation (`URLSearchParams`) routers apply. `null` when the
+ * value is malformed.
+ */
+export function decodeParameterValue(raw: string): string | null {
+	try {
+		return decodeURIComponent(raw.replace(/\+/g, " "));
+	} catch {
+		return null;
+	}
 }
 
-/** Returns the listed ids (empty list for an empty value) or `null` if malformed. */
+/** Ids that cannot be told apart in a comma separated list are not representable. */
+function isRepresentableLayerId(id: string): boolean {
+	return id !== "" && !id.includes(",");
+}
+
+/**
+ * Ids joined with commas, each percent-encoded. `null` when the list cannot be
+ * represented: an id contains a comma or the text exceeds what the parser
+ * accepts.
+ */
+export function formatLayersParameter(layerIds: string[]): string | null {
+	if (!layerIds.every(isRepresentableLayerId)) {
+		return null;
+	}
+	const text = layerIds.map((id) => encodeURIComponent(id)).join(",");
+	return text.length > MAX_VALUE_LENGTH ? null : text;
+}
+
+/**
+ * The value is percent-decoded once as a whole and then split on commas, so
+ * `a,b` and `a%2Cb` mean the same. Returns the listed ids (empty list for an
+ * empty value) or `null` if malformed.
+ */
 export function parseLayersParameter(
 	value: string | null | undefined,
 ): string[] | null {
@@ -172,14 +224,12 @@ export function parseLayersParameter(
 	if (value === "") {
 		return [];
 	}
+	const decoded = decodeParameterValue(value);
+	if (decoded === null) {
+		return null;
+	}
 	const ids: string[] = [];
-	for (const item of value.split(",")) {
-		let id: string;
-		try {
-			id = decodeURIComponent(item);
-		} catch {
-			return null;
-		}
+	for (const id of decoded.split(",")) {
 		if (id === "") {
 			return null;
 		}
@@ -309,7 +359,7 @@ export function trackedLayerIds(
 	if (!layers) {
 		return [];
 	}
-	const ids = Object.keys(layers);
+	const ids = Object.keys(layers).filter(isRepresentableLayerId);
 	if (Array.isArray(tracking)) {
 		return ids.filter((id) => tracking.includes(id));
 	}
@@ -321,8 +371,10 @@ export function trackedLayerIds(
 
 /**
  * Visibility changes that make the tracked layers match `visibleIds`.
- * Unknown ids are ignored, untracked layers are never listed. Hides come
- * first so that showing a base layer cannot be undone by a later hide.
+ * Unknown ids are ignored, untracked layers are never listed. Of several
+ * listed base layers the first one wins and the others count as not listed.
+ * Hides come first so that showing a base layer cannot be undone by a later
+ * hide.
  */
 export function planLayerVisibility(
 	layers: Record<string, LayerState> | undefined,
@@ -331,8 +383,13 @@ export function planLayerVisibility(
 ): Array<{id: string; visible: boolean}> {
 	const hide: Array<{id: string; visible: boolean}> = [];
 	const show: Array<{id: string; visible: boolean}> = [];
+	const isBaseLayer = (id: string) =>
+		tracked.includes(id) && !!layers?.[id]?.metaData?.isBaseLayer;
+	const firstBaseLayer = visibleIds.find(isBaseLayer);
 	for (const id of tracked) {
-		const desired = visibleIds.includes(id);
+		const desired =
+			visibleIds.includes(id) &&
+			(!isBaseLayer(id) || id === firstBaseLayer);
 		const current = layers?.[id]?.options?.visible === true;
 		if (desired !== current) {
 			(desired ? show : hide).push({id, visible: desired});
@@ -404,6 +461,31 @@ function snapshotView(
 	};
 }
 
+/** A view from the address, in view projection coordinates and radians. */
+type LinkedView = {center: [number, number]; zoom: number; rotation: number};
+
+/** `null` when the place cannot be represented or the zoom is out of limits. */
+function resolveLinkedView(
+	parsed: ParsedView,
+	projection: string,
+	minZoom?: number,
+	maxZoom?: number,
+): LinkedView | null {
+	const center = lonLatToViewCoordinate(parsed.lon, parsed.lat, projection);
+	if (
+		!center ||
+		(minZoom !== undefined && parsed.zoom < minZoom) ||
+		(maxZoom !== undefined && parsed.zoom > maxZoom)
+	) {
+		return null;
+	}
+	return {
+		center,
+		zoom: parsed.zoom,
+		rotation: (parsed.rotation * Math.PI) / 180,
+	};
+}
+
 /**
  * Keeps the map view and the visibility of layers in the page address so a
  * copied link reopens the same view. Opt-in: not part of the default plugins.
@@ -440,9 +522,13 @@ export default function createPlugin(
 	let destroyed = false;
 	let timer: ReturnType<typeof setTimeout> | undefined;
 	const cleanups: Array<() => void> = [];
+	// Set in `afterInit` when the address names a usable view; applied in
+	// `afterCreate`, once the hydration snapshot has been captured.
+	let linkedView: LinkedView | null = null;
 
-	// Raw parameter values last read from or written to the address, so that
-	// our own writes and unrelated address changes are never applied again.
+	// Parameter values last read from or written to the address (percent-decoded,
+	// so a router's re-spelling is no change), so that our own writes and
+	// unrelated address changes are never applied again.
 	const seen: {view: string | null; layers: string | null} = {
 		view: null,
 		layers: null,
@@ -455,6 +541,15 @@ export default function createPlugin(
 
 	const readParameter = (name: string | false, address: string) =>
 		name === false ? null : readAddressParameter(address, name);
+	const decoded = (raw: string | null) =>
+		raw === null ? null : (decodeParameterValue(raw) ?? raw);
+
+	function cancelPendingWrite() {
+		if (timer !== undefined) {
+			clearTimeout(timer);
+			timer = undefined;
+		}
+	}
 
 	function applyLayers(store: EnhancedStore, ids: string[]) {
 		const layers = store.getState()[mapControllerName] as
@@ -471,51 +566,82 @@ export default function createPlugin(
 		}
 	}
 
-	function applyViewAnimated(store: EnhancedStore, parsed: ParsedView) {
-		const view = getOlView(store, mapControllerName);
-		if (!view) {
-			return;
-		}
-		const center = lonLatToViewCoordinate(
-			parsed.lon,
-			parsed.lat,
-			view.getProjection().getCode(),
-		);
-		if (
-			!center ||
-			parsed.zoom < view.getMinZoom() ||
-			parsed.zoom > view.getMaxZoom()
-		) {
-			return;
-		}
+	/** Without animation, and effective immediately: no render is needed. */
+	function applyView(store: EnhancedStore, view: LinkedView) {
+		// The state first, so that it is consistent right away ...
 		store.dispatch(
-			animate(mapControllerName, {
-				center,
-				zoom: parsed.zoom,
-				rotation: (parsed.rotation * Math.PI) / 180,
-				duration: 0,
+			merge([mapControllerName, "view"], {
+				zoom: view.zoom,
+				center: view.center,
+				rotation: view.rotation,
 			}) as never,
 		);
+		// ... then the live view, which the state alone would leave untouched
+		// when it already holds these values but the view has moved on.
+		const olView = getOlView(store, mapControllerName);
+		if (!olView) {
+			return;
+		}
+		if (olView.getZoom() !== view.zoom) {
+			olView.setZoom(view.zoom);
+		}
+		const center = olView.getCenter();
+		if (
+			!center ||
+			center[0] !== view.center[0] ||
+			center[1] !== view.center[1]
+		) {
+			olView.setCenter(view.center);
+		}
+		if (olView.getRotation() !== view.rotation) {
+			olView.setRotation(view.rotation);
+		}
 	}
 
 	function applyAddress(store: EnhancedStore) {
+		if (destroyed) {
+			return;
+		}
 		const address = adapter.read();
 		const rawView = readParameter(viewParameter, address);
 		const rawLayers = readParameter(layersParameter, address);
-		if (rawView !== null && rawView !== seen.view) {
-			const parsed = parseViewParameter(safeDecode(rawView));
-			if (parsed) {
-				applyViewAnimated(store, parsed);
+		const view = decoded(rawView);
+		const layers = decoded(rawLayers);
+		let applied = false;
+		if (view !== null && view !== seen.view) {
+			const parsed = parseViewParameter(decodeParameterValue(rawView!));
+			const olView = getOlView(store, mapControllerName);
+			const linked =
+				parsed && olView
+					? resolveLinkedView(
+							parsed,
+							olView.getProjection().getCode(),
+							olView.getMinZoom(),
+							olView.getMaxZoom(),
+						)
+					: null;
+			if (linked) {
+				applyView(store, linked);
+				applied = true;
 			}
 		}
-		if (rawLayers !== null && rawLayers !== seen.layers) {
+		if (layers !== null && layers !== seen.layers) {
 			const ids = parseLayersParameter(rawLayers);
 			if (ids) {
 				applyLayers(store, ids);
+				applied = true;
 			}
 		}
-		seen.view = rawView;
-		seen.layers = rawLayers;
+		seen.view = view;
+		seen.layers = layers;
+		if (applied) {
+			// A write scheduled for the previous state must not replace the address
+			// that was just followed, and the state now matches that address.
+			cancelPendingWrite();
+			const baseline = serialise(store);
+			last.view = baseline.view;
+			last.layers = baseline.layers;
+		}
 	}
 
 	function serialise(store: EnhancedStore) {
@@ -551,21 +677,20 @@ export default function createPlugin(
 
 		// A parameter needs writing when its state changed and the address does
 		// not already say the same (e.g. because we just applied the address).
+		// A layer list that cannot be represented (`null`) is left as it is.
 		const address = adapter.read();
 		let stale = false;
 		if (viewParameter !== false && next.view !== null && viewChanged) {
 			const current = readParameter(viewParameter, address);
-			stale = current === null || safeDecode(current) !== next.view;
+			stale =
+				current === null || decodeParameterValue(current) !== next.view;
 		}
-		if (
-			layersParameter !== false &&
-			next.layers !== null &&
-			layersChanged
-		) {
+		const nextIds =
+			next.layers === null ? null : parseLayersParameter(next.layers);
+		if (layersParameter !== false && nextIds && layersChanged) {
 			const current = readParameter(layersParameter, address);
 			const currentIds =
 				current === null ? null : parseLayersParameter(current);
-			const nextIds = parseLayersParameter(next.layers)!;
 			stale ||= !currentIds || !sameSet(currentIds, nextIds);
 		}
 		if (!stale) {
@@ -576,22 +701,22 @@ export default function createPlugin(
 		if (viewParameter !== false && next.view !== null) {
 			updates[viewParameter] = next.view;
 		}
-		if (layersParameter !== false && next.layers !== null) {
+		if (layersParameter !== false && nextIds && next.layers !== null) {
 			updates[layersParameter] = next.layers;
 		}
-		adapter.write(writeAddressParameters(address, updates, prefix));
-		const written = adapter.read();
-		seen.view = readParameter(viewParameter, written);
-		seen.layers = readParameter(layersParameter, written);
+		const written = writeAddressParameters(address, updates, prefix);
+		// Record what is being written first: an adapter may notify us
+		// synchronously, and that address change is our own.
+		seen.view = decoded(readParameter(viewParameter, written));
+		seen.layers = decoded(readParameter(layersParameter, written));
+		adapter.write(written);
 	}
 
 	function schedule(store: EnhancedStore) {
 		if (destroyed) {
 			return;
 		}
-		if (timer !== undefined) {
-			clearTimeout(timer);
-		}
+		cancelPendingWrite();
 		timer = setTimeout(() => flush(store), debounceMs);
 	}
 
@@ -604,38 +729,32 @@ export default function createPlugin(
 			const parsed =
 				rawView === null
 					? null
-					: parseViewParameter(safeDecode(rawView));
+					: parseViewParameter(decodeParameterValue(rawView));
 			if (!parsed) {
 				return;
 			}
-			const initial = (context.initialState ??= {}) as AnyState;
-			const mapState = (initial[mapControllerName] ??= {}) as AnyState;
-			const currentView = (mapState.view ?? {}) as AnyState;
-			const projection =
-				typeof currentView.projection === "string"
-					? currentView.projection
-					: DEFAULT_VIEW_PROJECTION;
-			const center = lonLatToViewCoordinate(
-				parsed.lon,
-				parsed.lat,
-				projection,
+			// Read-only: the initial state, and with it the hydration snapshot
+			// taken from it, stays as configured. The view is applied in
+			// `afterCreate`.
+			const mapState = context.initialState?.[
+				mapControllerName as never
+			] as {view?: Record<string, unknown>} | undefined;
+			const configured = mapState?.view ?? {};
+			linkedView = resolveLinkedView(
+				parsed,
+				typeof configured.projection === "string"
+					? configured.projection
+					: DEFAULT_VIEW_PROJECTION,
+				typeof configured.minZoom === "number"
+					? configured.minZoom
+					: undefined,
+				typeof configured.maxZoom === "number"
+					? configured.maxZoom
+					: undefined,
 			);
-			const {minZoom, maxZoom} = currentView;
-			if (
-				!center ||
-				(typeof minZoom === "number" && parsed.zoom < minZoom) ||
-				(typeof maxZoom === "number" && parsed.zoom > maxZoom)
-			) {
-				return;
+			if (linkedView) {
+				context.initialViewFromAddress = true;
 			}
-			// A configured resolution would win over the linked zoom.
-			const {resolution: _resolution, ...rest} = currentView;
-			mapState.view = {
-				...rest,
-				center,
-				zoom: parsed.zoom,
-				rotation: (parsed.rotation * Math.PI) / 180,
-			};
 		},
 
 		afterCreate({store}: MapsightUiContext) {
@@ -643,14 +762,20 @@ export default function createPlugin(
 				return;
 			}
 			const address = adapter.read();
-			seen.view = readParameter(viewParameter, address);
-			seen.layers = readParameter(layersParameter, address);
+			seen.view = decoded(readParameter(viewParameter, address));
+			seen.layers = decoded(readParameter(layersParameter, address));
 
 			if (layersParameter !== false && seen.layers !== null) {
-				const ids = parseLayersParameter(seen.layers);
+				const ids = parseLayersParameter(
+					readParameter(layersParameter, address),
+				);
 				if (ids) {
 					applyLayers(store, ids);
 				}
+			}
+			if (linkedView) {
+				applyView(store, linkedView);
+				linkedView = null;
 			}
 
 			const baseline = serialise(store);
@@ -675,7 +800,7 @@ export default function createPlugin(
 			}
 			if (layersParameter !== false) {
 				let layersRef: unknown;
-				let visibleKey = "";
+				let visibleKey: string | null = "";
 				cleanups.push(
 					observeState(
 						store,
@@ -714,21 +839,10 @@ export default function createPlugin(
 
 		destroy() {
 			destroyed = true;
-			if (timer !== undefined) {
-				clearTimeout(timer);
-				timer = undefined;
-			}
+			cancelPendingWrite();
 			for (const cleanup of cleanups.splice(0)) {
 				cleanup();
 			}
 		},
 	};
-}
-
-function safeDecode(value: string): string {
-	try {
-		return decodeURIComponent(value);
-	} catch {
-		return value;
-	}
 }

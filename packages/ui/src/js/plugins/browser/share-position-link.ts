@@ -318,7 +318,8 @@ function defaultCreateMarkerFeature(
  * @param {string} options.mapControllerName map controller name
  * @param {string} options.featureSourcesControllerName feature sources controller name
  * @param {string} options.linkParameter link parameter name
- * @param {boolean} options.centerOnMarker centers map on marker if present
+ * @param {boolean} options.centerOnMarker centers map on marker if present, unless the page address names the view
+ * @param {boolean} options.viewFromAddress whether the page address fixes the initial view (see `initialViewFromAddress`)
  * @param {string} options.markerStyle style for marker
  * @param {number|null} options.markerZoom zoom level when marker is present
  * @param {import('../../types').MapsightUiFeatureId} options.markerFeatureId feature id
@@ -343,6 +344,7 @@ function setupMarker(options) {
 		markerStyle,
 		markerLayerGroup,
 		zIndex,
+		viewFromAddress,
 	} = options;
 
 	// TODO: Handle on SSR?!
@@ -386,7 +388,8 @@ function setupMarker(options) {
 		),
 	);
 
-	if (centerOnMarker) {
+	// A view named in the page address wins: the marker is placed, the map stays.
+	if (centerOnMarker && !viewFromAddress) {
 		store.dispatch(
 			set(
 				[mapControllerName, "view", "center"],
@@ -473,7 +476,8 @@ export type Options = {
 	showMarker?: boolean;
 
 	/**
-	 * centers map on marker if present
+	 * centers map on marker if present. A view named in the page address by
+	 * another plugin (e.g. the view permalink) takes precedence.
 	 *
 	 * @default true
 	 */
@@ -555,7 +559,7 @@ export default function createShareLinkPlugin(
 	} = options;
 
 	return {
-		afterCreate({store}) {
+		afterCreate({store, initialViewFromAddress}) {
 			if (!store) {
 				return;
 			}
@@ -637,6 +641,7 @@ export default function createShareLinkPlugin(
 					markerIconId: "marker",
 					createMarkerFeature,
 					zIndex,
+					viewFromAddress: initialViewFromAddress === true,
 				});
 			}
 		},
