@@ -1,3 +1,4 @@
+import type {Coordinate} from "ol/coordinate";
 import type OlLayer from "ol/layer/Layer";
 
 import type {OptionValue, Options} from "@/lib/helpers/schema";
@@ -54,6 +55,32 @@ export function getVectorFeatureSource(
 		throw new Error("Expected layer with VectorFeatureSource source");
 	}
 	return source;
+}
+
+/**
+ * What the view selectors in `@mapsight/core/lib/map/selectors` return for the
+ * view state of a map controller. Read it through those selectors; the state
+ * itself may hold further keys (options for the OpenLayers view such as
+ * `maxZoom` or `extent`) that are not part of this type.
+ *
+ * `MapState` does not type its `view` with this interface, so plain host
+ * objects and interfaces stay assignable to it.
+ */
+export interface MapViewState {
+	/**
+	 * Center as the OpenLayers view reports it: in view projection coordinates
+	 * (EPSG:3857), or in the user projection (for example degrees after
+	 * `useGeographic()` from `ol/proj`) when one is set.
+	 */
+	center?: Coordinate;
+	/** Rounded zoom level; use `resolution` for the exact value. */
+	zoom?: number;
+	/** Map units per pixel in view projection (not in user projection units). */
+	resolution?: number;
+	/** Rotation in radians, clockwise. */
+	rotation?: number;
+	minResolution?: number;
+	maxResolution?: number;
 }
 
 export interface MapState {

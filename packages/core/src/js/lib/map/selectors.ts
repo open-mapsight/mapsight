@@ -1,3 +1,7 @@
+import type {Extent} from "ol/extent";
+import {getForViewAndSize} from "ol/extent";
+import {fromUserCoordinate, getUserProjection, toUserExtent} from "ol/proj";
+
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
 import isEqual from "lodash/isEqual";
@@ -11,7 +15,7 @@ import type {
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
 import type {FeatureInteractionName} from "@/lib/map/lib/WithFeatureInteractions";
-import type {LayerState, MapState} from "@/lib/map/types";
+import type {LayerState, MapState, MapViewState} from "@/lib/map/types";
 import {isVectorFeatureSource} from "@/lib/map/types";
 import type {State} from "@/types";
 
@@ -109,6 +113,78 @@ export const makeFeatureSourceFromLayerIdSelector = (
 	);
 
 export const mapSizeSelector = (state: MapState) => state.size;
+
+/**
+ * The Mapsight view is always created in the OpenLayers default projection;
+ * a `projection` key in the view state is not passed on to the view.
+ */
+const VIEW_PROJECTION = "EPSG:3857";
+
+/**
+ * The view state, or `undefined` while the map has no view state yet. See
+ * {@link MapViewState} for the coordinate systems of its fields.
+ */
+export const viewSelector = (state: MapState): MapViewState | undefined => {
+	const view = state.view;
+	return typeof view === "object" && view !== null ? view : undefined;
+};
+/**
+ * Center of the view: in view projection coordinates (EPSG:3857), or in the
+ * user projection when one is set (for example `useGeographic()`).
+ */
+export const viewCenterSelector = (state: MapState) =>
+	viewSelector(state)?.center;
+/** Rounded zoom level. Use {@link viewResolutionSelector} for the exact value. */
+export const viewZoomSelector = (state: MapState) => viewSelector(state)?.zoom;
+/** Rotation in radians; 0 when the view was never rotated. */
+export const viewRotationSelector = (state: MapState) =>
+	viewSelector(state)?.rotation ?? 0;
+/** Map units per pixel in view projection (EPSG:3857), never in user projection units. */
+export const viewResolutionSelector = (state: MapState) =>
+	viewSelector(state)?.resolution;
+
+/**
+ * Visible extent `[minX, minY, maxX, maxY]`, derived from center, resolution,
+ * rotation and map size. It uses the same coordinate system as the center: view
+ * projection (EPSG:3857) units, or the user projection when one is set (for
+ * example degrees after `useGeographic()` from `ol/proj`), like
+ * `view.calculateExtent()`. With a rotated view this is the bounding box of
+ * the visible area. `undefined` while center, resolution or size are missing,
+ * for example before the map is mounted. Keeps its reference while the extent
+ * is unchanged.
+ */
+export const viewExtentSelector: Selector<MapState, Extent | undefined> =
+	createSelector(
+		[
+			viewCenterSelector,
+			viewResolutionSelector,
+			viewRotationSelector,
+			mapSizeSelector,
+			// Global OpenLayers setting, not part of the state.
+			() => getUserProjection(),
+		],
+		(center, resolution, rotation, size, userProjection) => {
+			if (!center || resolution === undefined || !size) {
+				return undefined;
+			}
+			// Without a user projection nothing needs converting. Skipping the
+			// helpers also avoids OpenLayers' one-time "call useGeographic()"
+			// warning for centers that merely look like degrees.
+			const extent = getForViewAndSize(
+				userProjection
+					? fromUserCoordinate(center, VIEW_PROJECTION)
+					: center,
+				resolution,
+				rotation,
+				size,
+			);
+			return userProjection
+				? toUserExtent(extent, VIEW_PROJECTION)
+				: extent;
+		},
+		{memoizeOptions: {resultEqualityCheck: isEqual}},
+	);
+
 export const viewportAnchorSelector = (state: MapState) => state.viewportAnchor;
 
 // die tatsächlich von OpenLayer gerenderten Layer. wenn ein Layer mit option.visible grundsätzlich aktiv ist, aber an der angezeigten Stelle nichts beiträgt, ist er hier nicht verzeichnet.

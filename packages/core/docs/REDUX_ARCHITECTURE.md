@@ -137,6 +137,35 @@ Layer definitions use the **ol-proxy `Description`** shape: `{ type, options?, m
 
 ---
 
+## Reading state
+
+Host code reads state through selectors and hooks. **State paths and fields without a selector below are internal and may change without notice** — do not read `state.map.view.center`, `source.dataHistory` and the like directly. If you need a field that has no selector, ask for one.
+
+Map selectors (`@mapsight/core/lib/map/selectors`) take the map slice (`state[controllerName]`); the `make…Selector(id)` factories take an id and return such a selector. Feature-source selectors (`@mapsight/core/lib/feature-sources/selectors`) take one source state, except the `find…` lookups, which take all sources of the slice, and `createFilteredFeatureSourceSelector(…)`, whose selector takes the full state. Selection selectors take the full state. One selector takes two arguments: the selector returned by `makeFeatureSourceFromLayerIdSelector(layerId)` is called with the map slice **and** the full state, `selector(state[controllerName], state)`.
+
+| Area                       | Selectors                                                                                                                                         | Hook (`@mapsight/ui/hooks/<name>`)                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Map view                   | `viewSelector`, `viewCenterSelector`, `viewZoomSelector`, `viewRotationSelector`, `viewResolutionSelector`, `viewExtentSelector` (visible extent) | `useMapView`, `useMapZoom` (`zoom`, `zoomIn`, `zoomOut`) |
+| Map size and anchor        | `mapSizeSelector`, `viewportAnchorSelector`                                                                                                       |                                                          |
+| Layers                     | `layersSelector`, `makeLayerTitleSelector`, `makeLayerVisibleSelector`, `layerIdsIntegratedSwitcherSelector`, `layerIdsExternalSwitcherSelector`  | `useLayerVisibility` (`[visible, setVisible]`)           |
+| Rendered layers            | `visibleLayersSelector`                                                                                                                           |                                                          |
+| Attributions and legends   | `layerAttributionsSelector`, `visibleLayerAttributionsSelector`, `layersWithLegendsSelector`, `visibleLayersWithLegendsSelector`                  | `useVisibleLayerAttributions`                            |
+| Feature source status      | `getFeatureSourceStatus`, `hasFeatureSourceLoadError`, `getFeatureSourceError`, `hasFeatureSourceLocalEdits`, `canUndo`, `canRedo`                |                                                          |
+| Feature source data/lookup | `getSourceData`, `getAllFeatures`, `hasFeatureSourceFeatureId`, `findFeatureSourceIdForFeatureId`, `findFeatureInFeatureSourcesById`              |                                                          |
+| Feature source of a layer  | `makeFeatureSourceFromLayerIdSelector`, `createFilteredFeatureSourceSelector`                                                                     |                                                          |
+| Selections                 | `createFeatureSelectionSelector`, `createAllFeatureIdsSelector` (`@mapsight/core/lib/feature-selections/selectors`)                               |                                                          |
+
+The hooks take the controller name as optional last argument, defaulting to the one in `@mapsight/ui/config/constants/controllers`. A few details:
+
+- `viewZoomSelector` is the rounded zoom level; derive exact positions from `viewResolutionSelector`, which is in view projection units (EPSG:3857) per pixel.
+- Coordinate systems: `viewCenterSelector` returns the center as the OpenLayers view reports it, which is in view projection coordinates (EPSG:3857) by default and in the user projection when one is set (for example after `useGeographic()` from `ol/proj`, then in degrees). `viewExtentSelector` is the visible extent in the same coordinate system as the center, like `view.calculateExtent()` (internally the center is converted to the view projection, the extent is computed and converted back). For a rotated view it is the bounding box of the visible area.
+- `viewRotationSelector` is in radians and 0 for a view that was never rotated. `viewExtentSelector` is `undefined` until center, resolution and map size are known, and keeps its reference while the extent is unchanged.
+- `MapViewState` (`@mapsight/core/lib/map/types`) describes what `viewSelector` returns. `MapState` itself does not type its `view`, so host objects and interfaces stay assignable to it.
+- `hasFeatureSourceLocalEdits` is `true` when the data was changed by editing (add, update or remove features) after it was loaded or set as a whole; with `enableHistory`, undoing all edits makes it `false` again (redo makes it `true` again). It stays `true` while a reload is pending and after a reload failed, because the edited data is kept; a successful reload, setting the data as a whole and a config change that clears the data make it `false`.
+- `hasFeatureSourceFeatureId` looks at the source state it is given, so pass a filtered source to ask about visible features only. It uses the `ids` index and falls back to the features when a source has none, for example one built with `mapFeaturesToFeatureSource`.
+
+---
+
 ## Controllers
 
 `BaseController` (`packages/core/src/js/lib/base/controller.ts`) is the foundation.
