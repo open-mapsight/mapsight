@@ -7,10 +7,22 @@ export const featureSourceTypeSchema = z.enum([
 	"combined",
 ]);
 
+/**
+ * Initial GeoJSON for a source that the host fills (`noop`). Validated loosely:
+ * entries are checked when the data is indexed, not here.
+ */
+export const featureSourceInitialDataSchema = z
+	.object({
+		type: z.literal("FeatureCollection").optional(),
+		features: z.array(z.unknown()).optional(),
+	})
+	.loose();
+
 export const featureSourceConfigSchema = z
 	.object({
 		type: featureSourceTypeSchema,
 		url: z.string().optional(),
+		data: featureSourceInitialDataSchema.nullable().optional(),
 		featureSourceNames: z.array(z.string()).optional(),
 		filters: z.array(z.string()).optional(),
 		doRefresh: z.boolean().optional(),
