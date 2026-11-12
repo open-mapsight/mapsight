@@ -22,8 +22,8 @@ export default function createImmutablePathReducer(
 		state: T,
 		action: AnyAction,
 	): T => {
-		const path = action[pathKey] as Array<string>;
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+		const path = action[pathKey] as Array<string | number>;
+
 		const oldValue = (path?.length ? get(state, path) : state) as T;
 		const newValue = reducer(oldValue, action) as T;
 		if (newValue === oldValue) {

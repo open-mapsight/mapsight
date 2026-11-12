@@ -131,6 +131,11 @@ export const setLayerVisibility = (
  * - Feature selections (highlight, preselect, select) are not touched. Clear
  *   them first if they refer to features of this layer.
  *
+ * The layer's vector source is torn down with the layer: it stops observing the
+ * feature source, the selections and the map size, so it no longer reacts to
+ * later data or selection changes (for example by fitting the map). Other layers
+ * on the same feature source keep working.
+ *
  * Layers whose `metaData.visibleWhenLayerIds` lists the removed layer count it
  * as hidden and become invisible. Unknown ids are ignored.
  */

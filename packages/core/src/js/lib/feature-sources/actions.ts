@@ -315,7 +315,13 @@ export const setError = (controllerName: string, id: string, error: unknown) =>
  *   they keep the features they already show until they are removed or rebound.
  * - Feature selections are not touched.
  *
- * Unknown ids are ignored.
+ * Unknown ids are ignored. So are all later source actions for an id that is
+ * not in the state: a source has to be created through configuration before it
+ * is written to.
+ *
+ * A list that is bound to the removed source (`list.featureSource`) shows its
+ * empty state. Point it at another source, and remove the id from the
+ * `featureSourceNames` of combined sources, to keep the state tidy.
  */
 export const removeFeatureSource = (controllerName: string, id: string) =>
 	removeKey([controllerName, id]);

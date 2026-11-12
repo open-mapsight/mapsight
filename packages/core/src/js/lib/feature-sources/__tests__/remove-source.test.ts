@@ -5,15 +5,23 @@ import {set, unset} from "@/lib/base/actions";
 import {ACTION_REMOVE_KEY} from "@/lib/base/reducer";
 import {
 	addFeature,
+	addFeatures,
 	load,
 	loadFailure,
 	loadSuccess,
 	pauseRefreshUntilNextLoad,
 	redo,
+	removeAllFeatures,
+	removeFeature,
 	removeFeatureSource,
+	removeFeatures,
 	setData,
 	setError,
 	undo,
+	updateFeature,
+	updateFeatureGeometry,
+	updateFeatureProperty,
+	updateFeatures,
 } from "@/lib/feature-sources/actions";
 import {estimateFeatureSourcesStateBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
@@ -120,6 +128,34 @@ describe("removeFeatureSource", () => {
 			store.dispatch(loadFailure(controllerName, "items", "failure"));
 			store.dispatch(pauseRefreshUntilNextLoad(controllerName, "items"));
 			store.dispatch(addFeature(controllerName, "items", feature("x")));
+			store.dispatch(
+				addFeatures(controllerName, "items", [feature("x")]),
+			);
+			store.dispatch(
+				updateFeature(controllerName, "items", "a1", feature("a1")),
+			);
+			store.dispatch(
+				updateFeatureProperty(
+					controllerName,
+					"items",
+					"a1",
+					"k",
+					1,
+					undefined,
+				),
+			);
+			store.dispatch(
+				updateFeatures(controllerName, "items", [feature("a1")]),
+			);
+			store.dispatch(
+				updateFeatureGeometry(controllerName, "items", "a1", {
+					type: "Point",
+					coordinates: [1, 1],
+				}),
+			);
+			store.dispatch(removeFeature(controllerName, "items", "a1"));
+			store.dispatch(removeFeatures(controllerName, "items", ["a1"]));
+			store.dispatch(removeAllFeatures(controllerName, "items"));
 			store.dispatch(undo(controllerName, "items"));
 			store.dispatch(redo(controllerName, "items"));
 			store.dispatch(load(controllerName, "items"));
