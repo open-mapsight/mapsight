@@ -1,5 +1,17 @@
 # @mapsight/ui
 
+## 7.13.0
+
+### Minor Changes
+
+- e97c0f7: Browser-only hosts no longer install `jsdom` through `@mapsight/ui`; it is now an optional peer dependency. Hosts that import `@mapsight/core/env/ssr-simulated-browser` for server-side rendering must have `jsdom` in their own dependencies.
+
+### Patch Changes
+
+- 02cbd9f: Fix the default projection of `wms()` layers. The default was misspelled (`ESPG:3857`), so OpenLayers did not recognize it and the WMS source followed the map view projection. WMS tiles are now requested in `EPSG:3857` by default. If your map view uses a different projection and you want WMS requests in that projection, pass it explicitly as the third argument of `wms()`.
+- Updated dependencies [`37abb0e`, `5aeedad`, `457a760`]:
+    - `@mapsight/traffic-style@5.7.0 → 5.7.1` (patch)
+
 ## 7.12.1
 
 ### Patch Changes

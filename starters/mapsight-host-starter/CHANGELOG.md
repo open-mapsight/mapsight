@@ -1,5 +1,17 @@
 # mapsight-host-starter
 
+## 0.1.10
+
+### Patch Changes
+
+- 37abb0e: Bump dependencies from Dependabot ([#464](https://github.com/open-mapsight/mapsight/pull/464)):
+
+    - `rimraf` `^6.1.3` → `^6.1.4` (patch)
+
+- Updated dependencies [`37abb0e`, `5aeedad`, `e97c0f7`, `457a760`, `02cbd9f`]:
+    - `@mapsight/traffic-style@5.7.0 → 5.7.1` (patch)
+    - `@mapsight/ui@7.12.1 → 7.13.0` (minor)
+
 ## 0.1.9
 
 ### Patch Changes

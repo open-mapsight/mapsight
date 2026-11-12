@@ -1,5 +1,26 @@
 # mapsight-next-starter
 
+## 0.1.10
+
+### Patch Changes
+
+- 2f8fff8: Bump dependencies from Dependabot ([#460](https://github.com/open-mapsight/mapsight/pull/460)):
+
+    - `next` `^16.4.3` → `^16.4.5` (patch)
+
+- b74b9b7: Bump dependencies from Dependabot ([#461](https://github.com/open-mapsight/mapsight/pull/461)):
+
+    - `@tailwindcss/postcss` `^4.3.3` → `^4.3.4` (patch)
+    - `tailwindcss` `^4.3.3` → `^4.3.4` (patch)
+
+- 37abb0e: Bump dependencies from Dependabot ([#464](https://github.com/open-mapsight/mapsight/pull/464)):
+
+    - `rimraf` `^6.1.3` → `^6.1.4` (patch)
+
+- Updated dependencies [`37abb0e`, `5aeedad`, `e97c0f7`, `457a760`, `02cbd9f`]:
+    - `@mapsight/traffic-style@5.7.0 → 5.7.1` (patch)
+    - `@mapsight/ui@7.12.1 → 7.13.0` (minor)
+
 ## 0.1.9
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @mapsight/vector-style-compiler
 
+## 13.2.2
+
+### Patch Changes
+
+- 0ba468f: The compiler now warns about styles that declare `circle-*` or `icon-*` properties but no `image-type`, since such styles draw no point symbol. The API reports warnings through the new optional `onWarning` callback and the CLI prints them; the generated output is unchanged. The README examples now set `image-type` and its duplicated sections are removed.
+- 457a760: Generated style modules no longer import `@mapsight/lib-js`. The small path and replace helpers are now emitted inline, and only when a style uses them. After regenerating your styles you can remove a direct `@mapsight/lib-js` dependency from your application if nothing else needs it.
+
 ## 13.2.1
 
 ### Patch Changes
