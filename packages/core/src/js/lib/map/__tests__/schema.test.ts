@@ -2,6 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {
 	layerConfigSchema,
+	layerMetaDataSchema,
 	mapConfigSchema,
 	vectorFeatureSourceStateSchema,
 } from "@/lib/map/schema";
@@ -106,5 +107,19 @@ describe("map config schema", () => {
 			},
 		});
 		expect(result.success).toBe(true);
+	});
+
+	it("accepts attribution text and explicit attribution HTML", () => {
+		const metaData = {
+			attribution: "Map data by contributors",
+			dangerouslySetAttributionHtml: "Map data by <b>contributors</b>",
+		};
+		const result = layerMetaDataSchema.safeParse(metaData);
+		expect(result.success).toBe(true);
+		expect(result.data).toEqual(metaData);
+		expect(
+			layerMetaDataSchema.safeParse({dangerouslySetAttributionHtml: 1})
+				.success,
+		).toBe(false);
 	});
 });

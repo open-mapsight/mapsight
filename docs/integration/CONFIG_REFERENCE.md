@@ -110,6 +110,7 @@ createOptions: {
 	future: {
 		v8_ariaControlTooltip: true,
 		v8_listSearchButton: true,
+		v8_attributionText: true,
 		v8_automaticHeadings: true,
 	},
 }
@@ -121,7 +122,33 @@ Omitted or `false` keeps `ms3-hint--*` classes.
 `v8_listSearchButton` expands list text search from a labeled button. Omitted or `false` keeps the visible
 label + input so 7.x host CSS does not break. This will be the only list-search chrome in v8.
 
+`v8_attributionText` renders a layer's `metaData.attribution` as plain text (no HTML parsing, entities such as
+`&amp;` are not decoded). Omitted or `false` renders it as HTML. Markup goes in
+`metaData.dangerouslySetAttributionHtml`, which is always rendered as HTML (also without the flag) and takes
+precedence when a layer sets both; `attribution` then stays the plain-text form for consumers that render text.
+An empty string in either field counts as not set.
+Config helper: `metaDataWithAttributionHtml(metaData, html)`.
+
+Migration: move HTML attributions from `attribution` to `dangerouslySetAttributionHtml`, then enable
+`v8_attributionText`. Plain-text attributions need no change.
+
 New UI is not hidden behind flags; only leftover behavior that must stay dual-path in this major.
+
+### HTML in config
+
+The chrome renders these config and feature fields as HTML (`dangerouslySetInnerHTML`). They must only contain
+trusted content; escape or sanitize text you do not control before it reaches them.
+
+- `map.layers.*.metaData.attribution`: HTML unless `future.v8_attributionText` is enabled.
+- `map.layers.*.metaData.dangerouslySetAttributionHtml`: always HTML.
+- `map.layers.*.metaData.legend`: legend overlay.
+- `map.layers.*.metaData.miniLegend` when it is a string: mini legend.
+- Feature property `description`: feature details, when no details URL is set.
+- Feature property `listInformation`: extra HTML in list rows.
+- Feature property `tooltip`: map tooltip.
+- Feature property `overrideListHtml` (deprecated, also via `__overrideListHtmlProp`): whole list row.
+- The HTML document that a feature's `detailsUrl` returns: feature details body.
+- The translation string `ui.map.usage.html`: keyboard usage text for the map (visually hidden).
 
 ### `createOptions.headings`
 

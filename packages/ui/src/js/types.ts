@@ -380,6 +380,12 @@ export type FutureFlags = {
 	 * visible label + input (7.x host CSS). This will be the only behavior in v8.
 	 */
 	v8_listSearchButton?: boolean;
+	/**
+	 * Render `metaData.attribution` as plain text instead of HTML. Default `false`
+	 * keeps HTML. Use `metaData.dangerouslySetAttributionHtml` for markup, which
+	 * is always rendered as HTML. This will be the only behavior in v8.
+	 */
+	v8_attributionText?: boolean;
 	/** Derive native heading ranks from headings.baseLevel (default 2). Default false in 7.x. */
 	v8_automaticHeadings?: boolean;
 };
