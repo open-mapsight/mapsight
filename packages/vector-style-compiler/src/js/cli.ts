@@ -46,7 +46,9 @@ async function compile(input: string, opts: CliOptions) {
 	const jsPath = path.join(outDir, `${opts.name}.js`);
 	await fs.mkdir(outDir, {recursive: true});
 	await fs.writeFile(cssPath, css);
-	const js = vectorStyleCompiler(css);
+	const js = vectorStyleCompiler(css, {
+		onWarning: (message) => console.warn(`Warning (${input}): ${message}`),
+	});
 	await fs.writeFile(jsPath, js);
 	console.log(`Updated: ${cssPath}, ${jsPath}`);
 }
