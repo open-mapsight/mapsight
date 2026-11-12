@@ -42,3 +42,86 @@ retired/current refresh timers, including URL replacement without an explicit
 reload after a completed or still-pending request. Existing cache, HTTP
 validation, and singleflight tests continue to cover the document cache
 independently.
+
+## Waiting for data
+
+The value of `dispatch(load(...))` says nothing about completion. `load` is an
+async action: the store queues it and `dispatch` returns the action object, not a
+promise. Inside, a load is skipped while another is pending, skipped while the
+source has an error (unless `forceRefresh`), and ignored for a missing source;
+refreshing sources also keep the thunk busy until their timer fires; failures are
+caught and logged, not thrown. These rules deduplicate requests and are intended.
+To wait for data, observe the state instead.
+
+`@mapsight/core/lib/feature-sources/load-state` classifies one source:
+
+| State     | Meaning                                                                         |
+| --------- | ------------------------------------------------------------------------------- |
+| `missing` | No entry for the id (never added, or removed).                                  |
+| `idle`    | Configured, no data, no error, no request yet. Normal right after adding it.    |
+| `loading` | A request is in flight. This includes a retry that still carries the old error. |
+| `ok`      | Data is present, including an empty collection and data that was never loaded.  |
+| `error`   | The last load or write failed. Stale data may still be present.                 |
+
+`@mapsight/core/lib/feature-sources/when-settled` returns a promise that never
+rejects. It works with any store that has `getState` and `subscribe`:
+
+```typescript
+import {load} from "@mapsight/core/lib/feature-sources/actions";
+import {whenFeatureSourcesSettled} from "@mapsight/core/lib/feature-sources/when-settled";
+
+store.dispatch(load("featureSources", "places"));
+const {status, sources} = await whenFeatureSourcesSettled(
+	store,
+	"featureSources",
+	["places", "events"],
+	{timeoutMs: 10_000, signal},
+);
+// status: "settled" | "timeout" | "aborted"
+// sources: {places: "ok", events: "error"}
+```
+
+By default it settles when every listed source is `ok`, `error` or `missing`.
+Whether the load is dispatched before or after the call does not matter, since a
+source that is still `idle` is not settled. Success and failure both settle, so
+check `sources` (or `whenFeatureSourceSettled` for one source, which returns
+`{status, state}`) before using the data. A source removed while waiting is
+`missing`. A refreshing source (`doRefresh` with `timer`) settles on its data,
+not on its timer, and keeps refreshing afterwards.
+
+Options:
+
+- `signal` ends the wait with `status: "aborted"`; `timeoutMs` ends it with
+  `status: "timeout"`. There is no timeout by default. Both report the states
+  at that moment.
+- `isSettled(states)` replaces the condition, for example "any source has data,
+  or none is loading":
+  `(states) => Object.values(states).some((s) => s === "ok") || Object.values(states).every((s) => s !== "loading")`.
+- `after: "next-completion"` waits for a request that starts after the call and
+  ends. Use it after `load(..., {forceRefresh: true})` for a source that already
+  has data, because the old data would settle the default condition before the
+  queued load has started. A source counts as started once its `requestId` is a
+  number that differs from the one it had when you called the helper. So a
+  request that is already in flight at the call does not count, and neither does
+  the completion of an earlier request that finishes before your refresh starts.
+  To wait for whatever is pending right now, use the default condition instead.
+  A forced refresh that replaces a pending request counts; the replaced request's
+  late completion is dropped by the store. Until a request has started, the
+  source is reported as `loading`. A source that is removed and added again is a
+  new source and has to start its own request, so re-adding one with static data
+  never counts. Comparing `lastUpdate` instead does not work, since a failed
+  refresh does not change it. If no request starts (a load without `forceRefresh`
+  on a source with an error is skipped), only `timeoutMs` or `signal` end the
+  wait, so set one of them.
+
+`sources` lists every id once, in the order given, in an object without a
+prototype, so ids such as `__proto__` are safe. Duplicate ids are waited for
+once, and an empty list resolves as `settled` at once without calling
+`isSettled`. The condition may change the store or abort the signal; the wait
+notices both, and the condition is never called re-entrantly.
+
+The helper subscribes only while waiting; it unsubscribes, clears its timer and
+removes the abort listener when it finishes. `combined` sources have data once the
+controller has filled them, whether or not their members have loaded; wait for
+the members to know about those. In React, `useFeatureSourceLoadState(id)` from
+`@mapsight/ui/hooks/useFeatureSourceLoadState` returns the same classification.
