@@ -25,7 +25,8 @@ built-in caching.
 │  Define styles in CSS subset (supports custom properties):     │
 │                                                                 │
 │    * { fill-color: red; }                                      │
-│    #myStyle { circle-radius: 5; }                              │
+│    #myStyle { image-type: circle; circle-radius: 5;            │
+│               circle-fill-color: red; }                        │
 │    :selected { stroke-color: green; }                          │
 │    [state="hover"] { fill-color: orange; }                     │
 │                                                                 │
@@ -186,7 +187,9 @@ stroke-width: attr(
 	"prop|stroke-width"
 ); /* props['stroke-width'] — quote in SCSS */
 
+image-type: circle; /* selects the point symbol */
 circle-radius: 5;
+circle-fill-color: red;
 circle-radius: calc(zoom * 2 + 3); /* JavaScript expression */
 
 stroke-color: replace("pattern", "X", "attr(id)"); /* string replace */
@@ -195,6 +198,7 @@ text-text: attr(--env-title); /* dynamic text */
 text-text: attr("env-prop|title"); /* literal env key — quote in SCSS */
 
 /* Complex nested properties */
+image-type: icon;
 icon-src: "path/to/icon.png";
 icon-sizex: 32;
 icon-sizey: 32;
@@ -206,6 +210,8 @@ icon-src: calc(mapsightRuntimeIcon(attr(mapsightIconId), "default"));
 ```
 
 <!-- markdownlint-enable MD013 -->
+
+`image-type` (`circle`, `icon` or `none`) selects the point symbol; points of a style without it are not drawn, even if it sets `circle-*` or `icon-*` properties. The compiler warns about such styles.
 
 See full list of supported properties in [Custom CSS properties](#custom-css-properties).
 
@@ -359,19 +365,6 @@ property`, and add the following string under `Options -> Custom CSS Properties`
 
 circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
 </code>
-
-## Benchmarking
-
-- `pnpm bench`
-    - Runs the canonical workload simulation benchmark across `nodejs`, `chromium`, `firefox`, and `webkit` via headless
-      Playwright.
-    - Includes memory output for all engines (`nodejs` heap usage; browser memory via OS RSS sampling on the Playwright
-      browser process using `pidusage`).
-    - Browser RSS is process-level memory (not JS-heap-only), so use it for trend/comparison signals.
-    - For stronger GC signal in Node, run with exposed GC:
-        - `NODE_OPTIONS=--expose-gc pnpm bench`
-    - You can increase run length / repeat count for more stable memory trends:
-        - `BENCH_WORKLOAD_ROUNDS=30 BENCH_WORKLOAD_TICKS=500 pnpm bench`
 
 ### Custom CSS properties
 
@@ -588,18 +581,6 @@ Description: Z index for this style. OpenLayers uses it to order style rendering
 Since version: v0.0.0
 
 <!-- :CUSTOM_CSS_PROPERTIES_DOCS -->
-
-#### Adding the custom properties to WebStorm/PHPStorm/IntelliJ
-
-Go to `Settings -> Editor -> Inspections` and search for `Unknown CSS property`. Then add the following string under
-`Options -> Custom CSS Properties`:
-
-<code>
-
-<!-- CUSTOM_CSS_PROPERTIES_LIST: -->
-
-circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
-</code>
 
 ## Benchmarking
 
