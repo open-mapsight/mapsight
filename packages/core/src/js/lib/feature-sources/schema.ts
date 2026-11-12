@@ -1,5 +1,7 @@
 import {z} from "zod";
 
+import type {FeatureSourceData} from "@/lib/feature-sources/types";
+
 export const featureSourceTypeSchema = z.enum([
 	"local",
 	"xhr-json",
@@ -11,12 +13,23 @@ export const featureSourceTypeSchema = z.enum([
  * Initial GeoJSON for a source that the host fills (`noop`). Validated loosely:
  * entries are checked when the data is indexed, not here.
  */
-export const featureSourceInitialDataSchema = z
-	.object({
-		type: z.literal("FeatureCollection").optional(),
-		features: z.array(z.unknown()).optional(),
-	})
-	.loose();
+export const featureSourceInitialDataSchema = z.custom<FeatureSourceData>(
+	(value) => {
+		if (
+			typeof value !== "object" ||
+			value === null ||
+			Array.isArray(value)
+		) {
+			return false;
+		}
+		const {type, features} = value as {type?: unknown; features?: unknown};
+		return (
+			(type === undefined || type === "FeatureCollection") &&
+			(features === undefined || Array.isArray(features))
+		);
+	},
+	{error: "Expected a GeoJSON FeatureCollection"},
+);
 
 export const featureSourceConfigSchema = z
 	.object({
