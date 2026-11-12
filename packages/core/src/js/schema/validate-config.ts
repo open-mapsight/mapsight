@@ -38,7 +38,13 @@ function mergeTypeMismatches(branches: $ZodIssue[][]): string | undefined {
 		return undefined;
 	}
 	const expected = [...new Set(issues.map((i) => i.expected))];
-	const received = /received (.+)$/.exec(issues[0].message)?.[1];
+	// Zod has no structured "received" value; its message ends with it.
+	const marker = "received ";
+	const markerIndex = issues[0].message.indexOf(marker);
+	const received =
+		markerIndex === -1
+			? undefined
+			: issues[0].message.slice(markerIndex + marker.length);
 	return `Invalid input: expected ${expected.join(" | ")}${
 		received ? `, received ${received}` : ""
 	}`;
