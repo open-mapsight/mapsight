@@ -234,3 +234,161 @@ describe("wmtsCapabilitiesToLayers", () => {
 		);
 	});
 });
+
+/** Applies `change` to the `webmercator` tile matrix set of a document only. */
+function changeWebMercator(xml: string, change: (matrixSet: string) => string) {
+	const start = xml.indexOf("<ows:Identifier>webmercator</ows:Identifier>");
+	const end = xml.indexOf("</TileMatrixSet>", start);
+	return xml.slice(0, start) + change(xml.slice(start, end)) + xml.slice(end);
+}
+
+describe("wmtsCapabilitiesToLayers with malformed numeric fields", () => {
+	// Only the webmercator matrix set is changed: "basemap" is published in both
+	// matrix sets and prefers webmercator, "overview" only uses geographic.
+	const malformations: Array<[string, (matrixSet: string) => string]> = [
+		[
+			"a missing ScaleDenominator",
+			(set) =>
+				set.replace(/<ScaleDenominator>[^<]*<\/ScaleDenominator>/, ""),
+		],
+		[
+			"a non-numeric ScaleDenominator",
+			(set) =>
+				set.replace(
+					/<ScaleDenominator>[^<]*</,
+					"<ScaleDenominator>abc<",
+				),
+		],
+		[
+			"a ScaleDenominator of zero",
+			(set) =>
+				set.replace(/<ScaleDenominator>[^<]*</, "<ScaleDenominator>0<"),
+		],
+		[
+			"a missing TopLeftCorner",
+			(set) => set.replace(/<TopLeftCorner>[^<]*<\/TopLeftCorner>/, ""),
+		],
+		[
+			"a non-numeric TopLeftCorner",
+			(set) =>
+				set.replace(
+					/<TopLeftCorner>[^<]*</,
+					"<TopLeftCorner>left top<",
+				),
+		],
+		[
+			"a missing TileWidth",
+			(set) => set.replace(/<TileWidth>[^<]*<\/TileWidth>/, ""),
+		],
+		[
+			"a non-numeric TileHeight",
+			(set) => set.replace(/<TileHeight>[^<]*</, "<TileHeight>high<"),
+		],
+		[
+			"a missing MatrixWidth",
+			(set) => set.replace(/<MatrixWidth>[^<]*<\/MatrixWidth>/, ""),
+		],
+		[
+			"a non-numeric MatrixHeight",
+			(set) => set.replace(/<MatrixHeight>[^<]*</, "<MatrixHeight>many<"),
+		],
+		[
+			"a missing tile matrix Identifier",
+			(set) => set.replace(/<ows:Identifier>0<\/ows:Identifier>/, ""),
+		],
+		[
+			"two tile matrices with the same ScaleDenominator",
+			(set) => set.replace(/139770566.00717944/, "279541132.0143589"),
+		],
+	];
+
+	it.each(malformations)("skips the layer for %s", (_label, change) => {
+		const xml = changeWebMercator(WMTS_KVP, change);
+
+		const entries = wmtsCapabilitiesToLayers(xml);
+
+		// the layer that only uses the intact matrix set is still returned
+		expect(entries.map((entry) => entry.name)).toEqual(["overview"]);
+		for (const entry of entries) {
+			expect(JSON.parse(JSON.stringify(entry))).toEqual(entry);
+		}
+	});
+
+	it("skips only layers that use the broken matrix set", () => {
+		const xml = changeWebMercator(WMTS_REST, (set) =>
+			set.replace(/<ScaleDenominator>[^<]*<\/ScaleDenominator>/, ""),
+		);
+
+		expect(wmtsCapabilitiesToLayers(xml)).toEqual([]);
+	});
+
+	it("never emits non-finite numbers in a tile grid", () => {
+		for (const [, change] of malformations) {
+			const entries = wmtsCapabilitiesToLayers(
+				changeWebMercator(WMTS_KVP, change),
+			);
+			expect(JSON.stringify(entries)).not.toMatch(/null|NaN|Infinity/);
+		}
+	});
+});
+
+describe("wmtsCapabilitiesToLayers identifiers", () => {
+	it("keeps identifiers that differ only in case", () => {
+		const xml = WMTS_KVP.replace(
+			"<Style><ows:Identifier>plain</ows:Identifier></Style>",
+			"<Style><ows:Identifier>Default</ows:Identifier></Style>",
+		).replace(
+			"<Format>image/jpeg</Format>",
+			"<Format>image/JPEG</Format><Format>image/jpeg</Format>",
+		);
+
+		const entry = byName(wmtsCapabilitiesToLayers(xml))["basemap"]!;
+
+		expect(entry.styles).toEqual(["Default", "default"]);
+		expect(entry.formats).toEqual([
+			"image/JPEG",
+			"image/jpeg",
+			"image/png",
+		]);
+	});
+
+	it("finds a style that only differs in case from another one", () => {
+		const xml = WMTS_KVP.replace(
+			"<Style><ows:Identifier>plain</ows:Identifier></Style>",
+			"<Style><ows:Identifier>Default</ows:Identifier></Style>",
+		);
+
+		for (const style of ["default", "Default"]) {
+			const entry = byName(wmtsCapabilitiesToLayers(xml, {style}))[
+				"basemap"
+			];
+			expect(entry).toBeDefined();
+			expect(tileUrl(createSource(entry!), [0, 0, 0])).toContain(
+				`style=${style}`,
+			);
+		}
+	});
+
+	it("keeps matrix set identifiers that differ only in case", () => {
+		const xml = WMTS_KVP.replace(
+			"<TileMatrixSetLink><TileMatrixSet>geographic</TileMatrixSet></TileMatrixSetLink>\n\t\t\t<TileMatrixSetLink><TileMatrixSet>webmercator</TileMatrixSet></TileMatrixSetLink>",
+			"<TileMatrixSetLink><TileMatrixSet>webmercator</TileMatrixSet></TileMatrixSetLink>" +
+				"<TileMatrixSetLink><TileMatrixSet>WebMercator</TileMatrixSet></TileMatrixSetLink>",
+		);
+
+		const entry = byName(wmtsCapabilitiesToLayers(xml))["basemap"]!;
+
+		expect(entry.matrixSets).toEqual(["webmercator", "WebMercator"]);
+	});
+
+	it("treats CRS codes that differ only in case as one", () => {
+		const xml = WMTS_KVP.replace(
+			"urn:ogc:def:crs:EPSG::4326",
+			"URN:OGC:DEF:CRS:EPSG::3857",
+		);
+
+		const entry = byName(wmtsCapabilitiesToLayers(xml))["basemap"]!;
+
+		expect(entry.crs).toEqual(["URN:OGC:DEF:CRS:EPSG::3857"]);
+	});
+});

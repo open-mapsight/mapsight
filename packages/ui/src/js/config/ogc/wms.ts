@@ -11,6 +11,7 @@ import {
 	isRawObject,
 	parseXmlDocument,
 	unique,
+	uniqueCrs,
 } from "./util";
 
 /**
@@ -32,7 +33,19 @@ export type WmsLayerEntry = {
 	crs: string[];
 	/** Names of the styles, own and inherited. */
 	styles: string[];
-	queryable: boolean;
+	/**
+	 * Whether the layer supports `GetFeatureInfo` (the `queryable` attribute,
+	 * inherited from parent layers, `false` if no layer sets it).
+	 *
+	 * Only present when it is known. It is read from the XML of a capabilities
+	 * string, per layer element. A capabilities object that was parsed by
+	 * OpenLayers cannot tell an explicit `queryable="0"` from an unset value
+	 * and has no inheritance information, so there only `true` is reported
+	 * and the field is omitted otherwise. The same applies to layers that
+	 * cannot be matched to their element in the XML. Omitted means unknown,
+	 * not `false`.
+	 */
+	queryable?: boolean;
 	/** Title of the layer's `Attribution` element, if the service gives one. */
 	attribution?: string;
 	/**
@@ -60,7 +73,8 @@ type Inherited = {
 	geographicBoundingBox?: GeographicBoundingBox;
 	styles: string[];
 	attribution?: string;
-	queryable: boolean;
+	/** `undefined`: not known. */
+	queryable: boolean | undefined;
 };
 
 const FORMAT_PREFERENCE = [
@@ -106,46 +120,131 @@ function getMapUrl(operation: RawObject | undefined): string | undefined {
 	return undefined;
 }
 
+const isLayerElement = (element: Element) => element.localName === "Layer";
+
+function layerElementName(element: Element): string | undefined {
+	return asText(
+		Array.from(element.children).find((child) => child.localName === "Name")
+			?.textContent,
+	);
+}
+
+/** The layer element directly below `Capability`. */
+function findRootLayerElement(document: Document): Element | undefined {
+	return Array.from(document.documentElement.children)
+		.filter((element) => element.localName === "Capability")
+		.flatMap((capability) => Array.from(capability.children))
+		.find(isLayerElement);
+}
+
 /**
- * The OpenLayers parser does not carry the `queryable` attribute down to
- * nested layers. Resolve it from the XML (it is inherited, default `false`).
+ * The `queryable` attribute of a layer element: `undefined` if it is not set
+ * (or not a boolean), so the layer inherits it.
  */
-function readQueryableByName(document: Document): Map<string, boolean> {
-	const result = new Map<string, boolean>();
-
-	const visit = (layer: Element, inherited: boolean) => {
-		const attribute = layer.getAttribute("queryable");
-		const queryable =
-			attribute === null
-				? inherited
-				: attribute === "1" || attribute.toLowerCase() === "true";
-
-		const children = Array.from(layer.children);
-		const name = children
-			.find((child) => child.localName === "Name")
-			?.textContent?.trim();
-		if (name && !result.has(name)) {
-			result.set(name, queryable);
-		}
-		for (const child of children) {
-			if (child.localName === "Layer") {
-				visit(child, queryable);
-			}
-		}
-	};
-
-	for (const capability of Array.from(document.documentElement.children)) {
-		if (capability.localName !== "Capability") {
-			continue;
-		}
-		for (const layer of Array.from(capability.children)) {
-			if (layer.localName === "Layer") {
-				visit(layer, false);
-			}
-		}
+function readQueryableAttribute(element: Element): boolean | undefined {
+	const value = element.getAttribute("queryable")?.trim().toLowerCase();
+	if (value === "1" || value === "true") {
+		return true;
 	}
+	if (value === "0" || value === "false") {
+		return false;
+	}
+	return undefined;
+}
 
-	return result;
+/**
+ * Pairs the parsed child layers of a layer with the child `Layer` elements of
+ * its XML element, by position. The OpenLayers parser drops child layers it
+ * finds nothing in, so the pairing is only used if every child matches its
+ * element (same position and same name); otherwise the XML is not used for
+ * the children.
+ */
+function pairChildElements(
+	children: RawObject[],
+	element: Element | undefined,
+): Array<Element | undefined> {
+	const elements = element
+		? Array.from(element.children).filter(isLayerElement)
+		: [];
+	const aligned =
+		elements.length === children.length &&
+		children.every(
+			(child, index) =>
+				asText(child["Name"]) === layerElementName(elements[index]!),
+		);
+	return children.map((_, index) => (aligned ? elements[index] : undefined));
+}
+
+/**
+ * Resolves `queryable` of a layer. With its XML element it is read from there
+ * and inherited as the specification says. Without, only an explicit `true`
+ * of the parsed object is certain (see `WmsLayerEntry.queryable`).
+ */
+function resolveQueryable(
+	layer: RawObject,
+	element: Element | undefined,
+	inherited: boolean | undefined,
+): boolean | undefined {
+	if (element) {
+		return readQueryableAttribute(element) ?? inherited;
+	}
+	return layer["queryable"] === true
+		? true
+		: typeof layer["queryable"] === "boolean"
+			? undefined
+			: inherited;
+}
+
+/**
+ * Parameters the source generates for every `GetMap` request. They are
+ * removed from an advertised URL, which often is a copy of the capabilities
+ * request URL, so each of them is sent exactly once.
+ */
+const REQUEST_PARAMETERS = new Set([
+	"SERVICE",
+	"REQUEST",
+	"VERSION",
+	"LAYERS",
+	"STYLES",
+	"FORMAT",
+	"CRS",
+	"SRS",
+	"BBOX",
+	"WIDTH",
+	"HEIGHT",
+	"TRANSPARENT",
+]);
+
+function parameterName(parameter: string): string {
+	const name = parameter.split("=", 1)[0] ?? "";
+	try {
+		return decodeURIComponent(name).trim().toUpperCase();
+	} catch {
+		return name.trim().toUpperCase();
+	}
+}
+
+/**
+ * Removes the parameters the source generates itself (case-insensitively) from
+ * the query of a `GetMap` URL and keeps everything else, such as `map=` or
+ * authentication parameters, as it is.
+ */
+function removeRequestParameters(url: string): string {
+	const queryStart = url.indexOf("?");
+	if (queryStart === -1) {
+		return url;
+	}
+	const hashStart = url.indexOf("#", queryStart);
+	const queryEnd = hashStart === -1 ? url.length : hashStart;
+
+	const kept = url
+		.slice(queryStart + 1, queryEnd)
+		.split("&")
+		.filter(
+			(parameter) => !REQUEST_PARAMETERS.has(parameterName(parameter)),
+		);
+
+	return url.slice(0, queryStart + 1) + kept.join("&") + url.slice(queryEnd);
 }
 
 function readCrs(layer: RawObject): string[] {
@@ -210,12 +309,12 @@ export function wmsCapabilitiesToLayers(
 	capabilities: string | RawObject,
 	options: WmsCapabilitiesToLayersOptions = {},
 ): WmsLayerEntry[] {
-	let queryableByName: Map<string, boolean> | undefined;
+	let rootElement: Element | undefined;
 	let parsed: unknown;
 	if (typeof capabilities === "string") {
 		const document = parseXmlDocument(capabilities);
 		parsed = new WMSCapabilities().readFromDocument(document);
-		queryableByName = readQueryableByName(document);
+		rootElement = findRootLayerElement(document);
 	} else {
 		parsed = capabilities;
 	}
@@ -227,12 +326,13 @@ export function wmsCapabilitiesToLayers(
 	}
 
 	const operation = getMapOperation(parsed);
-	const url = options.url ?? getMapUrl(operation);
-	if (!url) {
+	const advertisedUrl = options.url ?? getMapUrl(operation);
+	if (!advertisedUrl) {
 		throw new Error(
 			"The capabilities do not advertise a GetMap URL; pass options.url.",
 		);
 	}
+	const url = removeRequestParameters(advertisedUrl);
 	const version = asText(parsed["version"]) ?? "1.3.0";
 	const format = chooseFormat(
 		asArray(operation?.["Format"]).flatMap((entry) => asText(entry) ?? []),
@@ -242,23 +342,21 @@ export function wmsCapabilitiesToLayers(
 
 	const entries: WmsLayerEntry[] = [];
 
-	const visit = (layer: RawObject, inherited: Inherited) => {
+	const visit = (
+		layer: RawObject,
+		element: Element | undefined,
+		inherited: Inherited,
+	) => {
 		const name = asText(layer["Name"]);
-		// Explicit `queryable` is resolved from the XML where it is available.
-		const queryable =
-			(name !== undefined ? queryableByName?.get(name) : undefined) ??
-			(typeof layer["queryable"] === "boolean"
-				? layer["queryable"]
-				: inherited.queryable);
 
 		const resolved: Inherited = {
-			crs: unique([...readCrs(layer), ...inherited.crs]),
+			crs: uniqueCrs([...readCrs(layer), ...inherited.crs]),
 			geographicBoundingBox:
 				readGeographicBoundingBox(layer) ??
 				inherited.geographicBoundingBox,
 			styles: unique([...readStyleNames(layer), ...inherited.styles]),
 			attribution: readAttribution(layer) ?? inherited.attribution,
-			queryable,
+			queryable: resolveQueryable(layer, element, inherited.queryable),
 		};
 
 		const supportsProjection =
@@ -278,7 +376,9 @@ export function wmsCapabilitiesToLayers(
 				}),
 				crs: resolved.crs,
 				styles: resolved.styles,
-				queryable: resolved.queryable,
+				...(resolved.queryable !== undefined && {
+					queryable: resolved.queryable,
+				}),
 				...(resolved.attribution !== undefined && {
 					attribution: resolved.attribution,
 				}),
@@ -303,14 +403,23 @@ export function wmsCapabilitiesToLayers(
 			});
 		}
 
-		for (const child of asArray(layer["Layer"])) {
-			if (isRawObject(child)) {
-				visit(child, resolved);
-			}
-		}
+		const children = asArray(layer["Layer"]).filter(isRawObject);
+		const elements = pairChildElements(children, element);
+		children.forEach((child, index) => {
+			visit(child, elements[index], {
+				...resolved,
+				// a child whose element is unknown cannot inherit a certain value
+				queryable: elements[index] ? resolved.queryable : undefined,
+			});
+		});
 	};
 
-	visit(root, {crs: [], styles: [], queryable: false});
+	visit(root, rootElement, {
+		crs: [],
+		styles: [],
+		// the specification's default; unknown for an object parsed elsewhere
+		queryable: rootElement ? false : undefined,
+	});
 
 	return entries;
 }

@@ -35,11 +35,24 @@ export function isHttpUrl(value: unknown): value is string {
 	return typeof value === "string" && /^https?:\/\//i.test(value.trim());
 }
 
-/** Removes duplicates, keeping the first occurrence and the original casing. */
+/**
+ * Removes duplicates, keeping the first occurrence. Values are compared
+ * exactly: layer names, style, matrix set and format identifiers are case
+ * sensitive. Use {@link uniqueCrs} for CRS codes.
+ */
 export function unique(values: string[]): string[] {
+	return [...new Set(values)];
+}
+
+/**
+ * Removes duplicate CRS codes, keeping the first occurrence and its casing.
+ * Unlike other identifiers, CRS codes are not case sensitive
+ * (`EPSG:3857` and `epsg:3857` are the same).
+ */
+export function uniqueCrs(codes: string[]): string[] {
 	const seen = new Set<string>();
-	return values.filter((value) => {
-		const key = value.toLowerCase();
+	return codes.filter((code) => {
+		const key = code.toLowerCase();
 		if (seen.has(key)) {
 			return false;
 		}

@@ -148,8 +148,20 @@ definition builds the OpenLayers source and its tile grid from it.
 - `tileSize` or `tileSizes`: pixels, a number or `[width, height]`.
 - Optional: `sizes` (`[matrixWidth, matrixHeight]` per matrix), `tileRanges` (`[minCol, maxCol, minRow, maxRow]` per
   matrix, for tile matrix limits) and `extent`, which restrict the requested tiles.
+- **`tileRanges` take precedence over `extent`.** OpenLayers uses `tileRanges` as they are and does not intersect them
+  with `extent` (it does so for `sizes`). If you give both, `extent` no longer limits the requested tiles; put the
+  restriction into the `tileRanges`.
 
 An `ol/tilegrid/WMTS` instance is still accepted as `tileGrid` when the layer is created in code.
+
+The tile grid description is validated when the source is created: `resolutions` and `matrixIds` are required, the
+per-matrix arrays (`matrixIds`, `origins`, `tileSizes`, `sizes`, `tileRanges`) need the length of `resolutions`,
+`resolutions` must be finite, positive and strictly descending, `origin` and `origins` (or `tileSize` and `tileSizes`)
+must not be combined, and all numbers must be finite. A source without a valid `tileGrid` is not created: Mapsight logs
+one error that names the problem and builds no source.
+
+`dimensions` is copied when the source is created, so the configuration is never modified (it can be frozen state).
+Changing, adding or removing a dimension creates a new source.
 
 The definition is not part of the default set. Register it with the ol-proxy plugin:
 
@@ -182,7 +194,7 @@ const xml = await (
 ).text();
 
 const layers = wmsCapabilitiesToLayers(xml, {projection: "EPSG:3857"});
-// [{name, title, abstract?, geographicBoundingBox?, crs, styles, queryable, attribution?, definition}, ...]
+// [{name, title, abstract?, geographicBoundingBox?, crs, styles, queryable?, attribution?, definition}, ...]
 
 const chosen = layers.find((layer) => layer.name === "workspace:layer_name")!;
 const mapLayers = {
@@ -203,7 +215,10 @@ geographicBoundingBox?, crs, matrixSets, styles, formats, definition}` per layer
   geographic bounding box, attribution and `queryable` are inherited unless the layer sets its own (see "Inheritance of
   layer properties" in the WMS specification).
 - `definition` is a `TileLayer` with a `TileWMSSource`: the `GetMap` URL from the capabilities and `params` with `LAYERS`,
-  `VERSION`, `FORMAT` and `TRANSPARENT`.
+  `VERSION`, `FORMAT` and `TRANSPARENT`. Parameters that the source generates itself (`SERVICE`, `REQUEST`, `VERSION`,
+  `LAYERS`, `STYLES`, `FORMAT`, `CRS`, `SRS`, `BBOX`, `WIDTH`, `HEIGHT`, `TRANSPARENT`, in any letter case) are removed
+  from the URL, whether advertised or passed as `url`, so that each is sent once. Other parameters such as `map=` or
+  access tokens stay in the URL.
 - Options: `url` replaces the advertised `GetMap` URL, `format` (default: an advertised format, preferring PNG) and
   `projection` (sets the source projection and leaves out layers that do not advertise the CRS).
 
@@ -229,11 +244,14 @@ Things to know:
   your UI renders it as text, never as HTML.
 - **Plain JSON.** The definitions can be stored in Redux state and in embed config as they are.
 - Layers for which no usable source can be derived (for example a tile matrix set in a projection that is not
-  registered, or a tile URL that is not `http(s)`) are left out of the WMTS result. Register additional projections
-  before calling the helper.
-- When you pass an already **parsed WMS object**, `queryable` is only known for the layer's own `queryable` attribute:
-  the OpenLayers parser drops the attribute on layers that have child layers, so inheritance can only be resolved from the
-  XML string.
+  registered, a tile URL that is not `http(s)`, or malformed tile matrix data such as a missing or non-numeric
+  `ScaleDenominator`) are left out of the WMTS result. Register additional projections before calling the helper.
+- **Identifiers are case-sensitive.** Layer names, style names, matrix set identifiers and formats that differ only in
+  case are different values and are all kept. Only CRS codes are compared case-insensitively.
+- **`queryable` can be unknown.** From an XML string it is resolved per layer element, so layers that share a name keep
+  their own value, and it is `true` or `false`. An already **parsed WMS object** (from `ol/format/WMSCapabilities`)
+  cannot tell an explicit `queryable="0"` from an unset value, and layers with child layers carry no value, so only a
+  `true` is reported there. The field is omitted when it is not known: omitted means unknown, not `false`.
 
 ---
 

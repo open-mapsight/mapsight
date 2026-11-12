@@ -1,9 +1,11 @@
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import type {Size} from "ol/size";
 import {optionsFromCapabilities} from "ol/source/WMTS";
 import type WMTSTileGrid from "ol/tilegrid/WMTS";
 
 import type {Description} from "@mapsight/core/lib/map/types";
 import type {WMTSTileGridDescription} from "@mapsight/core/ol-proxy/definitions/source/WMTSSource";
+import {validateWMTSTileGridDescription} from "@mapsight/core/ol-proxy/definitions/source/WMTSSource";
 
 import type {GeographicBoundingBox, RawObject} from "./util";
 import {
@@ -14,6 +16,7 @@ import {
 	isRawObject,
 	parseXmlDocument,
 	unique,
+	uniqueCrs,
 } from "./util";
 
 /**
@@ -68,6 +71,25 @@ export type WmtsCapabilitiesToLayersOptions = {
 	style?: string;
 };
 
+/**
+ * Describes the tile grid OpenLayers derived from the capabilities as plain
+ * JSON, or returns `undefined` if the result would not be a valid, finite
+ * description (for example because a tile matrix lacks its `ScaleDenominator`
+ * and OpenLayers computed `NaN`, which JSON turns into `null`).
+ */
+function describeValidTileGrid(
+	tileGrid: WMTSTileGrid,
+): WMTSTileGridDescription | undefined {
+	try {
+		const description = describeTileGrid(tileGrid);
+		return validateWMTSTileGridDescription(description).length === 0
+			? description
+			: undefined;
+	} catch {
+		return undefined;
+	}
+}
+
 function describeTileGrid(tileGrid: WMTSTileGrid): WMTSTileGridDescription {
 	const resolutions = tileGrid.getResolutions();
 	const ranges = resolutions.map((_, z) => tileGrid.getFullTileRange(z));
@@ -81,8 +103,10 @@ function describeTileGrid(tileGrid: WMTSTileGrid): WMTSTileGridDescription {
 			if (typeof size === "number") {
 				return size;
 			}
-			const [width = 0, height = width] = size;
-			return width === height ? width : [width, height];
+			// Do not fill in missing values: the validation has to see them.
+			const [width, height] = size as Array<number | undefined>;
+			return (width === height ? width : [width, height]) as
+				number | Size;
 		}),
 	};
 
@@ -114,7 +138,7 @@ function readLayerData(layer: RawObject, matrixSets: RawObject[]) {
 			isRawObject(link) ? (asText(link["TileMatrixSet"]) ?? []) : [],
 		),
 	);
-	const crs = unique(
+	const crs = uniqueCrs(
 		matrixSetIds.flatMap((id) => {
 			const matrixSet = matrixSets.find(
 				(candidate) => candidate["Identifier"] === id,
@@ -145,8 +169,14 @@ function readLayerData(layer: RawObject, matrixSets: RawObject[]) {
  * registered in ol-proxy, for example with
  * `createOlProxyPlugin({dependencies: [WMTSSource]})`.
  *
- * Layers for which no usable source can be derived (unknown matrix set or
- * style, unregistered projection, no `http(s)` tile URL) are left out.
+ * Layers for which no usable source can be derived are left out: unknown
+ * matrix set or style, unregistered projection, no `http(s)` tile URL, or
+ * malformed tile matrix data (for example a missing or non-numeric
+ * `ScaleDenominator`, `TopLeftCorner`, `TileWidth` or `MatrixWidth`, or tile
+ * matrices that share a `ScaleDenominator`). The derived tile grid
+ * has to pass the same validation as a `WMTSSource` tile grid description
+ * (`validateWMTSTileGridDescription`), so no returned definition holds
+ * `NaN` (which JSON turns into `null`) or fails to create a source.
  *
  * This function does not fetch anything: the host application loads the
  * capabilities document (including CORS or proxy handling) and passes it in.
@@ -236,12 +266,13 @@ export function wmtsCapabilitiesToLayers(
 			continue;
 		}
 
+		const tileGrid = describeValidTileGrid(source.tileGrid);
 		const urls = (source.urls ?? []).filter(isHttpUrl);
 		const projection =
 			typeof source.projection === "string"
 				? source.projection
 				: source.projection?.getCode();
-		if (urls.length === 0 || !projection) {
+		if (urls.length === 0 || !projection || !tileGrid) {
 			continue;
 		}
 
@@ -281,7 +312,7 @@ export function wmtsCapabilitiesToLayers(
 							}),
 							...(version !== undefined && {version}),
 							projection,
-							tileGrid: describeTileGrid(source.tileGrid),
+							tileGrid,
 							...(Object.keys(dimensions).length > 0 && {
 								dimensions,
 							}),

@@ -1,4 +1,5 @@
 import type TileLayer from "ol/layer/Tile";
+import {get as getProjection} from "ol/proj";
 import TileWMS from "ol/source/TileWMS";
 
 import {describe, expect, it} from "vitest";
@@ -285,5 +286,237 @@ describe("wmsCapabilitiesToLayers (WMS 1.1.1)", () => {
 				},
 			},
 		});
+	});
+});
+
+/** A minimal WMS 1.3.0 document around the given layer elements. */
+function wmsDocument(
+	layers: string,
+	getMapUrl = "https://wms.example.org/maps?",
+) {
+	return `<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<Capability>
+		<Request><GetMap>
+			<Format>image/png</Format>
+			<DCPType><HTTP><Get><OnlineResource xlink:href="${getMapUrl}"/></Get></HTTP></DCPType>
+		</GetMap></Request>
+		${layers}
+	</Capability>
+</WMS_Capabilities>`;
+}
+
+describe("wmsCapabilitiesToLayers identifiers", () => {
+	it("keeps style names that differ only in case", () => {
+		const xml = wmsDocument(`<Layer>
+			<Name>a</Name><Title>A</Title>
+			<Style><Name>Default</Name></Style>
+			<Style><Name>default</Name></Style>
+		</Layer>`);
+
+		expect(wmsCapabilitiesToLayers(xml)[0]?.styles).toEqual([
+			"Default",
+			"default",
+		]);
+	});
+
+	it("keeps layers whose names differ only in case", () => {
+		const xml = wmsDocument(`<Layer>
+			<Layer><Name>Roads</Name></Layer>
+			<Layer><Name>roads</Name></Layer>
+		</Layer>`);
+
+		expect(wmsCapabilitiesToLayers(xml).map((entry) => entry.name)).toEqual(
+			["Roads", "roads"],
+		);
+	});
+
+	it("treats CRS codes that differ only in case as one", () => {
+		const xml = wmsDocument(`<Layer>
+			<CRS>EPSG:3857</CRS>
+			<Layer><Name>a</Name><CRS>epsg:3857</CRS><CRS>EPSG:4326</CRS></Layer>
+		</Layer>`);
+
+		expect(wmsCapabilitiesToLayers(xml)[0]?.crs).toEqual([
+			"epsg:3857",
+			"EPSG:4326",
+		]);
+	});
+});
+
+describe("wmsCapabilitiesToLayers queryable", () => {
+	it("tracks layers with the same name separately", () => {
+		const xml = wmsDocument(`<Layer>
+			<Layer queryable="1"><Name>dup</Name><Title>First</Title></Layer>
+			<Layer queryable="0"><Name>dup</Name><Title>Second</Title></Layer>
+			<Layer><Title>Folder</Title>
+				<Layer queryable="1"><Name>dup</Name><Title>Third</Title></Layer>
+			</Layer>
+		</Layer>`);
+
+		const entries = wmsCapabilitiesToLayers(xml);
+
+		expect(entries.map((entry) => [entry.title, entry.queryable])).toEqual([
+			["First", true],
+			["Second", false],
+			["Third", true],
+		]);
+	});
+
+	it("inherits an unset value per occurrence", () => {
+		const xml = wmsDocument(`<Layer>
+			<Layer queryable="1"><Title>Parent</Title>
+				<Layer><Name>dup</Name><Title>Inheriting</Title></Layer>
+			</Layer>
+			<Layer><Name>dup</Name><Title>Default</Title></Layer>
+		</Layer>`);
+
+		const entries = wmsCapabilitiesToLayers(xml);
+
+		expect(entries.map((entry) => [entry.title, entry.queryable])).toEqual([
+			["Inheriting", true],
+			["Default", false],
+		]);
+	});
+
+	it("is not reported for a parsed object where it cannot be known", async () => {
+		const {default: WMSCapabilities} =
+			await import("ol/format/WMSCapabilities");
+		const xml = wmsDocument(`<Layer queryable="1">
+			<Layer><Name>explicit</Name><Title>Explicit</Title></Layer>
+			<Layer queryable="1"><Name>own</Name><Title>Own</Title></Layer>
+			<Layer queryable="0"><Name>off</Name><Title>Off</Title></Layer>
+		</Layer>`);
+		const parsed = new WMSCapabilities().read(xml) as Record<
+			string,
+			unknown
+		>;
+
+		const fromObject = byName(wmsCapabilitiesToLayers(parsed));
+		const fromString = byName(wmsCapabilitiesToLayers(xml));
+
+		// the string knows all three
+		expect(fromString["explicit"]?.queryable).toBe(true);
+		expect(fromString["own"]?.queryable).toBe(true);
+		expect(fromString["off"]?.queryable).toBe(false);
+		// the OpenLayers parser reports `false` for "unknown", so the object
+		// only confirms what is certain
+		expect(fromObject["own"]?.queryable).toBe(true);
+		expect(fromObject["explicit"]).not.toHaveProperty("queryable");
+		expect(fromObject["off"]).not.toHaveProperty("queryable");
+	});
+
+	it("only reports what is certain for layers that cannot be matched to their element", () => {
+		// OpenLayers drops the empty layer, so the lists no longer line up
+		const xml = wmsDocument(`<Layer queryable="1">
+			<Layer/>
+			<Layer queryable="1"><Name>a</Name></Layer>
+			<Layer queryable="0"><Name>b</Name></Layer>
+			<Layer><Name>c</Name></Layer>
+		</Layer>`);
+
+		const entries = byName(wmsCapabilitiesToLayers(xml));
+
+		// the parser keeps an explicit `true`; `false` could also be "unset"
+		expect(entries["a"]?.queryable).toBe(true);
+		expect(entries["b"]).not.toHaveProperty("queryable");
+		expect(entries["c"]).not.toHaveProperty("queryable");
+	});
+});
+
+describe("wmsCapabilitiesToLayers GetMap URL", () => {
+	const projection = getProjection("EPSG:3857")!;
+
+	/** Creates the source through ol-proxy and returns a tile URL. */
+	function tileUrl(
+		entry: ReturnType<typeof wmsCapabilitiesToLayers>[number],
+	) {
+		di.injectDefinitions([TileLayerDefinition, TileWMSSource]);
+		let layer: TileLayer<TileWMS> | undefined;
+		updateProxyObject({
+			di,
+			newDefinition: entry.definition,
+			adder: (created) => (layer = created as TileLayer<TileWMS>),
+		});
+		const url = layer!
+			.getSource()!
+			.tileUrlFunction([1, 1, 0], 1, projection);
+		return new URL(url!);
+	}
+
+	/** All values of a parameter, whatever its casing. */
+	function values(url: URL, name: string) {
+		return [...url.searchParams.entries()]
+			.filter(([key]) => key.toUpperCase() === name)
+			.map(([, value]) => value);
+	}
+
+	const advertised =
+		"https://wms.example.org/maps?map=demo&REQUEST=GetCapabilities&version=1.0.0&SERVICE=WFS" +
+		"&Layers=old&styles=x&format=image/jpeg&crs=EPSG:4326&SRS=EPSG:4326&bbox=1,2,3,4" +
+		"&width=1&Height=1&transparent=false&token=abc%20def";
+
+	it.each([
+		["1.3.0", WMS_130, "CRS", "SRS"],
+		["1.1.1", WMS_111, "SRS", "CRS"],
+	])(
+		"generates one request parameter set for WMS %s",
+		(version, template, crsName, otherCrsName) => {
+			const xml = template.replace(
+				/<GetMap>([\s\S]*?)<OnlineResource xlink:href="[^"]*"/,
+				(_match, formats: string) =>
+					`<GetMap>${formats}<OnlineResource xlink:href="${advertised.replace(/&/g, "&amp;")}"`,
+			);
+
+			const entry = wmsCapabilitiesToLayers(xml)[0]!;
+			const url = tileUrl(entry);
+
+			expect(url.origin + url.pathname).toBe(
+				"https://wms.example.org/maps",
+			);
+			// everything WMS controls appears exactly once, with the generated value
+			expect(values(url, "REQUEST")).toEqual(["GetMap"]);
+			expect(values(url, "SERVICE")).toEqual(["WMS"]);
+			expect(values(url, "VERSION")).toEqual([version]);
+			expect(values(url, "LAYERS")).toEqual([entry.name]);
+			expect(values(url, "STYLES")).toEqual([""]);
+			expect(values(url, "FORMAT")).toEqual(["image/png"]);
+			expect(values(url, "TRANSPARENT")).toEqual(["true"]);
+			expect(values(url, crsName)).toEqual(["EPSG:3857"]);
+			expect(values(url, otherCrsName)).toEqual([]);
+			expect(values(url, "BBOX")).toHaveLength(1);
+			expect(values(url, "BBOX")[0]).not.toBe("1,2,3,4");
+			expect(values(url, "WIDTH")).toEqual(["256"]);
+			expect(values(url, "HEIGHT")).toEqual(["256"]);
+			// everything else is kept
+			expect(values(url, "MAP")).toEqual(["demo"]);
+			expect(values(url, "TOKEN")).toEqual(["abc def"]);
+		},
+	);
+
+	it("also cleans a url option", () => {
+		const entry = wmsCapabilitiesToLayers(WMS_130, {
+			url: "https://proxy.example.org/wms?SERVICE=WMS&request=GetCapabilities&key=1",
+		})[0]!;
+
+		expect(entry.definition).toMatchObject({
+			options: {
+				source: {options: {url: "https://proxy.example.org/wms?key=1"}},
+			},
+		});
+	});
+
+	it("keeps a URL without controlled parameters as it is", () => {
+		for (const url of [
+			"https://wms.example.org/maps?",
+			"https://wms.example.org/wms?map=demo&",
+			"https://wms.example.org/wms?map=demo&token=a%2Fb",
+			"https://wms.example.org/wms",
+		]) {
+			const entry = wmsCapabilitiesToLayers(WMS_130, {url})[0]!;
+			expect(entry.definition).toMatchObject({
+				options: {source: {options: {url}}},
+			});
+		}
 	});
 });
