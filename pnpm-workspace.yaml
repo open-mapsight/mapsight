@@ -11,7 +11,7 @@ allowBuilds:
   unrs-resolver: true
   sharp: true
 catalog:
-  "@reduxjs/toolkit": "^2.13.0"
+  "@reduxjs/toolkit": "^2.14.0"
   "@playwright/test": "^1.64.1"
   "@types/jsdom": "^30.0.0"
   "canvas": "^3.1.0"
