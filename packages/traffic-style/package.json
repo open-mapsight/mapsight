@@ -23,7 +23,7 @@
 		"@fortawesome/free-solid-svg-icons": "^7.3.1",
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@types/node": "catalog:",
-		"markdown-table": "^3.0.4",
+		"markdown-table": "^3.1.0",
 		"vitest": "catalog:"
 	},
 	"exports": {
