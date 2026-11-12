@@ -22,6 +22,7 @@ export default {
 	initialOptionMap: {
 		...base.initialOptionMap,
 		styleUrl: "styleUrl",
+		styleTransforms: "styleTransforms",
 		accessToken: "accessToken",
 		webfonts: "webfonts",
 		sourceId: "source",
