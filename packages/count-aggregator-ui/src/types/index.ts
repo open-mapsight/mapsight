@@ -133,6 +133,8 @@ export interface CountAggregatorAppConfig {
 	displayPrecision?: number;
 	defaultResolution?: Resolution;
 	defaultChartType?: ChartType;
+	/** Compact comparison labels; full station labels remain the default. */
+	comparisonTooltip?: "full" | "compact";
 	resolutions?: readonly Resolution[];
 	resolutionLabels?: Partial<Record<ValuesMode, string>>;
 	features?: CountAggregatorFeatures;

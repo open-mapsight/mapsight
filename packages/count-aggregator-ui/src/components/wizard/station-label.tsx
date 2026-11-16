@@ -7,10 +7,12 @@ import {ColorDot} from "./color-dot.js";
 
 export const StationLabel = memo(function StationLabel({
 	station,
+	label,
 	color,
 	isEnabled = true,
 }: {
 	station?: Station;
+	label?: string;
 	color: string;
 	isEnabled?: boolean;
 }): ReactElement {
@@ -25,8 +27,10 @@ export const StationLabel = memo(function StationLabel({
 			>
 				{station ? (
 					<>
-						{formatStationLabel(station)}
-						{station.sectionDescription ? (
+						{label ?? formatStationLabel(station)}
+						{station.sectionDescription &&
+						label !==
+							`${formatStationLabel(station)} — ${station.sectionDescription.trim()}` ? (
 							<span className="msca:ml-1 msca:text-sm msca:text-gray-600">
 								{station.sectionDescription}
 							</span>

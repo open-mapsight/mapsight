@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import type {Station} from "../types";
-import {formatStationLabel} from "./stations.js";
+import {buildStationLabels, formatStationLabel} from "./stations.js";
 
 function createStation(overrides: Partial<Station>): Station {
 	return {
@@ -42,5 +42,56 @@ describe("formatStationLabel", () => {
 		expect(formatStationLabel(createStation({label: null}))).toBe(
 			"fallback-id",
 		);
+	});
+});
+
+describe("buildStationLabels", () => {
+	it("leaves unique names unchanged and disambiguates names after suffix removal", () => {
+		const stations = [
+			createStation({
+				id: 1,
+				label: "Shared path (min)",
+				sectionDescription: "Upper section",
+			}),
+			createStation({
+				id: 2,
+				label: "Shared path (max)",
+				sectionDescription: "Lower section",
+			}),
+			createStation({id: 3, label: "Other path"}),
+		];
+		expect([...buildStationLabels(stations).values()]).toEqual([
+			"Shared path — Upper section",
+			"Shared path — Lower section",
+			"Other path",
+		]);
+		expect(buildStationLabels(stations.toReversed())).toEqual(
+			buildStationLabels(stations),
+		);
+	});
+
+	it("uses type, origin id, then numeric id when descriptions are absent or identical", () => {
+		const stations = [
+			createStation({id: 1, typeName: "Counter", originId: "sensor-a"}),
+			createStation({id: 2, typeName: "Level", originId: "sensor-b"}),
+		];
+		expect([...buildStationLabels(stations).values()]).toEqual([
+			"Station — Counter",
+			"Station — Level",
+		]);
+		const sameType = stations.map((station) => ({
+			...station,
+			typeName: "Counter",
+			sectionDescription: "Same section",
+		}));
+		expect([...buildStationLabels(sameType).values()]).toEqual([
+			"Station — sensor-a",
+			"Station — sensor-b",
+		]);
+		expect([
+			...buildStationLabels(
+				sameType.map((station) => ({...station, originId: "shared"})),
+			).values(),
+		]).toEqual(["Station — 1", "Station — 2"]);
 	});
 });

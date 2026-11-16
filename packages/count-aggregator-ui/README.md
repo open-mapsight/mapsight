@@ -143,6 +143,41 @@ The `/headless` entry also exports `CountAggregatorProvider`, `createStationType
 [`/count-aggregator/headless`](https://github.com/open-mapsight/mapsight/blob/main/apps/demos/src/count-aggregator/count-aggregator-headless-page.tsx)
 (mock API via `pnpm --filter @mapsight/demos dev`).
 
+## Comparison charts
+
+Full station labels remain the tooltip default. A host application can opt into a compact tooltip
+for charts with more than one series by setting `comparisonTooltip` on its app config:
+
+```ts
+config.apps.bicycleSensorTotal = {
+	...config.apps.bicycleSensorTotal,
+	comparisonTooltip: "compact", // default: "full"
+};
+```
+
+Compact tooltips show a colour swatch, a short station identifier, the metric (such as minimum,
+maximum or average), and the bucket value. They use the station's existing `originId` when it is
+unique within the comparison and at most 20 characters; otherwise they use `#` plus the numeric
+station ID. Identifiers beginning with `#` also use the numeric fallback to avoid collisions.
+The full series label remains available as a title. Width and height are bounded on small screens;
+long comparisons scroll within the tooltip. Single-series charts keep full labels in either mode.
+This setting applies to the wizard, overview charts and direct `TimeSeriesChart` use.
+
+Intraday axis ticks include dates when the selected range crosses a calendar-day boundary, and the
+year when it crosses a year boundary. Single-day charts retain time-only ticks.
+
+Line and area charts break at missing resolution buckets. Missing stations or metrics remain null,
+are omitted from tooltips, and never become zero measurements or contribute to bucket statistics.
+Gap rows exist only in the merged chart data; source measurements and exports remain unchanged.
+Daily, weekly, monthly and yearly steps use local calendar dates, matching API datetime parsing.
+Gap expansion is limited to 5,000 rows plus one break marker for each remaining gap, so long outages
+stay bounded while lines still break.
+
+Station selections, result labels and full chart tooltips disambiguate duplicate display names
+using an existing section description, type name, origin ID, or numeric ID, in that order. Unique
+names keep their existing formatting. Custom selectors can use the exported `buildStationLabels`
+helper with the complete station collection to get the same labels.
+
 ## CMS app-shell embed
 
 For host CMS pages that paste HTML rather than bundle your app, use the public Vite plugins:

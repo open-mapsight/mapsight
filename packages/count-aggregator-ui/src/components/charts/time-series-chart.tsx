@@ -27,6 +27,7 @@ import {
 	Y_AXIS_UNIT_LABEL_TOP_MARGIN,
 	createYAxisUnitLabel,
 } from "../../lib/chart-axis-label.js";
+import {type ChartDataRow, mergeSeriesData} from "../../lib/chart-data.js";
 import {getColorForStationIndex} from "../../lib/colors.js";
 import {formatChartAxisDate, getTooltipDateFormat} from "../../lib/dates.js";
 import {
@@ -35,7 +36,7 @@ import {
 	metricValueFormatFromAppConfig,
 } from "../../lib/format-metric-value.js";
 import {getMetricLabels} from "../../lib/i18n.js";
-import {formatStationLabel} from "../../lib/stations.js";
+import {buildStationLabels} from "../../lib/stations.js";
 import {cn, getDocumentLocale, isDefined} from "../../lib/utils.js";
 import type {
 	AggregatedValuesData,
@@ -72,7 +73,7 @@ function getFallbackResolutionMs(resolution: string): number {
 }
 
 function getColumnDomainPadding(
-	chartData: Array<Record<string, number>>,
+	chartData: ChartDataRow[],
 	resolution: string,
 ): number {
 	const timestamps = chartData
@@ -91,25 +92,6 @@ function getColumnDomainPadding(
 			: Math.min(...deltas);
 
 	return bucketMs / 2;
-}
-
-function mergeSeriesData(
-	series: readonly ChartSeries[],
-): Array<Record<string, number>> {
-	const byTimestamp = new Map<number, Record<string, number>>();
-
-	for (const entry of series) {
-		for (const {date, value} of entry.values) {
-			const ts = date.getTime();
-			const row = byTimestamp.get(ts) ?? {date: ts};
-			row[entry.key] = value;
-			byTimestamp.set(ts, row);
-		}
-	}
-
-	return Array.from(byTimestamp.values()).sort(
-		(a, b) => (a.date ?? 0) - (b.date ?? 0),
-	);
 }
 
 function limitChartSeries(series: readonly ChartSeries[]): {
@@ -187,20 +169,40 @@ export function TimeSeriesChart({
 		[locale, valueFormat],
 	);
 
+	const compactTooltip =
+		appConfig.comparisonTooltip === "compact" &&
+		(chartSeries?.length ?? 0) > 1;
 	const {chartConfig, chartData} = useMemo(() => {
 		if (chartSeries === undefined) {
 			return {chartConfig: {}, chartData: []};
 		}
 
 		const config: ChartConfig = {};
+		const stationLabels = buildStationLabels(stationsById?.values() ?? []);
+		const comparedIds = new Set(
+			chartSeries.map(({stationId}) => stationId),
+		);
+		const shortLabels = [...comparedIds].map((id) =>
+			stationsById?.get(id)?.originId.trim(),
+		);
+
 		for (const entry of chartSeries) {
 			const station = stationsById?.get(entry.stationId);
 			const stationLabel =
 				station === undefined
 					? entry.stationId.toString()
-					: formatStationLabel(station);
+					: stationLabels.get(station.id)!;
 
+			const originId = station?.originId.trim();
+			const shortLabel =
+				originId &&
+				originId.length <= 20 &&
+				!originId.startsWith("#") &&
+				shortLabels.filter((label) => label === originId).length === 1
+					? originId
+					: `#${entry.stationId}`;
 			config[entry.key] = {
+				tooltipLabel: `${shortLabel} · ${metricLabels[entry.metric]}`,
 				label: buildSeriesLabel(
 					stationLabel,
 					entry.metric,
@@ -215,11 +217,12 @@ export function TimeSeriesChart({
 
 		return {
 			chartConfig: config,
-			chartData: mergeSeriesData(chartSeries),
+			chartData: mergeSeriesData(chartSeries, resolution),
 		};
 	}, [
 		chartSeries,
 		metricLabels,
+		resolution,
 		selectedStationIds,
 		showMetricInLabel,
 		stationsById,
@@ -239,7 +242,7 @@ export function TimeSeriesChart({
 	const commonAxisProps = {
 		domain: xDomain,
 		tickFormatter: (value: number) =>
-			formatChartAxisDate(value, resolution),
+			formatChartAxisDate(value, resolution, {startDate, endDate}),
 		type: "number" as const,
 		scale: "time" as const,
 		dataKey: "date",
@@ -273,6 +276,7 @@ export function TimeSeriesChart({
 					fillOpacity={0.2}
 					strokeWidth={2}
 					isAnimationActive={false}
+					connectNulls={false}
 					dot={false}
 				/>
 			);
@@ -286,6 +290,7 @@ export function TimeSeriesChart({
 				stroke={color}
 				strokeWidth={2}
 				isAnimationActive={false}
+				connectNulls={false}
 				dot={false}
 			/>
 		);
@@ -351,6 +356,7 @@ export function TimeSeriesChart({
 						<Tooltip
 							content={
 								<ChartTooltipContent
+									compact={compactTooltip}
 									labelFormatter={(label) =>
 										tooltipFormatter.format(new Date(label))
 									}
