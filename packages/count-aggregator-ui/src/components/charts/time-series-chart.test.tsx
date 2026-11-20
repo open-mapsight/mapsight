@@ -174,6 +174,7 @@ function renderComparison(
 		single?: boolean;
 		originIds?: string[];
 		type?: "line" | "area" | "column";
+		breakAtGaps?: boolean;
 	} = {},
 ) {
 	const dates = [0, 1, 4, 5].map((hour) => new Date(2026, 0, 1, hour));
@@ -220,6 +221,7 @@ function renderComparison(
 				startDate={dates[0]!}
 				endDate={new Date(2026, 0, 8)}
 				stationsById={stationMap}
+				breakAtGaps={options.breakAtGaps}
 			/>
 		</CountAggregatorProvider>,
 	);
@@ -289,4 +291,12 @@ describe("comparison chart rendering", () => {
 			expect(ticks[0]?.textContent).toMatch(/Jan|01/);
 		},
 	);
+
+	it("connects irregular measurements when gap breaks are disabled", () => {
+		const {container} = renderComparison({breakAtGaps: false});
+		const paths = container.querySelectorAll(".recharts-line-curve");
+		expect(paths).toHaveLength(2);
+		for (const path of paths)
+			expect(path.getAttribute("d")?.match(/M/g)).toHaveLength(1);
+	});
 });

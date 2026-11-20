@@ -171,7 +171,8 @@ are omitted from tooltips, and never become zero measurements or contribute to b
 Gap rows exist only in the merged chart data; source measurements and exports remain unchanged.
 Daily, weekly, monthly and yearly steps use local calendar dates, matching API datetime parsing.
 Gap expansion is limited to 5,000 rows plus one break marker for each remaining gap, so long outages
-stay bounded while lines still break.
+stay bounded while lines still break. Raw values have no fixed step, so the wizard keeps connecting
+them; pass `breakAtGaps={false}` to `TimeSeriesChart` for other irregular series.
 
 Station selections, result labels and full chart tooltips disambiguate duplicate display names
 using an existing section description, type name, origin ID, or numeric ID, in that order. Unique

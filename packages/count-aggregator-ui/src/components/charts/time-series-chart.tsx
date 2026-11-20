@@ -142,6 +142,7 @@ export function TimeSeriesChart({
 	startDate,
 	endDate,
 	stationsById,
+	breakAtGaps = true,
 	className = "msca:h-[calc(100vh-400px)] msca:min-h-[300px] msca:max-h-[700px]",
 	emptyMessage = "No measurements are available for the current selection.",
 }: TimeSeriesChartProps): ReactElement {
@@ -217,9 +218,13 @@ export function TimeSeriesChart({
 
 		return {
 			chartConfig: config,
-			chartData: mergeSeriesData(chartSeries, resolution),
+			chartData: mergeSeriesData(
+				chartSeries,
+				breakAtGaps ? resolution : undefined,
+			),
 		};
 	}, [
+		breakAtGaps,
 		chartSeries,
 		metricLabels,
 		resolution,

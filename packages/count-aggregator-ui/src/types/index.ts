@@ -160,6 +160,11 @@ export interface TimeSeriesChartProps {
 	startDate: Date;
 	endDate: Date;
 	stationsById: Map<number, Station> | undefined;
+	/**
+	 * Insert empty buckets at the `resolution` step so line and area charts break at missing data.
+	 * Disable for irregular measurements such as raw values. Defaults to `true`.
+	 */
+	breakAtGaps?: boolean;
 	className?: string;
 	emptyMessage?: string;
 }

@@ -204,6 +204,7 @@ export function ResultStep({
 							startDate={startDate}
 							endDate={endDate}
 							stationsById={stationsById}
+							breakAtGaps={!isRaw}
 							emptyMessage={t("chart.empty")}
 						/>
 

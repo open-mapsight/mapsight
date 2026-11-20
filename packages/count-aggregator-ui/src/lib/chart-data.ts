@@ -46,9 +46,13 @@ function stepTimestamp(
 	}
 }
 
+/**
+ * Merge series into chart rows. With a `resolution`, missing buckets become null rows so lines
+ * break at gaps; without one, rows are only created for existing timestamps.
+ */
 export function mergeSeriesData(
 	series: readonly ChartSeries[],
-	resolution: DataResolution,
+	resolution: DataResolution | undefined,
 ): ChartDataRow[] {
 	const byTimestamp = new Map<number, ChartDataRow>();
 	const emptyValues = Object.fromEntries(series.map(({key}) => [key, null]));
@@ -65,6 +69,7 @@ export function mergeSeriesData(
 	}
 
 	const rows = [...byTimestamp.values()].sort((a, b) => a.date - b.date);
+	if (resolution === undefined) return rows;
 	const result: ChartDataRow[] = [];
 	let gapRows = 0;
 	for (const [index, row] of rows.entries()) {

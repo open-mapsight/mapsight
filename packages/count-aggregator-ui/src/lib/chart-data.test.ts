@@ -41,6 +41,19 @@ describe("mergeSeriesData", () => {
 		},
 	);
 
+	it("only merges existing timestamps without a resolution", () => {
+		const start = new Date(2026, 0, 1).getTime();
+		const dates = [0, 15, 45].map(
+			(minutes) => new Date(start + minutes * 60_000),
+		);
+		const rows = mergeSeriesData([series("a", dates)], undefined);
+		expect(rows).toEqual([
+			{date: dates[0]!.getTime(), a: 0},
+			{date: dates[1]!.getTime(), a: 10},
+			{date: dates[2]!.getTime(), a: 20},
+		]);
+	});
+
 	it("keeps missing stations and metrics null while retaining real zeros", () => {
 		const dates = [1, 2, 3].map((day) => new Date(2026, 0, day));
 		const input = [
