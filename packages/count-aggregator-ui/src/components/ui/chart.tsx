@@ -14,6 +14,7 @@ export type ChartConfig = Record<
 	string,
 	{
 		label?: ReactNode;
+		tooltipLabel?: ReactNode;
 		color?: string;
 	}
 >;
@@ -85,7 +86,7 @@ export function ChartContainer({
 
 interface TooltipPayloadItem {
 	name?: string;
-	value?: number;
+	value?: number | null;
 	color?: string;
 	dataKey?: string | number;
 	payload?: {
@@ -95,11 +96,13 @@ interface TooltipPayloadItem {
 
 export function ChartTooltipContent({
 	active,
+	compact = false,
 	payload,
 	labelFormatter,
 	valueFormatter,
 }: {
 	active?: boolean;
+	compact?: boolean;
 	payload?: TooltipPayloadItem[];
 	labelFormatter?: (label: number) => ReactNode;
 	valueFormatter?: (value: number) => ReactNode;
@@ -110,17 +113,27 @@ export function ChartTooltipContent({
 		return null;
 	}
 
-	const label = payload[0]?.payload?.date;
+	const items = payload.filter(
+		(item) => typeof item.value === "number" && Number.isFinite(item.value),
+	);
+	if (items.length === 0) return null;
+	const label = items[0]?.payload?.date;
 
 	return (
-		<div className="msca:rounded-md msca:border msca:border-gray-200 msca:bg-white/95 msca:px-3 msca:py-2 msca:shadow-sm">
+		<div
+			className={cn(
+				"msca:rounded-md msca:border msca:border-gray-200 msca:bg-white/95 msca:px-3 msca:py-2 msca:shadow-sm",
+				compact &&
+					"msca:pointer-events-auto msca:max-h-[min(18rem,50vh)] msca:w-max msca:max-w-[min(18rem,calc(100vw-2rem))] msca:overflow-y-auto",
+			)}
+		>
 			{label !== undefined && labelFormatter !== undefined ? (
 				<div className="msca:mb-1 msca:font-medium msca:text-gray-900">
 					{labelFormatter(label)}
 				</div>
 			) : null}
 			<div className="msca:grid msca:gap-1">
-				{payload.map((item) => {
+				{items.map((item) => {
 					const key = String(item.dataKey ?? "");
 					const itemConfig = config[key];
 
@@ -129,17 +142,44 @@ export function ChartTooltipContent({
 							key={key}
 							className="msca:flex msca:items-center msca:justify-between msca:gap-4"
 						>
-							<div className="msca:flex msca:items-center msca:gap-2">
+							<div
+								className={cn(
+									"msca:flex msca:items-center msca:gap-2",
+									compact && "msca:min-w-0",
+								)}
+							>
 								<span
-									className="msca:h-2 msca:w-2 msca:rounded-full"
+									className={cn(
+										"msca:h-2 msca:w-2 msca:rounded-full",
+										compact && "msca:shrink-0",
+									)}
 									style={{backgroundColor: item.color}}
 								/>
-								<span className="msca:text-gray-600">
-									{itemConfig?.label ?? item.name}
+								<span
+									className={cn(
+										"msca:text-gray-600",
+										compact &&
+											"msca:[overflow-wrap:anywhere]",
+									)}
+									title={
+										typeof itemConfig?.label === "string"
+											? itemConfig.label
+											: item.name
+									}
+								>
+									{(compact
+										? itemConfig?.tooltipLabel
+										: itemConfig?.label) ?? item.name}
 								</span>
 							</div>
-							<span className="msca:font-medium msca:tabular-nums msca:text-gray-900">
-								{item.value === undefined
+							<span
+								className={cn(
+									"msca:font-medium msca:tabular-nums msca:text-gray-900",
+									compact &&
+										"msca:shrink-0 msca:whitespace-nowrap",
+								)}
+							>
+								{item.value == null
 									? undefined
 									: (valueFormatter?.(item.value) ??
 										item.value.toLocaleString())}

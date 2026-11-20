@@ -15,6 +15,7 @@ import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
 import {getValuesModeLabels} from "../../lib/i18n.js";
 import {RAW_VALUES_RANGE_QUERY} from "../../lib/raw-values.js";
+import {resolveStationLabelParts} from "../../lib/stations.js";
 import {isDefined} from "../../lib/utils.js";
 import {
 	type AggregatedValuesData,
@@ -87,6 +88,8 @@ export function ResultStep({
 			return [];
 		}
 
+		const labels = resolveStationLabelParts(stationsById.values());
+
 		return selectedStationIds
 			.map((stationId, index) => {
 				const station = stationsById.get(stationId);
@@ -95,7 +98,11 @@ export function ResultStep({
 				return (
 					<li key={stationId}>
 						<div className="msca:flex msca:grow msca:flex-row msca:items-center msca:gap-2 msca:px-2 msca:py-1 msca:text-left">
-							<StationLabel station={station} color={color} />
+							<StationLabel
+								station={station}
+								label={labels.get(stationId)}
+								color={color}
+							/>
 						</div>
 					</li>
 				);
@@ -197,6 +204,7 @@ export function ResultStep({
 							startDate={startDate}
 							endDate={endDate}
 							stationsById={stationsById}
+							breakAtGaps={!isRaw}
 							emptyMessage={t("chart.empty")}
 						/>
 

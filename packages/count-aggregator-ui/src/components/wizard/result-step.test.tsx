@@ -16,8 +16,13 @@ vi.mock("../charts/time-series-chart.js", async (importActual) => {
 
 	return {
 		...actual,
-		TimeSeriesChart() {
-			return <div data-testid="time-series-chart" />;
+		TimeSeriesChart({breakAtGaps}: {breakAtGaps?: boolean}) {
+			return (
+				<div
+					data-testid="time-series-chart"
+					data-break-at-gaps={String(breakAtGaps ?? true)}
+				/>
+			);
 		},
 	};
 });
@@ -116,6 +121,22 @@ describe("ResultStep", () => {
 		).toBeTruthy();
 		expect(screen.queryByRole("link", {name: /csv/i})).toBeNull();
 	});
+
+	it.each([
+		["raw", "false"],
+		["daily", "true"],
+	] as const)(
+		"sets gap breaks for %s values to %s",
+		(valuesMode, expected) => {
+			renderResultStep({valuesMode});
+
+			expect(
+				screen
+					.getByTestId("time-series-chart")
+					.getAttribute("data-break-at-gaps"),
+			).toBe(expected);
+		},
+	);
 
 	it("builds a raw-values CSV href in Rohwerte mode", () => {
 		renderResultStep({

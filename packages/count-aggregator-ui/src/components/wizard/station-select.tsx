@@ -9,7 +9,12 @@ import Select, {
 
 import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
-import {formatStationLabel} from "../../lib/stations.js";
+import {
+	type StationLabelParts,
+	formatStationLabel,
+	formatStationLabelParts,
+	resolveStationLabelParts,
+} from "../../lib/stations.js";
 import {isDefined} from "../../lib/utils.js";
 import type {Station} from "../../types";
 
@@ -49,12 +54,25 @@ export function getSelectStyles(
 	};
 }
 
-function createFormatOptionLabel(showDescriptionInSelection: boolean) {
+function createFormatOptionLabel(
+	showDescriptionInSelection: boolean,
+	labels: ReadonlyMap<number, StationLabelParts>,
+) {
 	return function formatOptionLabel(
 		station: Station,
 		{context}: {context: "menu" | "value"},
 	): ReactElement {
-		const showDesc = showDescriptionInSelection || context === "menu";
+		const parts = labels.get(station.id) ?? {
+			name: formatStationLabel(station),
+		};
+		// The description already disambiguates; show it instead of appending it to the name.
+		const byDescription =
+			parts.disambiguator?.field === "sectionDescription";
+		const label = byDescription
+			? parts.name
+			: formatStationLabelParts(parts);
+		const showDesc =
+			showDescriptionInSelection || context === "menu" || byDescription;
 
 		return (
 			<Fragment>
@@ -62,7 +80,7 @@ function createFormatOptionLabel(showDescriptionInSelection: boolean) {
 					className="msca:font-bold"
 					title={`${station.label ?? ""} ${station.sectionDescription ?? ""} (${station.originId})`}
 				>
-					{formatStationLabel(station)}
+					{label}
 				</strong>
 				{showDesc && station.sectionDescription ? (
 					<>
@@ -75,10 +93,6 @@ function createFormatOptionLabel(showDescriptionInSelection: boolean) {
 			</Fragment>
 		);
 	};
-}
-
-function getOptionLabel(station: Station): string {
-	return `${formatStationLabel(station)} ${station.typeName} ${station.sectionDescription ?? ""}`;
 }
 
 export const StationSelect = memo(function StationSelect({
@@ -105,6 +119,22 @@ export const StationSelect = memo(function StationSelect({
 	const portalTarget = useCountAggregatorPortal();
 	const {t} = useCountAggregatorI18n();
 
+	const labels = useMemo(
+		() => resolveStationLabelParts(stationsById?.values() ?? []),
+		[stationsById],
+	);
+	const getOptionLabel = useCallback(
+		(station: Station): string => {
+			const parts = labels.get(station.id);
+			const label =
+				parts === undefined
+					? formatStationLabel(station)
+					: formatStationLabelParts(parts);
+			return `${label} ${station.typeName} ${station.sectionDescription ?? ""}`;
+		},
+		[labels],
+	);
+
 	const options = useMemo(
 		() =>
 			stationsById === undefined
@@ -112,7 +142,7 @@ export const StationSelect = memo(function StationSelect({
 				: Array.from(stationsById.values()).sort((a, b) =>
 						getOptionLabel(a).localeCompare(getOptionLabel(b)),
 					),
-		[stationsById],
+		[getOptionLabel, stationsById],
 	);
 
 	const value = useMemo(() => {
@@ -156,6 +186,7 @@ export const StationSelect = memo(function StationSelect({
 			getOptionValue={(station) => station.id.toString(10)}
 			formatOptionLabel={createFormatOptionLabel(
 				showDescriptionInSelection,
+				labels,
 			)}
 			styles={getSelectStyles(styleOverrides)}
 			menuPortalTarget={portalTarget}

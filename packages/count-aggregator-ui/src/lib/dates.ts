@@ -107,6 +107,7 @@ export function getTooltipDateFormat(
 export function formatChartAxisDate(
 	timestamp: number,
 	resolution: DataResolution,
+	range?: {startDate: Date; endDate: Date},
 ): string {
 	const date = new Date(timestamp);
 
@@ -121,6 +122,21 @@ export function formatChartAxisDate(
 		case "5min":
 		case "15min":
 		case "hourly":
+			if (
+				range !== undefined &&
+				dateToYmd(range.startDate) !== dateToYmd(range.endDate)
+			) {
+				return date.toLocaleString(undefined, {
+					day: "numeric",
+					month: "short",
+					hour: "2-digit",
+					minute: "2-digit",
+					...(range.startDate.getFullYear() !==
+					range.endDate.getFullYear()
+						? {year: "2-digit" as const}
+						: {}),
+				});
+			}
 			return date.toLocaleTimeString(undefined, {
 				hour: "2-digit",
 				minute: "2-digit",

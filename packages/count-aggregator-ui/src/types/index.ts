@@ -133,6 +133,8 @@ export interface CountAggregatorAppConfig {
 	displayPrecision?: number;
 	defaultResolution?: Resolution;
 	defaultChartType?: ChartType;
+	/** Compact comparison labels; full station labels remain the default. */
+	comparisonTooltip?: "full" | "compact";
 	resolutions?: readonly Resolution[];
 	resolutionLabels?: Partial<Record<ValuesMode, string>>;
 	features?: CountAggregatorFeatures;
@@ -158,6 +160,11 @@ export interface TimeSeriesChartProps {
 	startDate: Date;
 	endDate: Date;
 	stationsById: Map<number, Station> | undefined;
+	/**
+	 * Insert empty buckets at the `resolution` step so line and area charts break at missing data.
+	 * Disable for irregular measurements such as raw values. Defaults to `true`.
+	 */
+	breakAtGaps?: boolean;
 	className?: string;
 	emptyMessage?: string;
 }

@@ -1,16 +1,22 @@
 import {type ReactElement, memo} from "react";
 
-import {formatStationLabel} from "../../lib/stations.js";
+import {
+	type StationLabelParts,
+	formatStationLabel,
+	formatStationLabelParts,
+} from "../../lib/stations.js";
 import {cn} from "../../lib/utils.js";
 import type {Station} from "../../types";
 import {ColorDot} from "./color-dot.js";
 
 export const StationLabel = memo(function StationLabel({
 	station,
+	label,
 	color,
 	isEnabled = true,
 }: {
 	station?: Station;
+	label?: StationLabelParts;
 	color: string;
 	isEnabled?: boolean;
 }): ReactElement {
@@ -25,7 +31,12 @@ export const StationLabel = memo(function StationLabel({
 			>
 				{station ? (
 					<>
-						{formatStationLabel(station)}
+						{label === undefined
+							? formatStationLabel(station)
+							: label.disambiguator?.field ===
+								  "sectionDescription"
+								? label.name
+								: formatStationLabelParts(label)}
 						{station.sectionDescription ? (
 							<span className="msca:ml-1 msca:text-sm msca:text-gray-600">
 								{station.sectionDescription}
