@@ -9,7 +9,12 @@ import Select, {
 
 import {useCountAggregatorI18n} from "../../context/count-aggregator-provider.js";
 import {useCountAggregatorPortal} from "../../context/count-aggregator-root.js";
-import {buildStationLabels, formatStationLabel} from "../../lib/stations.js";
+import {
+	type StationLabelParts,
+	formatStationLabel,
+	formatStationLabelParts,
+	resolveStationLabelParts,
+} from "../../lib/stations.js";
 import {isDefined} from "../../lib/utils.js";
 import type {Station} from "../../types";
 
@@ -51,17 +56,23 @@ export function getSelectStyles(
 
 function createFormatOptionLabel(
 	showDescriptionInSelection: boolean,
-	labels: ReadonlyMap<number, string>,
+	labels: ReadonlyMap<number, StationLabelParts>,
 ) {
 	return function formatOptionLabel(
 		station: Station,
 		{context}: {context: "menu" | "value"},
 	): ReactElement {
-		const label = labels.get(station.id) ?? formatStationLabel(station);
+		const parts = labels.get(station.id) ?? {
+			name: formatStationLabel(station),
+		};
+		// The description already disambiguates; show it instead of appending it to the name.
+		const byDescription =
+			parts.disambiguator?.field === "sectionDescription";
+		const label = byDescription
+			? parts.name
+			: formatStationLabelParts(parts);
 		const showDesc =
-			(showDescriptionInSelection || context === "menu") &&
-			label !==
-				`${formatStationLabel(station)} — ${station.sectionDescription?.trim()}`;
+			showDescriptionInSelection || context === "menu" || byDescription;
 
 		return (
 			<Fragment>
@@ -109,12 +120,18 @@ export const StationSelect = memo(function StationSelect({
 	const {t} = useCountAggregatorI18n();
 
 	const labels = useMemo(
-		() => buildStationLabels(stationsById?.values() ?? []),
+		() => resolveStationLabelParts(stationsById?.values() ?? []),
 		[stationsById],
 	);
 	const getOptionLabel = useCallback(
-		(station: Station): string =>
-			`${labels.get(station.id)} ${station.typeName} ${station.sectionDescription ?? ""}`,
+		(station: Station): string => {
+			const parts = labels.get(station.id);
+			const label =
+				parts === undefined
+					? formatStationLabel(station)
+					: formatStationLabelParts(parts);
+			return `${label} ${station.typeName} ${station.sectionDescription ?? ""}`;
+		},
 		[labels],
 	);
 

@@ -15,7 +15,7 @@ import {getColorForStationIndex} from "../../lib/colors.js";
 import {dateToYmd} from "../../lib/dates.js";
 import {getValuesModeLabels} from "../../lib/i18n.js";
 import {RAW_VALUES_RANGE_QUERY} from "../../lib/raw-values.js";
-import {buildStationLabels} from "../../lib/stations.js";
+import {resolveStationLabelParts} from "../../lib/stations.js";
 import {isDefined} from "../../lib/utils.js";
 import {
 	type AggregatedValuesData,
@@ -88,7 +88,7 @@ export function ResultStep({
 			return [];
 		}
 
-		const labels = buildStationLabels(stationsById.values());
+		const labels = resolveStationLabelParts(stationsById.values());
 
 		return selectedStationIds
 			.map((stationId, index) => {

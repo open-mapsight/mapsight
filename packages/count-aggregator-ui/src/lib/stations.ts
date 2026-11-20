@@ -41,35 +41,76 @@ export function formatStationLabel(station: Station | undefined): string {
 	);
 }
 
+export interface StationLabelParts {
+	/** Display name from `formatStationLabel`. */
+	name: string;
+	/** Set only when another station shares `name`. */
+	disambiguator?: {
+		field: "sectionDescription" | "typeName" | "originId" | "id";
+		value: string;
+	};
+}
+
+const DISAMBIGUATOR_FIELDS = [
+	"sectionDescription",
+	"typeName",
+	"originId",
+] as const;
+
 /** Resolve duplicate display names using only metadata present on the stations. */
-export function buildStationLabels(
+export function resolveStationLabelParts(
 	stations: Iterable<Station>,
-): Map<number, string> {
+): Map<number, StationLabelParts> {
 	const groups = new Map<string, Station[]>();
 	for (const station of stations) {
-		const label = formatStationLabel(station);
-		const group = groups.get(label) ?? [];
+		const name = formatStationLabel(station);
+		const group = groups.get(name) ?? [];
 		group.push(station);
-		groups.set(label, group);
+		groups.set(name, group);
 	}
 
-	const labels = new Map<number, string>();
-	for (const [label, group] of groups) {
-		const fields = ["sectionDescription", "typeName", "originId"] as const;
-		const field = fields.find((key) => {
+	const parts = new Map<number, StationLabelParts>();
+	for (const [name, group] of groups) {
+		if (group.length === 1) {
+			parts.set(group[0]!.id, {name});
+			continue;
+		}
+		const field = DISAMBIGUATOR_FIELDS.find((key) => {
 			const values = group.map((station) => station[key]?.trim());
 			return (
 				values.every(Boolean) && new Set(values).size === group.length
 			);
 		});
 		for (const station of group) {
-			const suffix =
-				field === undefined ? station.id : station[field]?.trim();
-			labels.set(
-				station.id,
-				group.length === 1 ? label : `${label} — ${suffix}`,
-			);
+			parts.set(station.id, {
+				name,
+				disambiguator:
+					field === undefined
+						? {field: "id", value: String(station.id)}
+						: {field, value: station[field]!.trim()},
+			});
 		}
 	}
-	return labels;
+	return parts;
+}
+
+export function formatStationLabelParts({
+	name,
+	disambiguator,
+}: StationLabelParts): string {
+	return disambiguator === undefined
+		? name
+		: `${name} — ${disambiguator.value}`;
+}
+
+/** Display labels for all stations; duplicate names get a ` — ` disambiguator. */
+export function buildStationLabels(
+	stations: Iterable<Station>,
+): Map<number, string> {
+	return new Map(
+		Array.from(resolveStationLabelParts(stations), ([id, parts]) => [
+			id,
+			formatStationLabelParts(parts),
+		]),
+	);
 }

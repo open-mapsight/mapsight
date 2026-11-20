@@ -176,7 +176,9 @@ them; pass `breakAtGaps={false}` to `TimeSeriesChart` for other irregular series
 
 Station selections, result labels and full chart tooltips disambiguate duplicate display names
 using an existing section description, type name, origin ID, or numeric ID, in that order. Unique
-names keep their existing formatting. Custom selectors can use the exported `buildStationLabels`
+names keep their existing formatting. When the section description disambiguates, selections and
+result labels show it as their usual description text, including selected values that otherwise
+hide descriptions. Custom selectors can use the exported `buildStationLabels`
 helper with the complete station collection to get the same labels.
 
 ## CMS app-shell embed

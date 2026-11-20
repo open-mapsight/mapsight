@@ -48,6 +48,26 @@ describe("StationSelect", () => {
 		expect(screen.getByText("Shared path — sensor-2")).toBeTruthy();
 	});
 
+	it("shows the section description for description-disambiguated chips", () => {
+		render(
+			<CountAggregatorProvider config={config}>
+				<StationSelect
+					stationsById={
+						new Map([1, 2].map((id) => [id, stations.get(id)!]))
+					}
+					stationIds={[1, 2]}
+					onChange={() => {}}
+					isMulti
+					showDescriptionInSelection={false}
+				/>
+			</CountAggregatorProvider>,
+		);
+		expect(screen.getAllByText("Shared path")).toHaveLength(2);
+		expect(screen.getByText("Upper section")).toBeTruthy();
+		expect(screen.getByText("Lower section")).toBeTruthy();
+		expect(screen.queryByText(/Shared path —/)).toBeNull();
+	});
+
 	it("uses the same labels in the menu and permits searching by the disambiguator", () => {
 		render(
 			<CountAggregatorProvider config={config}>
