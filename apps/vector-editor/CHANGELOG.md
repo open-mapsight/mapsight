@@ -1,5 +1,30 @@
 # @mapsight/vector-editor
 
+## 1.2.11
+
+### Patch Changes
+
+- b74b9b7: Bump dependencies from Dependabot ([#461](https://github.com/open-mapsight/mapsight/pull/461)):
+
+    - `@tailwindcss/postcss` `^4.3.3` → `^4.3.4` (patch)
+
+- 93f193b: Bump dependencies from Dependabot ([#485](https://github.com/open-mapsight/mapsight/pull/485)):
+
+    - `@tailwindcss/postcss` `^4.3.4` → `^4.3.5` (patch)
+
+- 898baf5: Bump dependencies from Dependabot ([#486](https://github.com/open-mapsight/mapsight/pull/486)):
+
+    - `react-tooltip` `^6.0.9` → `^6.0.11` (patch)
+
+- 3741cca: Bump dependencies from Dependabot ([#487](https://github.com/open-mapsight/mapsight/pull/487)):
+
+    - `vite` `^8.3.5` → `^8.3.8` (patch)
+
+- Updated dependencies [`37abb0e`, `3741cca`, `3fbb08f`, `0e943b2`, `5aeedad`, `457a760`]:
+    - `@mapsight/traffic-style@5.7.0 → 5.8.0` (minor)
+    - `@mapsight/core@14.7.1 → 14.7.2` (patch)
+    - `@mapsight/lib-ol@4.3.4 → 4.4.0` (minor)
+
 ## 1.2.10
 
 ### Patch Changes

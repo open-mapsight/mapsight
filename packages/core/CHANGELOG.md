@@ -1,5 +1,17 @@
 # @mapsight/core
 
+## 14.7.2
+
+### Patch Changes
+
+- 3741cca: Bump dependencies from Dependabot ([#487](https://github.com/open-mapsight/mapsight/pull/487)):
+
+    - `@redux-devtools/extension` `^4.0.0` → `^4.0.1` (patch)
+    - `vite` `^8.3.5` → `^8.3.8` (patch)
+
+- Updated dependencies [`3fbb08f`]:
+    - `@mapsight/lib-ol@4.3.4 → 4.4.0` (minor)
+
 ## 14.7.1
 
 ### Patch Changes

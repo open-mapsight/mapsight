@@ -1,5 +1,13 @@
 # @mapsight/vite-host-embed
 
+## 1.1.8
+
+### Patch Changes
+
+- 3741cca: Bump dependencies from Dependabot ([#487](https://github.com/open-mapsight/mapsight/pull/487)):
+
+    - `vite` `^8.3.5` → `^8.3.8` (patch)
+
 ## 1.1.7
 
 ### Patch Changes
