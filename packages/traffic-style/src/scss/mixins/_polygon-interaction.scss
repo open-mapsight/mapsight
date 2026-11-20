@@ -1,0 +1,29 @@
+// Emphasize hovered and selected polygons without replacing their colors.
+//
+// Include inside a feature style block, after the rules that set stroke and fill
+// (e.g. from Simplestyle properties). Widths are added to the resolved stroke
+// width; opacities are lower bounds on the effective paint alpha, so a fully
+// transparent fill becomes visible while keeping its RGB channels.
+@mixin polygonInteractionEmphasis(
+	$highlight-width-offset: 2,
+	$highlight-stroke-min-opacity: 0.85,
+	$highlight-fill-min-opacity: 0.18,
+	$select-width-offset: 4,
+	$select-stroke-min-opacity: 1,
+	$select-fill-min-opacity: 0.3
+) {
+	[geometry|type="Polygon"],
+	[geometry|type="MultiPolygon"] {
+		[state="highlight"] {
+			stroke-widthOffset: $highlight-width-offset;
+			stroke-minOpacity: $highlight-stroke-min-opacity;
+			fill-minOpacity: $highlight-fill-min-opacity;
+		}
+
+		[state="select"] {
+			stroke-widthOffset: $select-width-offset;
+			stroke-minOpacity: $select-stroke-min-opacity;
+			fill-minOpacity: $select-fill-min-opacity;
+		}
+	}
+}

@@ -105,3 +105,81 @@ it("passes computed circle radii as numbers to OpenLayers", () => {
 	expect(circle.getRadius()).toBe(38);
 	expect(circle.getSize()).toEqual([76, 76]);
 });
+
+it("raises transparent paint to minOpacity after applying opacity, keeping RGB", () => {
+	const style = declarationToStyle(
+		constructorsMap,
+		{
+			fill: {
+				color: {value: "rgba(255,255,255,0)"},
+				opacity: {value: 1},
+				minOpacity: {value: 0.3},
+			},
+			stroke: {
+				color: {value: "rgba(128,0,128,0.4)"},
+				opacity: {value: 0.5},
+				minOpacity: {value: "0.85"},
+			},
+		},
+		"style",
+		"min-opacity-transparent",
+	);
+
+	expect(style?.getFill()?.getColor()).toEqual([255, 255, 255, 0.3]);
+	expect(style?.getStroke()?.getColor()).toEqual([128, 0, 128, 0.85]);
+});
+
+it("keeps paint alpha above minOpacity and ignores minOpacity without a color", () => {
+	const style = declarationToStyle(
+		constructorsMap,
+		{
+			fill: {
+				color: {value: "rgba(0,0,255,0.6)"},
+				minOpacity: {value: 0.3},
+			},
+			stroke: {width: {value: 2}, minOpacity: {value: 1}},
+		},
+		"style",
+		"min-opacity-noop",
+	);
+
+	expect(style?.getFill()?.getColor()).toEqual([0, 0, 255, 0.6]);
+	expect(style?.getStroke()?.getColor()).toBeNull();
+});
+
+it("adds widthOffset to the resolved stroke width", () => {
+	const widened = declarationToStyle(
+		constructorsMap,
+		{
+			stroke: {
+				color: {value: "red"},
+				width: {value: "3"},
+				widthOffset: {value: 4},
+			},
+		},
+		"style",
+		"width-offset",
+	);
+	const defaulted = declarationToStyle(
+		constructorsMap,
+		{stroke: {color: {value: "red"}, widthOffset: {value: "2"}}},
+		"style",
+		"width-offset-default",
+	);
+	const clamped = declarationToStyle(
+		constructorsMap,
+		{
+			stroke: {
+				color: {value: "red"},
+				width: {value: 1},
+				widthOffset: {value: -3},
+			},
+		},
+		"style",
+		"width-offset-clamped",
+	);
+
+	expect(widened?.getStroke()?.getWidth()).toBe(7);
+	expect(defaulted?.getStroke()?.getWidth()).toBe(3);
+	expect(clamped?.getStroke()?.getWidth()).toBe(0);
+});
