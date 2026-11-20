@@ -104,9 +104,21 @@
 				},
 				{
 					"name": "fill",
-					"description": "Sass nested namespace for Mapsight vector style properties matching fill-*.",
+					"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				},
+				{
+					"name": "fill-minopacity",
+					"description": "Lower bound for the effective fill alpha from 0 to 1, applied after fill-opacity. Keeps the color's RGB channels, so it can reveal a transparent fill. Has no effect without a fill color.",
 					"deprecated": false,
 					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html"
+				},
+				{
+					"name": "minopacity",
+					"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+					"deprecated": false,
+					"doc-url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
 				},
 				{
 					"name": "geometry",
@@ -393,6 +405,24 @@
 				{
 					"name": "lineDash",
 					"description": "Nested form of Mapsight vector style property stroke-linedash.",
+					"deprecated": false,
+					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "stroke-minopacity",
+					"description": "Lower bound for the effective stroke alpha from 0 to 1, applied after stroke-opacity. Keeps the color's RGB channels. Has no effect without a stroke color.",
+					"deprecated": false,
+					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "stroke-widthoffset",
+					"description": "Pixels added to the resolved stroke width (1 when no width is set), for example to widen a data-driven width on hover or selection. The result is never negative.",
+					"deprecated": false,
+					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "widthoffset",
+					"description": "Nested form of Mapsight vector style property stroke-widthoffset.",
 					"deprecated": false,
 					"doc-url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
 				},

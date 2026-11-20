@@ -52,6 +52,9 @@ const numberArrayValue = (a?: NumberArrayStyleValue) => {
 	return arr.map((b) => parseFloat(String(b).trim()));
 };
 
+/** Width the OpenLayers canvas renderer uses for a stroke without one. */
+const DEFAULT_STROKE_WIDTH = 1;
+
 const HASH_STRING_DELIMITER = "|";
 export const DEFAULT_CACHE_SIZE = 100;
 
@@ -77,6 +80,53 @@ function applyPaintOpacity(style: StyleLiteral) {
 		: [...asArray(String(style.color ?? "#000"))];
 	color[3] = (color[3] ?? 1) * numberValue(opacity);
 	style.color = color as [number, number, number, number];
+}
+
+/**
+ * Raise the effective paint alpha to at least `minOpacity`, after `opacity` was applied.
+ * Unlike `opacity`, this can reveal a transparent color while keeping its RGB channels.
+ */
+function applyPaintMinOpacity(style: StyleLiteral) {
+	const minOpacity = style.minOpacity;
+	if (minOpacity === undefined) {
+		return;
+	}
+
+	delete style.minOpacity;
+
+	if (
+		(typeof minOpacity !== "number" && typeof minOpacity !== "string") ||
+		style.color === undefined ||
+		style.color === null
+	) {
+		return;
+	}
+
+	const color = Array.isArray(style.color)
+		? [...style.color]
+		: [...asArray(String(style.color))];
+	color[3] = Math.max(color[3] ?? 1, Math.min(1, numberValue(minOpacity)));
+	style.color = color as [number, number, number, number];
+}
+
+/** Add `widthOffset` to the resolved stroke width, e.g. to widen any data-driven width. */
+function applyStrokeWidthOffset(style: StyleLiteral) {
+	const widthOffset = style.widthOffset;
+	if (widthOffset === undefined) {
+		return;
+	}
+
+	delete style.widthOffset;
+
+	if (typeof widthOffset !== "number" && typeof widthOffset !== "string") {
+		return;
+	}
+
+	const width =
+		style.width === undefined || style.width === null
+			? DEFAULT_STROKE_WIDTH
+			: numberValue(style.width as string | number);
+	style.width = Math.max(0, width + numberValue(widthOffset));
 }
 
 function _declarationToStyle(
@@ -274,6 +324,11 @@ function _declarationToStyle(
 
 	if (type === "fill" || type === "stroke") {
 		applyPaintOpacity(style);
+		applyPaintMinOpacity(style);
+	}
+
+	if (type === "stroke") {
+		applyStrokeWidthOffset(style);
 	}
 
 	if (
