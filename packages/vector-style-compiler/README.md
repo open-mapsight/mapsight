@@ -304,6 +304,37 @@ viewport even when its footprint is outside it.
 /* @formatter:on */
 ```
 
+### Interaction emphasis
+
+`fill-minOpacity` and `stroke-minOpacity` set a lower bound on the effective
+paint alpha, applied after `fill-opacity` / `stroke-opacity`. Unlike opacity,
+which multiplies the color's alpha, they can make a transparent color visible
+while keeping its RGB channels. `stroke-widthOffset` adds pixels to whatever
+stroke width the cascade resolved, including widths read from feature
+properties. Together they emphasize hovered or selected features without
+replacing data-driven colors:
+
+<!-- prettier-ignore -->
+```scss
+/* @formatter:off */
+#features {
+	[fill] {
+		fill-color: attr(fill);
+	}
+
+	[state="select"] {
+		stroke-widthOffset: 4;
+		stroke-minOpacity: 1;
+		fill-minOpacity: 0.3;
+	}
+}
+/* @formatter:on */
+```
+
+The `polygonInteractionEmphasis` mixin of `@mapsight/traffic-style` applies
+such defaults to polygons. The properties are materialized by
+`@mapsight/lib-ol`, so they need a release of it that supports them.
+
 ## Caching
 
 High-level 3-level LRU caching strategy:
@@ -363,7 +394,7 @@ property`, and add the following string under `Options -> Custom CSS Properties`
 
 <!-- CUSTOM_CSS_PROPERTIES_LIST: -->
 
-circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
+circle-fill-color,circle-radius,circle-stroke-color,circle-stroke-width,extrusion-height,fill-color,fill-minopacity,geometry,icon-anchorx,icon-anchory,icon-offsetx,icon-offsety,icon-opacity,icon-scale,icon-sizex,icon-sizey,icon-snaptopixel,icon-src,image-circle-fill-color,image-circle-radius,image-type,stroke-color,stroke-linedash,stroke-minopacity,stroke-widthoffset,text-alignment,text-fill-color,text-font,text-offsetx,text-offsety,text-placement,text-stroke-color,text-stroke-width,text-testalign,text-text,text-textalign,text-textbaseline,zindex<!-- :CUSTOM_CSS_PROPERTIES_LIST -->
 </code>
 
 ### Custom CSS properties
@@ -405,6 +436,12 @@ Since version: v13.1.0
 Description: Fill color for polygon interiors. Accepts OpenLayers color values such as CSS color strings, RGBA arrays, gradients, patterns, or null.
 
 Since version: v0.0.0
+
+#### fill-minopacity
+
+Description: Lower bound for the effective fill alpha from 0 to 1, applied after fill-opacity. Keeps the color's RGB channels, so it can reveal a transparent fill. Has no effect without a fill color.
+
+Since version: v13.3.0
 
 #### geometry
 
@@ -501,6 +538,18 @@ Since version: v0.0.0
 Description: Line dash pattern for strokes: an array of numbers specifying alternating drawn segment and gap lengths.
 
 Since version: v0.0.0
+
+#### stroke-minopacity
+
+Description: Lower bound for the effective stroke alpha from 0 to 1, applied after stroke-opacity. Keeps the color's RGB channels. Has no effect without a stroke color.
+
+Since version: v13.3.0
+
+#### stroke-widthoffset
+
+Description: Pixels added to the resolved stroke width (1 when no width is set), for example to widen a data-driven width on hover or selection. The result is never negative.
+
+Since version: v13.3.0
 
 #### text-alignment
 
