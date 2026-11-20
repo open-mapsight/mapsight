@@ -21,15 +21,18 @@ import {
 	faCloudShowersWater,
 	faCloudSun,
 	faCloudSunRain,
+	faCrow,
 	faDog,
 	faDroplet,
 	faDumpster,
 	faFaucetDrip,
 	faFlagCheckered,
+	faFrog,
 	faGasPump,
 	faGlassWaterDroplet,
 	faHandHoldingDroplet,
 	faHeartCircleBolt,
+	faHelicopter,
 	faHippo,
 	faHospital,
 	faInfo,
@@ -39,6 +42,7 @@ import {
 	faMugHot,
 	faPersonBiking,
 	faPersonShelter,
+	faPersonSkating,
 	faPersonWalking,
 	faPlugCircleBolt,
 	faRecycle,
@@ -83,6 +87,30 @@ type FaIconEntry = {
 };
 
 const icons: FaIconEntry[] = [
+	{
+		exportName: "faPersonSkating",
+		id: "fa-person-skating",
+		label: {de: "Person Skating", en: "Person Skating"},
+		icon: faPersonSkating,
+	},
+	{
+		exportName: "faHelicopter",
+		id: "fa-helicopter",
+		label: {de: "Hubschrauber", en: "Helicopter"},
+		icon: faHelicopter,
+	},
+	{
+		exportName: "faCrow",
+		id: "fa-crow",
+		label: {de: "Rabe", en: "Crow"},
+		icon: faCrow,
+	},
+	{
+		exportName: "faFrog",
+		id: "fa-frog",
+		label: {de: "Frosch", en: "Frog"},
+		icon: faFrog,
+	},
 	{
 		exportName: "faSchool",
 		id: "fa-school",
