@@ -199,6 +199,8 @@ instance. The default is planned to become `true` in v8.
 
 In development, invalid config logs a Zod warning; production behaviour is host-defined.
 
+Messages list one `path: message` entry per issue, separated by `;`. For union fields the message describes the most relevant branch instead of a generic "Invalid input", for example `map.layers.base.options.source: "options.source" is reserved for a source description ({type, options}). Name the style source of a MapboxVectorLayer with "options.sourceId" instead.` or `map.layers.base.options.source.type: Invalid input: expected string, received undefined`. Validation outcomes are unchanged; only the messages are more specific.
+
 ---
 
 ## Examples
