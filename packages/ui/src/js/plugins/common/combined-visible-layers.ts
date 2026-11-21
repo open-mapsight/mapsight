@@ -47,8 +47,19 @@ export default function createCombinedVisibleLayersPlugin(
 			const combinedFeatureSourceId = options.combinedFeatureSourceId;
 			const getMembers = () =>
 				options.getMembers?.() ?? options.members ?? [];
+			const combinedSourceExists = (state: State) =>
+				!!(
+					state[featureSourcesControllerName] as
+						Record<string, unknown> | undefined
+				)?.[combinedFeatureSourceId];
 
 			function syncVisibleMembers() {
+				// A generic `set` creates a missing source. A combined source
+				// that was removed (or not configured) must stay gone.
+				if (!combinedSourceExists(store.getState())) {
+					return;
+				}
+
 				const visibleFeatureSourceNames = getVisibleFeatureSourceNames(
 					store.getState(),
 					getMembers(),
@@ -71,11 +82,14 @@ export default function createCombinedVisibleLayersPlugin(
 
 			observeState(
 				store,
-				(state) =>
-					createVisibleLayerMembersObserverState(
+				(state) => ({
+					...createVisibleLayerMembersObserverState(
 						getMembers(),
 						mapControllerName,
 					)(state),
+					// Synchronise again when the combined source is added back
+					combinedSourceExists: combinedSourceExists(state),
+				}),
 				syncVisibleMembers,
 				isEqual,
 			);

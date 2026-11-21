@@ -7,6 +7,7 @@ import {
 	ACTION_MERGE,
 	ACTION_MERGE_CONFIG,
 	ACTION_REMOVE_FROM,
+	ACTION_REMOVE_KEY,
 	ACTION_SET,
 } from "@/lib/base/reducer";
 import type {Action, ActionOrThunk, BatchedAction} from "@/types";
@@ -160,6 +161,21 @@ export function unset(path: ActionPath | null) {
 	throwOnEmptyPath(path);
 
 	return set(path, undefined);
+}
+
+/**
+ * Delete the key at the last segment of `path` from its parent plain object.
+ *
+ * Unlike `unset`, which keeps the key with an `undefined` value, the key is
+ * really gone afterwards. Nothing happens when the key or its parent does not
+ * exist, or when the parent is an array (use `removeFrom` for array elements).
+ * This only changes Redux state; domain actions such as `removeLayer` and
+ * `removeFeatureSource` are the intended way to remove layers and sources.
+ */
+export function removeKey(path: ActionPath | null) {
+	throwOnEmptyPath(path);
+
+	return withPath({type: ACTION_REMOVE_KEY}, path);
 }
 
 export function removeFrom(path: ActionPath | null, element: unknown) {

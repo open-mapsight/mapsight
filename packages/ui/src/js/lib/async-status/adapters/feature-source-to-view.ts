@@ -12,8 +12,10 @@ export type FeatureSourceToViewOptions = {
 function isCombinedMemberUnsettled(
 	member: FeatureSourceState | undefined,
 ): boolean {
+	// A member that is not in the state (for example removed with
+	// `removeFeatureSource`) is skipped by the combined source, nothing loads it.
 	if (!member) {
-		return true;
+		return false;
 	}
 	if (member.error) {
 		return false;
@@ -86,13 +88,15 @@ export function featureSourceToView(
 		};
 	}
 
+	// The initial state contains every configured source and nothing loads a
+	// source that is not in the state, so waiting for one would never end. This
+	// is the case for a list bound to a removed source: it is empty, not loading.
 	if (!source) {
 		return {
-			status: "pending",
-			fetchStatus: "fetching",
+			status: "success",
+			fetchStatus: "idle",
 			data: undefined,
 			error: undefined,
-			refetch: options?.refetch,
 		};
 	}
 

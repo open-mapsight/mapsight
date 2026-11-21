@@ -96,4 +96,42 @@ describe("featureSourceToView", () => {
 		expect(view.status).toBe("error");
 		expect(view.error).toBe("network failure");
 	});
+	it("treats a source that is not in the state as settled and empty", () => {
+		const view = featureSourceToView(undefined);
+
+		expect(view.status).toBe("success");
+		expect(view.fetchStatus).toBe("idle");
+		expect(view.data).toBeUndefined();
+		expect(view.error).toBeUndefined();
+	});
+
+	it("skips combined members that are not in the state", () => {
+		const view = featureSourceToView(combinedSource(["parks", "cafes"]), {
+			memberSources: [
+				xhrMember({data: {type: "FeatureCollection", features: []}}),
+				undefined,
+			],
+		});
+
+		expect(view.status).toBe("success");
+		expect(view.fetchStatus).toBe("idle");
+	});
+
+	it("is settled when every combined member is missing", () => {
+		const view = featureSourceToView(combinedSource(["parks", "cafes"]), {
+			memberSources: [undefined, undefined],
+		});
+
+		expect(view.status).toBe("success");
+		expect(view.fetchStatus).toBe("idle");
+	});
+
+	it("still waits for a combined member that is loading next to a missing one", () => {
+		const view = featureSourceToView(combinedSource(["parks", "cafes"]), {
+			memberSources: [undefined, xhrMember({isLoading: true})],
+		});
+
+		expect(view.status).toBe("pending");
+		expect(view.fetchStatus).toBe("fetching");
+	});
 });

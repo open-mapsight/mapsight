@@ -221,7 +221,8 @@ function normalizeFeatureSourcesState(
 ): FeatureSourcesState {
 	let next = state;
 	for (const [id, source] of Object.entries(state)) {
-		if (normalizedFeatureSources.has(source)) {
+		// `undefined` entries are what `unset` leaves behind, nothing to normalize
+		if (!source || normalizedFeatureSources.has(source)) {
 			continue;
 		}
 		if (shouldNormalizeFeatureSourceState(source)) {
@@ -282,6 +283,7 @@ function reduceUncontrolledFeatureSourceChanges(
 	for (const [id, source] of Object.entries(state)) {
 		const oldSource = oldState[id];
 		if (
+			source &&
 			oldSource &&
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
@@ -306,7 +308,7 @@ function reduceUncontrolledFeatureSourceChanges(
 
 	for (const [id, source] of Object.entries(next)) {
 		const oldSource = oldState[id];
-		if (!oldSource || oldSource.data === source.data) {
+		if (!source || !oldSource || oldSource.data === source.data) {
 			continue;
 		}
 
@@ -334,6 +336,29 @@ function reduceUncontrolledFeatureSourceChanges(
 }
 
 const emptyFeaturesArray: Array<Feature> = [];
+
+// Actions that address an existing source by `id`. All but `LOAD_FEATURE_SOURCE`
+// (which `load` only dispatches for existing sources) are ignored for ids that
+// are not in the state, so that a source removed while one of them was queued
+// or in flight is neither recreated nor causes an error.
+const SOURCE_ADDRESSING_ACTION_TYPES = new Set<string>([
+	FEATURE_SOURCE_ERROR,
+	LOAD_FEATURE_SOURCE_ERROR,
+	FEATURE_SOURCE_DATA,
+	LOAD_FEATURE_SOURCE_SUCCESS,
+	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
+	FEATURE_SOURCE_DATA_UNDO,
+	FEATURE_SOURCE_DATA_REDO,
+	FEATURE_SOURCE_DATA_ADD_FEATURE,
+	FEATURE_SOURCE_DATA_ADD_FEATURES,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE_PROPERTY,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURES,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE_GEOMETRY,
+	FEATURE_SOURCE_DATA_REMOVE_FEATURE,
+	FEATURE_SOURCE_DATA_REMOVE_FEATURES,
+	FEATURE_SOURCE_DATA_REMOVE_ALL_FEATURES,
+]);
 
 type CombinedFeatureSourceBinding = {
 	featureSourceNames: string[];
@@ -397,7 +422,7 @@ export class FeatureSourcesController extends BaseController {
 		const activeIds = new Set<string>();
 
 		for (const [id, source] of Object.entries(sources)) {
-			if (source.type !== "combined") {
+			if (source?.type !== "combined") {
 				continue;
 			}
 
@@ -502,6 +527,13 @@ export class FeatureSourcesController extends BaseController {
 			(state[featureSourceAction.id]?.requestId !==
 				featureSourceAction.requestId ||
 				!state[featureSourceAction.id]?.isLoading)
+		) {
+			return state;
+		}
+
+		if (
+			SOURCE_ADDRESSING_ACTION_TYPES.has(featureSourceAction.type) &&
+			!state[featureSourceAction.id]
 		) {
 			return state;
 		}

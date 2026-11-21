@@ -43,4 +43,30 @@ describe("deepChangeState", () => {
 		expect(nextState.retained).toBe(retained);
 		expect(state.levelOne.levelTwo.value).toBe("before");
 	});
+	it("copies arrays along the path as arrays", () => {
+		const first = {a: 1};
+		const second = {a: 2};
+		const state = {list: [first, second]};
+
+		const nextState = deepChangeState(
+			state,
+			["list", 0, "a"],
+			10,
+		) as typeof state;
+
+		expect(Array.isArray(nextState.list)).toBe(true);
+		expect(nextState.list).toEqual([{a: 10}, {a: 2}]);
+		expect(nextState.list).not.toBe(state.list);
+		expect(nextState.list[1]).toBe(second);
+		expect(first.a).toBe(1);
+	});
+
+	it("keeps an array root as an array", () => {
+		const state = [{a: 1}];
+
+		const nextState = deepChangeState(state, [0, "a"], 2);
+
+		expect(Array.isArray(nextState)).toBe(true);
+		expect(nextState).toEqual([{a: 2}]);
+	});
 });

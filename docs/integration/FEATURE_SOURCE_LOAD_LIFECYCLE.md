@@ -6,6 +6,24 @@ rehydrated request metadata. A pending request suppresses another ordinary load;
 `forceRefresh` starts a newer request. Removing and re-adding the same source does
 not reuse its previous number.
 
+Remove a source with `removeFeatureSource`, which deletes its key. Its refresh
+timer then stops because the source no longer exists, and actions that address
+the removed id later (for example a late `setData`, or an update queued for a
+removed combined source) are ignored instead of recreating it.
+
+This applies to every id that is not in the state, whether it was removed or
+never existed. The `FeatureSourcesController` ignores `setData`, `setError`,
+`loadSuccess`, `loadFailure`, `pauseRefreshUntilNextLoad`, the feature edit
+actions (`addFeature`, `addFeatures`, `updateFeature`, `updateFeatureProperty`,
+`updateFeatures`, `updateFeatureGeometry`, `removeFeature`, `removeFeatures`,
+`removeAllFeatures`) and `undo`/`redo` for such an id. Before, `setData`,
+`loadSuccess`, the feature edits and `undo`/`redo` threw, while `setError`,
+`loadFailure` without a request number and `pauseRefreshUntilNextLoad` created a
+partial source (only `error`/`isLoading`/`dataHistory`, or only `refreshPaused`)
+that had no type or URL. A source must be created through configuration
+(`set` or `mergeConfig` of `featureSources.<id>`) before anything is written to
+it. `load` has always skipped ids that are not in the state.
+
 The success/error actions produced by `load` carry that number. The
 `FeatureSourcesController` accepts them only while the matching request is still
 loading. This check happens in the reducer because asynchronous dispatch can
@@ -30,10 +48,12 @@ cancel the underlying fetch or remove an otherwise valid URL-keyed document
 cache entry; the request can still populate the existing cache for that URL.
 
 The public `loadSuccess` and `loadFailure` helpers remain usable without a
-request number for hosts that deliberately write a completion. These manual
-unbound actions retain their previous behavior. Passing the optional fourth
-argument binds a completion to a particular loading request. Prefer `load` for
-network work so core owns the full lifecycle.
+request number for hosts that deliberately write a completion. For a source that
+exists, these manual unbound actions retain their previous behavior; for an id
+that is not in the state they are ignored like every other source action (see
+above). Passing the optional fourth argument binds a completion to a particular
+loading request. Prefer `load` for network work so core owns the full
+lifecycle.
 
 Regression tests cover deferred responses in both completion orders, queued
 completions, URL/type replacement, removal/re-addition, forced refresh,

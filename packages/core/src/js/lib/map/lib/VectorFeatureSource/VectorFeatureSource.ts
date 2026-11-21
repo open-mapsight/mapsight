@@ -129,6 +129,9 @@ export default class VectorFeatureSource extends VectorSource {
 		resolution: number,
 		projection: Projection,
 	) {
+		if (this.disposed) {
+			return;
+		}
 		this._active = true;
 		super.loadFeatures(extentToLoad, resolution, projection);
 
@@ -142,7 +145,7 @@ export default class VectorFeatureSource extends VectorSource {
 
 	/** @override */
 	override refresh() {
-		if (!this._active) {
+		if (!this._active || this.disposed) {
 			return;
 		}
 
@@ -307,6 +310,27 @@ export default class VectorFeatureSource extends VectorSource {
 		}
 
 		return doHighlight;
+	}
+
+	/**
+	 * Release everything this source subscribed to: the shared feature source,
+	 * the feature selections, the map size and the core property keys. Call it
+	 * when the layer that owns the source is removed or replaced. The source
+	 * stays untouched in its last state and ignores all later updates.
+	 *
+	 * @override
+	 */
+	override disposeInternal() {
+		this._active = false;
+		this._unsubscribeCorePropertyKeys?.();
+		this._unsubscribeCorePropertyKeys = null;
+		this._mapAnimator?.dispose();
+		this._featureSelectionStates.dispose();
+		this._featureSourceConnector.dispose();
+		this._mapController = null;
+		this._layer = null;
+		this._drawInteraction = null;
+		super.disposeInternal();
 	}
 
 	override addFeature(feature: OlFeature) {

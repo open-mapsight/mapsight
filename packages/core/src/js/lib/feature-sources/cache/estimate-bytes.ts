@@ -23,7 +23,7 @@ export function estimateFeatureSourcesStateBytes(
 ): number {
 	let total = 0;
 	for (const source of Object.values(state)) {
-		total += estimateFeatureSourceBytes(source.data);
+		total += estimateFeatureSourceBytes(source?.data);
 	}
 	return total;
 }
