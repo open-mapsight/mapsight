@@ -1,19 +1,32 @@
-import type {FeatureSourceConfig} from "@mapsight/core/lib/feature-sources/types";
+import type {
+	FeatureSourceConfig,
+	FeatureSourceData,
+} from "@mapsight/core/lib/feature-sources/types";
 
 type FeatureSourceDefinition = FeatureSourceConfig;
 
 export {TIME_FILTER, TAG_FILTER} from "../constants/controllers";
 
 /**
- * Create an empty feature source that can be filled using actions
- * and cannot not load features itself.
+ * Create a feature source that can be filled using actions
+ * and cannot load features itself.
  *
+ * Without `data` the source starts empty: when a visible layer or list uses it,
+ * it ends up in the error state `no data` until the host dispatches `setData`.
+ * Pass initial `data` (an empty FeatureCollection is enough) to avoid that.
+ *
+ * @param data optional initial GeoJSON FeatureCollection
  * @returns config for a plain feature source
  */
-export function plain(): FeatureSourceDefinition {
-	return {
-		type: "noop" as const,
-	};
+export function plain(data?: FeatureSourceData): FeatureSourceDefinition {
+	return data
+		? {
+				type: "noop" as const,
+				data,
+			}
+		: {
+				type: "noop" as const,
+			};
 }
 
 /**

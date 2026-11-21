@@ -65,6 +65,14 @@ See [CMS_PHP](CMS_PHP.md).
 
 Loader helpers live in `@mapsight/ui/config/feature/sources` (`xhrJson`, `plain`, …).
 
+`plain()` creates a source without a loader (`type: "noop"`) that the host fills. Pass initial GeoJSON with
+`plain(featureCollection)`; it is indexed when the store is created.
+
+An empty `plain()` source that is bound to a visible layer or list is still loaded by core. The `noop` loader
+rejects, so the source ends up in the error state `no data` (with a console warning) until the host dispatches
+`setData`. To avoid it, either pass initial data (an empty collection is enough:
+`plain({type: "FeatureCollection", features: []})`) or dispatch `setData` after creation (this also clears the error state).
+
 ### `map.layers`
 
 **Basemap** (OSM, XYZ, WMS raster) and **thematic** vector layers are separate concerns. Basemap
