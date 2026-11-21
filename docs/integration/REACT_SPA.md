@@ -113,5 +113,6 @@ Run typecheck/lint via turbo from root: `pnpm typecheck`, `pnpm lint`.
 
 - [Integration overview](OVERVIEW.md)
 - [NEXTJS.md](NEXTJS.md)
+- [Bring your own interface](CUSTOM_INTERFACE.md) — `Instance` and `Map` without `App` and the Mapsight chrome
 - [DATA_BACKEND.md](DATA_BACKEND.md)
 - [Redux architecture](../../packages/core/docs/REDUX_ARCHITECTURE.md)
