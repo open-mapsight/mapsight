@@ -79,7 +79,10 @@ export default class WithMap extends BaseController<MapState> {
 								async(() => {
 									const zoom = view?.getZoom();
 									const resolution = view?.getResolution();
-									if (zoom && resolution) {
+									if (
+										zoom !== undefined &&
+										resolution !== undefined
+									) {
 										this.dispatch(
 											quiet(
 												controlled(
@@ -117,7 +120,7 @@ export default class WithMap extends BaseController<MapState> {
 							this.dispatch(
 								async(() => {
 									const rotation = view?.getRotation();
-									if (rotation) {
+									if (rotation !== undefined) {
 										this.dispatch(
 											quiet(
 												controlled(

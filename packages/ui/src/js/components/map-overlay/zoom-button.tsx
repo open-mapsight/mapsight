@@ -1,12 +1,9 @@
 import type {CSSProperties, MouseEvent} from "react";
 import {memo, useCallback} from "react";
-import {useDispatch, useSelector} from "react-redux";
-
-import {animate} from "@mapsight/core/lib/map/actions";
 
 import {ZOOM_IN, ZOOM_OUT} from "../../config/constants/app";
-import * as c from "../../config/constants/controllers";
 import {translate} from "../../helpers/i18n";
+import useMapZoom from "../../hooks/useMapZoom";
 
 export type ZoomButtonProps = {
 	action: typeof ZOOM_IN | typeof ZOOM_OUT;
@@ -15,9 +12,6 @@ export type ZoomButtonProps = {
 	zoomModifierClassPrefix?: string;
 	style?: CSSProperties;
 };
-
-const zoomSelector = (state: {[c.MAP]?: {view?: {zoom?: number}}}) =>
-	(state && state[c.MAP] && state[c.MAP].view && state[c.MAP].view.zoom) || 0;
 
 function getAriaLabel(action: ZoomButtonProps["action"]) {
 	return translate("ui.zoom-button.ariaLabel" + action);
@@ -38,8 +32,7 @@ function ZoomButton(props: ZoomButtonProps) {
 		style = {},
 	} = props;
 
-	const dispatch = useDispatch();
-	const zoom = useSelector(zoomSelector);
+	const {zoomIn, zoomOut} = useMapZoom();
 
 	const onClick = useCallback(
 		function onClick(e: MouseEvent<HTMLButtonElement>) {
@@ -47,28 +40,18 @@ function ZoomButton(props: ZoomButtonProps) {
 
 			switch (action) {
 				case ZOOM_IN:
-					dispatch(
-						animate(c.MAP, {
-							zoom: zoom + 1,
-							duration: 200,
-						}),
-					);
+					zoomIn();
 					break;
 
 				case ZOOM_OUT:
-					dispatch(
-						animate(c.MAP, {
-							zoom: zoom - 1,
-							duration: 200,
-						}),
-					);
+					zoomOut();
 					break;
 
 				default:
 					throw new Error("Unsupported action");
 			}
 		},
-		[dispatch, action, zoom],
+		[action, zoomIn, zoomOut],
 	);
 
 	const className = `${baseClass} ${zoomModifierClassPrefix}${action} ${additionalClasses}`;
