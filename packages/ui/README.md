@@ -348,6 +348,7 @@ When shown, use the artwork unmodified (no opacity, filters or cropping). See th
 | [CMS PHP integration](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/CMS_PHP.md)                         | —                         | Classic PHP host pattern                              |
 | [React SPA](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/REACT_SPA.md)                                 | —                         | Standalone React apps                                 |
 | [Next.js](https://github.com/open-mapsight/mapsight/blob/main/docs/integration/NEXTJS.md)                                      | —                         | Next.js host notes                                    |
+| [View permalink plugin](https://github.com/open-mapsight/mapsight/blob/main/packages/ui/docs/VIEW_PERMALINK.md)                | `@mapsight/ui`            | Map view and layer state in the page address          |
 | [Default icons and vector styles](https://github.com/open-mapsight/mapsight/blob/main/packages/traffic-style/README.md)        | `@mapsight/traffic-style` | Precompiled style function and icon catalog           |
 
 ## Related packages

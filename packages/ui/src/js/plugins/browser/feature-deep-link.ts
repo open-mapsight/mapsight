@@ -201,6 +201,18 @@ export default function createPlugin(
 			const handleHistoryStateChange = (state) => {
 				if (state && "featureId" in state) {
 					if (state.featureId) {
+						// An address-only replacement (e.g. a permalink keeping the
+						// entry's state) must not reselect: that would count as a
+						// selection change.
+						const selected = selectorSelectedFeatures(
+							store.getState(),
+						)?.features;
+						if (
+							selected?.length === 1 &&
+							selected[0] === state.featureId
+						) {
+							return;
+						}
 						selectFeature(
 							store,
 							featureSelectionsController,
