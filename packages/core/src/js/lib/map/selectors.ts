@@ -169,6 +169,75 @@ export const visibleLayerAttributionsSelector: Selector<
 	getVisibleLayerAttributions,
 );
 
+/** Attribution of one layer: plain text and/or markup that must be trusted. */
+export type LayerAttributionParts = {
+	/** `metaData.attribution` */
+	text?: string;
+	/** `metaData.dangerouslySetAttributionHtml` */
+	html?: string;
+};
+
+export type LayerAttributionsParts = {[layerId: string]: LayerAttributionParts};
+
+export const reduceLayersToAttributionParts = (
+	layers?: MapState["layers"],
+): LayerAttributionsParts => {
+	if (layers === undefined) {
+		return {};
+	}
+
+	const entries = Object.keys(layers)
+		.map((layerId) => {
+			const metaData = layers[layerId]?.metaData;
+			const text = metaData?.attribution || undefined;
+			const html = metaData?.dangerouslySetAttributionHtml || undefined;
+			return text || html
+				? ([
+						layerId,
+						{...(text && {text}), ...(html && {html})},
+					] as const)
+				: null;
+		})
+		.filter(isNonNullable);
+	return Object.fromEntries(entries);
+};
+
+export const layerAttributionPartsSelector: Selector<
+	MapState,
+	LayerAttributionsParts
+> = createSelector([layersSelector], reduceLayersToAttributionParts);
+
+export const getVisibleLayerAttributionParts = (
+	visibleLayers: string[] | undefined,
+	layerAttributionParts: LayerAttributionsParts,
+): LayerAttributionsParts => {
+	if (visibleLayers === undefined) {
+		return {};
+	}
+
+	const entries = unique(visibleLayers)
+		.map((layerId) =>
+			mapNonNullable(
+				layerAttributionParts[layerId],
+				(parts) => [layerId, parts] as const,
+			),
+		)
+		.filter(isNonNullable);
+	return Object.fromEntries(entries);
+};
+
+/**
+ * Attribution parts of the visible layers, in visible-layer order. A layer
+ * appears only if it sets `attribution` and/or `dangerouslySetAttributionHtml`.
+ */
+export const visibleLayerAttributionPartsSelector: Selector<
+	MapState,
+	LayerAttributionsParts
+> = createSelector(
+	[visibleLayersSelector, layerAttributionPartsSelector],
+	getVisibleLayerAttributionParts,
+);
+
 export type LayerLegends = {[layerId: string]: string};
 
 export const reduceLayersToLegends = (

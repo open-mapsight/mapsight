@@ -169,6 +169,20 @@ export function metaDataWithAttribution(
 	};
 }
 
+/**
+ * Sets the attribution that the chrome always renders as HTML. The content
+ * must be trusted. See `future.v8_attributionText`.
+ */
+export function metaDataWithAttributionHtml(
+	_metaData: LayerMetaData = {},
+	html: string,
+): LayerMetaData {
+	return {
+		..._metaData,
+		dangerouslySetAttributionHtml: html,
+	};
+}
+
 export function metaDataWithLegend(
 	_metaData: LayerMetaData = {},
 	legend,
