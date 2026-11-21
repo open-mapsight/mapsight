@@ -168,6 +168,8 @@ store.dispatch(load("featureSources", "pois", {forceRefresh: true}));
 
 Feature source **config** (`type`, `url`, filters) still belongs in preset JSON via `mergeAll`. `load()` fetches or hydrates **data** into that config.
 
+`dispatch(load(...))` returns the queued action, not a promise, and says nothing about completion (loads can also be skipped as duplicates). To wait for data, use `whenFeatureSourcesSettled` from `@mapsight/core/lib/feature-sources/when-settled`; see [Waiting for data](../../../docs/integration/FEATURE_SOURCE_LOAD_LIFECYCLE.md#waiting-for-data).
+
 ### Anti-pattern
 
 ```typescript
