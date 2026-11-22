@@ -8,13 +8,8 @@ import {di, setOptions, updateProxyObject} from "@/ol-proxy";
 import Map from "@/ol-proxy/definitions/Map";
 import View from "@/ol-proxy/definitions/View";
 
-import {async, controlled, quiet} from "../../base/actions";
+import {async, controlled, quiet, setAll} from "../../base/actions";
 import {BaseController} from "../../base/controller";
-import {
-	setViewCenter,
-	setViewRotation,
-	setViewZoomAndResolution,
-} from "../actions";
 import throttleDispatch from "./throttleDispatch";
 
 // Legacy. We always need Map and View, so we inject it by default. This should not be done here.
@@ -74,81 +69,42 @@ export default class WithMap extends BaseController<MapState> {
 							this._map.setView(view);
 						}
 
-						const handleResolution = () => {
+						const syncView = () => {
 							this.dispatch(
 								async(() => {
-									const zoom = view?.getZoom();
-									const resolution = view?.getResolution();
-									if (
-										zoom !== undefined &&
-										resolution !== undefined
-									) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewZoomAndResolution(
-														name,
-														zoom,
-														resolution,
-													),
-												),
+									if (view !== nextView) return;
+									const zoom = nextView.getZoom();
+									this.dispatch(
+										quiet(
+											controlled(
+												setAll([name, "view"], {
+													center: nextView.getCenter(),
+													projectedCenter:
+														nextView.getCenterInternal(),
+													zoom:
+														zoom === undefined
+															? undefined
+															: Math.round(zoom),
+													resolution:
+														nextView.getResolution(),
+													rotation:
+														nextView.getRotation(),
+												}),
 											),
-										);
-									}
+										),
+									);
 								}),
 							);
 						};
-
-						const handleCenter = () => {
-							this.dispatch(
-								async(() => {
-									const center = view?.getCenter();
-									if (center) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewCenter(name, center),
-												),
-											),
-										);
-									}
-								}),
-							);
-						};
-
-						const handleRotation = () => {
-							this.dispatch(
-								async(() => {
-									const rotation = view?.getRotation();
-									if (rotation !== undefined) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewRotation(
-														name,
-														rotation,
-													),
-												),
-											),
-										);
-									}
-								}),
-							);
-						};
-
 						view.on(
-							"change:resolution",
-							throttleDispatch(handleResolution),
+							[
+								"change:center",
+								"change:resolution",
+								"change:rotation",
+							],
+							throttleDispatch(syncView),
 						);
-						handleResolution();
-						view.on(
-							"change:center",
-							throttleDispatch(handleCenter),
-						);
-						view.on(
-							"change:rotation",
-							throttleDispatch(handleRotation),
-						);
+						syncView();
 					},
 				});
 			},

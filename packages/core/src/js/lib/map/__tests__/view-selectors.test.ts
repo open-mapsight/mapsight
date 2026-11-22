@@ -185,21 +185,60 @@ describe("viewExtentSelector against a real view", () => {
 		},
 	);
 
-	it("follows the user projection being switched on and off", () => {
-		const view = new View({center: [0, 0], resolution: 38.2});
-		const state = stateOf(view);
-		const projected = viewExtentSelector(state);
+	it.each([false, true])(
+		"keeps the displayed extent when switching projection (geographic first: %s)",
+		async (geographicFirst) => {
+			if (geographicFirst) useGeographic();
+			const controller = new MapController("map");
+			const store = createMapsightStore(
+				{map: controller as unknown as BaseController},
+				{},
+				{
+					map: {
+						layers: {},
+						view: {
+							center: geographicFirst
+								? [10, 50]
+								: [1113194, 6446275],
+							zoom: 10,
+						},
+					},
+				},
+			);
+			const map = controller.getMap()!;
+			try {
+				map.setSize(size);
+				await expect
+					.poll(() => (store.getState().map as MapState).size)
+					.toEqual(size);
+				const state = store.getState().map as MapState;
+				const view = map.getView();
+				expectExtent(
+					viewExtentSelector(state),
+					view.calculateExtent(size),
+				);
+				if (geographicFirst) clearUserProjection();
+				else useGeographic();
+				expectExtent(
+					viewExtentSelector(state),
+					view.calculateExtent(size),
+				);
+			} finally {
+				map.dispose();
+			}
+		},
+	);
 
-		useGeographic();
-		const geographic = viewExtentSelector(state);
-		expect(geographic).not.toEqual(projected);
-		expectExtent(geographic, view.calculateExtent(size));
-
-		clearUserProjection();
-		expectExtent(viewExtentSelector(state), view.calculateExtent(size));
-	});
-
-	it.each([{zoom: 10}, {resolution: 100}])(
+	it.each([
+		{zoom: 10},
+		{resolution: 100},
+		{
+			zoom: 10,
+			extent: [-1e6, -1e6, 1e6, 1e6],
+			center: [2e6, 2e6],
+			rotation: 0.02,
+		},
+	])(
 		"publishes the initial extent through the map controller with %j",
 		async (options) => {
 			const controller = new MapController("map");
@@ -216,6 +255,8 @@ describe("viewExtentSelector against a real view", () => {
 				const view = map.getView();
 				const state = () => store.getState().map as MapState;
 				await expect.poll(() => state().size).toEqual(size);
+				expect(viewCenterSelector(state())).toEqual(view.getCenter());
+				expect(viewRotationSelector(state())).toBe(view.getRotation());
 				expect(viewZoomSelector(state())).toBe(
 					Math.round(view.getZoom()!),
 				);

@@ -147,19 +147,23 @@ export const viewResolutionSelector = (state: MapState) =>
 const selectViewExtent = createSelector(
 	[
 		viewCenterSelector,
+		(state: MapState) => viewSelector(state)?.projectedCenter,
 		viewResolutionSelector,
 		viewRotationSelector,
 		mapSizeSelector,
 		(_state: MapState, userProjection: Projection | null) => userProjection,
 	],
-	(center, resolution, rotation, size, userProjection) => {
-		if (!center || resolution === undefined || !size) {
+	(center, projectedCenter, resolution, rotation, size, userProjection) => {
+		const effectiveCenter =
+			projectedCenter ??
+			(center && userProjection
+				? transform(center, userProjection, VIEW_PROJECTION)
+				: center);
+		if (!effectiveCenter || resolution === undefined || !size) {
 			return undefined;
 		}
 		const extent = getForViewAndSize(
-			userProjection
-				? transform(center, userProjection, VIEW_PROJECTION)
-				: center,
+			effectiveCenter,
 			resolution,
 			rotation,
 			size,
@@ -173,7 +177,7 @@ const selectViewExtent = createSelector(
 
 /**
  * Visible extent `[minX, minY, maxX, maxY]`, derived from center, resolution,
- * rotation and map size. It uses the same coordinate system as the center: view
+ * rotation and map size. The result uses the active coordinate system: view
  * projection (EPSG:3857) units, or the user projection when one is set (for
  * example degrees after `useGeographic()` from `ol/proj`), like
  * `view.calculateExtent()`. With a rotated view this is the bounding box of
