@@ -10,6 +10,9 @@ import {removeLayer} from "@/lib/map/actions";
 import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
 import {getIdForLayer} from "@/lib/map/lib/tagLayer";
 import type {LayerState} from "@/lib/map/types";
+import {di} from "@/ol-proxy";
+import LazyMapboxVectorLayer from "@/ol-proxy/definitions/layer/LazyMapboxVectorLayer";
+import MapboxVectorLayer from "@/ol-proxy/definitions/layer/MapboxVectorLayer";
 import {createHighlightTestMap} from "@/test/create-highlight-test-map";
 
 function collection(...ids: string[]) {
@@ -213,4 +216,41 @@ describe("tearing down the source of a removed layer", () => {
 			source.dispose();
 		}).not.toThrow();
 	});
+});
+
+describe("disposing controller-owned layers", () => {
+	it.each(["removal", "replacement"])(
+		"disposes a Mapbox vector layer on %s",
+		(operation) => {
+			di.injectDefinitions([MapboxVectorLayer]);
+			const {store, map} = createHighlightTestMap();
+			store.dispatch(
+				set(["map", "layers", "tiles"], {
+					type: "MapboxVectorLayer",
+					options: {visible: false, styleUrl: "/original.json"},
+				}),
+			);
+			const layer = map
+				.getAllLayers()
+				.find((layer) => getIdForLayer(layer) === "tiles");
+			if (!(layer instanceof LazyMapboxVectorLayer)) {
+				throw new Error("Expected a Mapbox vector layer");
+			}
+			expect(layer.getSource()).not.toBeNull();
+
+			if (operation === "removal") {
+				store.dispatch(removeLayer("map", "tiles"));
+			} else {
+				store.dispatch(
+					set(
+						["map", "layers", "tiles", "options", "styleUrl"],
+						"/replacement.json",
+					),
+				);
+			}
+
+			expect(map.getAllLayers()).not.toContain(layer);
+			expect(layer.getSource()).toBeNull();
+		},
+	);
 });

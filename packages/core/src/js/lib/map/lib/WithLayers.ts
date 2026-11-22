@@ -92,6 +92,7 @@ export default class WithLayers extends WithAnimations {
 					if (source instanceof VectorFeatureSource) {
 						source.dispose();
 					}
+					oldObject.dispose();
 				},
 				adder: (layer) => {
 					if (!newDefinition) {
