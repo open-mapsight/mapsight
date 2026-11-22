@@ -138,7 +138,7 @@ describe("app hydration", () => {
 					return root;
 				},
 			);
-			await act(async () => {
+			await act(() => {
 				browserEmbed(container, {
 					styleFunction,
 					baseMapsightConfig: {
