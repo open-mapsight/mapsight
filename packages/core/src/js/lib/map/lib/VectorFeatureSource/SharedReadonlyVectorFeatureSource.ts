@@ -20,7 +20,10 @@ import type {EnhancedStore} from "@/types";
 
 import {updateFeaturesInSource} from "./updateFeaturesInSource";
 
-const listenerStoreMaps = new WeakMap();
+const listenerStoreMaps = new WeakMap<
+	EnhancedStore,
+	Map<string, SharedReadonlyVectorFeatureSource>
+>();
 
 type FeatureSourceListener = () => void;
 
@@ -44,6 +47,7 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 
 	private _listeners: Array<FeatureSourceListener>;
 	private _unsubscribeFromStore: (() => void) | undefined = undefined;
+	private _cacheKey?: string;
 	private _format: GeoJSONFormat;
 	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
 	private _lastFeaturesKey: string | undefined;
@@ -93,10 +97,8 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		listener: FeatureSourceListener,
 		corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS,
 	) {
-		let map;
-		if (listenerStoreMaps.has(store)) {
-			map = listenerStoreMaps.get(store);
-		} else {
+		let map = listenerStoreMaps.get(store);
+		if (!map) {
 			map = new Map();
 			listenerStoreMaps.set(store, map);
 		}
@@ -110,8 +112,8 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			format.constructor.name,
 		]);
 
-		let instance: SharedReadonlyVectorFeatureSource & {__hash?: string};
-		if (!map.has(hash)) {
+		let instance = map.get(hash);
+		if (!instance) {
 			instance = new SharedReadonlyVectorFeatureSource(
 				store,
 				controllerName,
@@ -122,10 +124,9 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 				externalProjection,
 				corePropertyKeys,
 			);
-			instance.__hash = hash;
+			instance._cacheKey = hash;
 			map.set(hash, instance);
 		} else {
-			instance = map.get(hash);
 			instance.setCorePropertyKeys(corePropertyKeys);
 		}
 
@@ -139,7 +140,8 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	subscribe(listener: FeatureSourceListener) {
 		const wasAbandoned = this.isAbandoned();
 		const featuresBefore = this.getFeatures().length;
-		this._listeners.push(listener);
+		const notify = () => listener();
+		this._listeners.push(notify);
 
 		if (wasAbandoned) {
 			this._unsubscribeFromStore = this._subscribeToSource();
@@ -157,9 +159,17 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 		}
 
 		return () => {
-			this._listeners = this._listeners.filter((f) => f !== listener);
+			this._listeners = this._listeners.filter((f) => f !== notify);
 			if (this._unsubscribeFromStore && this.isAbandoned()) {
 				this._unsubscribeFromStore();
+				this._unsubscribeFromStore = undefined;
+				const map = listenerStoreMaps.get(this._store);
+				if (
+					this._cacheKey !== undefined &&
+					map?.get(this._cacheKey) === this
+				) {
+					map.delete(this._cacheKey);
+				}
 			}
 		};
 	}

@@ -5,7 +5,7 @@ import {describe, expect, it, vi} from "vitest";
 
 import {set} from "@/lib/base/actions";
 import {select} from "@/lib/feature-selections/actions";
-import {setData} from "@/lib/feature-sources/actions";
+import {removeFeatureSource, setData} from "@/lib/feature-sources/actions";
 import {removeLayer} from "@/lib/map/actions";
 import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
 import {getIdForLayer} from "@/lib/map/lib/tagLayer";
@@ -112,6 +112,33 @@ describe("tearing down the source of a removed layer", () => {
 
 		expect(refresh).not.toHaveBeenCalled();
 		expect(source.getFeatures()).toHaveLength(1);
+	});
+
+	it("starts a new layer empty when its deleted feature source ID is reused", () => {
+		const {store, map, source} = setup();
+		store.dispatch(setData("featureSources", "pois", collection("old")));
+		expect(source.getFeatures().map((feature) => feature.getId())).toEqual([
+			"old",
+		]);
+
+		store.dispatch(removeLayer("map", "animated"));
+		store.dispatch(removeLayer("map", "pois"));
+		store.dispatch(removeFeatureSource("featureSources", "pois"));
+		store.dispatch(
+			set(["featureSources", "pois"], {type: "local", data: null}),
+		);
+		store.dispatch(set(["map", "layers", "animated"], animatingLayer()));
+
+		const replacement = findOlLayer(map, "animated").getSource();
+		if (!(replacement instanceof VectorFeatureSource)) {
+			throw new Error("Expected a replacement VectorFeatureSource");
+		}
+		expect(replacement.getFeatures()).toEqual([]);
+
+		store.dispatch(setData("featureSources", "pois", collection("new")));
+		expect(
+			replacement.getFeatures().map((feature) => feature.getId()),
+		).toEqual(["new"]);
 	});
 
 	it("does not react to map size changes any more", () => {

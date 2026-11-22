@@ -150,6 +150,41 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 		expect(again).toHaveBeenCalled();
 	});
 
+	it("keeps sharing until the last subscription is released", () => {
+		const format = new GeoJSON();
+		const store = createStore(sourceState([placeFeature]));
+		const onUpdate = vi.fn();
+		const subscribe = () =>
+			SharedReadonlyVectorFeatureSource.subscribe(
+				store as unknown as EnhancedStore,
+				"featureSources",
+				"parking",
+				"map",
+				format,
+				undefined,
+				undefined,
+				onUpdate,
+			);
+
+		const first = subscribe();
+		const second = subscribe();
+		expect(second.instance).toBe(first.instance);
+		first.unsubscribe();
+		const third = subscribe();
+		expect(third.instance).toBe(second.instance);
+
+		second.unsubscribe();
+		third.unsubscribe();
+		const replacement = subscribe();
+		expect(replacement.instance).not.toBe(first.instance);
+
+		first.unsubscribe();
+		const sibling = subscribe();
+		expect(sibling.instance).toBe(replacement.instance);
+		sibling.unsubscribe();
+		replacement.unsubscribe();
+	});
+
 	it("skips readFeatures when only collection metadata changed", () => {
 		const format = new GeoJSON();
 		const readFeatures = vi.spyOn(format, "readFeatures");
