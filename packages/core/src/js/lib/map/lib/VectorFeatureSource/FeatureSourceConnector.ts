@@ -180,6 +180,9 @@ export default class FeatureSourceConnector {
 	}
 
 	setInternalProjection(projection: ProjectionLike) {
+		if (projection === this._internalProjection) {
+			return;
+		}
 		this._internalProjection = projection;
 		this._subscribeFeatureSource();
 	}

@@ -163,15 +163,16 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 			if (this._unsubscribeFromStore && this.isAbandoned()) {
 				this._unsubscribeFromStore();
 				this._unsubscribeFromStore = undefined;
-				const map = listenerStoreMaps.get(this._store);
-				if (
-					this._cacheKey !== undefined &&
-					map?.get(this._cacheKey) === this
-				) {
-					map.delete(this._cacheKey);
-				}
+				this._evictFromCache();
 			}
 		};
+	}
+
+	private _evictFromCache() {
+		const map = listenerStoreMaps.get(this._store);
+		if (this._cacheKey !== undefined && map?.get(this._cacheKey) === this) {
+			map.delete(this._cacheKey);
+		}
 	}
 
 	private _applyFeatureSourceData(
@@ -230,8 +231,14 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 	private _subscribeToSource(): Unsubscribe {
 		const handleFeatureSourceStateChange = (
 			sourceState: FeatureSourceState | undefined,
+			previousSource: FeatureSourceState | null | undefined,
 		) => {
 			if (!sourceState) {
+				// Mounted layers keep their last display. A new layer must
+				// subscribe without any features from the deleted source.
+				if (previousSource) {
+					this._evictFromCache();
+				}
 				return;
 			}
 

@@ -67,8 +67,9 @@ describe("FeatureSourceConnector", () => {
 		expect(connector.getFeatures()).toHaveLength(1);
 	});
 
-	it("refreshes once after a re-subscribe with the same store data", () => {
+	it("reparses features only when the internal projection changes", () => {
 		const format = new GeoJSON();
+		const readFeatures = vi.spyOn(format, "readFeatures");
 		const store = createStore({
 			featureSources: {
 				parking: {
@@ -100,9 +101,14 @@ describe("FeatureSourceConnector", () => {
 		connector.setTargetControllerName("map");
 		connector.setStore(store as unknown as EnhancedStore);
 		onUpdate.mockClear();
+		expect(readFeatures).toHaveBeenCalledTimes(1);
 
 		connector.setInternalProjection("EPSG:3857");
+		expect(onUpdate).not.toHaveBeenCalled();
+		expect(readFeatures).toHaveBeenCalledTimes(1);
 
+		connector.setInternalProjection("EPSG:4326");
+		expect(readFeatures).toHaveBeenCalledTimes(2);
 		expect(onUpdate).toHaveBeenCalledTimes(1);
 		expect(onUpdate).toHaveBeenCalledWith(1);
 	});

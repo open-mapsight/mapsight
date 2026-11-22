@@ -144,6 +144,35 @@ describe("tearing down the source of a removed layer", () => {
 		).toEqual(["new"]);
 	});
 
+	it("keeps the surviving layer's display without passing it to a new layer", () => {
+		const {store, map, source: sibling} = setup();
+		store.dispatch(set(["map", "layers", "recreated"], animatingLayer()));
+		store.dispatch(setData("featureSources", "pois", collection("old")));
+		expect(sibling.getFeatureById("old")).toBeTruthy();
+
+		store.dispatch(removeLayer("map", "recreated"));
+		store.dispatch(removeFeatureSource("featureSources", "pois"));
+		expect(sibling.getFeatureById("old")).toBeTruthy();
+		store.dispatch(
+			set(["featureSources", "pois"], {type: "local", data: null}),
+		);
+		store.dispatch(set(["map", "layers", "recreated"], animatingLayer()));
+
+		const replacement = findOlLayer(map, "recreated").getSource();
+		if (!(replacement instanceof VectorFeatureSource)) {
+			throw new Error("Expected a replacement VectorFeatureSource");
+		}
+		expect(replacement.getFeatures()).toEqual([]);
+		expect(sibling.getFeatureById("old")).toBeTruthy();
+
+		store.dispatch(setData("featureSources", "pois", collection("new")));
+		for (const source of [sibling, replacement]) {
+			expect(
+				source.getFeatures().map((feature) => feature.getId()),
+			).toEqual(["new"]);
+		}
+	});
+
 	it("does not react to map size changes any more", () => {
 		const {store, fit} = setup({keepAllFeaturesInView: true});
 		store.dispatch(setData("featureSources", "pois", collection("a")));
