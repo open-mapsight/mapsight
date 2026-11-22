@@ -138,7 +138,7 @@ describe("app hydration", () => {
 					return root;
 				},
 			);
-			await act(() => {
+			await act(async () => {
 				browserEmbed(container, {
 					styleFunction,
 					baseMapsightConfig: {
@@ -146,6 +146,7 @@ describe("app hydration", () => {
 					},
 					createOptions: {...createOptions, renderer},
 				});
+				await Promise.resolve();
 			});
 
 			const [, props, hydrate] = renderer.mock.calls[0] ?? [];
