@@ -387,6 +387,10 @@ export function trackedLayerIds(
 	return ids;
 }
 
+function isLayerVisible(layer: LayerState | undefined): boolean {
+	return !!layer && layer.options?.visible !== false;
+}
+
 /**
  * Visibility changes that make the tracked layers match `visibleIds`.
  * Unknown ids are ignored, untracked layers are never listed. Of several
@@ -408,14 +412,14 @@ export function planLayerVisibility(
 	const hasVisibleUntrackedBase = Object.entries(layers ?? {}).some(
 		([id, layer]) =>
 			layer?.metaData?.isBaseLayer &&
-			layer.options?.visible === true &&
+			isLayerVisible(layer) &&
 			!tracked.includes(id),
 	);
 	for (const id of tracked) {
 		const desired =
 			visibleIds.includes(id) &&
 			(!isBaseLayer(id) || id === firstBaseLayer);
-		const current = layers?.[id]?.options?.visible === true;
+		const current = isLayerVisible(layers?.[id]);
 		if (desired && !current && isBaseLayer(id) && hasVisibleUntrackedBase) {
 			continue;
 		}
@@ -430,7 +434,7 @@ export function visibleTrackedLayerIds(
 	layers: Layers | undefined,
 	tracked: string[],
 ): string[] {
-	return tracked.filter((id) => layers?.[id]?.options?.visible === true);
+	return tracked.filter((id) => isLayerVisible(layers?.[id]));
 }
 
 function sameSet(a: string[], b: string[]): boolean {

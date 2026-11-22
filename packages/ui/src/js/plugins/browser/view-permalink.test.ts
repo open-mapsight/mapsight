@@ -743,6 +743,36 @@ describe("layer restore", () => {
 		expect(s.visible("poi")).toBe(false);
 	});
 
+	it("keeps an implicitly visible locked base and hides an implicitly visible tracked overlay", () => {
+		const locked = tile(true, {
+			isBaseLayer: true,
+			lockedInLayerSwitcher: true,
+		});
+		const overlay = tile(true, {visibleInLayerSwitcher: true});
+		delete locked.options?.visible;
+		delete overlay.options?.visible;
+		const s = setup({
+			layers: {
+				locked,
+				overlay,
+				other: tile(false, {
+					isBaseLayer: true,
+					visibleInLayerSwitcher: true,
+				}),
+			},
+		});
+		const live = () =>
+			s.map.getAllLayers().map((layer) => layer.getVisible());
+		expect(live()).toEqual([true, true, false]);
+		s.view.setZoom(9);
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "layers")).toBe(
+			"overlay",
+		);
+		window.history.replaceState(null, "", "/page#layers=other");
+		window.dispatchEvent(new Event("hashchange"));
+		expect(live()).toEqual([true, false, false]);
+	});
 	it("shows listed tracked layers and hides the other tracked ones", () => {
 		const s = setup({url: "/page#layers=baseB,parks"});
 		expect(s.visible("baseB")).toBe(true);
