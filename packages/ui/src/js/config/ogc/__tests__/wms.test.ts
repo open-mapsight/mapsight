@@ -595,6 +595,23 @@ describe("wmsCapabilitiesToLayers GetMap URL", () => {
 		});
 	});
 
+	it.each([
+		[
+			"https://wms.example.org/maps?map=demo&request=GetCapabilities#legend",
+			"demo",
+		],
+		["https://wms.example.org/maps#legend?section=key", null],
+	])("keeps GetMap parameters in the query for %s", (endpoint, map) => {
+		const entry = wmsCapabilitiesToLayers(WMS_130, {url: endpoint})[0]!;
+		const url = tileUrl(entry);
+
+		expect(url.hash).toBe("");
+		expect(url.searchParams.get("map")).toBe(map);
+		expect(url.searchParams.getAll("REQUEST")).toEqual(["GetMap"]);
+		expect(url.searchParams.get("LAYERS")).toBe(entry.name);
+		expect(url.searchParams.get("BBOX")).toBeTruthy();
+	});
+
 	it("keeps a URL without controlled parameters as it is", () => {
 		for (const url of [
 			"https://wms.example.org/maps?",

@@ -229,25 +229,24 @@ function parameterName(parameter: string): string {
 
 /**
  * Removes the parameters the source generates itself (case-insensitively) from
- * the query of a `GetMap` URL and keeps everything else, such as `map=` or
- * authentication parameters, as it is.
+ * the query of a `GetMap` URL and keeps other query parameters as they are.
+ * Strip the fragment before OpenLayers appends its query parameters.
  */
-function removeRequestParameters(url: string): string {
+function cleanGetMapUrl(endpoint: string): string {
+	const hashStart = endpoint.indexOf("#");
+	const url = hashStart === -1 ? endpoint : endpoint.slice(0, hashStart);
 	const queryStart = url.indexOf("?");
 	if (queryStart === -1) {
 		return url;
 	}
-	const hashStart = url.indexOf("#", queryStart);
-	const queryEnd = hashStart === -1 ? url.length : hashStart;
-
 	const kept = url
-		.slice(queryStart + 1, queryEnd)
+		.slice(queryStart + 1)
 		.split("&")
 		.filter(
 			(parameter) => !REQUEST_PARAMETERS.has(parameterName(parameter)),
 		);
 
-	return url.slice(0, queryStart + 1) + kept.join("&") + url.slice(queryEnd);
+	return url.slice(0, queryStart + 1) + kept.join("&");
 }
 
 function readCrs(layer: RawObject): string[] {
@@ -363,7 +362,7 @@ export function wmsCapabilitiesToLayers(
 			"The capabilities do not advertise a GetMap URL; pass options.url.",
 		);
 	}
-	const url = removeRequestParameters(advertisedUrl);
+	const url = cleanGetMapUrl(advertisedUrl);
 	const version = asText(parsed["version"]) ?? "1.3.0";
 	const format = chooseFormat(
 		asArray(operation?.["Format"]).flatMap((entry) => asText(entry) ?? []),
