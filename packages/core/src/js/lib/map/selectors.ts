@@ -1,6 +1,7 @@
 import type {Extent} from "ol/extent";
 import {getForViewAndSize} from "ol/extent";
-import {fromUserCoordinate, getUserProjection, toUserExtent} from "ol/proj";
+import {getUserProjection, transform, transformExtent} from "ol/proj";
+import type Projection from "ol/proj/Projection";
 
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
@@ -143,6 +144,33 @@ export const viewRotationSelector = (state: MapState) =>
 export const viewResolutionSelector = (state: MapState) =>
 	viewSelector(state)?.resolution;
 
+const selectViewExtent = createSelector(
+	[
+		viewCenterSelector,
+		viewResolutionSelector,
+		viewRotationSelector,
+		mapSizeSelector,
+		(_state: MapState, userProjection: Projection | null) => userProjection,
+	],
+	(center, resolution, rotation, size, userProjection) => {
+		if (!center || resolution === undefined || !size) {
+			return undefined;
+		}
+		const extent = getForViewAndSize(
+			userProjection
+				? transform(center, userProjection, VIEW_PROJECTION)
+				: center,
+			resolution,
+			rotation,
+			size,
+		);
+		return userProjection
+			? transformExtent(extent, VIEW_PROJECTION, userProjection)
+			: extent;
+	},
+	{memoizeOptions: {resultEqualityCheck: isEqual}},
+);
+
 /**
  * Visible extent `[minX, minY, maxX, maxY]`, derived from center, resolution,
  * rotation and map size. It uses the same coordinate system as the center: view
@@ -153,37 +181,9 @@ export const viewResolutionSelector = (state: MapState) =>
  * for example before the map is mounted. Keeps its reference while the extent
  * is unchanged.
  */
-export const viewExtentSelector: Selector<MapState, Extent | undefined> =
-	createSelector(
-		[
-			viewCenterSelector,
-			viewResolutionSelector,
-			viewRotationSelector,
-			mapSizeSelector,
-			// Global OpenLayers setting, not part of the state.
-			() => getUserProjection(),
-		],
-		(center, resolution, rotation, size, userProjection) => {
-			if (!center || resolution === undefined || !size) {
-				return undefined;
-			}
-			// Without a user projection nothing needs converting. Skipping the
-			// helpers also avoids OpenLayers' one-time "call useGeographic()"
-			// warning for centers that merely look like degrees.
-			const extent = getForViewAndSize(
-				userProjection
-					? fromUserCoordinate(center, VIEW_PROJECTION)
-					: center,
-				resolution,
-				rotation,
-				size,
-			);
-			return userProjection
-				? toUserExtent(extent, VIEW_PROJECTION)
-				: extent;
-		},
-		{memoizeOptions: {resultEqualityCheck: isEqual}},
-	);
+export const viewExtentSelector: Selector<MapState, Extent | undefined> = (
+	state,
+) => selectViewExtent(state, getUserProjection());
 
 export const viewportAnchorSelector = (state: MapState) => state.viewportAnchor;
 

@@ -183,15 +183,14 @@ describe("viewExtentSelector against a real view", () => {
 	);
 
 	it("follows the user projection being switched on and off", () => {
-		const view = new View({center: [1113194, 6446275], resolution: 38.2});
+		const view = new View({center: [0, 0], resolution: 38.2});
 		const state = stateOf(view);
 		const projected = viewExtentSelector(state);
 
 		useGeographic();
-		const geographicView = new View({center: [10, 51], resolution: 38.2});
-		const geographic = viewExtentSelector(stateOf(geographicView));
+		const geographic = viewExtentSelector(state);
 		expect(geographic).not.toEqual(projected);
-		expectExtent(geographic, geographicView.calculateExtent(size));
+		expectExtent(geographic, view.calculateExtent(size));
 
 		clearUserProjection();
 		expectExtent(viewExtentSelector(state), view.calculateExtent(size));
