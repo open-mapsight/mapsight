@@ -2,8 +2,6 @@ import LayerGroup from "ol/layer/Group";
 import type Layer from "ol/layer/Layer";
 import VectorSource from "ol/source/Vector";
 
-import forEach from "lodash/forEach";
-
 import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 import matchesPath from "@mapsight/lib-redux/matchesPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
@@ -66,10 +64,8 @@ export default class WithLayers extends WithAnimations {
 		const updateLayer = (
 			id: string,
 			newDefinition: LayerDefinition | undefined,
-			oldDefinitions: Record<string, LayerDefinition>,
+			oldDefinition: LayerDefinition | undefined,
 		) => {
-			const oldDefinition = oldDefinitions[id];
-
 			// update layer
 			updateProxyObject({
 				di: di,
@@ -129,12 +125,13 @@ export default class WithLayers extends WithAnimations {
 		this.getAndObserveUncontrolled(
 			(state) => state.layers as Record<string, LayerDefinition>,
 			function updateLayers(newDefinitions = {}, oldDefinitions = {}) {
-				forEach(oldDefinitions, (_, id) =>
-					updateLayer(id, newDefinitions[id], oldDefinitions),
-				);
-				forEach(newDefinitions, (newDefinition, id) =>
-					updateLayer(id, newDefinition, oldDefinitions),
-				);
+				const ids = new Set([
+					...Object.keys(oldDefinitions),
+					...Object.keys(newDefinitions),
+				]);
+				for (const id of ids) {
+					updateLayer(id, newDefinitions[id], oldDefinitions[id]);
+				}
 			},
 		);
 

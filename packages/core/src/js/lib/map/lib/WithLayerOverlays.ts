@@ -2,8 +2,6 @@ import type OlFeature from "ol/Feature";
 import type OlLayer from "ol/layer/Layer";
 import type VectorSource from "ol/source/Vector";
 
-import forEach from "lodash/forEach";
-
 import type {LayerDefinition} from "@/lib/map/lib/WithLayers";
 import {Z_INDEX_OVERLAY} from "@/lib/map/z-index";
 import {di, updateProxyObject} from "@/ol-proxy";
@@ -36,9 +34,8 @@ export default class WithLayerOverlays extends WithMap {
 		const updateLayerOverlay = (
 			id: string,
 			newDefinition: LayerDefinition | undefined,
-			oldDefinitions: Record<string, LayerDefinition>,
+			oldDefinition: LayerDefinition | undefined,
 		) => {
-			const oldDefinition = oldDefinitions[id];
 			const overlayDefinition = newDefinition && {
 				...newDefinition,
 				zIndex: Z_INDEX_OVERLAY,
@@ -80,12 +77,17 @@ export default class WithLayerOverlays extends WithMap {
 				newDefinitions = {},
 				oldDefinitions = {},
 			) {
-				forEach(oldDefinitions, (_, id) =>
-					updateLayerOverlay(id, newDefinitions[id], oldDefinitions),
-				);
-				forEach(newDefinitions, (newDefinition, id) =>
-					updateLayerOverlay(id, newDefinition, oldDefinitions),
-				);
+				const ids = new Set([
+					...Object.keys(oldDefinitions),
+					...Object.keys(newDefinitions),
+				]);
+				for (const id of ids) {
+					updateLayerOverlay(
+						id,
+						newDefinitions[id],
+						oldDefinitions[id],
+					);
+				}
 			},
 		);
 	}

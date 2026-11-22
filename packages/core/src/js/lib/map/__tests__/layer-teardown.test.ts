@@ -1,6 +1,7 @@
 import Feature from "ol/Feature";
 import type OlMap from "ol/Map";
 import Point from "ol/geom/Point";
+import LayerGroup from "ol/layer/Group";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 
@@ -378,6 +379,52 @@ describe("tearing down the source of a removed layer", () => {
 });
 
 describe("disposing controller-owned layers", () => {
+	it("constructs and disposes exactly one layer and overlay per replacement", () => {
+		const setMap = vi.spyOn(VectorLayer.prototype, "setMap");
+		const dispose = vi.spyOn(VectorLayer.prototype, "dispose");
+		try {
+			const {store, map} = setup();
+			const layer = findOlLayer(map, "animated");
+			const group = map
+				.getLayers()
+				.getArray()
+				.find(
+					(candidate): candidate is LayerGroup =>
+						candidate instanceof LayerGroup &&
+						candidate.getLayers().getArray().includes(layer),
+				);
+			const overlay = setMap.mock.contexts.find(
+				(candidate) =>
+					candidate instanceof VectorLayer &&
+					getIdForLayer(candidate) === "animated",
+			);
+			if (!group || !overlay) {
+				throw new Error("Expected a group and overlay for the layer");
+			}
+			const onAdd = vi.fn();
+			group.getLayers().on("add", onAdd);
+			setMap.mockClear();
+			dispose.mockClear();
+
+			store.dispatch(
+				set(
+					["map", "layers", "animated", "options", "declutter"],
+					true,
+				),
+			);
+
+			expect(findOlLayer(map, "animated")).not.toBe(layer);
+			expect(onAdd).toHaveBeenCalledTimes(1);
+			expect(
+				setMap.mock.calls.filter(([target]) => target === map),
+			).toHaveLength(1);
+			expect(dispose.mock.contexts).toEqual([layer, overlay]);
+		} finally {
+			setMap.mockRestore();
+			dispose.mockRestore();
+		}
+	});
+
 	it.each(["removal", "replacement"])(
 		"disposes a Mapbox vector layer on %s",
 		(operation) => {
