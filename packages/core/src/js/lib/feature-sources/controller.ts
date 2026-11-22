@@ -399,27 +399,46 @@ function createCombinedSourceEqualityCompare() {
 }
 
 export class FeatureSourcesController extends BaseController {
-	#sourceEditLifetimes = new Map<string, object>();
+	#sourceLifetimes = new Map<string, object>();
 	#combinedFeatureSourceBindings = new Map<
 		string,
 		CombinedFeatureSourceBinding
 	>();
 
-	queueSourceEdit(id: string, action: Action) {
+	#getSourceLifetime(id: string) {
 		const sources = this.getState() as FeatureSourcesState;
 		if (!Object.hasOwn(sources, id) || !sources[id]) {
 			return;
 		}
 
-		const lifetime = this.#sourceEditLifetimes.get(id) ?? {};
-		this.#sourceEditLifetimes.set(id, lifetime);
+		const lifetime = this.#sourceLifetimes.get(id) ?? {};
+		this.#sourceLifetimes.set(id, lifetime);
+		return lifetime;
+	}
+
+	#queueSourceWrite(
+		id: string,
+		lifetime: object,
+		action: Action,
+		isActive?: () => boolean,
+	) {
 		this.dispatch(
 			async<ThunkAction>((dispatch) => {
-				if (this.#sourceEditLifetimes.get(id) === lifetime) {
+				if (
+					this.#sourceLifetimes.get(id) === lifetime &&
+					(isActive === undefined || isActive())
+				) {
 					dispatch(action);
 				}
 			}),
 		);
+	}
+
+	queueSourceEdit(id: string, action: Action) {
+		const lifetime = this.#getSourceLifetime(id);
+		if (lifetime) {
+			this.#queueSourceWrite(id, lifetime, action);
+		}
 	}
 
 	override init() {
@@ -521,6 +540,11 @@ export class FeatureSourcesController extends BaseController {
 		};
 	}
 
+	/**
+	 * Pipe selector changes to the current target or its first registration
+	 * if initially absent. Deleting the target ends the binding. Call again
+	 * to bind its replacement. The returned teardown cancels queued writes.
+	 */
 	bindFeatureSourceToStore(
 		featureSourceId: string,
 		selector: (state: State) => FeatureSourceState,
@@ -531,19 +555,45 @@ export class FeatureSourcesController extends BaseController {
 			console.error(
 				"Can't bind feature source to store: store is not set",
 			);
-			return;
+			return () => undefined;
 		}
 
-		observeState(store, selector, ({data, error}) => {
-			this.dispatch(
-				async(
-					setDataOrError(controllerName, featureSourceId, {
-						data,
-						error,
-					}),
-				),
-			);
+		let active = true;
+		const isActive = () => active;
+		let lifetime = this.#getSourceLifetime(featureSourceId);
+		let previous = selector(store.getState());
+
+		const unsubscribe = store.subscribe(() => {
+			if (!active) {
+				return;
+			}
+			const currentLifetime = this.#getSourceLifetime(featureSourceId);
+			if (lifetime && lifetime !== currentLifetime) {
+				unbind();
+				return;
+			}
+			lifetime ??= currentLifetime;
+
+			const next = selector(store.getState());
+			if (next === previous) {
+				return;
+			}
+			previous = next;
+			if (lifetime) {
+				this.#queueSourceWrite(
+					featureSourceId,
+					lifetime,
+					setDataOrError(controllerName, featureSourceId, next),
+					isActive,
+				);
+			}
 		});
+
+		function unbind() {
+			active = false;
+			unsubscribe();
+		}
+		return unbind;
 	}
 
 	override reduce(
@@ -800,9 +850,9 @@ export class FeatureSourcesController extends BaseController {
 					state,
 				);
 				if (next !== state) {
-					for (const id of this.#sourceEditLifetimes.keys()) {
+					for (const id of this.#sourceLifetimes.keys()) {
 						if (!Object.hasOwn(next, id) || !next[id]) {
-							this.#sourceEditLifetimes.delete(id);
+							this.#sourceLifetimes.delete(id);
 						}
 					}
 				}
