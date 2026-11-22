@@ -1,5 +1,5 @@
 import {batchActions} from "redux-batched-actions";
-import {describe, expect, it, vi} from "vitest";
+import {describe, expect, expectTypeOf, it, vi} from "vitest";
 
 import {createMapsightStore} from "@/index";
 import {
@@ -12,7 +12,7 @@ import {
 	unset,
 } from "@/lib/base/actions";
 import {BaseController} from "@/lib/base/controller";
-import type {FutureFlags} from "@/lib/base/future";
+import {type FutureFlags, resolveUnsetAction} from "@/lib/base/future";
 import {ACTION_REMOVE_KEY, ACTION_SET} from "@/lib/base/reducer";
 import type {Action} from "@/types";
 
@@ -74,6 +74,23 @@ describe("unset action", () => {
 			path,
 			[UNSET_ACTION_FLAG]: true,
 		});
+	});
+});
+
+describe("resolveUnsetAction", () => {
+	it("returns an action typed for the converted result", () => {
+		const action = {
+			...unset(["data", "obj", "x"]),
+			type: ACTION_SET,
+			path: ["obj", "x"],
+		} as const;
+		const resolved = resolveUnsetAction(makeData(), action);
+
+		expectTypeOf(resolved).toEqualTypeOf<Action>();
+		expect(resolved.type).toBe(ACTION_REMOVE_KEY);
+		expect(resolved).not.toHaveProperty("value");
+		expect(action.type).toBe(ACTION_SET);
+		expect(action).toHaveProperty("value", undefined);
 	});
 });
 

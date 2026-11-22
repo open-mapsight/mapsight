@@ -29,10 +29,7 @@ export type FutureFlags = {
  * The action is expected as the controller reducers get it: `action.path` is
  * relative to `state` (the controller prefix is already cut off).
  */
-export function resolveUnsetAction<TAction extends Action>(
-	state: unknown,
-	action: TAction,
-): TAction {
+export function resolveUnsetAction(state: unknown, action: Action): Action {
 	if (
 		action.type !== ACTION_SET ||
 		action.meta?.[UNSET_ACTION_FLAG] !== true
@@ -53,5 +50,5 @@ export function resolveUnsetAction<TAction extends Action>(
 
 	const removeAction: Action = {...action, type: ACTION_REMOVE_KEY};
 	delete removeAction.value;
-	return removeAction as TAction;
+	return removeAction;
 }
