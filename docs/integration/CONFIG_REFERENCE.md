@@ -74,8 +74,8 @@ WMS/WFS: [OGC_LAYERS](OGC_LAYERS.md) — not the same as XYZ basemap / tile-prox
 #### Draw order
 
 Each layer is added to an OpenLayers layer group. The group is named by the top-level `group` of the layer definition,
-else by `metaData.group`, else `"default"`. Groups are created the first time a layer needs them, in the order the
-layers are processed, and are not removed when their last layer is removed.
+else by `metaData.group`, else `"default"`. Groups are created in the order layers first need them. The controller
+removes groups that are empty after a layer update. Recreating a removed group puts it at the end of the group order.
 
 OpenLayers flattens all groups into one list (group by group, layers in the order they were added to their group) and
 sorts it by `options.zIndex`. Layers without a `zIndex` count as `0`. The sort is stable, so layers with equal

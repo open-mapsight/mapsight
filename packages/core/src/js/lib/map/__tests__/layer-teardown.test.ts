@@ -460,3 +460,64 @@ describe("disposing controller-owned layers", () => {
 		},
 	);
 });
+
+describe("controller-owned layer groups", () => {
+	it("prunes empty groups while retaining siblings and group order", () => {
+		const {store, map} = setup();
+		const hostGroup = new LayerGroup();
+		map.addLayer(hostGroup);
+		const groups = map.getLayers();
+		const initialCount = groups.getLength();
+
+		const addGroupedLayer = (id: string, group: string) => {
+			store.dispatch(
+				set(["map", "layers", id], {...animatingLayer(), group}),
+			);
+		};
+		addGroupedLayer("first", "temporary");
+		addGroupedLayer("second", "temporary");
+		addGroupedLayer("tail", "tail-group");
+
+		const group = groups
+			.getArray()
+			.find(
+				(candidate): candidate is LayerGroup =>
+					candidate instanceof LayerGroup &&
+					getIdForLayer(candidate) === "temporary",
+			);
+		if (!group) {
+			throw new Error("Expected a temporary layer group");
+		}
+		const order = groups.getArray().slice();
+		const second = findOlLayer(map, "second");
+		expect(group.getLayers().getArray()).toContain(second);
+
+		store.dispatch(removeLayer("map", "first"));
+		expect(group.getLayers().getArray()).toEqual([second]);
+		expect(groups.getArray()).toEqual(order);
+
+		store.dispatch(
+			set(["map", "layers", "second", "options", "declutter"], true),
+		);
+		expect(group.getLayers().getArray()).toEqual([
+			findOlLayer(map, "second"),
+		]);
+		expect(groups.getArray()).toEqual(order);
+
+		store.dispatch(removeLayer("map", "second"));
+		expect(groups.getArray()).toEqual(
+			order.filter((candidate) => candidate !== group),
+		);
+		expect(groups.getArray()).toContain(hostGroup);
+
+		addGroupedLayer("second", "temporary");
+		const recreated = groups.item(groups.getLength() - 1);
+		expect(getIdForLayer(recreated)).toBe("temporary");
+		expect(recreated).not.toBe(group);
+		expect(map.getAllLayers()).toContain(findOlLayer(map, "second"));
+
+		store.dispatch(removeLayer("map", "second"));
+		store.dispatch(removeLayer("map", "tail"));
+		expect(groups.getLength()).toBe(initialCount);
+	});
+});
