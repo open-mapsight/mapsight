@@ -117,8 +117,9 @@ All options are optional.
 or `?` (empty when there is none). `write(next)` receives the complete next string in the
 same form, with unrelated parameters preserved, and should replace the current history
 entry. If the adapter defers the history mutation, call the supplied `commit` callback
-around that mutation when it runs. This keeps the write from being treated as feature
-navigation and lets traversal invalidate a queued commit. Synchronous adapters can
+around that mutation when it runs. Its argument is the address with the latest unrelated
+parameters preserved. The callback lets the plugin discard commits superseded by a view
+change or traversal, and keeps the write from triggering feature navigation. Synchronous adapters can
 ignore the callback. With an adapter the plugin still listens to `hashchange` / `popstate` on `window` to
 notice address changes; set `followAddressChanges: false` if the host applies them itself.
 
@@ -127,8 +128,10 @@ createViewPermalinkPlugin({
 	location: "search",
 	adapter: {
 		read: () => router.currentSearch(),
-		write: (next, commit) => {
-			queueMicrotask(() => commit(() => router.replaceSearch(next)));
+		write: (_next, commit) => {
+			queueMicrotask(() =>
+				commit((latest) => router.replaceSearch(latest)),
+			);
 		},
 	},
 });

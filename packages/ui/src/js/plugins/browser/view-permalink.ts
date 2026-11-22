@@ -42,7 +42,10 @@ export type ParsedView = {
 export type AddressAdapter = {
 	read(): string;
 	/** Wrap a deferred history mutation in `commit` when it runs. */
-	write(next: string, commit: (write: () => void) => void): void;
+	write(
+		next: string,
+		commit: (write: (latest: string) => void) => void,
+	): void;
 };
 
 export type LayerTracking =
@@ -575,10 +578,10 @@ export default function createPlugin(
 		layers: null,
 	};
 	// Serialisations last observed in the state (change detection for writes).
-	const last: {view: string | null; layers: string | null} = {
-		view: null,
-		layers: null,
-	};
+	let last = {view: null as string | null, layers: null as string | null};
+	// Keep the last settled state while the adapter has a write in flight, so a
+	// later change to one parameter does not forget the other unwritten changes.
+	let pending: {baseline: typeof last; retry: boolean} | undefined;
 
 	const readParameter = (name: string | false, address: string) =>
 		name === false ? null : readAddressParameter(address, name);
@@ -648,6 +651,7 @@ export default function createPlugin(
 		let applied = false;
 		if (traversed || view !== seen.view || layers !== seen.layers) {
 			addressRevision++;
+			pending = undefined;
 		}
 		if (view !== null && (traversed || view !== seen.view)) {
 			const parsed = parseViewParameter(decodeParameterValue(rawView!));
@@ -689,9 +693,7 @@ export default function createPlugin(
 			// A write scheduled for the previous state must not replace the address
 			// that was just followed, and the state now matches that address.
 			cancelPendingWrite();
-			const baseline = serialise(store);
-			last.view = baseline.view;
-			last.layers = baseline.layers;
+			last = serialise(store);
 		}
 	}
 
@@ -721,33 +723,41 @@ export default function createPlugin(
 			return;
 		}
 		const next = serialise(store);
-		const viewChanged = next.view !== last.view;
-		const layersChanged = next.layers !== last.layers;
-		last.view = next.view;
-		last.layers = next.layers;
-
-		// A parameter needs writing when its state changed and the address does
-		// not already say the same (e.g. because we just applied the address).
-		// A layer list that cannot be represented (`null`) is left as it is.
-		const address = adapter.read();
-		let stale = false;
-		if (viewParameter !== false && next.view !== null && viewChanged) {
-			const current = readParameter(viewParameter, address);
-			stale =
-				current === null || decodeParameterValue(current) !== next.view;
-		}
-		const nextIds =
-			next.layers === null ? null : parseLayersParameter(next.layers);
-		if (layersParameter !== false && nextIds && layersChanged) {
-			const current = readParameter(layersParameter, address);
-			const currentIds =
-				current === null ? null : parseLayersParameter(current);
-			stale ||= !currentIds || !sameSet(currentIds, nextIds);
-		}
-		if (!stale) {
+		if (
+			next.view === last.view &&
+			next.layers === last.layers &&
+			!pending?.retry
+		) {
 			return;
 		}
-		// One link carries the whole state, so write both parameters together.
+		const baseline = pending?.baseline ?? last;
+		last = next;
+		// Invalidate an older deferred write even if the address already agrees.
+		const revision = ++addressRevision;
+		pending = undefined;
+
+		const nextIds =
+			next.layers === null ? null : parseLayersParameter(next.layers);
+		const viewMatches = (address: string) =>
+			decoded(readParameter(viewParameter, address)) === next.view;
+		const layersMatch = (address: string) => {
+			const ids = parseLayersParameter(
+				readParameter(layersParameter, address),
+			);
+			return ids && nextIds && sameSet(ids, nextIds);
+		};
+		const address = adapter.read();
+		const viewStale =
+			next.view !== null &&
+			next.view !== baseline.view &&
+			!viewMatches(address);
+		const layersStale =
+			nextIds && next.layers !== baseline.layers && !layersMatch(address);
+		if (!viewStale && !layersStale) {
+			return;
+		}
+		pending = {baseline, retry: false};
+		// One link carries the whole state. Leave an unrepresentable parameter alone.
 		const updates: Record<string, string | null> = {};
 		if (viewParameter !== false && next.view !== null) {
 			updates[viewParameter] = next.view;
@@ -755,25 +765,45 @@ export default function createPlugin(
 		if (layersParameter !== false && nextIds && next.layers !== null) {
 			updates[layersParameter] = next.layers;
 		}
-		const written = writeAddressParameters(address, updates, prefix);
-		// Record what is being written first: an adapter may notify us
-		// synchronously, and that address change is our own.
-		seen.view = decoded(readParameter(viewParameter, written));
-		seen.layers = decoded(readParameter(layersParameter, written));
-		const revision = ++addressRevision;
-		const commit = (write: () => void) => {
-			if (destroyed || revision !== addressRevision) {
-				return;
-			}
+		const runWrite = (write: () => void) => {
 			const previous = writingAddress;
 			writingAddress = true;
 			try {
 				withAddressOnlyHistoryWrite(write);
+				const current = adapter.read();
+				seen.view = decoded(readParameter(viewParameter, current));
+				seen.layers = decoded(readParameter(layersParameter, current));
+				if (
+					(!viewStale || viewMatches(current)) &&
+					(!layersStale || layersMatch(current))
+				) {
+					pending = undefined;
+				}
 			} finally {
 				writingAddress = previous;
 			}
 		};
-		commit(() => adapter.write(written, commit));
+		const commit = (write: (latest: string) => void) => {
+			if (destroyed || revision !== addressRevision) {
+				return;
+			}
+			const current = serialise(store);
+			if (current.view !== next.view || current.layers !== next.layers) {
+				addressRevision++;
+				pending = {baseline, retry: true};
+				schedule(store);
+				return;
+			}
+			runWrite(() =>
+				write(writeAddressParameters(adapter.read(), updates, prefix)),
+			);
+		};
+		runWrite(() =>
+			adapter.write(
+				writeAddressParameters(address, updates, prefix),
+				commit,
+			),
+		);
 	}
 
 	function schedule(store: EnhancedStore) {
@@ -840,9 +870,7 @@ export default function createPlugin(
 				linkedView = null;
 			}
 
-			const baseline = serialise(store);
-			last.view = baseline.view;
-			last.layers = baseline.layers;
+			last = serialise(store);
 
 			const map =
 				viewParameter === false

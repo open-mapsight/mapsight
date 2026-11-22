@@ -1200,6 +1200,50 @@ describe("custom adapter", () => {
 		expect(write).not.toHaveBeenCalled();
 		expect(s.view.getZoom()).toBe(8);
 	});
+	it.each([
+		"undo after debounce",
+		"undo before debounce",
+		"unrelated address change",
+	])("publishes only a still-current deferred write after %s", (scenario) => {
+		const writes: string[] = [];
+		let deferred = () => {};
+		const s = setup({
+			url: "/page#map=8/52/10&host=first",
+			options: {
+				layersParameter: false,
+				adapter: {
+					read: () => window.location.hash,
+					write(_next, commit) {
+						deferred = () =>
+							commit((latest) => {
+								writes.push(latest);
+								window.history.replaceState(null, "", latest);
+							});
+					},
+				},
+			},
+		});
+		s.view.setZoom(9);
+		vi.advanceTimersByTime(DEBOUNCE);
+		if (scenario === "unrelated address change") {
+			window.history.replaceState(null, "", "#map=8/52/10&host=second");
+			window.dispatchEvent(new HashChangeEvent("hashchange"));
+			expect(s.view.getZoom()).toBe(9);
+			// A view event that keeps serialized zoom at 9 must also keep the write.
+			s.view.setZoom(9.001);
+			vi.advanceTimersByTime(DEBOUNCE);
+			deferred();
+			expect(writes).toEqual(["#map=9/52/10&host=second"]);
+		} else {
+			s.view.setZoom(8);
+			if (scenario === "undo after debounce")
+				vi.advanceTimersByTime(DEBOUNCE);
+			deferred();
+			vi.advanceTimersByTime(DEBOUNCE);
+			expect(writes).toEqual([]);
+			expect(window.location.hash).toBe("#map=8/52/10&host=first");
+		}
+	});
 	it("passes the prefix of the configured location", () => {
 		const adapter = memoryAdapter("");
 		const s = setup({options: {adapter, location: "search"}});
