@@ -1,4 +1,6 @@
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import {equivalent, get as getProjection} from "ol/proj";
+import type Projection from "ol/proj/Projection";
 import type {Size} from "ol/size";
 import {optionsFromCapabilities} from "ol/source/WMTS";
 import type WMTSTileGrid from "ol/tilegrid/WMTS";
@@ -60,8 +62,8 @@ export type WmtsCapabilitiesToLayersOptions = {
 	/**
 	 * Preferred projection used to choose between a layer's tile matrix sets.
 	 * Layers without a matching tile matrix set use their first one.
-	 * Defaults to `EPSG:3857`. The projection of every used tile matrix set
-	 * must be registered in OpenLayers, otherwise the layer is left out.
+	 * Defaults to `EPSG:3857`. The source keeps the selected matrix set's
+	 * projection, which must be registered in OpenLayers.
 	 */
 	projection?: string;
 	/**
@@ -162,6 +164,42 @@ function readLayerData(layer: RawObject, matrixSets: RawObject[]) {
 	return {matrixSetIds, crs, styles, formats};
 }
 
+function normalizeLayerBounds(layer: RawObject, projection: Projection) {
+	const bounds = layer["BoundingBox"];
+	if (!Array.isArray(bounds)) {
+		return layer;
+	}
+
+	// OpenLayers interprets equivalent layer bounds in the matrix set's
+	// axis order. Reorder bounds declared in an equivalent CRS if needed.
+	const northFirst = projection.getAxisOrientation().startsWith("ne");
+	return {
+		...layer,
+		BoundingBox: bounds.map((box: unknown) => {
+			if (!isRawObject(box)) {
+				return box;
+			}
+			const code = asText(box["crs"]);
+			const boxProjection = code ? getProjection(code) : null;
+			const extent = asBoundingBox(box["extent"]);
+			if (
+				!extent ||
+				!boxProjection ||
+				!equivalent(boxProjection, projection) ||
+				boxProjection.getAxisOrientation().startsWith("ne") ===
+					northFirst
+			) {
+				return box;
+			}
+			const [min1, min2, max1, max2] = extent;
+			return {
+				crs: projection.getCode(),
+				extent: [min2, min1, max2, max1],
+			};
+		}),
+	};
+}
+
 /**
  * Turns a WMTS capabilities document into one entry per layer.
  *
@@ -216,18 +254,11 @@ export function wmtsCapabilitiesToLayers(
 	}
 
 	const matrixSets = asArray(contents["TileMatrixSet"]).filter(isRawObject);
-	// `optionsFromCapabilities` sorts the tile matrices in place: work on copies
-	// so a parsed object passed in by the caller stays untouched.
-	const safeCapabilities: RawObject = {
-		...parsed,
-		Contents: {
-			...contents,
-			TileMatrixSet: matrixSets.map((matrixSet) => ({
-				...matrixSet,
-				TileMatrix: asArray(matrixSet["TileMatrix"]).slice(),
-			})),
-		},
-	};
+	const matrixSetsById = new Map(
+		matrixSets.map((matrixSet) => [matrixSet["Identifier"], matrixSet]),
+	);
+	const preferredCode = options.projection ?? "EPSG:3857";
+	const preferredProjection = getProjection(preferredCode);
 
 	const entries: WmtsLayerEntry[] = [];
 
@@ -250,24 +281,58 @@ export function wmtsCapabilitiesToLayers(
 
 		let source: ReturnType<typeof optionsFromCapabilities> = null;
 		try {
-			source = optionsFromCapabilities(safeCapabilities, {
-				layer: name,
-				projection: options.projection ?? "EPSG:3857",
-				...(options.matrixSet !== undefined && {
-					matrixSet: options.matrixSet,
-				}),
-			});
+			const matrixSetId =
+				options.matrixSet ??
+				matrixSetIds.find((id) => {
+					const code = asText(
+						matrixSetsById.get(id)?.["SupportedCRS"],
+					);
+					const projection = code ? getProjection(code) : null;
+					return (
+						code === preferredCode ||
+						(projection &&
+							preferredProjection &&
+							equivalent(projection, preferredProjection))
+					);
+				}) ??
+				matrixSetIds[0];
+			const matrixSet = matrixSetsById.get(matrixSetId);
+			const code = asText(matrixSet?.["SupportedCRS"]);
+			const projection = code ? getProjection(code) : null;
+			if (
+				!matrixSetId ||
+				!matrixSetIds.includes(matrixSetId) ||
+				!matrixSet ||
+				!projection
+			) {
+				continue;
+			}
+
+			// Keep the matrix set's CRS for grid construction. OpenLayers
+			// substitutes an equivalent CRS if given a projection preference.
+			// Copy the tile matrices because OpenLayers sorts them in place.
+			source = optionsFromCapabilities(
+				{
+					...parsed,
+					Contents: {
+						Layer: [normalizeLayerBounds(layer, projection)],
+						TileMatrixSet: [
+							{
+								...matrixSet,
+								TileMatrix: asArray(
+									matrixSet["TileMatrix"],
+								).slice(),
+							},
+						],
+					},
+				},
+				{layer: name, matrixSet: matrixSetId},
+			);
 		} catch {
-			// e.g. a tile matrix set in a projection that is not registered
+			// e.g. malformed tile matrix data
 		}
 
-		// `optionsFromCapabilities` falls back to the first matrix set when the
-		// requested one is unknown: do not hide that.
-		if (
-			!source ||
-			(options.matrixSet !== undefined &&
-				source.matrixSet !== options.matrixSet)
-		) {
+		if (!source) {
 			continue;
 		}
 

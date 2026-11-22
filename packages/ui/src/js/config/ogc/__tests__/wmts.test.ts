@@ -213,6 +213,39 @@ describe("wmtsCapabilitiesToLayers", () => {
 		}
 	});
 
+	it.each([
+		["CRS:84", "-100 40", "-92 50"],
+		["EPSG:4326", "40 -100", "50 -92"],
+	])("reads a %s bounding box in its own axis order", (crs, lower, upper) => {
+		const xml = WMTS_KVP.replace(
+			"<ows:Identifier>basemap</ows:Identifier>",
+			`<ows:Identifier>basemap</ows:Identifier>
+			<ows:BoundingBox crs="${crs}">
+				<ows:LowerCorner>${lower}</ows:LowerCorner>
+				<ows:UpperCorner>${upper}</ows:UpperCorner>
+			</ows:BoundingBox>`,
+		)
+			.replace("urn:ogc:def:crs:EPSG::4326", "CRS:84")
+			.replaceAll("<TopLeftCorner>90 -180", "<TopLeftCorner>-180 90");
+
+		for (const projection of ["EPSG:4326", "CRS:84"]) {
+			const entry = byName(wmtsCapabilitiesToLayers(xml, {projection}))[
+				"basemap"
+			]!;
+			const source = createSource(entry);
+			const grid = source.getTileGrid() as WMTSTileGrid;
+
+			expect(grid.getExtent()).toEqual([-100, 40, -92, 50]);
+			expect(source.getMatrixSet()).toBe("geographic");
+			expect(source.getProjection()?.getCode()).toBe("CRS:84");
+			expect(grid.getOrigin(1)).toEqual([-180, 90]);
+			expect(source.getTileCoordForTileUrlFunction([1, 0, 0])).toEqual([
+				1, 0, 0,
+			]);
+			expect(source.getTileCoordForTileUrlFunction([1, 1, 0])).toBeNull();
+		}
+	});
+
 	it("leaves out layers that cannot serve the requested matrix set or style", () => {
 		// "overview" is not published in "webmercator"
 		expect(
