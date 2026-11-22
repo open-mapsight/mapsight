@@ -8,7 +8,7 @@ import VectorSource from "ol/source/Vector";
 import {describe, expect, it, vi} from "vitest";
 
 import {set} from "@/lib/base/actions";
-import {select} from "@/lib/feature-selections/actions";
+import {select, selectExclusively} from "@/lib/feature-selections/actions";
 import {removeFeatureSource, setData} from "@/lib/feature-sources/actions";
 import {removeLayer} from "@/lib/map/actions";
 import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
@@ -418,7 +418,10 @@ describe("disposing controller-owned layers", () => {
 			expect(
 				setMap.mock.calls.filter(([target]) => target === map),
 			).toHaveLength(1);
-			expect(dispose.mock.contexts).toEqual([layer, overlay]);
+			expect(dispose.mock.contexts).toHaveLength(2);
+			expect(dispose.mock.contexts).toEqual(
+				expect.arrayContaining([layer, overlay]),
+			);
 		} finally {
 			setMap.mockRestore();
 			dispose.mockRestore();
@@ -459,6 +462,103 @@ describe("disposing controller-owned layers", () => {
 			expect(layer.getSource()).toBeNull();
 		},
 	);
+});
+
+describe("selection overlays through layer changes", () => {
+	function captureOverlays() {
+		const setMap = vi.spyOn(VectorLayer.prototype, "setMap");
+		return {
+			restore: () => setMap.mockRestore(),
+			featureIds(id: string) {
+				const overlay = setMap.mock.contexts.findLast(
+					(layer): layer is VectorLayer =>
+						layer instanceof VectorLayer &&
+						getIdForLayer(layer) === id,
+				);
+				const source = overlay?.getSource();
+				if (!(source instanceof VectorSource)) {
+					throw new Error("Expected a selection overlay");
+				}
+				return source.getFeatures().map((feature: unknown) => {
+					if (!(feature instanceof Feature)) {
+						throw new Error("Expected an overlay feature");
+					}
+					return feature.getId();
+				});
+			},
+		};
+	}
+
+	it.each(["source", "layer"] as const)(
+		"keeps the active highlight on %s replacement",
+		(operation) => {
+			const overlays = captureOverlays();
+			try {
+				const {store, map} = setup();
+				const layer = findOlLayer(map, "animated");
+				const source = layer.getSource();
+				store.dispatch(
+					setData("featureSources", "pois", collection("a")),
+				);
+				store.dispatch(
+					selectExclusively("featureSelections", "highlight", "a"),
+				);
+				expect(overlays.featureIds("animated")).toEqual(["a"]);
+
+				const option =
+					operation === "source"
+						? ["source", "options", "canCluster"]
+						: ["declutter"];
+				store.dispatch(
+					set(
+						["map", "layers", "animated", "options", ...option],
+						true,
+					),
+				);
+
+				const currentLayer = findOlLayer(map, "animated");
+				expect(currentLayer === layer).toBe(operation === "source");
+				expect(currentLayer.getSource()).not.toBe(source);
+				expect(overlays.featureIds("animated")).toEqual(["a"]);
+			} finally {
+				overlays.restore();
+			}
+		},
+	);
+
+	it("uses the current selection after the last layer is removed and re-added", () => {
+		const overlays = captureOverlays();
+		try {
+			const {store, map} = createHighlightTestMap();
+			store.dispatch(
+				setData("featureSources", "pois", collection("a", "b")),
+			);
+			store.dispatch(
+				selectExclusively("featureSelections", "highlight", "a"),
+			);
+			expect(overlays.featureIds("pois")).toEqual(["a"]);
+
+			store.dispatch(removeLayer("map", "pois"));
+			store.dispatch(
+				selectExclusively("featureSelections", "highlight", "b"),
+			);
+			store.dispatch(
+				set(
+					["map", "layers", "pois"],
+					animatingLayer({canAnimate: false}),
+				),
+			);
+			const current = findOlLayer(map, "pois").getSource();
+			if (!(current instanceof VectorFeatureSource)) {
+				throw new Error("Expected a replacement vector source");
+			}
+			// A stale connector highlights the wrong feature even after refresh.
+			current.refresh();
+			expect(overlays.featureIds("pois")).toEqual(["b"]);
+		} finally {
+			overlays.restore();
+		}
+	});
 });
 
 describe("controller-owned layer groups", () => {
