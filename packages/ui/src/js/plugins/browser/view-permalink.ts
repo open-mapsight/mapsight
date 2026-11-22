@@ -353,31 +353,37 @@ export function isUserToggleableLayer(layer: LayerState): boolean {
 }
 
 export function trackedLayerIds(
-	layers: Record<string, LayerState> | undefined,
+	layers: Layers | undefined,
 	tracking: LayerTracking | undefined,
 ): string[] {
 	if (!layers) {
 		return [];
 	}
-	const ids = Object.keys(layers).filter(isRepresentableLayerId);
-	if (Array.isArray(tracking)) {
-		return ids.filter((id) => tracking.includes(id));
+	const ids: string[] = [];
+	for (const [id, layer] of Object.entries(layers)) {
+		if (!layer || !isRepresentableLayerId(id)) {
+			continue;
+		}
+		const tracked = Array.isArray(tracking)
+			? tracking.includes(id)
+			: (tracking?.(id, layer) ?? isUserToggleableLayer(layer));
+		if (tracked) {
+			ids.push(id);
+		}
 	}
-	const predicate =
-		tracking ??
-		((_id: string, layer: LayerState) => isUserToggleableLayer(layer));
-	return ids.filter((id) => predicate(id, layers[id]!));
+	return ids;
 }
 
 /**
  * Visibility changes that make the tracked layers match `visibleIds`.
  * Unknown ids are ignored, untracked layers are never listed. Of several
  * listed base layers the first one wins and the others count as not listed.
+ * Switching base layers must preserve a visible untracked base.
  * Hides come first so that showing a base layer cannot be undone by a later
  * hide.
  */
 export function planLayerVisibility(
-	layers: Record<string, LayerState> | undefined,
+	layers: Layers | undefined,
 	tracked: string[],
 	visibleIds: string[],
 ): Array<{id: string; visible: boolean}> {
@@ -386,11 +392,20 @@ export function planLayerVisibility(
 	const isBaseLayer = (id: string) =>
 		tracked.includes(id) && !!layers?.[id]?.metaData?.isBaseLayer;
 	const firstBaseLayer = visibleIds.find(isBaseLayer);
+	const hasVisibleUntrackedBase = Object.entries(layers ?? {}).some(
+		([id, layer]) =>
+			layer?.metaData?.isBaseLayer &&
+			layer.options?.visible === true &&
+			!tracked.includes(id),
+	);
 	for (const id of tracked) {
 		const desired =
 			visibleIds.includes(id) &&
 			(!isBaseLayer(id) || id === firstBaseLayer);
 		const current = layers?.[id]?.options?.visible === true;
+		if (desired && !current && isBaseLayer(id) && hasVisibleUntrackedBase) {
+			continue;
+		}
 		if (desired !== current) {
 			(desired ? show : hide).push({id, visible: desired});
 		}
@@ -399,7 +414,7 @@ export function planLayerVisibility(
 }
 
 export function visibleTrackedLayerIds(
-	layers: Record<string, LayerState> | undefined,
+	layers: Layers | undefined,
 	tracked: string[],
 ): string[] {
 	return tracked.filter((id) => layers?.[id]?.options?.visible === true);
@@ -414,6 +429,8 @@ function sameSet(a: string[], b: string[]): boolean {
 // ---------------------------------------------------------------------------
 
 type ViewSnapshot = ParsedView;
+type Layers = Record<string, LayerState | undefined>;
+type MapSlice = {layers?: Layers};
 type AnyState = Record<string, unknown>;
 
 function createWindowAdapter(location: "hash" | "search"): AddressAdapter {
@@ -552,14 +569,11 @@ export default function createPlugin(
 	}
 
 	function applyLayers(store: EnhancedStore, ids: string[]) {
-		const layers = store.getState()[mapControllerName] as
-			{layers?: Record<string, LayerState>} | undefined;
-		const tracked = trackedLayerIds(layers?.layers, trackedLayers);
-		for (const {id, visible} of planLayerVisibility(
-			layers?.layers,
-			tracked,
-			ids,
-		)) {
+		const mapState = store.getState()[mapControllerName] as
+			MapSlice | undefined;
+		const layers = mapState?.layers;
+		const tracked = trackedLayerIds(layers, trackedLayers);
+		for (const {id, visible} of planLayerVisibility(layers, tracked, ids)) {
 			store.dispatch(
 				setLayerVisibility(mapControllerName, id, visible) as never,
 			);
@@ -653,7 +667,7 @@ export default function createPlugin(
 		let layers: string | null = null;
 		if (layersParameter !== false) {
 			const mapState = store.getState()[mapControllerName] as
-				{layers?: Record<string, LayerState>} | undefined;
+				MapSlice | undefined;
 			layers = formatLayersParameter(
 				visibleTrackedLayerIds(
 					mapState?.layers,
@@ -807,8 +821,7 @@ export default function createPlugin(
 						(state) => {
 							const layers = (
 								(state as AnyState)[mapControllerName] as
-									| {layers?: Record<string, LayerState>}
-									| undefined
+									MapSlice | undefined
 							)?.layers;
 							if (layers !== layersRef) {
 								layersRef = layers;

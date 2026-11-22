@@ -61,8 +61,8 @@ visibility. Empty ids are treated the same way.
   layers not listed become hidden. Untracked layers are never touched, unknown ids are
   ignored and nothing is created from the address. The "only one base layer visible" rule of
   `@mapsight/core` applies: when the list names several tracked base layers, **the first one
-  listed wins** and the others count as not listed, so `layers=A,B` and `layers=B,A` always
-  show `A` and `B` respectively.
+  listed wins** and the others count as not listed. A switch to a tracked base layer is
+  skipped if it would hide a visible untracked base layer.
 - **Marker links.** A valid view parameter wins over a marker link (`#lm=…` of the share
   position link plugin): the marker is still placed, but the map is neither recentred nor
   zoomed. Without a usable view parameter (missing, malformed, out of range or disabled via

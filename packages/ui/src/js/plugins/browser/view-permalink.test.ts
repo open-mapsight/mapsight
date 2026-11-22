@@ -2,6 +2,7 @@ import {fromLonLat, toLonLat} from "ol/proj";
 
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
+import {unset} from "@mapsight/core/lib/base/actions";
 import {ANIMATE, setLayerVisibility} from "@mapsight/core/lib/map/actions";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {LayerState} from "@mapsight/core/lib/map/types";
@@ -371,6 +372,18 @@ describe("layer tracking", () => {
 		).toEqual([{id: "pois", visible: true}]);
 	});
 
+	it("excludes absent definitions from an id list or predicate", () => {
+		const withMissing = {...layers, missing: undefined};
+		expect(trackedLayerIds(withMissing, ["missing", "pois"])).toEqual([
+			"pois",
+		]);
+		const predicate = vi.fn(() => true);
+		expect(trackedLayerIds(withMissing, predicate)).toEqual(
+			Object.keys(layers),
+		);
+		expect(predicate).toHaveBeenCalledTimes(Object.keys(layers).length);
+	});
+
 	it("lets the first listed base layer win and treats the others as not listed", () => {
 		const bases: Record<string, LayerState> = {
 			a: {...layers.base!, options: {visible: true}},
@@ -636,6 +649,54 @@ describe("startup restore", () => {
 });
 
 describe("layer restore", () => {
+	it("skips an absent definition at startup", () => {
+		const s = setup({
+			url: "/page#layers=poi,missing",
+			layers: {...defaultLayers(), missing: undefined} as Record<
+				string,
+				LayerState
+			>,
+		});
+		expect(s.visible("poi")).toBe(true);
+		expect(s.visible("missing")).toBeUndefined();
+	});
+
+	it("drops a tracked layer from the address after a legacy unset", () => {
+		const s = setup({url: "/page#layers=poi"});
+		s.store.dispatch(unset(["map", "layers", "poi"]) as never);
+		const state = s.store.getState().map as {
+			layers: Record<string, LayerState>;
+		};
+		expect(Object.hasOwn(state.layers, "poi")).toBe(true);
+		expect(state.layers.poi).toBeUndefined();
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "layers")).toBe("");
+	});
+
+	it("does not switch to a tracked base if it would hide a locked base", () => {
+		const s = setup({
+			layers: {
+				...defaultLayers(),
+				baseA: tile(false, {
+					isBaseLayer: true,
+					visibleInLayerSwitcher: true,
+				}),
+				locked: tile(true, {
+					isBaseLayer: true,
+					visibleInLayerSwitcher: true,
+					lockedInLayerSwitcher: true,
+				}),
+			},
+		});
+		window.history.replaceState(null, "", "/page#layers=baseB,parks");
+		window.dispatchEvent(new Event("hashchange"));
+
+		expect(s.visible("locked")).toBe(true);
+		expect(s.visible("baseB")).toBe(false);
+		expect(s.visible("parks")).toBe(true);
+		expect(s.visible("poi")).toBe(false);
+	});
+
 	it("shows listed tracked layers and hides the other tracked ones", () => {
 		const s = setup({url: "/page#layers=baseB,parks"});
 		expect(s.visible("baseB")).toBe(true);
