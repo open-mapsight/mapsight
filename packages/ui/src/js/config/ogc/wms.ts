@@ -261,27 +261,30 @@ function resolveProjection(
 	advertised: string[],
 ): string | undefined {
 	const key = requested.toUpperCase();
-	const match = advertised.find((code) => code.toUpperCase() === key);
-	if (match === undefined) {
+	const matching = advertised.filter((code) => code.toUpperCase() === key);
+	if (matching.length === 0) {
 		return undefined;
 	}
 
 	const epsgUrnCode = /^urn:(?:x-)?ogc:def:crs:epsg:(?:[^:]*:)?(\d+)$/i.exec(
-		match,
+		requested,
 	)?.[1];
-	const projection =
-		getProjection(match) ??
-		getProjection(requested) ??
-		getProjection(epsgUrnCode === undefined ? key : `EPSG:${epsgUrnCode}`);
-	const code = projection?.getCode();
+	const normalized = epsgUrnCode === undefined ? key : `EPSG:${epsgUrnCode}`;
+	const advertisedKeys = new Set(
+		advertised.map((code) => code.toUpperCase()),
+	);
+	// Prefer the requested spelling when registered. Give other spellings a
+	// stable lookup order so capabilities order cannot choose the projection.
+	const candidates = unique([requested, ...matching.sort(), normalized]);
 	// OpenLayers can resolve an alias to a different code. GetMap sends the
 	// registered code, so it must also be advertised.
-	return code !== undefined &&
-		advertised.some(
-			(candidate) => candidate.toUpperCase() === code.toUpperCase(),
-		)
-		? code
-		: undefined;
+	for (const candidate of candidates) {
+		const code = getProjection(candidate)?.getCode();
+		if (code !== undefined && advertisedKeys.has(code.toUpperCase())) {
+			return code;
+		}
+	}
+	return undefined;
 }
 
 function readGeographicBoundingBox(
@@ -380,7 +383,8 @@ export function wmsCapabilitiesToLayers(
 		const name = asText(layer["Name"]);
 
 		const resolved: Inherited = {
-			crs: uniqueCrs([...readCrs(layer), ...inherited.crs]),
+			// Keep exact spellings for projection lookup, which is case-sensitive.
+			crs: unique([...readCrs(layer), ...inherited.crs]),
 			geographicBoundingBox:
 				readGeographicBoundingBox(layer) ??
 				inherited.geographicBoundingBox,
@@ -406,7 +410,7 @@ export function wmsCapabilitiesToLayers(
 				...(resolved.geographicBoundingBox && {
 					geographicBoundingBox: resolved.geographicBoundingBox,
 				}),
-				crs: resolved.crs,
+				crs: uniqueCrs(resolved.crs),
 				styles: resolved.styles,
 				...(resolved.queryable !== undefined && {
 					queryable: resolved.queryable,

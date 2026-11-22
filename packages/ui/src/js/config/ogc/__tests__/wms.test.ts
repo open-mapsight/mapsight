@@ -511,6 +511,54 @@ describe("wmsCapabilitiesToLayers GetMap URL", () => {
 	}
 
 	it.each([
+		[
+			"1.3.0",
+			WMS_130,
+			"CRS",
+			["boundaries", "districts", "parcels", "rivers"],
+		],
+		["1.1.1", WMS_111, "SRS", ["lakes", "forests"]],
+	] as const)(
+		"resolves advertised CRS spellings in either order for WMS %s",
+		(_version, template, parameter, names) => {
+			const requested = "http://WWW.opengis.net/def/crs/EPSG/0/4326";
+			const registered = "http://www.opengis.net/def/crs/EPSG/0/4326";
+
+			for (const spellings of [
+				[requested, registered],
+				[registered, requested],
+			]) {
+				const xml = template.replace(
+					/<(?:CRS|SRS)>[^<]+<\/(?:CRS|SRS)>/,
+					spellings
+						.map((code) => `<${parameter}>${code}</${parameter}>`)
+						.join(""),
+				);
+				const entries = wmsCapabilitiesToLayers(xml, {
+					projection: requested,
+				});
+
+				expect(entries.map(({name}) => name)).toEqual(names);
+				for (const entry of entries) {
+					expect(
+						entry.crs.filter(
+							(code) =>
+								code.toLowerCase() === registered.toLowerCase(),
+						),
+					).toEqual([spellings[0]]);
+					const source = createSource(entry);
+					const sourceProjection = source.getProjection()!;
+					expect(sourceProjection.getCode()).toBe(registered);
+					const url = new URL(
+						source.tileUrlFunction([1, 1, 0], 1, sourceProjection)!,
+					);
+					expect(values(url, parameter)).toEqual([registered]);
+				}
+			}
+		},
+	);
+
+	it.each([
 		["1.3.0", WMS_130, "CRS", "EPSG:4326"],
 		["1.1.1", WMS_111, "SRS", "epsg:4326"],
 	])(
