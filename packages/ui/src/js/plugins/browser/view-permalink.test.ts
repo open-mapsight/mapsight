@@ -1166,6 +1166,7 @@ describe("custom adapter", () => {
 			},
 		};
 		const s = setup({options: {adapter, location: "search"}});
+		vi.advanceTimersByTime(STATE_SYNC); // drain controller startup sync
 		const dispatch = vi.spyOn(s.store, "dispatch");
 		s.store.dispatch(setLayerVisibility("map", "parks", true) as never);
 		dispatch.mockClear();
@@ -1175,6 +1176,27 @@ describe("custom adapter", () => {
 		expect(dispatch).not.toHaveBeenCalled();
 	});
 
+	it("invalidates a deferred commit when the browser traverses history", () => {
+		const write = vi.fn();
+		let deferred = () => {};
+		const s = setup({
+			url: "/page#map=8/52/10",
+			options: {
+				adapter: {
+					read: () => window.location.hash,
+					write(next, commit) {
+						deferred = () => commit(() => write(next));
+					},
+				},
+			},
+		});
+		s.view.setZoom(9);
+		vi.advanceTimersByTime(DEBOUNCE);
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		deferred();
+		expect(write).not.toHaveBeenCalled();
+		expect(s.view.getZoom()).toBe(8);
+	});
 	it("passes the prefix of the configured location", () => {
 		const adapter = memoryAdapter("");
 		const s = setup({options: {adapter, location: "search"}});
@@ -1248,6 +1270,16 @@ describe("following address changes", () => {
 		expect(s.view.getZoom()).toBeCloseTo(11, 6);
 	});
 
+	it("restores the destination of Back even when both entries have the same map parameter", () => {
+		const s = setup({url: "/page#map=8/52/10&host=second"});
+		s.view.setZoom(9);
+		vi.advanceTimersByTime(DEBOUNCE - 1);
+		window.history.replaceState(null, "", "/page#map=8/52/10&host=first");
+		window.dispatchEvent(new PopStateEvent("popstate"));
+		vi.advanceTimersByTime(2000);
+		expect(s.view.getZoom()).toBe(8);
+		expect(window.location.hash).toBe("#map=8/52/10&host=first");
+	});
 	it("drops a pending layer write when the address changes", () => {
 		const s = setup();
 		s.store.dispatch(setLayerVisibility("map", "parks", true) as never);
@@ -1450,6 +1482,58 @@ describe("with the feature deep-link plugin", () => {
 		},
 	);
 
+	it.each([null, "old"])(
+		"preserves local selection through a deferred address replacement with %j",
+		async (featureId) => {
+			const s = setup({
+				url: "/page#map=8/52/10",
+				historyState: {featureId, host: 1},
+				pluginsAfter: [deepLink()],
+				options: {
+					adapter: {
+						read: () => window.location.hash,
+						write(next, commit) {
+							queueMicrotask(() =>
+								commit(() => {
+									window.history.replaceState(
+										window.history.state,
+										"",
+										next,
+									);
+									window.dispatchEvent(
+										new PopStateEvent("popstate", {
+											state: window.history.state,
+										}),
+									);
+								}),
+							);
+						},
+					},
+				},
+			});
+			s.context.render!();
+			s.store.dispatch(
+				selectExclusively(
+					"featureSelections",
+					"select",
+					"local",
+				) as never,
+			);
+			const before = s.store.getState().featureSelections;
+			moveView(s, 11, 48, 9);
+			await Promise.resolve();
+			expect(window.location.hash).toContain("map=9/48/11");
+			expect(s.store.getState().featureSelections).toBe(before);
+			window.history.replaceState(
+				{featureId: "explicit"},
+				"",
+				window.location.href,
+			);
+			expect(s.store.getState().featureSelections).toMatchObject({
+				select: {features: ["explicit"]},
+			});
+		},
+	);
 	it("address writes neither reselect the feature nor add history entries", () => {
 		const s = setup({
 			url: "/page?feature=x#map=8/52/10",

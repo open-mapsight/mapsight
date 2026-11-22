@@ -81,14 +81,14 @@ visibility. Empty ids are treated the same way.
   read.
 - **Following.** Later `hashchange` and `popstate` events apply a changed address to the map
   (without animation, taking effect immediately), unless the address already holds what the
-  plugin last read or wrote, in whatever percent-encoding. Applying an address drops a write
-  that was still pending, so an older state cannot overwrite the address that was just
-  followed. Address changes that an adapter reports synchronously from its own `write()` are
-  recognised as the plugin's own and ignored.
+  plugin last read or wrote, in whatever percent-encoding. Back and forward reconcile the
+  destination even when the permalink parameters match the previous entry. Traversal drops
+  pending writes. Notifications within the adapter's write or its deferred commit are ignored.
 - **Feature deep links.** Permalink writes update only the address. The default adapter
-  preserves the history entry's state, and the deep-link plugin ignores replacements made
-  synchronously during a permalink write. Explicit feature navigation via history still
-  applies, including back and forward.
+  preserves the history entry's state. Explicit feature navigation via history still
+  applies. Back and forward prefer the feature query parameter over the entry's stored
+  feature ID, as at startup. A feature ID can be selected before any source supplies
+  it. A details view should handle an unresolved ID, including when its data was removed.
 - **Server.** The plugin does nothing without a `window`.
 - **Teardown.** The plugin lifecycle has no teardown phase. `destroy()` removes the listeners
   and subscriptions and cancels a pending write; call it when the instance goes away. It is
@@ -107,7 +107,7 @@ All options are optional.
 | `trackedLayers`        | layers shown in a switcher  | Array of layer ids or a `(id, layer) => boolean` predicate. The default tracks layers with `metaData.visibleInLayerSwitcher` or `visibleInExternalLayerSwitcher` that are neither `lockedInLayerSwitcher` nor derived through `visibleWhenLayerIds`. |
 | `debounceMs`           | `250`                       | Delay before state changes are written.                                                                                                                                                                                                              |
 | `precision`            | `5`                         | Decimals for latitude and longitude (0–10).                                                                                                                                                                                                          |
-| `adapter`              | `window.location` + history | `{read(): string; write(next: string): void}` for hosts whose router owns the address. See below.                                                                                                                                                    |
+| `adapter`              | `window.location` + history | `An address reader and writer` for hosts whose router owns the address. See below.                                                                                                                                                                   |
 | `followAddressChanges` | `true`                      | Apply later `hashchange` / `popstate` address changes.                                                                                                                                                                                               |
 
 ### Custom adapter
@@ -115,7 +115,10 @@ All options are optional.
 `read()` returns the parameter string of the configured location including its leading `#`
 or `?` (empty when there is none). `write(next)` receives the complete next string in the
 same form, with unrelated parameters preserved, and should replace the current history
-entry. With an adapter the plugin still listens to `hashchange` / `popstate` on `window` to
+entry. If the adapter defers the history mutation, call the supplied `commit` callback
+around that mutation when it runs. This keeps the write from being treated as feature
+navigation and lets traversal invalidate a queued commit. Synchronous adapters can
+ignore the callback. With an adapter the plugin still listens to `hashchange` / `popstate` on `window` to
 notice address changes; set `followAddressChanges: false` if the host applies them itself.
 
 ```ts
@@ -123,7 +126,9 @@ createViewPermalinkPlugin({
 	location: "search",
 	adapter: {
 		read: () => router.currentSearch(),
-		write: (next) => router.replaceSearch(next),
+		write: (next, commit) => {
+			queueMicrotask(() => commit(() => router.replaceSearch(next)));
+		},
 	},
 });
 ```

@@ -170,87 +170,7 @@ export default function createPlugin(
 			if (!store) {
 				return;
 			}
-			let followingHistoryEntry = false;
-
-			// We always do this action even if we should already have done that
-			// by re-hydrating the state as it may not have had the dynamic get parameter passed along
-			const featureId = getQueryStringParameter(
-				window.location.search,
-				getParameter,
-			);
-			if (featureId) {
-				applyFeatureSourceReveal(store, {
-					featureId,
-					sourceId: parseFeatureSourceSearchParam(
-						window.location.search,
-					),
-				});
-				selectFeature(
-					store,
-					featureSelectionsController,
-					featureSelection,
-					featureId,
-					setMapOnlyViewInMobile,
-				);
-
-				if (autoRemoveParameters && autoRemoveParameters.length) {
-					// if we can, remove initial feature id from url
-					// when the selection changes (e.g. panel is closed/different feature is selected)
-					cleanups.push(
-						observeStateOnce(
-							store,
-							selectorSelectedFeatures,
-							() => {
-								if (followingHistoryEntry) {
-									return;
-								}
-								let newUrl = window.location.href;
-								autoRemoveParameters.forEach((key) => {
-									newUrl = removeQueryStringParameter(
-										newUrl,
-										key,
-									);
-								});
-								window.history.pushState(
-									null,
-									window.document.title,
-									newUrl,
-								);
-							},
-						),
-					);
-				}
-			} else {
-				if (clearMissingParameters) {
-					let found: string | null = null;
-					while (!found && clearMissingParameters[0]) {
-						found = getQueryStringParameter(
-							window.location.search,
-							clearMissingParameters.shift() as string,
-						);
-					}
-					if (!found) {
-						store.dispatch(
-							deselectAll(
-								featureSelectionsController,
-								featureSelection,
-							),
-						);
-					}
-				}
-				const historyFeatureId = getHistoryFeatureId(
-					window.history.state,
-				);
-				if (historyFeatureId) {
-					selectFeature(
-						store,
-						featureSelectionsController,
-						featureSelection,
-						historyFeatureId,
-						setMapOnlyViewInMobile,
-					);
-				}
-			}
+			let handlingFeatureNavigation = false;
 
 			const handleFeatureNavigation = (
 				id: FeatureId | null | undefined,
@@ -273,33 +193,122 @@ export default function createPlugin(
 				}
 			};
 
-			const onPopState = (event: PopStateEvent) => {
+			// We always do this action even if we should already have done that
+			// by re-hydrating the state as it may not have had the dynamic get parameter passed along
+			const readLinkedFeature = () => {
+				const featureId = getQueryStringParameter(
+					window.location.search,
+					getParameter,
+				);
+				if (featureId) {
+					applyFeatureSourceReveal(store, {
+						featureId,
+						sourceId: parseFeatureSourceSearchParam(
+							window.location.search,
+						),
+					});
+				}
+				return featureId;
+			};
+			const featureId = readLinkedFeature();
+			if (featureId) {
+				handleFeatureNavigation(featureId);
+
+				if (autoRemoveParameters && autoRemoveParameters.length) {
+					// if we can, remove initial feature id from url
+					// when the selection changes (e.g. panel is closed/different feature is selected)
+					cleanups.push(
+						observeStateOnce(
+							store,
+							selectorSelectedFeatures,
+							(selection) => {
+								if (handlingFeatureNavigation) {
+									return;
+								}
+								let newUrl = window.location.href;
+								autoRemoveParameters.forEach((key) => {
+									newUrl = removeQueryStringParameter(
+										newUrl,
+										key,
+									);
+								});
+								const features = selection?.features ?? [];
+								const previous: unknown = window.history.state;
+								const state =
+									previous && typeof previous === "object"
+										? previous
+										: {};
+								const featureId =
+									features.length < 2
+										? (features[0] ?? null)
+										: undefined;
+								withAddressOnlyHistoryWrite(() => {
+									window.history.pushState(
+										{...state, featureId},
+										window.document.title,
+										newUrl,
+									);
+								});
+							},
+						),
+					);
+				}
+			} else {
+				if (clearMissingParameters) {
+					let found: string | null = null;
+					while (!found && clearMissingParameters[0]) {
+						found = getQueryStringParameter(
+							window.location.search,
+							clearMissingParameters.shift() as string,
+						);
+					}
+					if (!found) {
+						store.dispatch(
+							deselectAll(
+								featureSelectionsController,
+								featureSelection,
+							),
+						);
+					}
+				}
+				handleFeatureNavigation(
+					getHistoryFeatureId(window.history.state),
+				);
+			}
+
+			const navigate = (readId: () => FeatureId | null | undefined) => {
 				if (isAddressOnlyHistoryWrite) {
 					return;
 				}
-				followingHistoryEntry = true;
+				const previous = handlingFeatureNavigation;
+				handlingFeatureNavigation = true;
 				try {
-					handleFeatureNavigation(getHistoryFeatureId(event.state));
+					handleFeatureNavigation(readId());
 				} finally {
-					followingHistoryEntry = false;
+					handlingFeatureNavigation = previous;
 				}
+			};
+			const onPopState = (event: PopStateEvent) => {
+				navigate(
+					() =>
+						readLinkedFeature() ?? getHistoryFeatureId(event.state),
+				);
 			};
 			window.addEventListener("popstate", onPopState);
 			cleanups.push(
 				patchWindowHistoryFunction("pushState", (state) =>
-					handleFeatureNavigation(getHistoryFeatureId(state)),
+					navigate(() => getHistoryFeatureId(state)),
 				),
 				patchWindowHistoryFunction("replaceState", (state) => {
-					if (isAddressOnlyHistoryWrite) {
-						return;
-					}
-					const id = getHistoryFeatureId(state);
-					const selected = selectorSelectedFeatures(
-						store.getState(),
-					)?.features;
-					if (selected?.length !== 1 || selected[0] !== id) {
-						handleFeatureNavigation(id);
-					}
+					navigate(() => {
+						const id = getHistoryFeatureId(state);
+						const selected = selectorSelectedFeatures(
+							store.getState(),
+						)?.features;
+						return selected?.length === 1 && selected[0] === id
+							? undefined
+							: id;
+					});
 				}),
 				() => window.removeEventListener("popstate", onPopState),
 			);

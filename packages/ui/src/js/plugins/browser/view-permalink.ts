@@ -41,7 +41,8 @@ export type ParsedView = {
  */
 export type AddressAdapter = {
 	read(): string;
-	write(next: string): void;
+	/** Wrap a deferred history mutation in `commit` when it runs. */
+	write(next: string, commit: (write: () => void) => void): void;
 };
 
 export type LayerTracking =
@@ -558,6 +559,8 @@ export default function createPlugin(
 	const adapter = options.adapter ?? createWindowAdapter(location);
 
 	let destroyed = false;
+	let writingAddress = false;
+	let addressRevision = 0;
 	let timer: ReturnType<typeof setTimeout> | undefined;
 	const cleanups: Array<() => void> = [];
 	// Set in `afterInit` when the address names a usable view; applied in
@@ -633,8 +636,8 @@ export default function createPlugin(
 		}
 	}
 
-	function applyAddress(store: EnhancedStore) {
-		if (destroyed) {
+	function applyAddress(store: EnhancedStore, traversed: boolean) {
+		if (destroyed || writingAddress) {
 			return;
 		}
 		const address = adapter.read();
@@ -643,11 +646,23 @@ export default function createPlugin(
 		const view = decoded(rawView);
 		const layers = decoded(rawLayers);
 		let applied = false;
-		if (view !== null && view !== seen.view) {
+		if (traversed || view !== seen.view || layers !== seen.layers) {
+			addressRevision++;
+		}
+		if (view !== null && (traversed || view !== seen.view)) {
 			const parsed = parseViewParameter(decodeParameterValue(rawView!));
 			const olView = getOlView(store, mapControllerName);
+			const snapshot =
+				traversed && view === seen.view
+					? snapshotView(store, mapControllerName)
+					: null;
+			const alreadyShown =
+				parsed &&
+				snapshot &&
+				formatViewParameter(snapshot, precision) ===
+					formatViewParameter(parsed, precision);
 			const linked =
-				parsed && olView
+				parsed && olView && !alreadyShown
 					? resolveLinkedView(
 							parsed,
 							getUserProjection() ??
@@ -661,7 +676,7 @@ export default function createPlugin(
 				applied = true;
 			}
 		}
-		if (layers !== null && layers !== seen.layers) {
+		if (layers !== null && (traversed || layers !== seen.layers)) {
 			const ids = parseLayersParameter(rawLayers);
 			if (ids) {
 				applyLayers(store, ids);
@@ -670,7 +685,7 @@ export default function createPlugin(
 		}
 		seen.view = view;
 		seen.layers = layers;
-		if (applied) {
+		if (applied || traversed) {
 			// A write scheduled for the previous state must not replace the address
 			// that was just followed, and the state now matches that address.
 			cancelPendingWrite();
@@ -745,7 +760,20 @@ export default function createPlugin(
 		// synchronously, and that address change is our own.
 		seen.view = decoded(readParameter(viewParameter, written));
 		seen.layers = decoded(readParameter(layersParameter, written));
-		withAddressOnlyHistoryWrite(() => adapter.write(written));
+		const revision = ++addressRevision;
+		const commit = (write: () => void) => {
+			if (destroyed || revision !== addressRevision) {
+				return;
+			}
+			const previous = writingAddress;
+			writingAddress = true;
+			try {
+				withAddressOnlyHistoryWrite(write);
+			} finally {
+				writingAddress = previous;
+			}
+		};
+		commit(() => adapter.write(written, commit));
 	}
 
 	function schedule(store: EnhancedStore) {
@@ -869,7 +897,8 @@ export default function createPlugin(
 			}
 
 			if (followAddressChanges) {
-				const onAddressChange = () => applyAddress(store);
+				const onAddressChange = (event: Event) =>
+					applyAddress(store, event.type === "popstate");
 				window.addEventListener("hashchange", onAddressChange);
 				window.addEventListener("popstate", onAddressChange);
 				cleanups.push(() => {

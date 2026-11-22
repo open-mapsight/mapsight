@@ -1,5 +1,7 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
+
 import {create} from "../../index";
 import createFeatureDeepLinkPlugin from "./feature-deep-link";
 
@@ -7,6 +9,7 @@ const instances: ReturnType<typeof createFeatureDeepLinkPlugin>[] = [];
 
 function setup(url: string, historyState: unknown) {
 	window.history.replaceState(historyState, "", url);
+	const replaceAddress = window.history.replaceState.bind(window.history);
 	const plugin = createFeatureDeepLinkPlugin();
 	instances.push(plugin);
 	const context = create(
@@ -26,7 +29,14 @@ function setup(url: string, historyState: unknown) {
 				featureSelections: {select?: {features: string[]}};
 			}
 		).featureSelections.select?.features;
-	return {selected, store: context.store!};
+	return {
+		selected,
+		store: context.store!,
+		traverse(url: string, state: unknown) {
+			replaceAddress(state, "", url);
+			window.dispatchEvent(new PopStateEvent("popstate", {state}));
+		},
+	};
 }
 
 afterEach(() => {
@@ -87,14 +97,58 @@ describe("feature deep link and history replacements", () => {
 		expect(s.selected()).toBeUndefined();
 	});
 
+	it.each(["pushState", "replaceState"] as const)(
+		"keeps explicit %s state, address and entry count",
+		(method) => {
+			const s = setup("/page?feature=one", null);
+			const length = window.history.length;
+			window.history[method](
+				{featureId: "two", host: 1},
+				"",
+				"/page?feature=two",
+			);
+			expect(s.selected()).toEqual(["two"]);
+			expect(window.location.search).toBe("?feature=two");
+			expect(window.history.state).toEqual({featureId: "two", host: 1});
+			expect(window.history.length).toBe(
+				length + (method === "pushState" ? 1 : 0),
+			);
+		},
+	);
+
+	it.each([null, {featureId: "stale", host: 1}])(
+		"traverses back to the query and forward to the selection after cleanup (%j)",
+		(state) => {
+			const s = setup("/page?feature=one", state);
+			s.store.dispatch(
+				selectExclusively(
+					"featureSelections",
+					"select",
+					"two",
+				) as never,
+			);
+			const forwardState: unknown = window.history.state;
+			expect(window.location.search).toBe("");
+			const length = window.history.length;
+			s.traverse("/page?feature=one", state);
+			expect(s.selected()).toEqual(["one"]);
+			s.traverse("/page", forwardState);
+			expect(s.selected()).toEqual(["two"]);
+			expect(window.history.length).toBe(length);
+		},
+	);
+
+	it("restores a feature ID before its data is available", () => {
+		const s = setup("/page", null);
+		s.traverse("/page", {featureId: "unresolved"});
+		expect(s.selected()).toEqual(["unresolved"]);
+	});
 	it("follows a history entry without pushing an entry for query cleanup", () => {
 		const s = setup("/page?feature=x", {featureId: "x"});
 		expect(s.selected()).toEqual(["x"]);
 		const push = vi.spyOn(window.history, "pushState");
 
-		window.dispatchEvent(
-			new PopStateEvent("popstate", {state: {featureId: "y"}}),
-		);
+		s.traverse("/page", {featureId: "y"});
 
 		expect(s.selected()).toEqual(["y"]);
 		expect(push).not.toHaveBeenCalled();
