@@ -224,6 +224,27 @@ describe("wmsCapabilitiesToLayers (WMS 1.3.0)", () => {
 		});
 	});
 
+	it.each([
+		"urn:ogc:def:crs:epsg::4326",
+		"urn:ogc:def:crs:EPSG::4326",
+		"URN:X-OGC:DEF:CRS:EPSG:6.6:4326",
+	])(
+		"resolves the inherited EPSG URN %s to the advertised GetMap CRS",
+		(projection) => {
+			const xml = wmsDocument(`<Layer>
+			<CRS>${projection.toLowerCase()}</CRS><CRS>EPSG:4326</CRS>
+			<Layer><Name>geographic</Name></Layer>
+		</Layer>`);
+
+			const entries = wmsCapabilitiesToLayers(xml, {projection});
+
+			expect(entries.map((entry) => entry.name)).toEqual(["geographic"]);
+			expect(entries[0]?.definition).toMatchObject({
+				options: {source: {options: {projection: "EPSG:4326"}}},
+			});
+		},
+	);
+
 	it("accepts the already parsed capabilities", async () => {
 		const {default: WMSCapabilities} =
 			await import("ol/format/WMSCapabilities");

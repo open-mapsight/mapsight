@@ -267,8 +267,13 @@ function resolveProjection(
 		return undefined;
 	}
 
+	const epsgUrnCode = /^urn:(?:x-)?ogc:def:crs:epsg:(?:[^:]*:)?(\d+)$/i.exec(
+		match,
+	)?.[1];
 	const projection =
-		getProjection(match) ?? getProjection(requested) ?? getProjection(key);
+		getProjection(match) ??
+		getProjection(requested) ??
+		getProjection(epsgUrnCode === undefined ? key : `EPSG:${epsgUrnCode}`);
 	const code = projection?.getCode();
 	// OpenLayers can resolve an alias to a different code. GetMap sends the
 	// registered code, so it must also be advertised.
