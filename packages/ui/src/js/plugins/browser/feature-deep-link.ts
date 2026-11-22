@@ -26,6 +26,10 @@ import {
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
 const defaultGetParameter = "feature";
+const selectPrimaryFeature = createFeatureSelectionSelector(
+	defaultFeatureSelectionsController,
+	defaultFeatureSelection,
+);
 
 let isAddressOnlyHistoryWrite = false;
 
@@ -251,12 +255,15 @@ export default function createPlugin(
 							features.length < 2
 								? (features[0] ?? null)
 								: undefined;
+						const entryState = {...state, [historyKey]: selectedId};
+						if (historyKey !== "featureId") {
+							// Capture the open details panel independently of preselection.
+							entryState.featureId =
+								selectPrimaryFeature(store.getState())
+									?.features[0] ?? null;
+						}
 						withAddressOnlyHistoryWrite(() => {
-							window.history.pushState(
-								{...state, [historyKey]: selectedId},
-								"",
-								url,
-							);
+							window.history.pushState(entryState, "", url);
 						});
 					},
 				);

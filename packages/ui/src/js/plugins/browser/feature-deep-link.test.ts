@@ -1,6 +1,9 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
-import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
+import {
+	deselectAll,
+	selectExclusively,
+} from "@mapsight/core/lib/feature-selections/actions";
 import {setData} from "@mapsight/core/lib/feature-sources/actions";
 
 import {create} from "../../index";
@@ -206,11 +209,53 @@ describe("feature deep link and history replacements", () => {
 		s.traverse(forwardUrl, forwardState);
 		expect(s.selected() ?? []).toEqual([]);
 		expect(s.selected("preselect")).toEqual(["two"]);
-		expect(forwardState).toMatchObject({host: 1});
-		expect(forwardState).not.toHaveProperty("featureId");
+		expect(forwardState).toMatchObject({host: 1, featureId: null});
 		expect(window.location.search).toBe("");
 		expect(window.location.hash).toBe("#keep");
 	});
+
+	it.each([null, "previous"])(
+		"restores the details state saved by preselection cleanup (%j)",
+		(previous) => {
+			const hash = "#map=8/52/10&layers=baseA";
+			const s = setup(
+				"/page?preselect=one" + hash,
+				{host: 1, featureId: "stale"},
+				{preselect: true},
+			);
+			s.store.dispatch(
+				(previous === null
+					? deselectAll("featureSelections", "select")
+					: selectExclusively(
+							"featureSelections",
+							"select",
+							previous,
+						)) as never,
+			);
+			s.store.dispatch(
+				selectExclusively(
+					"featureSelections",
+					"preselect",
+					"two",
+				) as never,
+			);
+			const cleanupUrl = window.location.href;
+			const cleanupState: unknown = window.history.state;
+
+			window.history.pushState(
+				{featureId: "other"},
+				"",
+				"/page?feature=other" + hash,
+			);
+			expect(s.selected()).toEqual(["other"]);
+			s.traverse(cleanupUrl, cleanupState);
+			expect(s.selected()).toEqual(previous === null ? [] : [previous]);
+			expect(s.selected("preselect")).toEqual(["two"]);
+			expect(cleanupState).toMatchObject({host: 1, featureId: previous});
+			expect(window.location.search).toBe("");
+			expect(window.location.hash).toBe(hash);
+		},
+	);
 
 	it("arms query cleanup again after returning to the original feature link", () => {
 		const hash = "#map=8/52/10&layers=baseA";
