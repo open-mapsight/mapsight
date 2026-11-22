@@ -6,6 +6,7 @@ import type {CreateOptions, MapsightUiStore} from "../types";
 import {compactFeatureSourceIndexes} from "./compact-feature-source-indexes";
 import {wrapEmbedFragment} from "./emit-fragment";
 import {sanitizeRehydratedState} from "./sanitize-rehydrated-state";
+import {markServerSnapshot} from "./snapshot-deletions";
 
 export type NodeEmbedOptions = {
 	/** style function */
@@ -68,7 +69,11 @@ export default function nodeEmbed(options: NodeEmbedOptions): Result {
 				? compactFeatureSourceIndexes(state)
 				: state;
 			const serialized: unknown = JSON.parse(JSON.stringify(wireState));
-			return sanitizeRehydratedState(serialized).state;
+			return markServerSnapshot(
+				sanitizeRehydratedState(serialized).state,
+				ctx.initialState,
+				state,
+			);
 		} catch (cause) {
 			throw new Error(
 				"mapsight ui: store state is not JSON-serializable for dehydration",

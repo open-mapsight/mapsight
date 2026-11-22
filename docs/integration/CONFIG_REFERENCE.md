@@ -146,9 +146,9 @@ of this instance only. To drop a layer or feature source, prefer `removeLayer` /
 without the flag. This will be the only `unset` behavior in v8. A host that creates the `@mapsight/core` store itself
 passes `future: {v15_unsetRemovesKey: true}` in the options argument of `createMapsightStore`.
 
-Embed hydration merges `reHydratedState` over the client base config. A key omitted from the serialized state
-because it was deleted on the server can therefore come back from the client base config. To keep that key
-absent after hydration, omit it from the client base config as well.
+Complete snapshots from `nodeEmbed` record keys deleted from the server's initial state. Hydration applies these
+deletions to the merged config before creating the client store and the React hydration snapshot. Unmarked
+`reHydratedState` payloads are partial overlays, so omitted keys can still come from the client base config.
 
 `v8_ariaControlTooltip` switches leftover hint.css control tooltips (RegionSelector) to the ARIA `Tooltip`.
 Omitted or `false` keeps `ms3-hint--*` classes.

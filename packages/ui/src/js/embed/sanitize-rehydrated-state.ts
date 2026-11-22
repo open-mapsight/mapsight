@@ -1,8 +1,10 @@
 import {DETAILS_CONTENT_STATE_KEY} from "../config/constants/app";
+import {extractSnapshotDeletions} from "./snapshot-deletions";
 
 export type SanitizeRehydratedStateResult = {
 	state: unknown;
 	resumeFeatureSourceIds: string[];
+	deletedPaths: string[][];
 };
 
 /**
@@ -13,13 +15,14 @@ export function sanitizeRehydratedState(
 	state: unknown,
 ): SanitizeRehydratedStateResult {
 	if (state === null || typeof state !== "object") {
-		return {state, resumeFeatureSourceIds: []};
+		return {state, resumeFeatureSourceIds: [], deletedPaths: []};
 	}
 
 	const next = structuredClone(state) as Record<string, unknown>;
+	const deletedPaths = extractSnapshotDeletions(next);
 	const resumeFeatureSourceIds = clearFeatureSourceLoading(next);
 	clearInFlightAppFetches(next.app);
-	return {state: next, resumeFeatureSourceIds};
+	return {state: next, resumeFeatureSourceIds, deletedPaths};
 }
 
 function clearFeatureSourceLoading(state: Record<string, unknown>): string[] {

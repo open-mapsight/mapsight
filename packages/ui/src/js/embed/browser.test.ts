@@ -1,11 +1,8 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
-import {unset} from "@mapsight/core/lib/base/actions";
-
 import {create} from "../index";
 import type {MapsightUiRendererProps} from "../types";
 import browserEmbed from "./browser";
-import nodeEmbed from "./node";
 
 const minimalConfig = {
 	map: {layers: {base: {type: "OSM" as const}}},
@@ -67,7 +64,7 @@ describe("browserEmbed hydration contract", () => {
 		expect(container.getAttribute("data-dehydrated-state")).toBe("");
 	});
 
-	it("restores a configured layer omitted from the dehydrated state by unset", () => {
+	it("keeps base layers omitted from an unmarked partial overlay", () => {
 		const overlay = {type: "VectorLayer" as const};
 		const baseMapsightConfig = {
 			map: {layers: {...minimalConfig.map.layers, overlay}},
@@ -81,17 +78,14 @@ describe("browserEmbed hydration contract", () => {
 				future: {v8_unsetRemovesKey: true},
 			},
 		};
-		const server = nodeEmbed({
-			...options,
-			createOptions: {...options.createOptions, renderer: stubRenderer()},
-		});
-		server.store?.dispatch(unset(["map", "layers", "overlay"]));
-		const state = server.getDehydratedState();
-		expect(state).toHaveProperty("map.layers.base");
-		expect(state).not.toHaveProperty("map.layers.overlay");
-
 		const container = document.createElement("div");
-		container.setAttribute("data-dehydrated-state", JSON.stringify(state));
+		container.setAttribute(
+			"data-dehydrated-state",
+			JSON.stringify({
+				app: {},
+				map: {layers: {base: {options: {visible: false}}}},
+			}),
+		);
 		const renderer = vi.fn(
 			(
 				_container: HTMLElement | null,
@@ -114,6 +108,10 @@ describe("browserEmbed hydration contract", () => {
 		expect(props?.serverState).toHaveProperty(
 			"map.layers.overlay",
 			overlay,
+		);
+		expect(props?.store.getState()).toHaveProperty(
+			"map.layers.base.options.visible",
+			false,
 		);
 	});
 

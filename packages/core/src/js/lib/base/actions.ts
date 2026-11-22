@@ -188,9 +188,10 @@ export function unset(path: ActionPath | null) {
 /**
  * Delete the key at the last segment of `path` from its parent plain object.
  *
- * Unlike `unset`, which keeps the key with an `undefined` value, the key is
- * really gone afterwards. Nothing happens when the key or its parent does not
- * exist, or when the parent is an array (use `removeFrom` for array elements).
+ * This deletes the key regardless of the store's future flags. By default,
+ * `unset` keeps the key with an `undefined` value. Nothing happens when the
+ * key or its parent does not exist, or when the parent is an array (use
+ * `removeFrom` for array elements).
  * This only changes Redux state; domain actions such as `removeLayer` and
  * `removeFeatureSource` are the intended way to remove layers and sources.
  */

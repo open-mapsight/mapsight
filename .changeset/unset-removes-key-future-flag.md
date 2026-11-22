@@ -3,4 +3,6 @@
 "@mapsight/ui": minor
 ---
 
-Add the `v15_unsetRemovesKey` future flag to `createMapsightStore` (`options.future`) and `v8_unsetRemovesKey` to `createOptions.future` of `@mapsight/ui`. With the flag on, `unset(path)` deletes the key from a plain object parent instead of leaving it in the state with an `undefined` value, so the state survives serialisation and matches its types. Array elements are still set to `undefined`, a plain `set(path, undefined)` is unchanged, and without the flag nothing changes. The flag is read per store. In the next major, `unset` deletes the key by default; until then, use `removeKey`, `removeLayer` and `removeFeatureSource` to remove things in both modes.
+Add the per-store `v15_unsetRemovesKey` future flag to `createMapsightStore` (`options.future`) and `v8_unsetRemovesKey` to `createOptions.future` of `@mapsight/ui`. With the flag enabled, `unset(path)` deletes a key from its plain object parent before JSON serialization. Array elements and a plain `set(path, undefined)` still store `undefined`. The next major enables deletion by default. Until then, use `removeKey`, `removeLayer` and `removeFeatureSource` to delete keys in both modes.
+
+Complete Node embed snapshots carry deletions from the server's initial state through hydration. Unmarked partial states still merge over the client base config.
