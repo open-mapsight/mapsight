@@ -44,9 +44,17 @@ describe("useLayerVisibility", () => {
 		expect(setup("traffic").result.current[0]).toBe(false);
 	});
 
-	it("treats unknown layers and layers without the option as hidden", () => {
-		expect(setup("plain").result.current[0]).toBe(false);
+	it("treats unknown layers as hidden", () => {
 		expect(setup("missing").result.current[0]).toBe(false);
+	});
+
+	it("turns off an implicitly visible layer on the first toggle", () => {
+		const {result, store} = setup("plain");
+		const [visible, setVisible] = result.current;
+		expect(visible).toBe(true);
+		act(() => setVisible(!visible));
+		expect(result.current[0]).toBe(false);
+		expect(storedVisibility(store, "map", "plain")).toBe(false);
 	});
 
 	it("sets the visibility in the store", () => {
