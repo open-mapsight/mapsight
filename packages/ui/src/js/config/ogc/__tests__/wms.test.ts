@@ -1,5 +1,7 @@
 import type TileLayer from "ol/layer/Tile";
-import {get as getProjection} from "ol/proj";
+import {addProjection, get as getProjection} from "ol/proj";
+import Projection from "ol/proj/Projection";
+import ReprojTile from "ol/reproj/Tile";
 import TileWMS from "ol/source/TileWMS";
 
 import {describe, expect, it} from "vitest";
@@ -170,9 +172,12 @@ describe("wmsCapabilitiesToLayers (WMS 1.3.0)", () => {
 	});
 
 	it("uses the url and projection options", () => {
-		const entries = wmsCapabilitiesToLayers(WMS_130, {
+		const code = "TEST:LocalGrid";
+		addProjection(new Projection({code, units: "m"}));
+		const xml = WMS_130.replace("EPSG:25832", code);
+		const entries = wmsCapabilitiesToLayers(xml, {
 			url: "https://proxy.example.org/wms",
-			projection: "EPSG:25832",
+			projection: "test:localgrid",
 		});
 
 		// only layers that advertise the projection remain
@@ -186,10 +191,36 @@ describe("wmsCapabilitiesToLayers (WMS 1.3.0)", () => {
 				source: {
 					options: {
 						url: "https://proxy.example.org/wms",
-						projection: "EPSG:25832",
+						projection: code,
 					},
 				},
 			},
+		});
+	});
+
+	it("leaves out layers with an explicitly requested but unregistered CRS", () => {
+		const xml = wmsDocument(
+			"<Layer><Name>a</Name><CRS>EPSG:999999</CRS></Layer>",
+		);
+
+		expect(
+			wmsCapabilitiesToLayers(xml, {projection: "EPSG:999999"}),
+		).toEqual([]);
+		expect(wmsCapabilitiesToLayers(xml)).toHaveLength(1);
+	});
+
+	it("requires layers to advertise the code OpenLayers sends for a CRS alias", () => {
+		const projection = "urn:ogc:def:crs:EPSG::4326";
+		const xml = wmsDocument(`<Layer><CRS>${projection}</CRS>
+			<Layer><Name>alias-only</Name></Layer>
+			<Layer><Name>both</Name><CRS>EPSG:4326</CRS></Layer>
+		</Layer>`);
+
+		const entries = wmsCapabilitiesToLayers(xml, {projection});
+
+		expect(entries.map((entry) => entry.name)).toEqual(["both"]);
+		expect(entries[0]?.definition).toMatchObject({
+			options: {source: {options: {projection: "EPSG:4326"}}},
 		});
 	});
 
@@ -427,8 +458,7 @@ describe("wmsCapabilitiesToLayers queryable", () => {
 describe("wmsCapabilitiesToLayers GetMap URL", () => {
 	const projection = getProjection("EPSG:3857")!;
 
-	/** Creates the source through ol-proxy and returns a tile URL. */
-	function tileUrl(
+	function createSource(
 		entry: ReturnType<typeof wmsCapabilitiesToLayers>[number],
 	) {
 		di.injectDefinitions([TileLayerDefinition, TileWMSSource]);
@@ -438,9 +468,17 @@ describe("wmsCapabilitiesToLayers GetMap URL", () => {
 			newDefinition: entry.definition,
 			adder: (created) => (layer = created as TileLayer<TileWMS>),
 		});
-		const url = layer!
-			.getSource()!
-			.tileUrlFunction([1, 1, 0], 1, projection);
+		return layer!.getSource()!;
+	}
+
+	function tileUrl(
+		entry: ReturnType<typeof wmsCapabilitiesToLayers>[number],
+	) {
+		const url = createSource(entry).tileUrlFunction(
+			[1, 1, 0],
+			1,
+			projection,
+		);
 		return new URL(url!);
 	}
 
@@ -450,6 +488,36 @@ describe("wmsCapabilitiesToLayers GetMap URL", () => {
 			.filter(([key]) => key.toUpperCase() === name)
 			.map(([, value]) => value);
 	}
+
+	it.each([
+		["1.3.0", WMS_130, "CRS", "EPSG:4326"],
+		["1.1.1", WMS_111, "SRS", "epsg:4326"],
+	])(
+		"uses the advertised geographic CRS for reprojected GetMap tiles (%s)",
+		(_version, template, parameter, code) => {
+			const xml = template
+				.replace("<CRS>EPSG:3857</CRS>", "")
+				.replace("EPSG:4326 EPSG:3857", "EPSG:4326")
+				.replace("EPSG:4326", code);
+			const [entry] = wmsCapabilitiesToLayers(xml, {
+				projection: "ePsG:4326",
+			});
+			const source = createSource(entry!);
+			const urls: URL[] = [];
+			source.setTileLoadFunction((_tile, url) => {
+				urls.push(new URL(url));
+			});
+			const tile = source.getTile(1, 1, 0, 1, projection);
+			tile.load();
+
+			expect(urls.length).toBeGreaterThan(0);
+			expect(urls.map((url) => values(url, parameter))).toEqual(
+				urls.map(() => ["EPSG:4326"]),
+			);
+			expect(source.getProjection()?.getCode()).toBe("EPSG:4326");
+			expect(tile).toBeInstanceOf(ReprojTile);
+		},
+	);
 
 	const advertised =
 		"https://wms.example.org/maps?map=demo&REQUEST=GetCapabilities&version=1.0.0&SERVICE=WFS" +

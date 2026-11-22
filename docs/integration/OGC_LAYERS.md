@@ -220,7 +220,8 @@ geographicBoundingBox?, crs, matrixSets, styles, formats, definition}` per layer
   from the URL, whether advertised or passed as `url`, so that each is sent once. Other parameters such as `map=` or
   access tokens stay in the URL.
 - Options: `url` replaces the advertised `GetMap` URL, `format` (default: an advertised format, preferring PNG) and
-  `projection` (sets the source projection and leaves out layers that do not advertise the CRS).
+  `projection` (sets the source to a registered OpenLayers projection and leaves out layers that do not advertise
+  the requested CRS or the registered CRS code used in GetMap requests, matched case-insensitively).
 
 `wmtsCapabilitiesToLayers(capabilities, options?)`:
 

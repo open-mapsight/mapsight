@@ -1,4 +1,5 @@
 import WMSCapabilities from "ol/format/WMSCapabilities";
+import {get as getProjection} from "ol/proj";
 
 import type {Description} from "@mapsight/core/lib/map/types";
 
@@ -62,8 +63,10 @@ export type WmsCapabilitiesToLayersOptions = {
 	/** Image format; defaults to an advertised one, preferring PNG. */
 	format?: string;
 	/**
-	 * CRS code the source should request, e.g. `EPSG:3857`. Layers that do not
-	 * advertise it are left out. Without it the source follows the map view.
+	 * CRS code the source should request, e.g. `EPSG:3857`. The code must be
+	 * advertised by the layer and resolve to a registered OpenLayers projection
+	 * whose code the layer can serve. Matching ignores case. Without this
+	 * option the source follows the map view.
 	 */
 	projection?: string;
 };
@@ -254,6 +257,29 @@ function readCrs(layer: RawObject): string[] {
 	);
 }
 
+function resolveProjection(
+	requested: string,
+	advertised: string[],
+): string | undefined {
+	const key = requested.toUpperCase();
+	const match = advertised.find((code) => code.toUpperCase() === key);
+	if (match === undefined) {
+		return undefined;
+	}
+
+	const projection =
+		getProjection(match) ?? getProjection(requested) ?? getProjection(key);
+	const code = projection?.getCode();
+	// OpenLayers can resolve an alias to a different code. GetMap sends the
+	// registered code, so it must also be advertised.
+	return code !== undefined &&
+		advertised.some(
+			(candidate) => candidate.toUpperCase() === code.toUpperCase(),
+		)
+		? code
+		: undefined;
+}
+
 function readGeographicBoundingBox(
 	layer: RawObject,
 ): GeographicBoundingBox | undefined {
@@ -338,7 +364,7 @@ export function wmsCapabilitiesToLayers(
 		asArray(operation?.["Format"]).flatMap((entry) => asText(entry) ?? []),
 		options.format,
 	);
-	const projection = options.projection;
+	const requestedProjection = options.projection;
 
 	const entries: WmsLayerEntry[] = [];
 
@@ -359,13 +385,15 @@ export function wmsCapabilitiesToLayers(
 			queryable: resolveQueryable(layer, element, inherited.queryable),
 		};
 
-		const supportsProjection =
-			projection === undefined ||
-			resolved.crs.some(
-				(code) => code.toLowerCase() === projection.toLowerCase(),
-			);
+		const projection =
+			requestedProjection === undefined
+				? undefined
+				: resolveProjection(requestedProjection, resolved.crs);
 
-		if (name !== undefined && supportsProjection) {
+		if (
+			name !== undefined &&
+			(requestedProjection === undefined || projection !== undefined)
+		) {
 			const abstract = asText(layer["Abstract"]);
 			entries.push({
 				name,
