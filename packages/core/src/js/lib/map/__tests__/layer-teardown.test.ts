@@ -328,6 +328,45 @@ describe("tearing down the source of a removed layer", () => {
 		expect(oldSource.getFeatures()).toHaveLength(0);
 	});
 
+	it("disposes the detached source when only a source constructor option changes", () => {
+		const {store, map, fit, source: oldSource} = setup();
+		const layer = findOlLayer(map, "animated");
+		store.dispatch(setData("featureSources", "pois", collection("before")));
+		expect(oldSource.getFeatureById("before")).toBeTruthy();
+
+		store.dispatch(
+			set(
+				[
+					"map",
+					"layers",
+					"animated",
+					"options",
+					"source",
+					"options",
+					"canCluster",
+				],
+				true,
+			),
+		);
+		expect(findOlLayer(map, "animated")).toBe(layer);
+		const currentSource = layer.getSource();
+		if (!(currentSource instanceof VectorFeatureSource)) {
+			throw new Error("Expected a replacement vector source");
+		}
+		expect(currentSource).not.toBe(oldSource);
+		const retiredRevision = oldSource.getRevision();
+		fit.mockClear();
+
+		store.dispatch(setData("featureSources", "pois", collection("after")));
+
+		expect(oldSource.getRevision()).toBe(retiredRevision);
+		expect(oldSource.getFeatures()).toEqual([]);
+		expect(
+			currentSource.getFeatures().map((feature) => feature.getId()),
+		).toEqual(["after"]);
+		expect(fit).toHaveBeenCalledTimes(1);
+	});
+
 	it("can be torn down more than once", () => {
 		const {source} = setup();
 
