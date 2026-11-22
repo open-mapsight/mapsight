@@ -1,7 +1,8 @@
 import Feature from "ol/Feature";
 import type OlMap from "ol/Map";
 import Point from "ol/geom/Point";
-import type VectorLayer from "ol/layer/Vector";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
 
 import {describe, expect, it, vi} from "vitest";
 
@@ -116,7 +117,57 @@ describe("tearing down the source of a removed layer", () => {
 		store.dispatch(select("featureSelections", "highlight", "a"));
 
 		expect(refresh).not.toHaveBeenCalled();
-		expect(source.getFeatures()).toHaveLength(1);
+		expect(source.getFeatures()).toHaveLength(0);
+	});
+
+	it("detaches the retired vector and overlay sources from a shared feature", () => {
+		const setMap = vi.spyOn(VectorLayer.prototype, "setMap");
+		try {
+			const {store, map, mapController, source} = setup();
+			const retiredLayer = findOlLayer(map, "animated");
+			const overlay = setMap.mock.contexts.find(
+				(layer): layer is VectorLayer =>
+					layer instanceof VectorLayer &&
+					getIdForLayer(layer) === "animated",
+			);
+			const overlaySource = overlay?.getSource();
+			if (!(overlaySource instanceof VectorSource)) {
+				throw new Error("Expected a vector selection overlay");
+			}
+			store.dispatch(setData("featureSources", "pois", collection("a")));
+			const feature = source.getFeatureById("a");
+			const sibling = findOlLayer(map, "pois").getSource();
+			if (
+				!(feature instanceof Feature) ||
+				!(sibling instanceof VectorFeatureSource)
+			) {
+				throw new Error("Expected a shared vector feature");
+			}
+			expect(sibling.getFeatureById("a")).toBe(feature);
+			const overlayOnly = new Feature(new Point([10, 0]));
+			mapController.moveFeatureToOverlay(retiredLayer, feature);
+			mapController.moveFeatureToOverlay(retiredLayer, overlayOnly);
+			expect(overlaySource.getFeatures()).toEqual([feature, overlayOnly]);
+
+			store.dispatch(removeLayer("map", "animated"));
+			const sourceRevision = source.getRevision();
+			const overlayRevision = overlaySource.getRevision();
+			const siblingRevision = sibling.getRevision();
+			feature.changed();
+			overlayOnly.changed();
+
+			expect(source.getRevision()).toBe(sourceRevision);
+			expect(overlaySource.getRevision()).toBe(overlayRevision);
+			expect(sibling.getRevision()).toBeGreaterThan(siblingRevision);
+			expect(source.getFeatures()).toEqual([]);
+			expect(overlaySource.getFeatures()).toEqual([]);
+			expect(sibling.getFeatureById("a")).toBe(feature);
+			expect(store.getState()).toHaveProperty("featureSources.pois.ids", [
+				"a",
+			]);
+		} finally {
+			setMap.mockRestore();
+		}
 	});
 
 	it("starts a new layer empty when its deleted feature source ID is reused", () => {

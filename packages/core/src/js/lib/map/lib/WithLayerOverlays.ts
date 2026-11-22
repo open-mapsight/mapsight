@@ -1,10 +1,10 @@
 import type OlFeature from "ol/Feature";
 import type OlLayer from "ol/layer/Layer";
+import type VectorSource from "ol/source/Vector";
 
 import forEach from "lodash/forEach";
 
 import type {LayerDefinition} from "@/lib/map/lib/WithLayers";
-import type {VectorFeatureSourceLayer} from "@/lib/map/types";
 import {Z_INDEX_OVERLAY} from "@/lib/map/z-index";
 import {di, updateProxyObject} from "@/ol-proxy";
 
@@ -15,8 +15,10 @@ export {Z_INDEX_OVERLAY};
 export const LAYER_GROUP_DEFAULT = "default";
 export const LAYER_TYPE = "VectorOverlayLayer";
 
+type VectorOverlayLayer = OlLayer<VectorSource>;
+
 function getOverlayFeatureCollectionForLayer(
-	overlays: Record<string, VectorFeatureSourceLayer>,
+	overlays: Record<string, VectorOverlayLayer>,
 	layer: OlLayer,
 ) {
 	const layerId = getIdForLayer(layer);
@@ -26,7 +28,7 @@ function getOverlayFeatureCollectionForLayer(
 }
 
 export default class WithLayerOverlays extends WithMap {
-	private _overlays: Record<string, VectorFeatureSourceLayer> = {};
+	private _overlays: Record<string, VectorOverlayLayer> = {};
 
 	override init() {
 		this._overlays = {};
@@ -55,9 +57,13 @@ export default class WithLayerOverlays extends WithMap {
 					featureSelections && overlayDefinition
 						? {...overlayDefinition, type: LAYER_TYPE}
 						: undefined,
-				remover: () => {
-					this._overlays[id]?.setMap(null);
+				remover: (overlay) => {
+					overlay.setMap(null);
 					delete this._overlays[id];
+					const source = overlay.getSource();
+					source?.clear(true);
+					overlay.dispose();
+					source?.dispose();
 				},
 				adder: (overlay) => {
 					overlay.setMap(this.getMap());
@@ -84,7 +90,7 @@ export default class WithLayerOverlays extends WithMap {
 		);
 	}
 
-	moveFeatureToOverlay(layer: VectorFeatureSourceLayer, feature: OlFeature) {
+	moveFeatureToOverlay(layer: OlLayer, feature: OlFeature) {
 		const overlayFeatureCollection = getOverlayFeatureCollectionForLayer(
 			this._overlays,
 			layer,
@@ -97,10 +103,7 @@ export default class WithLayerOverlays extends WithMap {
 		}
 	}
 
-	removeFeatureFromOverlay(
-		layer: VectorFeatureSourceLayer,
-		feature: OlFeature,
-	) {
+	removeFeatureFromOverlay(layer: OlLayer, feature: OlFeature) {
 		const overlayFeatureCollection = getOverlayFeatureCollectionForLayer(
 			this._overlays,
 			layer,

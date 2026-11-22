@@ -164,6 +164,9 @@ class SharedReadonlyVectorFeatureSource extends VectorSource {
 				this._unsubscribeFromStore();
 				this._unsubscribeFromStore = undefined;
 				this._evictFromCache();
+				this._lastData = undefined;
+				this._lastFeaturesKey = undefined;
+				this.clear(true);
 			}
 		};
 	}

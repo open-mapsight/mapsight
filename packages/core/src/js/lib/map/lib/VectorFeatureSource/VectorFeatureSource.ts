@@ -152,12 +152,7 @@ export default class VectorFeatureSource extends VectorSource {
 		const layer = this._layer;
 		const mapController = this._mapController;
 
-		// remove (all) features from overlay
-		if (this._options.useSelectionOverlay && mapController && layer) {
-			this.getFeatures().forEach((feature) => {
-				mapController.removeFeatureFromOverlay(layer, feature);
-			});
-		}
+		this._removeFeaturesFromOverlay();
 
 		// get, filter, cluster and update features
 		let features = this._featureSourceConnector.getFeatures();
@@ -201,6 +196,16 @@ export default class VectorFeatureSource extends VectorSource {
 		}
 
 		super.changed();
+	}
+
+	private _removeFeaturesFromOverlay() {
+		const layer = this._layer;
+		const mapController = this._mapController;
+		if (this._options.useSelectionOverlay && mapController && layer) {
+			for (const feature of this.getFeatures()) {
+				mapController.removeFeatureFromOverlay(layer, feature);
+			}
+		}
 	}
 
 	_checkNewFeatures(nextFeatures: OlFeature[]) {
@@ -315,8 +320,7 @@ export default class VectorFeatureSource extends VectorSource {
 	/**
 	 * Release everything this source subscribed to: the shared feature source,
 	 * the feature selections, the map size and the core property keys. Call it
-	 * when the layer that owns the source is removed or replaced. The source
-	 * stays untouched in its last state and ignores all later updates.
+	 * when the source or its owning layer is removed or replaced.
 	 *
 	 * @override
 	 */
@@ -327,6 +331,9 @@ export default class VectorFeatureSource extends VectorSource {
 		this._mapAnimator?.dispose();
 		this._featureSelectionStates.dispose();
 		this._featureSourceConnector.dispose();
+		this._removeFeaturesFromOverlay();
+		// Release OpenLayers' feature listeners without dispatching a Redux edit.
+		super.clear(true);
 		this._mapController = null;
 		this._layer = null;
 		this._drawInteraction = null;

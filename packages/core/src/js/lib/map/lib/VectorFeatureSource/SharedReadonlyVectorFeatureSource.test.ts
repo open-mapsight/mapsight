@@ -173,8 +173,16 @@ describe("SharedReadonlyVectorFeatureSource", () => {
 		const third = subscribe();
 		expect(third.instance).toBe(second.instance);
 
+		const [oldFeature] = first.instance.getFeatures();
+		if (!oldFeature) {
+			throw new Error("Expected a shared feature");
+		}
 		second.unsubscribe();
 		third.unsubscribe();
+		const retiredRevision = first.instance.getRevision();
+		oldFeature.changed();
+		expect(first.instance.getRevision()).toBe(retiredRevision);
+
 		const replacement = subscribe();
 		expect(replacement.instance).not.toBe(first.instance);
 
