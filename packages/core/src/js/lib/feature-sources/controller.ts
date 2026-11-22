@@ -45,7 +45,14 @@ import type {
 	FeatureSourceState,
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
-import type {Action, Feature, FeatureId, Geometry, State} from "@/types";
+import type {
+	Action,
+	Feature,
+	FeatureId,
+	Geometry,
+	State,
+	ThunkAction,
+} from "@/types";
 
 type FeatureSourceActionWithId<TType extends string> = Action & {
 	type: TType;
@@ -469,21 +476,31 @@ export class FeatureSourcesController extends BaseController {
 			controllerName,
 		);
 
-		return getAndObserveState(
+		let active = true;
+		const unsubscribe = getAndObserveState(
 			store,
 			selector,
 			({data, error}) => {
+				const action = setDataOrError(controllerName, featureSourceId, {
+					data,
+					error,
+				});
 				this.dispatch(
-					async(
-						setDataOrError(controllerName, featureSourceId, {
-							data,
-							error,
-						}),
-					),
+					async<ThunkAction>((dispatch) => {
+						// The ID may already belong to a different source
+						// when the async queue drains.
+						if (active) {
+							dispatch(action);
+						}
+					}),
 				);
 			},
 			createCombinedSourceEqualityCompare(),
 		);
+		return () => {
+			active = false;
+			unsubscribe();
+		};
 	}
 
 	bindFeatureSourceToStore(
