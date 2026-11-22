@@ -117,7 +117,12 @@ function describeTileGrid(tileGrid: WMTSTileGrid): WMTSTileGridDescription {
 
 	const available = ranges.filter((range) => range !== null);
 	if (available.length === ranges.length) {
-		if (available.every((range) => range.minX === 0 && range.minY === 0)) {
+		// OpenLayers clips sizes to the extent. Explicit ranges preserve the
+		// original bounds, including zero-based matrix limits outside it.
+		if (
+			!extent &&
+			available.every((range) => range.minX === 0 && range.minY === 0)
+		) {
 			description.sizes = available.map((range) => [
 				range.maxX + 1,
 				range.maxY + 1,

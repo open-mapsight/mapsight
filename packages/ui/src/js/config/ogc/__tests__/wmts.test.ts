@@ -142,6 +142,57 @@ describe("wmtsCapabilitiesToLayers", () => {
 		});
 	});
 
+	it.each([true, false])(
+		"preserves bounded grids through JSON (explicit limits: %s)",
+		(withLimits) => {
+			const bounded = WMTS_KVP.replace(
+				"<ows:Identifier>overview</ows:Identifier>",
+				`<ows:Identifier>overview</ows:Identifier>
+				<ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4326">
+					<ows:LowerCorner>10 10</ows:LowerCorner>
+					<ows:UpperCorner>40 80</ows:UpperCorner>
+				</ows:BoundingBox>`,
+			).replaceAll(
+				/<MinTileCol>[12]<\/MinTileCol>/g,
+				"<MinTileCol>0</MinTileCol>",
+			);
+			const xml = withLimits
+				? bounded
+				: bounded.replace(
+						/<TileMatrixSetLimits>[\s\S]*?<\/TileMatrixSetLimits>/,
+						"",
+					);
+			const expected = optionsFromCapabilities(
+				new WMTSCapabilities().read(xml) as Record<string, unknown>,
+				{layer: "overview"},
+			)!.tileGrid;
+			const entry = byName(wmtsCapabilitiesToLayers(xml))["overview"]!;
+			const source = createSource(
+				JSON.parse(JSON.stringify(entry)) as typeof entry,
+			);
+			const actual = source.getTileGrid() as WMTSTileGrid;
+
+			expect(actual.getExtent()).toEqual([10, 10, 80, 40]);
+			expect(actual.getMatrixIds()).toEqual([
+				"geographic:0",
+				"geographic:1",
+			]);
+			for (const [z] of expected.getResolutions().entries()) {
+				expect(actual.getFullTileRange(z)).toEqual(
+					expected.getFullTileRange(z),
+				);
+			}
+
+			const projection = getProjection("EPSG:4326")!;
+			expect(
+				source.getTileCoordForTileUrlFunction([1, 0, 1], projection),
+			).toEqual(withLimits ? [1, 0, 1] : null);
+			expect(
+				source.getTileCoordForTileUrlFunction([1, 0, 2], projection),
+			).toBeNull();
+		},
+	);
+
 	it("selects the matrix set by identifier or by preferred projection", () => {
 		const byMatrixSet = byName(
 			wmtsCapabilitiesToLayers(WMTS_KVP, {matrixSet: "geographic"}),
