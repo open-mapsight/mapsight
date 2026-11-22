@@ -399,10 +399,28 @@ function createCombinedSourceEqualityCompare() {
 }
 
 export class FeatureSourcesController extends BaseController {
+	#sourceEditLifetimes = new Map<string, object>();
 	#combinedFeatureSourceBindings = new Map<
 		string,
 		CombinedFeatureSourceBinding
 	>();
+
+	queueSourceEdit(id: string, action: Action) {
+		const sources = this.getState() as FeatureSourcesState;
+		if (!Object.hasOwn(sources, id) || !sources[id]) {
+			return;
+		}
+
+		const lifetime = this.#sourceEditLifetimes.get(id) ?? {};
+		this.#sourceEditLifetimes.set(id, lifetime);
+		this.dispatch(
+			async<ThunkAction>((dispatch) => {
+				if (this.#sourceEditLifetimes.get(id) === lifetime) {
+					dispatch(action);
+				}
+			}),
+		);
+	}
 
 	override init() {
 		const store = this.getStore();
@@ -776,11 +794,20 @@ export class FeatureSourcesController extends BaseController {
 					featureSourceAction.type,
 				);
 
-			default:
-				return reduceUncontrolledFeatureSourceChanges(
+			default: {
+				const next = reduceUncontrolledFeatureSourceChanges(
 					normalizeFeatureSourcesState(baseReducer(state, action)),
 					state,
 				);
+				if (next !== state) {
+					for (const id of this.#sourceEditLifetimes.keys()) {
+						if (!Object.hasOwn(next, id) || !next[id]) {
+							this.#sourceEditLifetimes.delete(id);
+						}
+					}
+				}
+				return next;
+			}
 		}
 	}
 }

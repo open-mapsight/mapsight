@@ -1,4 +1,6 @@
+import Feature from "ol/Feature";
 import type OlMap from "ol/Map";
+import Point from "ol/geom/Point";
 import type VectorLayer from "ol/layer/Vector";
 
 import {describe, expect, it, vi} from "vitest";
@@ -172,6 +174,44 @@ describe("tearing down the source of a removed layer", () => {
 			).toEqual(["new"]);
 		}
 	});
+
+	it.each([true, false])(
+		"applies a queued edit only to its original source (source removed: %s)",
+		(removeSource) => {
+			vi.useFakeTimers();
+			try {
+				const {store, source} = setup();
+				const feature = new Feature(new Point([0, 0]));
+				feature.setId("edit");
+				source.addFeature(feature);
+
+				store.dispatch(removeLayer("map", "animated"));
+				if (removeSource) {
+					store.dispatch(
+						removeFeatureSource("featureSources", "pois"),
+					);
+					store.dispatch(
+						set(["featureSources", "pois"], {
+							type: "local",
+							data: null,
+						}),
+					);
+				} else {
+					store.dispatch(
+						setData("featureSources", "pois", collection("new")),
+					);
+				}
+
+				vi.runAllTimers();
+				expect(store.getState()).toHaveProperty(
+					"featureSources.pois.ids",
+					removeSource ? undefined : ["new", "edit"],
+				);
+			} finally {
+				vi.useRealTimers();
+			}
+		},
+	);
 
 	it("does not react to map size changes any more", () => {
 		const {store, fit} = setup({keepAllFeaturesInView: true});
