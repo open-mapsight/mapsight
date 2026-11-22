@@ -130,9 +130,9 @@ createViewPermalinkPlugin({
 
 ## Limitations
 
-- The view is converted with proj4 from WGS84 to the configured `map.view.projection`
-  (default `EPSG:3857`). A projection that proj4 does not know yet at that point leaves the
-  configured view in place.
+- Links use WGS84 longitude and latitude. Mapsight constructs the view in `EPSG:3857`,
+  and the plugin uses the active OpenLayers user projection for public view coordinates
+  when one is set, for example by `useGeographic()`.
 - Layer ids that contain a comma (or are empty) are never tracked, and a list of visible
   layers longer than 4096 characters once encoded is not written (see above).
 - Hosts that render view values server-side see the configured view in the server markup and

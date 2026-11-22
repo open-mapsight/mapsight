@@ -1,4 +1,10 @@
-import {fromLonLat, toLonLat} from "ol/proj";
+import View from "ol/View";
+import {
+	clearUserProjection,
+	fromLonLat,
+	toLonLat,
+	useGeographic,
+} from "ol/proj";
 
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
@@ -508,12 +514,51 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+	clearUserProjection();
 	for (const plugin of instances.splice(0)) {
 		plugin.destroy();
 	}
 	vi.useRealTimers();
 	vi.restoreAllMocks();
 	window.history.replaceState(null, "", "/");
+});
+
+describe("public view coordinates", () => {
+	it("restores, writes and follows a permalink in geographic mode", () => {
+		useGeographic();
+		const s = setup({
+			url: "/page#map=5/48/11",
+			view: {center: [10, 52], zoom: 8},
+		});
+		expect(s.view.getCenter()?.[0]).toBeCloseTo(11, 8);
+		expect(s.view.getCenter()?.[1]).toBeCloseTo(48, 8);
+
+		s.view.setZoom(6);
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "map")).toBe(
+			"6/48/11",
+		);
+
+		window.history.replaceState(null, "", "/page#map=7/40/3");
+		window.dispatchEvent(new Event("hashchange"));
+		expect(s.view.getCenter()?.[0]).toBeCloseTo(3, 8);
+		expect(s.view.getCenter()?.[1]).toBeCloseTo(40, 8);
+		expect(s.view.getZoom()).toBe(7);
+	});
+
+	it("uses the actual default view projection at startup", () => {
+		const s = setup({
+			url: "/page#map=5/48/11",
+			view: {
+				center: fromLonLat([10, 52]),
+				zoom: 8,
+				projection: "EPSG:4326",
+			},
+		});
+		const center = toLonLat(s.view.getCenter()!);
+		expect(center[0]).toBeCloseTo(11, 8);
+		expect(center[1]).toBeCloseTo(48, 8);
+	});
 });
 
 describe("startup restore", () => {
@@ -817,7 +862,6 @@ describe("writing", () => {
 
 		s.view.setCenter(fromLonLat([11.5, 48.1]));
 		s.view.setZoom(10.126);
-		vi.advanceTimersByTime(STATE_SYNC);
 		vi.advanceTimersByTime(DEBOUNCE - 50);
 		expect(replace).not.toHaveBeenCalled();
 		vi.advanceTimersByTime(100);
@@ -834,11 +878,36 @@ describe("writing", () => {
 	it("serialises rotation only when non-zero", () => {
 		const s = setup();
 		s.view.setRotation(Math.PI / 2);
-		moveView(s, 10, 52, 8);
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
 		expect(window.location.hash).toContain("map=8/52/10/90");
 		s.view.setRotation(0);
-		moveView(s, 10, 52, 9);
-		expect(window.location.hash).toContain("map=9/52/10&");
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
+		expect(window.location.hash).toContain("map=8/52/10&");
+	});
+
+	it("observes a replacement view and stops observing the old view", () => {
+		const adapter = {
+			read: vi.fn(() => window.location.hash),
+			write: (hash: string) =>
+				window.history.replaceState(null, "", hash),
+		};
+		const s = setup({options: {adapter}});
+		const next = new View({center: fromLonLat([3, 40]), zoom: 12});
+		s.map.setView(next);
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "map")).toBe(
+			"12/40/3",
+		);
+
+		adapter.read.mockClear();
+		s.view.setZoom(10);
+		vi.advanceTimersByTime(STATE_SYNC + DEBOUNCE);
+		expect(adapter.read).not.toHaveBeenCalled();
+		next.setZoom(11);
+		vi.advanceTimersByTime(DEBOUNCE);
+		expect(readAddressParameter(window.location.hash, "map")).toBe(
+			"11/40/3",
+		);
 	});
 
 	it("writes layer changes and keeps the view in the same link", () => {
@@ -1134,7 +1203,7 @@ describe("following address changes", () => {
 		// the user moves the map: a write is now scheduled
 		s.view.setCenter(fromLonLat([11, 48]));
 		s.view.setZoom(9);
-		vi.advanceTimersByTime(STATE_SYNC);
+		vi.advanceTimersByTime(DEBOUNCE - 1);
 
 		// back/forward navigates to another address; the map has no size yet
 		window.history.replaceState(null, "", "/page#map=11/48.5/11.25");

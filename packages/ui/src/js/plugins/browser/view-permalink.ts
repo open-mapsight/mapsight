@@ -1,3 +1,7 @@
+import type {ViewObjectEventTypes} from "ol/View";
+import {getUserProjection, transform} from "ol/proj";
+import type Projection from "ol/proj/Projection";
+
 import proj4 from "proj4";
 
 import {merge} from "@mapsight/core/lib/base/actions";
@@ -12,6 +16,7 @@ import {MAP} from "../../config/constants/controllers";
 import type {MapsightUiContext, PluginInstance} from "../../types";
 
 const WGS84 = "EPSG:4326";
+// The core view definition does not pass a projection to the constructor.
 const DEFAULT_VIEW_PROJECTION = "EPSG:3857";
 
 export const DEFAULT_VIEW_PARAMETER = "map";
@@ -312,27 +317,34 @@ function finiteCoordinate(
 		: null;
 }
 
-/** WGS84 degrees to view projection; `null` when not representable. */
+/** WGS84 degrees to public view coordinates; `null` when not representable. */
 export function lonLatToViewCoordinate(
 	lon: number,
 	lat: number,
-	projection = DEFAULT_VIEW_PROJECTION,
+	projection: string | Projection = DEFAULT_VIEW_PROJECTION,
 ): [number, number] | null {
 	try {
-		return finiteCoordinate(proj4(WGS84, projection, [lon, lat]));
+		const coordinate = [lon, lat];
+		return finiteCoordinate(
+			typeof projection === "string"
+				? proj4(WGS84, projection, coordinate)
+				: transform(coordinate, WGS84, projection),
+		);
 	} catch {
 		return null;
 	}
 }
 
-/** View projection to WGS84 degrees; `null` when not representable. */
+/** Public view coordinates to WGS84 degrees; `null` when not representable. */
 export function viewCoordinateToLonLat(
 	coordinate: number[],
-	projection = DEFAULT_VIEW_PROJECTION,
+	projection: string | Projection = DEFAULT_VIEW_PROJECTION,
 ): {lon: number; lat: number} | null {
 	try {
 		const converted = finiteCoordinate(
-			proj4(projection, WGS84, [coordinate[0]!, coordinate[1]!]),
+			typeof projection === "string"
+				? proj4(projection, WGS84, [coordinate[0]!, coordinate[1]!])
+				: transform(coordinate, projection, WGS84),
 		);
 		return converted ? {lon: converted[0], lat: converted[1]} : null;
 	} catch {
@@ -448,10 +460,14 @@ function createWindowAdapter(location: "hash" | "search"): AddressAdapter {
 	};
 }
 
-function getOlView(store: EnhancedStore, mapControllerName: string) {
+function getOlMap(store: EnhancedStore, mapControllerName: string) {
 	const controller = store.getController(mapControllerName) as
 		MapController | undefined;
-	return controller?.getMap()?.getView() ?? null;
+	return controller?.getMap();
+}
+
+function getOlView(store: EnhancedStore, mapControllerName: string) {
+	return getOlMap(store, mapControllerName)?.getView();
 }
 
 function snapshotView(
@@ -466,7 +482,7 @@ function snapshotView(
 	}
 	const lonLat = viewCoordinateToLonLat(
 		center,
-		view.getProjection().getCode(),
+		getUserProjection() ?? view.getProjection().getCode(),
 	);
 	if (!lonLat) {
 		return null;
@@ -478,13 +494,13 @@ function snapshotView(
 	};
 }
 
-/** A view from the address, in view projection coordinates and radians. */
+/** A view from the address, in public view coordinates and radians. */
 type LinkedView = {center: [number, number]; zoom: number; rotation: number};
 
 /** `null` when the place cannot be represented or the zoom is out of limits. */
 function resolveLinkedView(
 	parsed: ParsedView,
-	projection: string,
+	projection: string | Projection,
 	minZoom?: number,
 	maxZoom?: number,
 ): LinkedView | null {
@@ -629,7 +645,8 @@ export default function createPlugin(
 				parsed && olView
 					? resolveLinkedView(
 							parsed,
-							olView.getProjection().getCode(),
+							getUserProjection() ??
+								olView.getProjection().getCode(),
 							olView.getMinZoom(),
 							olView.getMaxZoom(),
 						)
@@ -756,9 +773,7 @@ export default function createPlugin(
 			const configured = mapState?.view ?? {};
 			linkedView = resolveLinkedView(
 				parsed,
-				typeof configured.projection === "string"
-					? configured.projection
-					: DEFAULT_VIEW_PROJECTION,
+				getUserProjection() ?? DEFAULT_VIEW_PROJECTION,
 				typeof configured.minZoom === "number"
 					? configured.minZoom
 					: undefined,
@@ -796,21 +811,30 @@ export default function createPlugin(
 			last.view = baseline.view;
 			last.layers = baseline.layers;
 
-			if (viewParameter !== false) {
-				cleanups.push(
-					observeState(
-						store,
-						(state) =>
-							(state as AnyState)[mapControllerName]
-								? (
-										(state as AnyState)[
-											mapControllerName
-										] as AnyState
-									).view
-								: undefined,
-						() => schedule(store),
-					),
-				);
+			const map =
+				viewParameter === false
+					? null
+					: getOlMap(store, mapControllerName);
+			if (map) {
+				const viewEvents: ViewObjectEventTypes[] = [
+					"change:center",
+					"change:resolution",
+					"change:rotation",
+				];
+				const onViewChange = () => schedule(store);
+				let view = map.getView();
+				view?.on(viewEvents, onViewChange);
+				const onViewReplaced = () => {
+					view?.un(viewEvents, onViewChange);
+					view = map.getView();
+					view?.on(viewEvents, onViewChange);
+					onViewChange();
+				};
+				map.on("change:view", onViewReplaced);
+				cleanups.push(() => {
+					map.un("change:view", onViewReplaced);
+					view?.un(viewEvents, onViewChange);
+				});
 			}
 			if (layersParameter !== false) {
 				let layersRef: unknown;
