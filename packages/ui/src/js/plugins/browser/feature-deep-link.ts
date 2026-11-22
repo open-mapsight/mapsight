@@ -225,13 +225,15 @@ export default function createPlugin(
 								if (handlingFeatureNavigation) {
 									return;
 								}
-								let newUrl = window.location.href;
-								autoRemoveParameters.forEach((key) => {
-									newUrl = removeQueryStringParameter(
-										newUrl,
+								const url = new URL(window.location.href);
+								let search = url.search;
+								for (const key of autoRemoveParameters) {
+									search = removeQueryStringParameter(
+										search,
 										key,
 									);
-								});
+								}
+								url.search = search;
 								const features = selection?.features ?? [];
 								const previous: unknown = window.history.state;
 								const state =
@@ -246,7 +248,7 @@ export default function createPlugin(
 									window.history.pushState(
 										{...state, featureId},
 										window.document.title,
-										newUrl,
+										url,
 									);
 								});
 							},

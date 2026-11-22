@@ -119,7 +119,8 @@ describe("feature deep link and history replacements", () => {
 	it.each([null, {featureId: "stale", host: 1}])(
 		"traverses back to the query and forward to the selection after cleanup (%j)",
 		(state) => {
-			const s = setup("/page?feature=one", state);
+			const hash = "#map=8/52/10&layers=base";
+			const s = setup("/page?feature=one" + hash, state);
 			s.store.dispatch(
 				selectExclusively(
 					"featureSelections",
@@ -129,10 +130,11 @@ describe("feature deep link and history replacements", () => {
 			);
 			const forwardState: unknown = window.history.state;
 			expect(window.location.search).toBe("");
+			expect(window.location.hash).toBe(hash);
 			const length = window.history.length;
-			s.traverse("/page?feature=one", state);
+			s.traverse("/page?feature=one" + hash, state);
 			expect(s.selected()).toEqual(["one"]);
-			s.traverse("/page", forwardState);
+			s.traverse("/page" + hash, forwardState);
 			expect(s.selected()).toEqual(["two"]);
 			expect(window.history.length).toBe(length);
 		},

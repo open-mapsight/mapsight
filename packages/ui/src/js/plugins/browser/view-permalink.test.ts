@@ -1185,7 +1185,10 @@ describe("custom adapter", () => {
 				adapter: {
 					read: () => window.location.hash,
 					write(next, commit) {
-						deferred = () => commit(() => write(next));
+						deferred = () =>
+							commit(() => {
+								write(next);
+							});
 					},
 				},
 			},
@@ -1470,7 +1473,7 @@ describe("with the feature deep-link plugin", () => {
 					"local",
 				) as never,
 			);
-			const before = s.store.getState().featureSelections;
+			const before: unknown = s.store.getState().featureSelections;
 			const length = window.history.length;
 
 			moveView(s, 11, 48, 9);
@@ -1495,14 +1498,16 @@ describe("with the feature deep-link plugin", () => {
 						write(next, commit) {
 							queueMicrotask(() =>
 								commit(() => {
+									const historyState: unknown =
+										window.history.state;
 									window.history.replaceState(
-										window.history.state,
+										historyState,
 										"",
 										next,
 									);
 									window.dispatchEvent(
 										new PopStateEvent("popstate", {
-											state: window.history.state,
+											state: historyState,
 										}),
 									);
 								}),
@@ -1519,7 +1524,7 @@ describe("with the feature deep-link plugin", () => {
 					"local",
 				) as never,
 			);
-			const before = s.store.getState().featureSelections;
+			const before: unknown = s.store.getState().featureSelections;
 			moveView(s, 11, 48, 9);
 			await Promise.resolve();
 			expect(window.location.hash).toContain("map=9/48/11");
