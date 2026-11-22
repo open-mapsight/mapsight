@@ -5,7 +5,9 @@ import {clearUserProjection, useGeographic} from "ol/proj";
 import {afterEach, describe, expect, it} from "vitest";
 
 import {createMapsightStore} from "@/index";
+import {merge} from "@/lib/base/actions";
 import type {BaseController} from "@/lib/base/controller";
+import {setViewCenter} from "@/lib/map/actions";
 import {MapController} from "@/lib/map/controller";
 import {
 	viewCenterSelector,
@@ -219,10 +221,56 @@ describe("viewExtentSelector against a real view", () => {
 				);
 				if (geographicFirst) clearUserProjection();
 				else useGeographic();
+				const center = view.getCenter();
+				expect(viewCenterSelector(state)).toEqual(center);
+				expect(viewSelector(state)?.center).toEqual(center);
+				expect(viewSelector(state)).toBe(viewSelector(state));
 				expectExtent(
 					viewExtentSelector(state),
 					view.calculateExtent(size),
 				);
+			} finally {
+				map.dispose();
+			}
+		},
+	);
+
+	it.each([false, true])(
+		"uses the new center immediately after a view update (geographic: %s)",
+		async (geographic) => {
+			if (geographic) useGeographic();
+			const controller = new MapController("map");
+			const store = createMapsightStore(
+				{map: controller as unknown as BaseController},
+				{},
+				{
+					map: {
+						layers: {},
+						view: {
+							center: geographic ? [10, 50] : [1113194, 6446275],
+							zoom: 10,
+						},
+					},
+				},
+			);
+			const map = controller.getMap()!;
+			try {
+				map.setSize(size);
+				const state = () => store.getState().map as MapState;
+				await expect.poll(() => state().size).toEqual(size);
+				const view = map.getView();
+				const newCenter = geographic ? [3, 4] : [300000, 400000];
+				const mergedCenter = geographic ? [6, 7] : [600000, 700000];
+				for (const action of [
+					setViewCenter("map", newCenter),
+					merge(["map", "view"], {center: mergedCenter}),
+				]) {
+					store.dispatch(action as never);
+					expectExtent(
+						viewExtentSelector(state()),
+						view.calculateExtent(size),
+					);
+				}
 			} finally {
 				map.dispose();
 			}

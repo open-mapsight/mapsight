@@ -74,13 +74,21 @@ export default class WithMap extends BaseController<MapState> {
 								async(() => {
 									if (view !== nextView) return;
 									const zoom = nextView.getZoom();
+									const center = nextView.getCenter();
+									const projected =
+										nextView.getCenterInternal();
 									this.dispatch(
 										quiet(
 											controlled(
 												setAll([name, "view"], {
-													center: nextView.getCenter(),
-													projectedCenter:
-														nextView.getCenterInternal(),
+													center,
+													centerSnapshot:
+														center && projected
+															? {
+																	center,
+																	projected,
+																}
+															: undefined,
 													zoom:
 														zoom === undefined
 															? undefined

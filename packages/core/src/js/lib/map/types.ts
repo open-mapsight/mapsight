@@ -73,8 +73,12 @@ export interface MapViewState {
 	 * `useGeographic()` from `ol/proj`) when one is set.
 	 */
 	center?: Coordinate;
-	/** Effective center in EPSG:3857, independent of the active user projection. */
-	projectedCenter?: Coordinate;
+	/** Controller sample used while the stored center still matches it. */
+	centerSnapshot?: {
+		center: Coordinate;
+		/** Effective center in EPSG:3857. */
+		projected: Coordinate;
+	};
 	/** Rounded zoom level; use `resolution` for the exact value. */
 	zoom?: number;
 	/** Map units per pixel in view projection (not in user projection units). */

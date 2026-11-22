@@ -1,3 +1,5 @@
+import {clearUserProjection, fromLonLat, useGeographic} from "ol/proj";
+
 import {act, cleanup, renderHook} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 
@@ -6,7 +8,10 @@ import {set} from "@mapsight/core/lib/base/actions";
 import {MapHookProvider, createMapHookStore} from "./__tests__/map-hook-store";
 import useMapView from "./useMapView";
 
-afterEach(cleanup);
+afterEach(() => {
+	cleanup();
+	clearUserProjection();
+});
 
 function setup(slices: Record<string, unknown>, controllerName?: string) {
 	const store = createMapHookStore(slices);
@@ -41,6 +46,24 @@ describe("useMapView", () => {
 			store.dispatch(set(["map", "size"], [2, 2]));
 		});
 		expect(result.current).toBe(before);
+	});
+
+	it("reads the public center in the active projection on rerender", () => {
+		const center = fromLonLat([10, 50]);
+		const {result, rerender} = setup({
+			map: {
+				layers: {},
+				view: {center, centerSnapshot: {center, projected: center}},
+			},
+		});
+		expect(result.current?.center).toEqual(center);
+		useGeographic();
+		rerender();
+		expect(result.current?.center?.[0]).toBeCloseTo(10, 8);
+		expect(result.current?.center?.[1]).toBeCloseTo(50, 8);
+		clearUserProjection();
+		rerender();
+		expect(result.current?.center).toEqual(center);
 	});
 
 	it("reads another map controller", () => {

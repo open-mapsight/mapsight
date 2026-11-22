@@ -121,37 +121,61 @@ export const mapSizeSelector = (state: MapState) => state.size;
  */
 const VIEW_PROJECTION = "EPSG:3857";
 
-/**
- * The view state, or `undefined` while the map has no view state yet. See
- * {@link MapViewState} for the coordinate systems of its fields.
- */
-export const viewSelector = (state: MapState): MapViewState | undefined => {
+const viewStateSelector = (state: MapState): MapViewState | undefined => {
 	const view = state.view;
 	return typeof view === "object" && view !== null ? view : undefined;
 };
-/**
- * Center of the view: in view projection coordinates (EPSG:3857), or in the
- * user projection when one is set (for example `useGeographic()`).
- */
+
+function projectedCenterFromSnapshot(view: MapViewState | undefined) {
+	const snapshot = view?.centerSnapshot;
+	return snapshot && isEqual(snapshot.center, view?.center)
+		? snapshot.projected
+		: undefined;
+}
+
+const activeProjection = (
+	_state: MapState,
+	userProjection: Projection | null,
+) => userProjection;
+
+const selectView = createSelector(
+	[viewStateSelector, activeProjection],
+	(view, userProjection) => {
+		const projected = projectedCenterFromSnapshot(view);
+		if (!view || !projected) return view;
+		const center = userProjection
+			? transform(projected, VIEW_PROJECTION, userProjection)
+			: projected;
+		return isEqual(view.center, center) ? view : {...view, center};
+	},
+);
+
+/** View state with the center in the active OpenLayers coordinate system. */
+export const viewSelector = (state: MapState): MapViewState | undefined =>
+	selectView(state, getUserProjection());
+
+/** Center in the active user projection, or EPSG:3857 when none is set. */
 export const viewCenterSelector = (state: MapState) =>
 	viewSelector(state)?.center;
 /** Rounded zoom level. Use {@link viewResolutionSelector} for the exact value. */
-export const viewZoomSelector = (state: MapState) => viewSelector(state)?.zoom;
+export const viewZoomSelector = (state: MapState) =>
+	viewStateSelector(state)?.zoom;
 /** Rotation in radians; 0 when the view was never rotated. */
 export const viewRotationSelector = (state: MapState) =>
-	viewSelector(state)?.rotation ?? 0;
+	viewStateSelector(state)?.rotation ?? 0;
 /** Map units per pixel in view projection (EPSG:3857), never in user projection units. */
 export const viewResolutionSelector = (state: MapState) =>
-	viewSelector(state)?.resolution;
+	viewStateSelector(state)?.resolution;
 
 const selectViewExtent = createSelector(
 	[
-		viewCenterSelector,
-		(state: MapState) => viewSelector(state)?.projectedCenter,
+		(state: MapState) => viewStateSelector(state)?.center,
+		(state: MapState) =>
+			projectedCenterFromSnapshot(viewStateSelector(state)),
 		viewResolutionSelector,
 		viewRotationSelector,
 		mapSizeSelector,
-		(_state: MapState, userProjection: Projection | null) => userProjection,
+		activeProjection,
 	],
 	(center, projectedCenter, resolution, rotation, size, userProjection) => {
 		const effectiveCenter =
