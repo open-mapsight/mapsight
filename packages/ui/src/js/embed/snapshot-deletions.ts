@@ -80,10 +80,40 @@ export function extractSnapshotDeletions(state: Record<string, unknown>) {
 		marker.version !== 1 ||
 		!Array.isArray(marker.deletedPaths)
 	) {
-		return [];
+		return undefined;
 	}
 	delete state[SNAPSHOT_KEY];
 	return marker.deletedPaths.filter(isDeletionPath);
+}
+
+function featureSourcesOf(state: unknown) {
+	return isRecord(state) && isRecord(state.featureSources)
+		? state.featureSources
+		: undefined;
+}
+
+/** Feature membership in a complete snapshot is authoritative. */
+export function applySnapshotFeatureArrays(state: unknown, snapshot: unknown) {
+	const targetSources = featureSourcesOf(state);
+	const serverSources = featureSourcesOf(snapshot);
+	if (!targetSources || !serverSources) {
+		return;
+	}
+
+	for (const [id, source] of Object.entries(serverSources)) {
+		const target = Object.hasOwn(targetSources, id)
+			? targetSources[id]
+			: undefined;
+		if (
+			isRecord(source) &&
+			isRecord(source.data) &&
+			Array.isArray(source.data.features) &&
+			isRecord(target) &&
+			isRecord(target.data)
+		) {
+			target.data.features = source.data.features;
+		}
+	}
 }
 
 export function applySnapshotDeletions(state: unknown, paths: string[][]) {

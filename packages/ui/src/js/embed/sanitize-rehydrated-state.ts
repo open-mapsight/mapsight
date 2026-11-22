@@ -4,7 +4,8 @@ import {extractSnapshotDeletions} from "./snapshot-deletions";
 export type SanitizeRehydratedStateResult = {
 	state: unknown;
 	resumeFeatureSourceIds: string[];
-	deletedPaths: string[][];
+	/** Present for complete server snapshots, even when there are no deleted keys. */
+	deletedPaths?: string[][];
 };
 
 /**
@@ -15,7 +16,7 @@ export function sanitizeRehydratedState(
 	state: unknown,
 ): SanitizeRehydratedStateResult {
 	if (state === null || typeof state !== "object") {
-		return {state, resumeFeatureSourceIds: [], deletedPaths: []};
+		return {state, resumeFeatureSourceIds: []};
 	}
 
 	const next = structuredClone(state) as Record<string, unknown>;

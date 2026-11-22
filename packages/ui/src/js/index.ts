@@ -18,7 +18,10 @@ import type {MapsightConfig} from "./config/schema";
 import {validateMapsightConfig} from "./config/schema/validate";
 import {createDefaultControllers} from "./controllers/defaults";
 import {sanitizeRehydratedState} from "./embed/sanitize-rehydrated-state";
-import {applySnapshotDeletions} from "./embed/snapshot-deletions";
+import {
+	applySnapshotDeletions,
+	applySnapshotFeatureArrays,
+} from "./embed/snapshot-deletions";
 import {mergeCreateOptions} from "./merge-create-options";
 import uiReducers from "./store/reducers";
 import type {
@@ -212,7 +215,13 @@ export function create(
 			context.createOptions.reHydratedState,
 		);
 		merge(context.initialState, sanitized.state);
-		applySnapshotDeletions(context.initialState, sanitized.deletedPaths);
+		if (sanitized.deletedPaths !== undefined) {
+			applySnapshotFeatureArrays(context.initialState, sanitized.state);
+			applySnapshotDeletions(
+				context.initialState,
+				sanitized.deletedPaths,
+			);
+		}
 		resumeFeatureSourceIds = sanitized.resumeFeatureSourceIds;
 	}
 
