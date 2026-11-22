@@ -1,37 +1,85 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
+import {setData} from "@mapsight/core/lib/feature-sources/actions";
 
 import {create} from "../../index";
+import type {PluginDefinition} from "../../types";
+import createOlProxyPlugin from "../common/ol-proxy";
 import createFeatureDeepLinkPlugin from "./feature-deep-link";
+import createViewPermalinkPlugin from "./view-permalink";
 
 const instances: ReturnType<typeof createFeatureDeepLinkPlugin>[] = [];
 
-function setup(url: string, historyState: unknown) {
+function setup(
+	url: string,
+	historyState: unknown,
+	{preselect = false, reveal = false} = {},
+) {
 	window.history.replaceState(historyState, "", url);
 	const replaceAddress = window.history.replaceState.bind(window.history);
 	const plugin = createFeatureDeepLinkPlugin();
 	instances.push(plugin);
+	const plugins: PluginDefinition[] = [["featureDeepLink", plugin]];
+	if (preselect) {
+		const preselectPlugin = createFeatureDeepLinkPlugin({
+			getParameter: "preselect",
+			featureSelection: "preselect",
+			clearMissingParameters: ["feature"],
+		});
+		instances.push(preselectPlugin);
+		plugins.unshift(["featurePreselectDeepLink", preselectPlugin]);
+	}
+	const permalink = reveal
+		? createViewPermalinkPlugin({viewParameter: false})
+		: undefined;
+	if (permalink) {
+		instances.push(permalink);
+		plugins.unshift(
+			["olProxy", createOlProxyPlugin()],
+			["viewPermalink", permalink],
+		);
+	}
+	const tile = (visible: boolean) => ({
+		type: "TileLayer",
+		metaData: {visibleInLayerSwitcher: true},
+		options: {visible, source: {type: "OsmSource", options: {}}},
+	});
 	const context = create(
 		null,
 		vi.fn(),
-		{map: {layers: {}}},
+		reveal
+			? {
+					map: {layers: {baseA: tile(true), parks: tile(true)}},
+					featureSources: {parks: {type: "local"}},
+				}
+			: {map: {layers: {}}},
 		{
 			renderer: vi.fn(),
 			validateConfig: false,
-			plugins: [["featureDeepLink", plugin]],
+			plugins,
 		},
 	);
 	context.render!();
-	const selected = () =>
+	const selected = (selection = "select") =>
 		(
 			context.store!.getState() as {
-				featureSelections: {select?: {features: string[]}};
+				featureSelections: Record<
+					string,
+					{features: string[]} | undefined
+				>;
 			}
-		).featureSelections.select?.features;
+		).featureSelections[selection]?.features;
 	return {
 		selected,
 		store: context.store!,
+		destroy: () => plugin.destroy(),
+		parksVisible() {
+			const state = context.store!.getState() as {
+				map: {layers: {parks: {options: {visible: boolean}}}};
+			};
+			return state.map.layers.parks.options.visible;
+		},
 		traverse(url: string, state: unknown) {
 			replaceAddress(state, "", url);
 			window.dispatchEvent(new PopStateEvent("popstate", {state}));
@@ -140,6 +188,92 @@ describe("feature deep link and history replacements", () => {
 		},
 	);
 
+	it("only restores the preselection owned by the cleanup entry", () => {
+		const s = setup(
+			"/page?preselect=one#keep",
+			{host: 1},
+			{preselect: true},
+		);
+		expect(s.selected("preselect")).toEqual(["one"]);
+		s.store.dispatch(
+			selectExclusively("featureSelections", "preselect", "two") as never,
+		);
+		const forwardState: unknown = window.history.state;
+		const forwardUrl = window.location.href;
+
+		s.traverse("/page?preselect=one#keep", {host: 1});
+		expect(s.selected("preselect")).toEqual(["one"]);
+		s.traverse(forwardUrl, forwardState);
+		expect(s.selected() ?? []).toEqual([]);
+		expect(s.selected("preselect")).toEqual(["two"]);
+		expect(forwardState).toMatchObject({host: 1});
+		expect(forwardState).not.toHaveProperty("featureId");
+		expect(window.location.search).toBe("");
+		expect(window.location.hash).toBe("#keep");
+	});
+
+	it("arms query cleanup again after returning to the original feature link", () => {
+		const hash = "#map=8/52/10&layers=baseA";
+		const entry = "/page?feature=one" + hash;
+		const s = setup(entry, {host: 1});
+		s.store.dispatch(
+			selectExclusively("featureSelections", "select", "two") as never,
+		);
+		s.traverse(entry, {host: 1});
+		expect(s.selected()).toEqual(["one"]);
+		s.store.dispatch(
+			selectExclusively("featureSelections", "select", "three") as never,
+		);
+		expect(window.location.search).toBe("");
+		expect(window.location.hash).toBe(hash);
+		expect(window.history.state).toEqual({host: 1, featureId: "three"});
+	});
+
+	it.each(["traverse", "destroy"])(
+		"cancels a delayed reveal on %s",
+		(reason) => {
+			const s = setup("/page#layers=baseA", null, {reveal: true});
+			const hash = "#layers=baseA";
+			s.traverse("/page?feature=late" + hash, null);
+			if (reason === "traverse") {
+				s.traverse("/page?feature=current" + hash, null);
+				expect(s.selected()).toEqual(["current"]);
+			} else {
+				s.destroy();
+			}
+			expect(s.parksVisible()).toBe(false);
+			s.store.dispatch(
+				setData("featureSources", "parks", {
+					type: "FeatureCollection",
+					features: [
+						{
+							type: "Feature",
+							id: "late",
+							properties: {},
+							geometry: null,
+						},
+					],
+				}) as never,
+			);
+			expect(s.parksVisible()).toBe(false);
+			if (reason === "traverse") {
+				s.store.dispatch(
+					setData("featureSources", "parks", {
+						type: "FeatureCollection",
+						features: [
+							{
+								type: "Feature",
+								id: "current",
+								properties: {},
+								geometry: null,
+							},
+						],
+					}) as never,
+				);
+				expect(s.parksVisible()).toBe(true);
+			}
+		},
+	);
 	it("restores a feature ID before its data is available", () => {
 		const s = setup("/page", null);
 		s.traverse("/page", {featureId: "unresolved"});

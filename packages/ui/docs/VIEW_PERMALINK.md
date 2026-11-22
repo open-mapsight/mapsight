@@ -86,9 +86,10 @@ visibility. Empty ids are treated the same way.
   pending writes. Notifications within the adapter's write or its deferred commit are ignored.
 - **Feature deep links.** Permalink writes update only the address. The default adapter
   preserves the history entry's state. Explicit feature navigation via history still
-  applies. Back and forward prefer the feature query parameter over the entry's stored
-  feature ID, as at startup. A feature ID can be selected before any source supplies
-  it. A details view should handle an unresolved ID, including when its data was removed.
+  applies. Back and forward prefer the configured query parameter over the entry's stored
+  ID and re-enable query cleanup for that entry. Cleanup stores each selection separately,
+  so restoring a preselection does not open feature details. A feature ID can be selected
+  before any source supplies it. A details view should handle unresolved IDs.
 - **Server.** The plugin does nothing without a `window`.
 - **Teardown.** The plugin lifecycle has no teardown phase. `destroy()` removes the listeners
   and subscriptions and cancels a pending write; call it when the instance goes away. It is
