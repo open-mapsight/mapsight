@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector, useStore} from "react-redux";
 
 import {setLayerVisibility} from "@mapsight/core/lib/map/actions";
 import {makeLayerVisibleSelector} from "@mapsight/core/lib/map/selectors";
@@ -11,7 +11,7 @@ import {MAP} from "../config/constants/controllers";
 /**
  * Visibility of a layer and a setter for it. A layer that does not exist or
  * has no `visible` option counts as not visible, and so does every layer while
- * the map controller has no state yet.
+ * the map controller has no state yet. The setter only changes existing layers.
  *
  * @param layerId Id of the layer in the map state.
  * @param mapControllerName Map controller name. @default `"map"`
@@ -20,7 +20,7 @@ function useLayerVisibility(
 	layerId: string,
 	mapControllerName: string = MAP,
 ): readonly [visible: boolean, setVisible: (visible: boolean) => void] {
-	const dispatch = useDispatch();
+	const store = useStore<State>();
 	const selectVisible = useMemo(
 		() => makeLayerVisibleSelector(layerId),
 		[layerId],
@@ -32,11 +32,16 @@ function useLayerVisibility(
 
 	const setVisible = useCallback(
 		(nextVisible: boolean) => {
-			dispatch(
-				setLayerVisibility(mapControllerName, layerId, nextVisible),
-			);
+			const map = store.getState()[mapControllerName] as
+				MapState | undefined;
+			const layers = map?.layers;
+			if (layers && Object.hasOwn(layers, layerId) && layers[layerId]) {
+				store.dispatch(
+					setLayerVisibility(mapControllerName, layerId, nextVisible),
+				);
+			}
 		},
-		[dispatch, mapControllerName, layerId],
+		[store, mapControllerName, layerId],
 	);
 
 	return useMemo(() => [visible, setVisible] as const, [visible, setVisible]);

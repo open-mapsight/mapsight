@@ -1,7 +1,7 @@
 import {act, cleanup, renderHook} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 
-import {set} from "@mapsight/core/lib/base/actions";
+import {set, unset} from "@mapsight/core/lib/base/actions";
 
 import {MapHookProvider, createMapHookStore} from "./__tests__/map-hook-store";
 import useLayerVisibility from "./useLayerVisibility";
@@ -59,6 +59,38 @@ describe("useLayerVisibility", () => {
 		act(() => result.current[1](false));
 		expect(result.current[0]).toBe(false);
 		expect(storedVisibility(store, "map", "traffic")).toBe(false);
+	});
+
+	it("does not recreate a removed layer when a retained setter is called", () => {
+		const {result, store} = setup("parking");
+		const setVisible = result.current[1];
+
+		act(() => {
+			store.dispatch(unset(["map", "layers", "parking"]));
+		});
+		expect(result.current[0]).toBe(false);
+		act(() => setVisible(true));
+
+		expect(
+			(store.getState() as MapSlices).map!.layers.parking,
+		).toBeUndefined();
+		expect(result.current[0]).toBe(false);
+	});
+
+	it("uses the same setter when a layer is registered later", () => {
+		const {result, store} = setup("later");
+		const setVisible = result.current[1];
+
+		act(() => setVisible(true));
+		expect(
+			(store.getState() as MapSlices).map!.layers.later,
+		).toBeUndefined();
+		act(() => {
+			store.dispatch(set(["map", "layers", "later"], layers.traffic));
+		});
+		act(() => setVisible(true));
+
+		expect(result.current[0]).toBe(true);
 	});
 
 	it("follows changes made elsewhere", () => {
