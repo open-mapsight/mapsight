@@ -2,7 +2,7 @@ import View from "ol/View";
 import {getForViewAndSize} from "ol/extent";
 import {clearUserProjection, useGeographic} from "ol/proj";
 
-import {afterEach, describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {createMapsightStore} from "@/index";
 import {merge} from "@/lib/base/actions";
@@ -276,6 +276,54 @@ describe("viewExtentSelector against a real view", () => {
 			}
 		},
 	);
+
+	it("reconciles consecutive center writes that clamp to the same point", () => {
+		vi.useFakeTimers();
+		const controller = new MapController("map");
+		const store = createMapsightStore(
+			{map: controller as unknown as BaseController},
+			{},
+			{
+				map: {
+					layers: {},
+					view: {
+						center: [0, 0],
+						extent: [-1e6, -1e6, 1e6, 1e6],
+						zoom: 10,
+					},
+				},
+			},
+		);
+		const map = controller.getMap()!;
+		try {
+			map.setSize(size);
+			vi.advanceTimersByTime(800);
+			const state = () => store.getState().map as MapState;
+			const view = map.getView();
+			store.dispatch(setViewCenter("map", [2e6, 2e6]) as never);
+			vi.advanceTimersByTime(800);
+			const constrainedCenter = view.getCenter();
+			expect(viewCenterSelector(state())).toEqual(constrainedCenter);
+
+			const centerChanged = vi.fn();
+			view.on("change:center", centerChanged);
+			store.dispatch(
+				merge(["map", "view"], {center: [3e6, 3e6]}) as never,
+			);
+			expect(centerChanged).not.toHaveBeenCalled();
+			vi.advanceTimersByTime(50);
+			const mapView = state().view as MapViewState;
+			expect(mapView.center).toEqual(constrainedCenter);
+			expect(viewCenterSelector(state())).toEqual(constrainedCenter);
+			expectExtent(
+				viewExtentSelector(state()),
+				view.calculateExtent(size),
+			);
+		} finally {
+			map.dispose();
+			vi.useRealTimers();
+		}
+	});
 
 	it.each([
 		{zoom: 10},

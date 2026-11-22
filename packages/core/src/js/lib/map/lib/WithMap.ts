@@ -1,6 +1,8 @@
 import type OlMap from "ol/Map";
 import type OlView from "ol/View";
 
+import isEqual from "lodash/isEqual";
+
 import type {MapState, Options} from "@/lib/map/types";
 //import updateSizeOnTransitionEnd from "@mapsight/lib-ol/map/updateSizeOnTransitionEnd";
 //import canvasSizeFixer from "@mapsight/lib-ol/map/canvasSizeFixer";
@@ -51,9 +53,43 @@ export default class WithMap extends BaseController<MapState> {
 		const name = this.getName();
 		let view: undefined | OlView = undefined;
 
+		const syncView = (nextView: OlView) => {
+			this.dispatch(
+				async(() => {
+					if (view !== nextView) return;
+					const zoom = nextView.getZoom();
+					const center = nextView.getCenter();
+					const projected = nextView.getCenterInternal();
+					this.dispatch(
+						quiet(
+							controlled(
+								setAll([name, "view"], {
+									center,
+									centerSnapshot:
+										center && projected
+											? {
+													center,
+													projected,
+												}
+											: undefined,
+									zoom:
+										zoom === undefined
+											? undefined
+											: Math.round(zoom),
+									resolution: nextView.getResolution(),
+									rotation: nextView.getRotation(),
+								}),
+							),
+						),
+					);
+				}),
+			);
+		};
+
 		this.getAndObserveUncontrolled(
 			(state) => state.view as Options | undefined,
 			(newOptions, oldOptions) => {
+				const previousView = view;
 				updateProxyObject({
 					di: di,
 					oldObject: view,
@@ -69,52 +105,28 @@ export default class WithMap extends BaseController<MapState> {
 							this._map.setView(view);
 						}
 
-						const syncView = () => {
-							this.dispatch(
-								async(() => {
-									if (view !== nextView) return;
-									const zoom = nextView.getZoom();
-									const center = nextView.getCenter();
-									const projected =
-										nextView.getCenterInternal();
-									this.dispatch(
-										quiet(
-											controlled(
-												setAll([name, "view"], {
-													center,
-													centerSnapshot:
-														center && projected
-															? {
-																	center,
-																	projected,
-																}
-															: undefined,
-													zoom:
-														zoom === undefined
-															? undefined
-															: Math.round(zoom),
-													resolution:
-														nextView.getResolution(),
-													rotation:
-														nextView.getRotation(),
-												}),
-											),
-										),
-									);
-								}),
-							);
-						};
 						view.on(
 							[
 								"change:center",
 								"change:resolution",
 								"change:rotation",
 							],
-							throttleDispatch(syncView),
+							throttleDispatch(() => syncView(nextView)),
 						);
-						syncView();
+						syncView(nextView);
 					},
 				});
+				// A requested center can clamp to the current position without an event.
+				const requestedCenter = newOptions?.center;
+				if (
+					view &&
+					view === previousView &&
+					requestedCenter != null &&
+					requestedCenter !== oldOptions?.center &&
+					!isEqual(requestedCenter, view.getCenter())
+				) {
+					syncView(view);
+				}
 			},
 		);
 
