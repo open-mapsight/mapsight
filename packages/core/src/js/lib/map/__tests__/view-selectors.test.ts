@@ -4,6 +4,9 @@ import {clearUserProjection, useGeographic} from "ol/proj";
 
 import {afterEach, describe, expect, it} from "vitest";
 
+import {createMapsightStore} from "@/index";
+import type {BaseController} from "@/lib/base/controller";
+import {MapController} from "@/lib/map/controller";
 import {
 	viewCenterSelector,
 	viewExtentSelector,
@@ -195,4 +198,37 @@ describe("viewExtentSelector against a real view", () => {
 		clearUserProjection();
 		expectExtent(viewExtentSelector(state), view.calculateExtent(size));
 	});
+
+	it.each([{zoom: 10}, {resolution: 100}])(
+		"publishes the initial extent through the map controller with %j",
+		async (options) => {
+			const controller = new MapController("map");
+			const store = createMapsightStore(
+				{map: controller as unknown as BaseController},
+				{},
+				{
+					map: {layers: {}, view: {center: [1000, 2000], ...options}},
+				},
+			);
+			const map = controller.getMap()!;
+			try {
+				map.setSize(size);
+				const view = map.getView();
+				const state = () => store.getState().map as MapState;
+				await expect.poll(() => state().size).toEqual(size);
+				expect(viewZoomSelector(state())).toBe(
+					Math.round(view.getZoom()!),
+				);
+				expect(viewResolutionSelector(state())).toBe(
+					view.getResolution(),
+				);
+				expectExtent(
+					viewExtentSelector(state()),
+					view.calculateExtent(size),
+				);
+			} finally {
+				map.dispose();
+			}
+		},
+	);
 });

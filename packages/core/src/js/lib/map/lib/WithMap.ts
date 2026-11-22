@@ -140,6 +140,7 @@ export default class WithMap extends BaseController<MapState> {
 							"change:resolution",
 							throttleDispatch(handleResolution),
 						);
+						handleResolution();
 						view.on(
 							"change:center",
 							throttleDispatch(handleCenter),
