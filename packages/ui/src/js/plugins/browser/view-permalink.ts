@@ -14,6 +14,7 @@ import {observeState} from "@mapsight/lib-redux/observe-state";
 
 import {MAP} from "../../config/constants/controllers";
 import type {MapsightUiContext, PluginInstance} from "../../types";
+import {withAddressOnlyHistoryWrite} from "./feature-deep-link";
 
 const WGS84 = "EPSG:4326";
 // The core view definition does not pass a projection to the constructor.
@@ -740,7 +741,7 @@ export default function createPlugin(
 		// synchronously, and that address change is our own.
 		seen.view = decoded(readParameter(viewParameter, written));
 		seen.layers = decoded(readParameter(layersParameter, written));
-		adapter.write(written);
+		withAddressOnlyHistoryWrite(() => adapter.write(written));
 	}
 
 	function schedule(store: EnhancedStore) {

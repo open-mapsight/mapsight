@@ -1,15 +1,14 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {create} from "../../index";
 import createFeatureDeepLinkPlugin from "./feature-deep-link";
 
-const original = {
-	pushState: window.history.pushState,
-	replaceState: window.history.replaceState,
-};
+const instances: ReturnType<typeof createFeatureDeepLinkPlugin>[] = [];
 
 function setup(url: string, historyState: unknown) {
 	window.history.replaceState(historyState, "", url);
+	const plugin = createFeatureDeepLinkPlugin();
+	instances.push(plugin);
 	const context = create(
 		null,
 		vi.fn(),
@@ -17,7 +16,7 @@ function setup(url: string, historyState: unknown) {
 		{
 			renderer: vi.fn(),
 			validateConfig: false,
-			plugins: [["featureDeepLink", createFeatureDeepLinkPlugin()]],
+			plugins: [["featureDeepLink", plugin]],
 		},
 	);
 	context.render!();
@@ -30,16 +29,11 @@ function setup(url: string, historyState: unknown) {
 	return {selected, store: context.store!};
 }
 
-beforeEach(() => {
-	window.history.pushState = original.pushState;
-	window.history.replaceState = original.replaceState;
-});
-
 afterEach(() => {
-	// the plugin patches the global history functions
-	window.history.pushState = original.pushState;
-	window.history.replaceState = original.replaceState;
 	vi.restoreAllMocks();
+	for (const plugin of instances.splice(0).reverse()) {
+		plugin.destroy();
+	}
 	window.history.replaceState(null, "", "/");
 });
 
@@ -69,5 +63,40 @@ describe("feature deep link and history replacements", () => {
 
 		window.history.replaceState({featureId: null}, "", "/page?feature=x");
 		expect(s.selected()).toEqual([]);
+	});
+
+	it("follows pushState and history traversal", () => {
+		const s = setup("/page", {featureId: "first"});
+		window.history.pushState({featureId: "second"}, "", "/page#second");
+		expect(s.selected()).toEqual(["second"]);
+
+		window.dispatchEvent(
+			new PopStateEvent("popstate", {state: {featureId: "first"}}),
+		);
+		expect(s.selected()).toEqual(["first"]);
+		window.dispatchEvent(
+			new PopStateEvent("popstate", {state: {featureId: null}}),
+		);
+		expect(s.selected()).toEqual([]);
+	});
+
+	it("ignores primitive state and invalid feature ids", () => {
+		const s = setup("/page", 1);
+		expect(s.selected()).toBeUndefined();
+		window.history.pushState({featureId: 1}, "", "/page");
+		expect(s.selected()).toBeUndefined();
+	});
+
+	it("follows a history entry without pushing an entry for query cleanup", () => {
+		const s = setup("/page?feature=x", {featureId: "x"});
+		expect(s.selected()).toEqual(["x"]);
+		const push = vi.spyOn(window.history, "pushState");
+
+		window.dispatchEvent(
+			new PopStateEvent("popstate", {state: {featureId: "y"}}),
+		);
+
+		expect(s.selected()).toEqual(["y"]);
+		expect(push).not.toHaveBeenCalled();
 	});
 });

@@ -9,6 +9,7 @@ import {
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import {unset} from "@mapsight/core/lib/base/actions";
+import {selectExclusively} from "@mapsight/core/lib/feature-selections/actions";
 import {ANIMATE, setLayerVisibility} from "@mapsight/core/lib/map/actions";
 import type {MapController} from "@mapsight/core/lib/map/controller";
 import type {LayerState} from "@mapsight/core/lib/map/types";
@@ -1378,21 +1379,52 @@ describe("router round trips", () => {
 });
 
 describe("with the feature deep-link plugin", () => {
-	const original = {
-		pushState: window.history.pushState,
-		replaceState: window.history.replaceState,
-	};
+	const instances: ReturnType<typeof createFeatureDeepLinkPlugin>[] = [];
+	function deepLink(): PluginDefinition {
+		const plugin = createFeatureDeepLinkPlugin();
+		instances.push(plugin);
+		return ["featureDeepLink", plugin];
+	}
+
 	afterEach(() => {
-		// the deep-link plugin patches the global history functions
-		window.history.pushState = original.pushState;
-		window.history.replaceState = original.replaceState;
+		for (const plugin of instances.splice(0).reverse()) {
+			plugin.destroy();
+		}
 	});
+
+	it.each([null, "old"])(
+		"keeps a local selection when history holds %j",
+		(featureId) => {
+			const s = setup({
+				url: "/page#map=8/52/10",
+				historyState: {featureId, router: "keep"},
+				pluginsAfter: [deepLink()],
+			});
+			s.context.render!();
+			s.store.dispatch(
+				selectExclusively(
+					"featureSelections",
+					"select",
+					"local",
+				) as never,
+			);
+			const before = s.store.getState().featureSelections;
+			const length = window.history.length;
+
+			moveView(s, 11, 48, 9);
+
+			expect(s.store.getState().featureSelections).toBe(before);
+			expect(window.history.state).toEqual({featureId, router: "keep"});
+			expect(window.history.length).toBe(length);
+			expect(window.location.hash).toContain("map=9/48/11");
+		},
+	);
 
 	it("address writes neither reselect the feature nor add history entries", () => {
 		const s = setup({
 			url: "/page?feature=x#map=8/52/10",
 			historyState: {featureId: "x"},
-			pluginsAfter: [["featureDeepLink", createFeatureDeepLinkPlugin()]],
+			pluginsAfter: [deepLink()],
 		});
 		s.context.render!();
 		const selections = () =>

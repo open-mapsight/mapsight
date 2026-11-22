@@ -85,10 +85,10 @@ visibility. Empty ids are treated the same way.
   that was still pending, so an older state cannot overwrite the address that was just
   followed. Address changes that an adapter reports synchronously from its own `write()` are
   recognised as the plugin's own and ignored.
-- **Feature deep links.** With the feature deep-link plugin active, writes keep the history
-  entry's state; the deep-link plugin ignores a `replaceState` that only names the feature
-  that is already selected, so writing the address neither reselects it nor removes the
-  `feature` parameter.
+- **Feature deep links.** Permalink writes update only the address. The default adapter
+  preserves the history entry's state, and the deep-link plugin ignores replacements made
+  synchronously during a permalink write. Explicit feature navigation via history still
+  applies, including back and forward.
 - **Server.** The plugin does nothing without a `window`.
 - **Teardown.** The plugin lifecycle has no teardown phase. `destroy()` removes the listeners
   and subscriptions and cancels a pending write; call it when the instance goes away. It is
