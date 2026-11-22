@@ -139,18 +139,22 @@ createOptions: {
 }
 ```
 
-`v8_ariaControlTooltip` switches leftover hint.css control tooltips (RegionSelector) to the ARIA `Tooltip`.
-Omitted or `false` keeps `ms3-hint--*` classes.
-
-`v8_listSearchButton` expands list text search from a labeled button. Omitted or `false` keeps the visible
-label + input so 7.x host CSS does not break. This will be the only list-search chrome in v8.
-
 `v8_unsetRemovesKey` makes the `unset(path)` action delete the key from the Redux state when its parent is a plain
 object, instead of leaving it there with an `undefined` value. Array elements are still set to `undefined`, and a
 plain `set(path, undefined)` is unchanged. Omitted or `false` keeps today's behavior. The flag applies to the store
 of this instance only. To drop a layer or feature source, prefer `removeLayer` / `removeFeatureSource`, which work
 without the flag. This will be the only `unset` behavior in v8. A host that creates the `@mapsight/core` store itself
 passes `future: {v15_unsetRemovesKey: true}` in the options argument of `createMapsightStore`.
+
+Embed hydration merges `reHydratedState` over the client base config. A key omitted from the serialized state
+because it was deleted on the server can therefore come back from the client base config. To keep that key
+absent after hydration, omit it from the client base config as well.
+
+`v8_ariaControlTooltip` switches leftover hint.css control tooltips (RegionSelector) to the ARIA `Tooltip`.
+Omitted or `false` keeps `ms3-hint--*` classes.
+
+`v8_listSearchButton` expands list text search from a labeled button. Omitted or `false` keeps the visible
+label + input so 7.x host CSS does not break. This will be the only list-search chrome in v8.
 
 New UI is not hidden behind flags; only leftover behavior that must stay dual-path in this major.
 

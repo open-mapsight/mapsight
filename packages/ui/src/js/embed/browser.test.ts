@@ -1,7 +1,11 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {unset} from "@mapsight/core/lib/base/actions";
+
 import {create} from "../index";
+import type {MapsightUiRendererProps} from "../types";
 import browserEmbed from "./browser";
+import nodeEmbed from "./node";
 
 const minimalConfig = {
 	map: {layers: {base: {type: "OSM" as const}}},
@@ -61,6 +65,56 @@ describe("browserEmbed hydration contract", () => {
 		expect(renderer).toHaveBeenCalledOnce();
 		expect(renderer.mock.calls[0]?.[2]).toBe(true);
 		expect(container.getAttribute("data-dehydrated-state")).toBe("");
+	});
+
+	it("restores a configured layer omitted from the dehydrated state by unset", () => {
+		const overlay = {type: "VectorLayer" as const};
+		const baseMapsightConfig = {
+			map: {layers: {...minimalConfig.map.layers, overlay}},
+		};
+		const options = {
+			styleFunction: vi.fn(),
+			baseMapsightConfig,
+			createOptions: {
+				plugins: [],
+				validateConfig: false,
+				future: {v8_unsetRemovesKey: true},
+			},
+		};
+		const server = nodeEmbed({
+			...options,
+			createOptions: {...options.createOptions, renderer: stubRenderer()},
+		});
+		server.store?.dispatch(unset(["map", "layers", "overlay"]));
+		const state = server.getDehydratedState();
+		expect(state).toHaveProperty("map.layers.base");
+		expect(state).not.toHaveProperty("map.layers.overlay");
+
+		const container = document.createElement("div");
+		container.setAttribute("data-dehydrated-state", JSON.stringify(state));
+		const renderer = vi.fn(
+			(
+				_container: HTMLElement | null,
+				_props: MapsightUiRendererProps,
+				_hydrate?: boolean,
+			) => undefined,
+		);
+		browserEmbed(container, {
+			...options,
+			createOptions: {...options.createOptions, renderer},
+		});
+
+		expect(renderer).toHaveBeenCalledOnce();
+		const [, props, hydrate] = renderer.mock.calls[0] ?? [];
+		expect(hydrate).toBe(true);
+		expect(props?.store.getState()).toHaveProperty(
+			"map.layers.overlay",
+			overlay,
+		);
+		expect(props?.serverState).toHaveProperty(
+			"map.layers.overlay",
+			overlay,
+		);
 	});
 
 	it("warns on invalid config in development via browserEmbed but still boots", () => {
