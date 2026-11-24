@@ -26,7 +26,40 @@ import {
 const defaultFeatureSelectionsController = c.FEATURE_SELECTIONS;
 const defaultFeatureSelection = FEATURE_SELECTION_SELECT;
 const defaultGetParameter = "feature";
-const defaultAutoRemoveParameters = [defaultGetParameter, "src", "cHash"];
+const selectPrimaryFeature = createFeatureSelectionSelector(
+	defaultFeatureSelectionsController,
+	defaultFeatureSelection,
+);
+
+let isAddressOnlyHistoryWrite = false;
+
+/** Run a synchronous permalink write with feature navigation suppressed. */
+export function withAddressOnlyHistoryWrite(write: () => void) {
+	const previous = isAddressOnlyHistoryWrite;
+	isAddressOnlyHistoryWrite = true;
+	try {
+		write();
+	} finally {
+		isAddressOnlyHistoryWrite = previous;
+	}
+}
+
+function getHistoryFeatureId(
+	state: unknown,
+	key: string,
+): FeatureId | null | undefined {
+	if (
+		typeof state !== "object" ||
+		state === null ||
+		!Object.hasOwn(state, key)
+	) {
+		return undefined;
+	}
+	const featureId = (state as Record<string, unknown>)[key];
+	return featureId === null || (typeof featureId === "string" && featureId)
+		? featureId
+		: undefined;
+}
 
 function selectFeature(
 	store: Store,
@@ -53,8 +86,7 @@ function selectFeature(
 
 /**
  * Hooks into global window.history[fn] to react to
- * history state changes from the app (as opposed to `window.onpopstate` which
- * triggers when a browser ui actions causes a history state change).
+ * history state changes from the app. Browser history traversal emits popstate.
  *
  * @param fn function name to patch (e.g. "pushState" or "replaceState")
  * @param callback will get called _after_ that function has been called
@@ -63,12 +95,22 @@ function patchWindowHistoryFunction(
 	fn: "pushState" | "replaceState",
 	callback: (state: unknown) => void,
 ) {
-	const originalFn = window.history[fn].bind(window.history);
-
-	window.history[fn] = (state, ...rest) => {
-		const returnValue: unknown = originalFn(state, ...rest);
-		callback(state);
-		return returnValue;
+	const history = window.history;
+	// eslint-disable-next-line @typescript-eslint/unbound-method -- Call with the history receiver and restore the original method on teardown.
+	const originalFn = history[fn];
+	let active = true;
+	const patched: History[typeof fn] = (state: unknown, ...rest) => {
+		originalFn.call(history, state, ...rest);
+		if (active) {
+			callback(state);
+		}
+	};
+	history[fn] = patched;
+	return () => {
+		active = false;
+		if (history[fn] === patched) {
+			history[fn] = originalFn;
+		}
 	};
 }
 
@@ -82,8 +124,8 @@ function patchWindowHistoryFunction(
  * @param [options.getParameter="feature"] name get parameter identifying the feature
  * @param [options.setMapOnlyViewInMobile=true] will set MapOnly view on mobile if a feature has been linked
  * @param [options.autoRemoveParameters] list of get parameters to remove once the feature
- *                                            has been selected, defaults to ["feature", "src", "cHash"]. Pass false to disable.
- * @param [options.clearMissingParameters] if set to true or an array clear if getParameter and the mentioned
+ *                                            has been selected, defaults to the configured getParameter plus "src" and "cHash". Pass false to disable.
+ * @param [options.clearMissingParameters] clear if getParameter and the given
  *                                            parameters are missing. don't clear if getParameter is missing, but one of the
  *                                            mentioned parameters is there. we keep this to be safe in race condition
  *                                            where ?feature is set but ?preselect is not where we want to keep the implicit
@@ -100,22 +142,34 @@ export default function createPlugin(
 		autoRemoveParameters?: string[] | false;
 		clearMissingParameters?: string[] | false;
 	} = {},
-): PluginInstance {
+): PluginInstance & {destroy(): void} {
 	const {
 		featureSelectionsController = defaultFeatureSelectionsController,
 		featureSelection = defaultFeatureSelection,
 		getParameter = defaultGetParameter,
-		autoRemoveParameters = defaultAutoRemoveParameters,
+		autoRemoveParameters = [getParameter, "src", "cHash"],
 		setMapOnlyViewInMobile = true,
 		clearMissingParameters = null,
 	} = options;
+	const historyKey =
+		featureSelectionsController === defaultFeatureSelectionsController &&
+		featureSelection === defaultFeatureSelection
+			? "featureId"
+			: `mapsightFeatureSelection:${JSON.stringify([featureSelectionsController, featureSelection])}`;
 	const selectorSelectedFeatures = createFeatureSelectionSelector(
 		featureSelectionsController,
 		featureSelection,
 	);
 
 	let isHandled = false;
+	const cleanups: Array<() => void> = [];
 	return {
+		destroy() {
+			isHandled = true;
+			for (const cleanup of cleanups.splice(0).reverse()) {
+				cleanup();
+			}
+		},
 		afterRender: function handleFeatureDeepLink(context) {
 			if (isHandled) {
 				return;
@@ -127,103 +181,173 @@ export default function createPlugin(
 			if (!store) {
 				return;
 			}
+			let activeQuery:
+				| {
+						featureId: FeatureId;
+						sourceId: string | null;
+						stop: () => void;
+				  }
+				| undefined;
 
-			// We always do this action even if we should already have done that
-			// by re-hydrating the state as it may not have had the dynamic get parameter passed along
-			const featureId = getQueryStringParameter(
-				window.location.search,
-				getParameter,
-			);
-			if (featureId) {
-				applyFeatureSourceReveal(store, {
-					featureId,
-					sourceId: parseFeatureSourceSearchParam(
-						window.location.search,
-					),
-				});
-				selectFeature(
-					store,
-					featureSelectionsController,
-					featureSelection,
-					featureId,
-					setMapOnlyViewInMobile,
-				);
+			function stopWatchingFeature() {
+				const previous = activeQuery;
+				activeQuery = undefined;
+				previous?.stop();
+			}
 
-				if (autoRemoveParameters && autoRemoveParameters.length) {
-					// if we can, remove initial feature id from url
-					// when the selection changes (e.g. panel is closed/different feature is selected)
-					observeStateOnce(store, selectorSelectedFeatures, () => {
-						let newUrl = window.location.href;
-						autoRemoveParameters.forEach((key) => {
-							newUrl = removeQueryStringParameter(newUrl, key);
-						});
-						window.history.pushState(
-							null,
-							window.document.title,
-							newUrl,
-						);
-					});
-				}
-			} else {
-				if (clearMissingParameters) {
-					let found: string | null = null;
-					while (!found && clearMissingParameters[0]) {
-						found = getQueryStringParameter(
-							window.location.search,
-							clearMissingParameters.shift() as string,
-						);
-					}
-					if (!found) {
-						store.dispatch(
-							deselectAll(
-								featureSelectionsController,
-								featureSelection,
-							),
-						);
-					}
-				}
-				// handle select via state at relaod
-				if (
-					window.history.state &&
-					"featureId" in window.history.state &&
-					window.history.state.featureId
-				) {
+			const handleFeatureNavigation = (
+				id: FeatureId | null | undefined,
+			) => {
+				if (id === null) {
+					store.dispatch(
+						deselectAll(
+							featureSelectionsController,
+							featureSelection,
+						),
+					);
+				} else if (id !== undefined) {
 					selectFeature(
 						store,
 						featureSelectionsController,
 						featureSelection,
-						window.history.state.featureId,
+						id,
 						setMapOnlyViewInMobile,
 					);
 				}
-			}
+			};
 
-			const handleHistoryStateChange = (state) => {
-				if (state && "featureId" in state) {
-					if (state.featureId) {
-						selectFeature(
-							store,
-							featureSelectionsController,
-							featureSelection,
-							state.featureId,
-							setMapOnlyViewInMobile,
-						);
-					} else if (state?.featureId === null) {
-						// test for null to inhibit action if featureId is simply omitted
-						store.dispatch(
-							deselectAll(
-								featureSelectionsController,
-								featureSelection,
-							),
-						);
-					}
+			const readQueryFeature = () =>
+				getQueryStringParameter(window.location.search, getParameter);
+
+			const watchLinkedFeature = (
+				featureId: FeatureId,
+				sourceId: string | null,
+			) => {
+				const cancelReveal = applyFeatureSourceReveal(store, {
+					featureId,
+					sourceId,
+				});
+				const cancelSelectionWatch = observeStateOnce(
+					store,
+					selectorSelectedFeatures,
+					(selection) => {
+						stopWatchingFeature();
+						if (
+							!autoRemoveParameters ||
+							readQueryFeature() !== featureId
+						) {
+							return;
+						}
+						const url = new URL(window.location.href);
+						let search = url.search;
+						for (const key of autoRemoveParameters) {
+							search = removeQueryStringParameter(search, key);
+						}
+						if (search === url.search) return;
+						url.search = search;
+						const features = selection?.features ?? [];
+						const previous: unknown = window.history.state;
+						const state =
+							previous && typeof previous === "object"
+								? previous
+								: {};
+						const selectedId =
+							features.length < 2
+								? (features[0] ?? null)
+								: undefined;
+						const entryState = {...state, [historyKey]: selectedId};
+						if (historyKey !== "featureId") {
+							// Capture the open details panel independently of preselection.
+							entryState.featureId =
+								selectPrimaryFeature(store.getState())
+									?.features[0] ?? null;
+						}
+						withAddressOnlyHistoryWrite(() => {
+							window.history.pushState(entryState, "", url);
+						});
+					},
+				);
+				activeQuery = {
+					featureId,
+					sourceId,
+					stop() {
+						cancelSelectionWatch();
+						cancelReveal();
+					},
+				};
+			};
+
+			const followEntry = (state: unknown) => {
+				stopWatchingFeature();
+				const featureId = readQueryFeature();
+				const id = featureId ?? getHistoryFeatureId(state, historyKey);
+				if (
+					id === undefined &&
+					clearMissingParameters &&
+					!clearMissingParameters.some((key) =>
+						getQueryStringParameter(window.location.search, key),
+					)
+				) {
+					handleFeatureNavigation(null);
+				} else {
+					handleFeatureNavigation(id);
+				}
+				if (featureId) {
+					watchLinkedFeature(
+						featureId,
+						parseFeatureSourceSearchParam(window.location.search),
+					);
 				}
 			};
 
-			patchWindowHistoryFunction("pushState", handleHistoryStateChange);
-			patchWindowHistoryFunction(
-				"replaceState",
-				handleHistoryStateChange,
+			const followHistoryMethod = (state: unknown, replace: boolean) => {
+				if (isAddressOnlyHistoryWrite) return;
+				const id = getHistoryFeatureId(state, historyKey);
+				const featureId = readQueryFeature();
+				const sourceId = parseFeatureSourceSearchParam(
+					window.location.search,
+				);
+				const sameQuery =
+					activeQuery?.featureId === featureId &&
+					activeQuery?.sourceId === sourceId;
+				if (id === undefined) {
+					if (!sameQuery) stopWatchingFeature();
+					return;
+				}
+				const selected = selectorSelectedFeatures(
+					store.getState(),
+				)?.features;
+				if (
+					replace &&
+					selected?.length === 1 &&
+					selected[0] === id &&
+					sameQuery
+				) {
+					return;
+				}
+				stopWatchingFeature();
+				if (!replace || selected?.length !== 1 || selected[0] !== id) {
+					handleFeatureNavigation(id);
+				}
+				if (featureId && featureId === id) {
+					watchLinkedFeature(featureId, sourceId);
+				}
+			};
+
+			followEntry(window.history.state);
+			const onPopState = (event: PopStateEvent) => {
+				if (!isAddressOnlyHistoryWrite) followEntry(event.state);
+			};
+			window.addEventListener("popstate", onPopState);
+			cleanups.push(
+				stopWatchingFeature,
+				patchWindowHistoryFunction("pushState", (state) =>
+					followHistoryMethod(state, false),
+				),
+				patchWindowHistoryFunction("replaceState", (state) =>
+					followHistoryMethod(state, true),
+				),
+				() => window.removeEventListener("popstate", onPopState),
 			);
 		},
 	};

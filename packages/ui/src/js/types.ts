@@ -59,6 +59,12 @@ export type MapsightUiContext = {
 	initialState?: DeepPartial<{app: UiState}>;
 	/** indicates if the instance has been re-hydrated (available after init) */
 	isStateReHydrated?: boolean;
+	/**
+	 * Set by a plugin in `afterInit` when the page address fixes the initial map
+	 * view. Plugins that would otherwise recentre the map at startup leave the
+	 * view alone then.
+	 */
+	initialViewFromAddress?: boolean;
 	/** map of controllers (available after init) */
 	controllers?: Record<string, BaseController>;
 	/** redux store enhancer (available after create) */
