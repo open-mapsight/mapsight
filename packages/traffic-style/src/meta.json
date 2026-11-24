@@ -557,6 +557,15 @@
 			"groups": ["smart-city"],
 			"render": "composable"
 		},
+		"fa-crow": {
+			"label": {
+				"de": "Rabe",
+				"en": "Crow"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
+			"render": "composable"
+		},
 		"fa-dog": {
 			"label": {
 				"de": "Hund",
@@ -582,6 +591,15 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-frog": {
+			"label": {
+				"de": "Frosch",
+				"en": "Frog"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
 			"render": "composable"
 		},
 		"fa-flag-checkered": {
@@ -627,6 +645,15 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-helicopter": {
+			"label": {
+				"de": "Hubschrauber",
+				"en": "Helicopter"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-transport"],
 			"render": "composable"
 		},
 		"fa-hippo": {
@@ -712,6 +739,15 @@
 			},
 			"aliases": [],
 			"groups": ["poi", "poi-services"],
+			"render": "composable"
+		},
+		"fa-person-skating": {
+			"label": {
+				"de": "Person Skating",
+				"en": "Person Skating"
+			},
+			"aliases": [],
+			"groups": ["poi", "poi-leisure"],
 			"render": "composable"
 		},
 		"fa-person-walking": {

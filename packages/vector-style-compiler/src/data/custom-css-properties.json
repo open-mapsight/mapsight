@@ -42,6 +42,13 @@
 		"sinceVersion": "v0.0.0"
 	},
 	{
+		"name": "fill-minopacity",
+		"description": "Lower bound for the effective fill alpha from 0 to 1, applied after fill-opacity. Keeps the color's RGB channels, so it can reveal a transparent fill. Has no effect without a fill color.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html",
+		"deprecated": false,
+		"sinceVersion": "v13.3.0"
+	},
+	{
 		"name": "geometry",
 		"description": "Draws this style group on a geometry derived from the feature's: vertices, firstVertex, lastVertex, segmentStarts, segmentEnds (and their intermediate variants) as points, or extrusionRoof, extrusionLitWalls and extrusionShadedWalls for pseudo-3D blocks of polygons (see extrusion-height).",
 		"docUrl": "https://github.com/open-mapsight/mapsight/tree/main/packages/vector-style-compiler#derived-geometries",
@@ -158,6 +165,20 @@
 		],
 		"deprecated": false,
 		"sinceVersion": "v0.0.0"
+	},
+	{
+		"name": "stroke-minopacity",
+		"description": "Lower bound for the effective stroke alpha from 0 to 1, applied after stroke-opacity. Keeps the color's RGB channels. Has no effect without a stroke color.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html",
+		"deprecated": false,
+		"sinceVersion": "v13.3.0"
+	},
+	{
+		"name": "stroke-widthoffset",
+		"description": "Pixels added to the resolved stroke width (1 when no width is set), for example to widen a data-driven width on hover or selection. The result is never negative.",
+		"docUrl": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html",
+		"deprecated": false,
+		"sinceVersion": "v13.3.0"
 	},
 	{
 		"name": "text-alignment",
