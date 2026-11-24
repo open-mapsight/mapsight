@@ -1,5 +1,11 @@
 # @mapsight/lib-ol
 
+## 4.4.0
+
+### Minor Changes
+
+- 3fbb08f: Support `minOpacity` on fill and stroke declarations as a lower bound for the effective paint alpha, and `widthOffset` on strokes to widen the resolved width.
+
 ## 4.3.4
 
 ### Patch Changes

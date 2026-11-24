@@ -1,5 +1,26 @@
 # @mapsight/count-aggregator-ui
 
+## 3.2.2
+
+### Patch Changes
+
+- b74b9b7: Bump dependencies from Dependabot ([#461](https://github.com/open-mapsight/mapsight/pull/461)):
+
+    - `@tailwindcss/cli` `^4.3.3` → `^4.3.4` (patch)
+
+- 93f193b: Bump dependencies from Dependabot ([#485](https://github.com/open-mapsight/mapsight/pull/485)):
+
+    - `@tailwindcss/cli` `^4.3.4` → `^4.3.5` (patch)
+
+- 898baf5: Bump dependencies from Dependabot ([#486](https://github.com/open-mapsight/mapsight/pull/486)):
+
+    - `@tanstack/react-query` `^5.105.0` → `^5.107.1` (minor)
+
+- Updated dependencies [`37abb0e`, `898baf5`, `0e943b2`, `3fbb08f`, `5aeedad`, `e97c0f7`, `457a760`, `02cbd9f`]:
+    - `@mapsight/count-aggregator-api@1.5.1 → 1.5.2` (patch)
+    - `@mapsight/traffic-style@5.7.0 → 5.8.0` (minor)
+    - `@mapsight/ui@7.12.1 → 7.13.0` (minor)
+
 ## 3.2.1
 
 ### Patch Changes
