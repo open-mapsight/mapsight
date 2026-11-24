@@ -91,7 +91,7 @@ export const findFeatureSourceIdForFeatureId = (
 		if (skip?.has(id)) {
 			continue;
 		}
-		if (!source.ids?.includes(featureId)) {
+		if (!source?.ids?.includes(featureId)) {
 			continue;
 		}
 		if (source.type === "combined") {

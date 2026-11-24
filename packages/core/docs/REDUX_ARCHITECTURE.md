@@ -175,14 +175,15 @@ Each mixin’s `init()` registers `getAndObserveUncontrolled` handlers that diff
 
 Generic mutation API in `packages/core/src/js/lib/base/actions.ts`:
 
-| Function                    | Effect                         |
-| --------------------------- | ------------------------------ |
-| `set(path, value)`          | Replace value at path          |
-| `merge(path, value)`        | Shallow-merge object at path   |
-| `addTo(path, element)`      | Append to array at path        |
-| `removeFrom(path, element)` | Remove from array at path      |
-| `unset(path)`               | `set(path, undefined)`         |
-| `setAll` / `mergeAll` / …   | Batch variant over object keys |
+| Function                    | Effect                            |
+| --------------------------- | --------------------------------- |
+| `set(path, value)`          | Replace value at path             |
+| `merge(path, value)`        | Shallow-merge object at path      |
+| `addTo(path, element)`      | Append to array at path           |
+| `removeFrom(path, element)` | Remove from array at path         |
+| `removeKey(path)`           | Delete object key at path         |
+| `unset(path)`               | `set(path, undefined)`; key stays |
+| `setAll` / `mergeAll` / …   | Batch variant over object keys    |
 
 Paths are arrays: `["map", "layers", "foo", "options", "visible"]`.
 

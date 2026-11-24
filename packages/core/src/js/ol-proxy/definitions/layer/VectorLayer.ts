@@ -3,6 +3,7 @@ import VectorLayer from "ol/layer/Vector";
 import type {MapsightStyleFunctionEnv} from "@mapsight/lib-ol/style/styleFunction";
 
 import type {MapController} from "@/lib/map/controller";
+import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
 import type {Definition, OlConstructor, OptionMapMapper} from "@/ol-proxy";
 import {OPTION_SET, di, isDescription, updateProxyObject} from "@/ol-proxy";
 
@@ -30,7 +31,12 @@ export function createVectorLayerSourceOptionMapper<
 			oldDefinition: oldDefinition,
 			newDefinition: newDefinition,
 			parentObject: layer,
-			remover: () => layer.setSource(null),
+			remover: (source) => {
+				layer.setSource(null);
+				if (source instanceof VectorFeatureSource) {
+					source.dispose();
+				}
+			},
 			adder: (source) => {
 				if (source.setLayer) {
 					source.setLayer(layer);

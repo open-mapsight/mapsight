@@ -1,10 +1,8 @@
 import type OlFeature from "ol/Feature";
 import type OlLayer from "ol/layer/Layer";
-
-import forEach from "lodash/forEach";
+import type VectorSource from "ol/source/Vector";
 
 import type {LayerDefinition} from "@/lib/map/lib/WithLayers";
-import type {VectorFeatureSourceLayer} from "@/lib/map/types";
 import {Z_INDEX_OVERLAY} from "@/lib/map/z-index";
 import {di, updateProxyObject} from "@/ol-proxy";
 
@@ -15,8 +13,10 @@ export {Z_INDEX_OVERLAY};
 export const LAYER_GROUP_DEFAULT = "default";
 export const LAYER_TYPE = "VectorOverlayLayer";
 
+type VectorOverlayLayer = OlLayer<VectorSource>;
+
 function getOverlayFeatureCollectionForLayer(
-	overlays: Record<string, VectorFeatureSourceLayer>,
+	overlays: Record<string, VectorOverlayLayer>,
 	layer: OlLayer,
 ) {
 	const layerId = getIdForLayer(layer);
@@ -26,7 +26,7 @@ function getOverlayFeatureCollectionForLayer(
 }
 
 export default class WithLayerOverlays extends WithMap {
-	private _overlays: Record<string, VectorFeatureSourceLayer> = {};
+	private _overlays: Record<string, VectorOverlayLayer> = {};
 
 	override init() {
 		this._overlays = {};
@@ -34,9 +34,8 @@ export default class WithLayerOverlays extends WithMap {
 		const updateLayerOverlay = (
 			id: string,
 			newDefinition: LayerDefinition | undefined,
-			oldDefinitions: Record<string, LayerDefinition>,
+			oldDefinition: LayerDefinition | undefined,
 		) => {
-			const oldDefinition = oldDefinitions[id];
 			const overlayDefinition = newDefinition && {
 				...newDefinition,
 				zIndex: Z_INDEX_OVERLAY,
@@ -55,9 +54,13 @@ export default class WithLayerOverlays extends WithMap {
 					featureSelections && overlayDefinition
 						? {...overlayDefinition, type: LAYER_TYPE}
 						: undefined,
-				remover: () => {
-					this._overlays[id]?.setMap(null);
+				remover: (overlay) => {
+					overlay.setMap(null);
 					delete this._overlays[id];
+					const source = overlay.getSource();
+					source?.clear(true);
+					overlay.dispose();
+					source?.dispose();
 				},
 				adder: (overlay) => {
 					overlay.setMap(this.getMap());
@@ -74,17 +77,22 @@ export default class WithLayerOverlays extends WithMap {
 				newDefinitions = {},
 				oldDefinitions = {},
 			) {
-				forEach(oldDefinitions, (_, id) =>
-					updateLayerOverlay(id, newDefinitions[id], oldDefinitions),
-				);
-				forEach(newDefinitions, (newDefinition, id) =>
-					updateLayerOverlay(id, newDefinition, oldDefinitions),
-				);
+				const ids = new Set([
+					...Object.keys(oldDefinitions),
+					...Object.keys(newDefinitions),
+				]);
+				for (const id of ids) {
+					updateLayerOverlay(
+						id,
+						newDefinitions[id],
+						oldDefinitions[id],
+					);
+				}
 			},
 		);
 	}
 
-	moveFeatureToOverlay(layer: VectorFeatureSourceLayer, feature: OlFeature) {
+	moveFeatureToOverlay(layer: OlLayer, feature: OlFeature) {
 		const overlayFeatureCollection = getOverlayFeatureCollectionForLayer(
 			this._overlays,
 			layer,
@@ -97,10 +105,7 @@ export default class WithLayerOverlays extends WithMap {
 		}
 	}
 
-	removeFeatureFromOverlay(
-		layer: VectorFeatureSourceLayer,
-		feature: OlFeature,
-	) {
+	removeFeatureFromOverlay(layer: OlLayer, feature: OlFeature) {
 		const overlayFeatureCollection = getOverlayFeatureCollectionForLayer(
 			this._overlays,
 			layer,

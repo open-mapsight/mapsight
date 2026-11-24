@@ -45,7 +45,14 @@ import type {
 	FeatureSourceState,
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
-import type {Action, Feature, FeatureId, Geometry, State} from "@/types";
+import type {
+	Action,
+	Feature,
+	FeatureId,
+	Geometry,
+	State,
+	ThunkAction,
+} from "@/types";
 
 type FeatureSourceActionWithId<TType extends string> = Action & {
 	type: TType;
@@ -221,7 +228,8 @@ function normalizeFeatureSourcesState(
 ): FeatureSourcesState {
 	let next = state;
 	for (const [id, source] of Object.entries(state)) {
-		if (normalizedFeatureSources.has(source)) {
+		// `undefined` entries are what `unset` leaves behind, nothing to normalize
+		if (!source || normalizedFeatureSources.has(source)) {
 			continue;
 		}
 		if (shouldNormalizeFeatureSourceState(source)) {
@@ -282,6 +290,7 @@ function reduceUncontrolledFeatureSourceChanges(
 	for (const [id, source] of Object.entries(state)) {
 		const oldSource = oldState[id];
 		if (
+			source &&
 			oldSource &&
 			oldSource !== source &&
 			shouldClearXhrDataAfterConfigChange(oldSource, source)
@@ -306,7 +315,7 @@ function reduceUncontrolledFeatureSourceChanges(
 
 	for (const [id, source] of Object.entries(next)) {
 		const oldSource = oldState[id];
-		if (!oldSource || oldSource.data === source.data) {
+		if (!source || !oldSource || oldSource.data === source.data) {
 			continue;
 		}
 
@@ -334,6 +343,29 @@ function reduceUncontrolledFeatureSourceChanges(
 }
 
 const emptyFeaturesArray: Array<Feature> = [];
+
+// Actions that address an existing source by `id`. All but `LOAD_FEATURE_SOURCE`
+// (which `load` only dispatches for existing sources) are ignored for ids that
+// are not in the state, so that a source removed while one of them was queued
+// or in flight is neither recreated nor causes an error.
+const SOURCE_ADDRESSING_ACTION_TYPES = new Set<string>([
+	FEATURE_SOURCE_ERROR,
+	LOAD_FEATURE_SOURCE_ERROR,
+	FEATURE_SOURCE_DATA,
+	LOAD_FEATURE_SOURCE_SUCCESS,
+	PAUSE_FEATURE_SOURCE_REFRESH_UNTIL_NEXT_LOAD,
+	FEATURE_SOURCE_DATA_UNDO,
+	FEATURE_SOURCE_DATA_REDO,
+	FEATURE_SOURCE_DATA_ADD_FEATURE,
+	FEATURE_SOURCE_DATA_ADD_FEATURES,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE_PROPERTY,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURES,
+	FEATURE_SOURCE_DATA_UPDATE_FEATURE_GEOMETRY,
+	FEATURE_SOURCE_DATA_REMOVE_FEATURE,
+	FEATURE_SOURCE_DATA_REMOVE_FEATURES,
+	FEATURE_SOURCE_DATA_REMOVE_ALL_FEATURES,
+]);
 
 type CombinedFeatureSourceBinding = {
 	featureSourceNames: string[];
@@ -367,10 +399,47 @@ function createCombinedSourceEqualityCompare() {
 }
 
 export class FeatureSourcesController extends BaseController {
+	#sourceLifetimes = new Map<string, object>();
 	#combinedFeatureSourceBindings = new Map<
 		string,
 		CombinedFeatureSourceBinding
 	>();
+
+	#getSourceLifetime(id: string) {
+		const sources = this.getState() as FeatureSourcesState;
+		if (!Object.hasOwn(sources, id) || !sources[id]) {
+			return;
+		}
+
+		const lifetime = this.#sourceLifetimes.get(id) ?? {};
+		this.#sourceLifetimes.set(id, lifetime);
+		return lifetime;
+	}
+
+	#queueSourceWrite(
+		id: string,
+		lifetime: object,
+		action: Action,
+		isActive?: () => boolean,
+	) {
+		this.dispatch(
+			async<ThunkAction>((dispatch) => {
+				if (
+					this.#sourceLifetimes.get(id) === lifetime &&
+					(isActive === undefined || isActive())
+				) {
+					dispatch(action);
+				}
+			}),
+		);
+	}
+
+	queueSourceEdit(id: string, action: Action) {
+		const lifetime = this.#getSourceLifetime(id);
+		if (lifetime) {
+			this.#queueSourceWrite(id, lifetime, action);
+		}
+	}
 
 	override init() {
 		const store = this.getStore();
@@ -397,7 +466,7 @@ export class FeatureSourcesController extends BaseController {
 		const activeIds = new Set<string>();
 
 		for (const [id, source] of Object.entries(sources)) {
-			if (source.type !== "combined") {
+			if (source?.type !== "combined") {
 				continue;
 			}
 
@@ -444,23 +513,38 @@ export class FeatureSourcesController extends BaseController {
 			controllerName,
 		);
 
-		return getAndObserveState(
+		let active = true;
+		const unsubscribe = getAndObserveState(
 			store,
 			selector,
 			({data, error}) => {
+				const action = setDataOrError(controllerName, featureSourceId, {
+					data,
+					error,
+				});
 				this.dispatch(
-					async(
-						setDataOrError(controllerName, featureSourceId, {
-							data,
-							error,
-						}),
-					),
+					async<ThunkAction>((dispatch) => {
+						// The ID may already belong to a different source
+						// when the async queue drains.
+						if (active) {
+							dispatch(action);
+						}
+					}),
 				);
 			},
 			createCombinedSourceEqualityCompare(),
 		);
+		return () => {
+			active = false;
+			unsubscribe();
+		};
 	}
 
+	/**
+	 * Pipe selector changes to the current target or its first registration
+	 * if initially absent. Deleting the target ends the binding. Call again
+	 * to bind its replacement. The returned teardown cancels queued writes.
+	 */
 	bindFeatureSourceToStore(
 		featureSourceId: string,
 		selector: (state: State) => FeatureSourceState,
@@ -471,19 +555,45 @@ export class FeatureSourcesController extends BaseController {
 			console.error(
 				"Can't bind feature source to store: store is not set",
 			);
-			return;
+			return () => undefined;
 		}
 
-		observeState(store, selector, ({data, error}) => {
-			this.dispatch(
-				async(
-					setDataOrError(controllerName, featureSourceId, {
-						data,
-						error,
-					}),
-				),
-			);
+		let active = true;
+		const isActive = () => active;
+		let lifetime = this.#getSourceLifetime(featureSourceId);
+		let previous = selector(store.getState());
+
+		const unsubscribe = store.subscribe(() => {
+			if (!active) {
+				return;
+			}
+			const currentLifetime = this.#getSourceLifetime(featureSourceId);
+			if (lifetime && lifetime !== currentLifetime) {
+				unbind();
+				return;
+			}
+			lifetime ??= currentLifetime;
+
+			const next = selector(store.getState());
+			if (next === previous) {
+				return;
+			}
+			previous = next;
+			if (lifetime) {
+				this.#queueSourceWrite(
+					featureSourceId,
+					lifetime,
+					setDataOrError(controllerName, featureSourceId, next),
+					isActive,
+				);
+			}
 		});
+
+		function unbind() {
+			active = false;
+			unsubscribe();
+		}
+		return unbind;
 	}
 
 	override reduce(
@@ -502,6 +612,13 @@ export class FeatureSourcesController extends BaseController {
 			(state[featureSourceAction.id]?.requestId !==
 				featureSourceAction.requestId ||
 				!state[featureSourceAction.id]?.isLoading)
+		) {
+			return state;
+		}
+
+		if (
+			SOURCE_ADDRESSING_ACTION_TYPES.has(featureSourceAction.type) &&
+			!state[featureSourceAction.id]
 		) {
 			return state;
 		}
@@ -727,11 +844,20 @@ export class FeatureSourcesController extends BaseController {
 					featureSourceAction.type,
 				);
 
-			default:
-				return reduceUncontrolledFeatureSourceChanges(
+			default: {
+				const next = reduceUncontrolledFeatureSourceChanges(
 					normalizeFeatureSourcesState(baseReducer(state, action)),
 					state,
 				);
+				if (next !== state) {
+					for (const id of this.#sourceLifetimes.keys()) {
+						if (!Object.hasOwn(next, id) || !next[id]) {
+							this.#sourceLifetimes.delete(id);
+						}
+					}
+				}
+				return next;
+			}
 		}
 	}
 }

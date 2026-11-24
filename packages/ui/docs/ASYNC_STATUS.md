@@ -182,12 +182,13 @@ Maps `@mapsight/core` feature-source state via `featureSourceToView` in
 
 Feature list edge cases:
 
-| Case                                      | Behavior                                                    |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| No feature source selected                | Not async loading — keep “no list selected”                 |
-| Filter yields zero results, source loaded | `empty`, not loading                                        |
-| Error with stale data                     | Default: banner over list if data exists; full error if not |
-| Autoload via `useAutoloadFeatureSource`   | Unchanged; view reflects resulting source state             |
+| Case                                                                        | Behavior                                                                                                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| No feature source selected                                                  | Not async loading — keep “no list selected”                                                                               |
+| Filter yields zero results, source loaded                                   | `empty`, not loading                                                                                                      |
+| Source id not in the state (for example removed with `removeFeatureSource`) | `empty`, not loading — nothing loads a source that does not exist. Combined members that are not in the state are skipped |
+| Error with stale data                                                       | Default: banner over list if data exists; full error if not                                                               |
+| Autoload via `useAutoloadFeatureSource`                                     | Unchanged; view reflects resulting source state                                                                           |
 
 ### TanStack Query → `AsyncStatusView`
 

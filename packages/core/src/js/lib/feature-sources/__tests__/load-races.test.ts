@@ -8,6 +8,7 @@ import {
 	load,
 	loadFailure,
 	loadSuccess,
+	removeFeatureSource,
 	setData,
 	undo,
 } from "@/lib/feature-sources/actions";
@@ -47,6 +48,11 @@ function createStore(overrides: Partial<FeatureSourcesState[string]> = {}) {
 }
 function current(store: ReturnType<typeof createStore>) {
 	return (store.getState()[controllerName] as FeatureSourcesState)[sourceId];
+}
+function hasSource(store: ReturnType<typeof createStore>) {
+	return (
+		sourceId in (store.getState()[controllerName] as FeatureSourcesState)
+	);
 }
 function deferredFetch() {
 	const pending: {
@@ -510,5 +516,71 @@ describe("feature-source load ownership", () => {
 		pending[2]!.resolve(collection("polled"));
 		await tick();
 		expect(current(store)?.ids).toEqual(["polled"]);
+	});
+});
+
+describe("removeFeatureSource during loads", () => {
+	it.each(["success", "failure"] as const)(
+		"ignores the late %s of an in-flight load and never recreates the source",
+		async (result) => {
+			const {pending} = deferredFetch();
+			const store = createStore();
+			store.dispatch(load(controllerName, sourceId));
+			await tick();
+			expect(current(store)?.isLoading).toBe(true);
+
+			store.dispatch(removeFeatureSource(controllerName, sourceId));
+			expect(hasSource(store)).toBe(false);
+
+			if (result === "success") pending[0]!.resolve(collection("old"));
+			else pending[0]!.reject(new Error("old failure"));
+			await tick();
+			expect(hasSource(store)).toBe(false);
+			store.dispatch(load(controllerName, sourceId));
+			await tick();
+			expect(hasSource(store)).toBe(false);
+		},
+	);
+
+	it("ignores a completion that was queued before the removal", async () => {
+		const {pending} = deferredFetch();
+		const store = createStore();
+		store.dispatch(load(controllerName, sourceId));
+		await tick();
+		pending[0]!.resolve(collection("old"));
+		await tick(0); // The resolved completion is queued, but has not reduced.
+		store.dispatch(removeFeatureSource(controllerName, sourceId));
+		await tick();
+		expect(hasSource(store)).toBe(false);
+	});
+
+	it("stops refreshing a removed source", async () => {
+		const {pending, fetch} = deferredFetch();
+		const store = createStore({doRefresh: true, timer: 100});
+		store.dispatch(load(controllerName, sourceId));
+		await tick();
+		pending[0]!.resolve(collection("old"));
+		await tick();
+		expect(fetch).toHaveBeenCalledTimes(1);
+
+		store.dispatch(removeFeatureSource(controllerName, sourceId));
+		await tick(500);
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(hasSource(store)).toBe(false);
+	});
+
+	it("stops refreshing when the source is removed while its first load is pending", async () => {
+		const {pending, fetch} = deferredFetch();
+		const store = createStore({doRefresh: true, timer: 100});
+		store.dispatch(load(controllerName, sourceId));
+		await tick();
+
+		store.dispatch(removeFeatureSource(controllerName, sourceId));
+		pending[0]!.resolve(collection("old"));
+		await tick(500);
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(hasSource(store)).toBe(false);
 	});
 });

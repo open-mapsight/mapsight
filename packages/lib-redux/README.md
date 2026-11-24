@@ -6,14 +6,14 @@ See the [documentation hub](https://github.com/open-mapsight/mapsight/blob/main/
 
 ## Common imports
 
-| Module                                                       | Purpose                                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `@mapsight/lib-redux/reducers/immutable-path`                | Path-based `set`, `merge`, `add-to`, `remove-from` reducers              |
-| `@mapsight/lib-redux/reducers/immutable`                     | Immutable collection reducers                                            |
-| `@mapsight/lib-redux/observe-state`                          | Subscribe to derived store slices (`observeState`, `getAndObserveState`) |
-| `@mapsight/lib-redux/local-storage`                          | Persist slice to `localStorage`                                          |
-| `@mapsight/lib-redux/matchesPath`, `matchPath`               | Action path matching                                                     |
-| `@mapsight/lib-redux/enable-controlled-dispatch-and-observe` | Controlled vs uncontrolled store loop prevention                         |
+| Module                                                       | Purpose                                                                   |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `@mapsight/lib-redux/reducers/immutable-path`                | Path-based `set`, `merge`, `add-to`, `remove-from`, `remove-key` reducers |
+| `@mapsight/lib-redux/reducers/immutable`                     | Immutable collection reducers                                             |
+| `@mapsight/lib-redux/observe-state`                          | Subscribe to derived store slices (`observeState`, `getAndObserveState`)  |
+| `@mapsight/lib-redux/local-storage`                          | Persist slice to `localStorage`                                           |
+| `@mapsight/lib-redux/matchesPath`, `matchPath`               | Action path matching                                                      |
+| `@mapsight/lib-redux/enable-controlled-dispatch-and-observe` | Controlled vs uncontrolled store loop prevention                          |
 
 ## Related packages
 

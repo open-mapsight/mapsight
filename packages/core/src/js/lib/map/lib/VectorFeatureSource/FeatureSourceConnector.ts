@@ -15,7 +15,8 @@ import {
 	updateFeatureGeometry,
 	updateFeatures,
 } from "@/lib/feature-sources/actions";
-import type {ActionOrThunk, EnhancedStore, Feature, Geometry} from "@/types";
+import {FeatureSourcesController} from "@/lib/feature-sources/controller";
+import type {Action, EnhancedStore, Feature, Geometry} from "@/types";
 
 import SharedReadonlyVectorFeatureSource from "./SharedReadonlyVectorFeatureSource";
 
@@ -31,6 +32,7 @@ export default class FeatureSourceConnector {
 	private readonly _format: GeoJSONFormat;
 	private _source: SharedReadonlyVectorFeatureSource | null = null;
 	private _corePropertyKeys: ReadonlySet<string> = DEFAULT_CORE_PROPERTY_KEYS;
+	private _disposed = false;
 
 	constructor({
 		onUpdate,
@@ -49,15 +51,21 @@ export default class FeatureSourceConnector {
 		this._onUpdate = onUpdate;
 	}
 
-	_dispatchIfPossible(action: ActionOrThunk) {
-		if (this._controllerName && this._id && this._store) {
-			this._store.dispatch(action);
+	private _queueEdit(action: Action) {
+		if (!this._controllerName || !this._id || !this._store) {
+			return;
+		}
+		const controller = this._store.getController(this._controllerName);
+		if (controller instanceof FeatureSourcesController) {
+			controller.queueSourceEdit(this._id, action);
+		} else {
+			this._store.dispatch(async(action));
 		}
 	}
 
 	load() {
 		if (this._controllerName && this._id)
-			this._dispatchIfPossible(load(this._controllerName, this._id));
+			this._store?.dispatch(load(this._controllerName, this._id));
 	}
 
 	getFeatures() {
@@ -74,44 +82,35 @@ export default class FeatureSourceConnector {
 
 	addFeature(feature: Feature) {
 		if (this._controllerName && this._id)
-			this._dispatchIfPossible(
-				async(addFeature(this._controllerName, this._id, feature)),
+			this._queueEdit(
+				addFeature(this._controllerName, this._id, feature),
 			);
 	}
 
 	addFeatures(features: Feature[]) {
 		if (this._controllerName && this._id)
-			this._dispatchIfPossible(
-				async(addFeatures(this._controllerName, this._id, features)),
+			this._queueEdit(
+				addFeatures(this._controllerName, this._id, features),
 			);
 	}
 
 	updateFeature(featureId: string, feature: Feature, {quiet = false} = {}) {
 		if (!this._controllerName || !this._id) return;
 
-		let action = async(
-			updateFeature(this._controllerName, this._id, featureId, feature),
+		const action = updateFeature(
+			this._controllerName,
+			this._id,
+			featureId,
+			feature,
 		);
-
-		if (quiet) {
-			action = quietAction(action);
-		}
-
-		this._dispatchIfPossible(action);
+		this._queueEdit(quiet ? quietAction(action) : action);
 	}
 
 	updateFeatures(features: Feature[], {quiet = false} = {}) {
 		if (!this._controllerName || !this._id) return;
 
-		let action = async(
-			updateFeatures(this._controllerName, this._id, features),
-		);
-
-		if (quiet) {
-			action = quietAction(action);
-		}
-
-		this._dispatchIfPossible(action);
+		const action = updateFeatures(this._controllerName, this._id, features);
+		this._queueEdit(quiet ? quietAction(action) : action);
 	}
 
 	updateFeatureGeometry(
@@ -121,36 +120,27 @@ export default class FeatureSourceConnector {
 	) {
 		if (!this._controllerName || !this._id) return;
 
-		let action = async(
-			updateFeatureGeometry(
-				this._controllerName,
-				this._id,
-				featureId,
-				geometry,
-			),
+		const action = updateFeatureGeometry(
+			this._controllerName,
+			this._id,
+			featureId,
+			geometry,
 		);
-
-		if (quiet) {
-			action = quietAction(action);
-		}
-
-		this._dispatchIfPossible(action);
+		this._queueEdit(quiet ? quietAction(action) : action);
 	}
 
 	removeFeature(featureId: string) {
 		if (!this._controllerName || !this._id) return;
 
-		this._dispatchIfPossible(
-			async(removeFeature(this._controllerName, this._id, featureId)),
+		this._queueEdit(
+			removeFeature(this._controllerName, this._id, featureId),
 		);
 	}
 
 	clear() {
 		if (!this._controllerName || !this._id) return;
 
-		this._dispatchIfPossible(
-			async(removeAllFeatures(this._controllerName, this._id)),
-		);
+		this._queueEdit(removeAllFeatures(this._controllerName, this._id));
 	}
 
 	setCorePropertyKeys(corePropertyKeys: ReadonlySet<string>) {
@@ -179,6 +169,9 @@ export default class FeatureSourceConnector {
 	}
 
 	setInternalProjection(projection: ProjectionLike) {
+		if (projection === this._internalProjection) {
+			return;
+		}
 		this._internalProjection = projection;
 		this._subscribeFeatureSource();
 	}
@@ -186,6 +179,19 @@ export default class FeatureSourceConnector {
 	setProjection(projection: ProjectionLike) {
 		this._externalProjection = projection;
 		this._subscribeFeatureSource();
+	}
+
+	/**
+	 * Release the subscription to the shared feature source and drop the store,
+	 * so that nothing is observed or dispatched any more. Setters called
+	 * afterwards do not subscribe again.
+	 */
+	dispose() {
+		this._disposed = true;
+		this._unsubscribeFeatureSource?.();
+		this._unsubscribeFeatureSource = null;
+		this._source = null;
+		this._store = null;
 	}
 
 	_subscribeFeatureSource() {
@@ -196,6 +202,7 @@ export default class FeatureSourceConnector {
 		}
 
 		if (
+			!this._disposed &&
 			this._id &&
 			this._store &&
 			this._controllerName &&

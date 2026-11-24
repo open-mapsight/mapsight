@@ -2,14 +2,12 @@ import LayerGroup from "ol/layer/Group";
 import type Layer from "ol/layer/Layer";
 import VectorSource from "ol/source/Vector";
 
-import forEach from "lodash/forEach";
-
-import {ensureNonNullable} from "@mapsight/lib-js/nonNullable";
 import matchesPath from "@mapsight/lib-redux/matchesPath";
 import reducers from "@mapsight/lib-redux/reducers/immutable-path";
 
 import {ACTION_SET} from "@/lib/base/reducer";
 import type {MapController} from "@/lib/map/controller";
+import VectorFeatureSource from "@/lib/map/lib/VectorFeatureSource/VectorFeatureSource";
 import type {LayerState, MapState} from "@/lib/map/types";
 import {di, updateProxyObject} from "@/ol-proxy";
 import type {Action, State} from "@/types";
@@ -30,45 +28,40 @@ export const LAYER_GROUP_DEFAULT = "default";
 export default class WithLayers extends WithAnimations {
 	private _layers: Record<string, Layer> = {};
 
-	private _groups: Record<
-		string,
-		{id: string; groupLayer: LayerGroup; layers: Record<string, Layer>}
-	> = {};
+	private _groups = new Map<string, LayerGroup>();
 
 	private getOrCreateLayerGroup(id: string): LayerGroup {
 		const map = this.getMap();
 
-		const groupLayer = this._groups[id]?.groupLayer;
-		if (groupLayer !== undefined) {
-			return groupLayer;
+		const existingGroup = this._groups.get(id);
+		if (existingGroup !== undefined) {
+			return existingGroup;
 		}
 
-		const groupLayer2 = new LayerGroup();
-		tagLayer(groupLayer2, this, id);
-		this._groups[id] = {id: id, groupLayer: groupLayer2, layers: {}};
+		const group = new LayerGroup();
+		tagLayer(group, this, id);
+		this._groups.set(id, group);
 
 		if (map) {
-			map.addLayer(groupLayer2);
+			map.addLayer(group);
 		} else {
 			console.warn(
 				"Could not get or create layer group. Map is not set.",
 			);
 		}
 
-		return groupLayer2;
+		return group;
 	}
 
 	override init() {
 		this._layers = {};
-		this._groups = {};
+		this._groups = new Map();
 
 		const updateLayer = (
 			id: string,
 			newDefinition: LayerDefinition | undefined,
-			oldDefinitions: Record<string, LayerDefinition>,
+			oldDefinition: LayerDefinition | undefined,
 		) => {
-			const oldDefinition = oldDefinitions[id];
-
 			// update layer
 			updateProxyObject({
 				di: di,
@@ -78,11 +71,17 @@ export default class WithLayers extends WithAnimations {
 				remover: (oldObject) => {
 					const group =
 						getGroupForLayer(oldObject) || LAYER_GROUP_DEFAULT;
-					this._groups[group]?.groupLayer
-						.getLayers()
-						.remove(oldObject);
+					this._groups.get(group)?.getLayers().remove(oldObject);
 					delete this._layers[id];
-					delete this._groups[group]?.layers[id];
+
+					// The source subscribed to the store and the selections on
+					// its own. Release that, or it keeps reacting to state
+					// changes (for example fitting the map) with no layer.
+					const source = oldObject.getSource();
+					if (source instanceof VectorFeatureSource) {
+						source.dispose();
+					}
+					oldObject.dispose();
 				},
 				adder: (layer) => {
 					if (!newDefinition) {
@@ -96,7 +95,6 @@ export default class WithLayers extends WithAnimations {
 						LAYER_GROUP_DEFAULT;
 					const layerGroup = this.getOrCreateLayerGroup(group);
 					this._layers[id] = layer;
-					ensureNonNullable(this._groups[group]).layers[id] = layer;
 					tagLayer(layer, this, id, group);
 					layerGroup.getLayers().push(layer);
 					if (!newDefinition.type) {
@@ -118,13 +116,25 @@ export default class WithLayers extends WithAnimations {
 
 		this.getAndObserveUncontrolled(
 			(state) => state.layers as Record<string, LayerDefinition>,
-			function updateLayers(newDefinitions = {}, oldDefinitions = {}) {
-				forEach(oldDefinitions, (_, id) =>
-					updateLayer(id, newDefinitions[id], oldDefinitions),
-				);
-				forEach(newDefinitions, (newDefinition, id) =>
-					updateLayer(id, newDefinition, oldDefinitions),
-				);
+			(newDefinitions = {}, oldDefinitions = {}) => {
+				const ids = new Set([
+					...Object.keys(oldDefinitions),
+					...Object.keys(newDefinitions),
+				]);
+				for (const id of ids) {
+					updateLayer(id, newDefinitions[id], oldDefinitions[id]);
+				}
+
+				// Replacements can temporarily empty a group. Prune only
+				// after processing all layers to preserve its draw order.
+				const map = this.getMap();
+				for (const [id, group] of this._groups) {
+					if (group.getLayers().getLength() === 0) {
+						this._groups.delete(id);
+						map?.removeLayer(group);
+						group.dispose();
+					}
+				}
 			},
 		);
 

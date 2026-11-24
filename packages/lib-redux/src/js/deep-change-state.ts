@@ -1,7 +1,11 @@
 import setWith from "lodash/setWith";
 
-function shallowCloneObject<T>(o: T): T {
-	return {...o};
+/**
+ * Shallow copy of a state node. Arrays stay arrays: an object spread would turn
+ * an array on the path into a plain object keyed by its indexes.
+ */
+function shallowCloneNode<T>(o: T): T {
+	return (Array.isArray(o) ? [...o] : {...o}) as T;
 }
 
 /**
@@ -9,16 +13,18 @@ function shallowCloneObject<T>(o: T): T {
  * reassigns all objects down along the path of the change so they aren't strictly equal anymore
  * and can be easily observed as changed by redux/react.
  *
+ * Arrays along the path are copied as arrays, missing ancestors are created as plain objects.
+ *
  * **Note:** Returns a new state object! Does NOT mutate the original state object!
  *
  * @param {object} state The original state
- * @param {*[]|string} [path] The path at which the change gets applied.
+ * @param {Array<string|number>} [path] The path at which the change gets applied.
  * @param {*} [value] The new value to be set (or undefined).
  * @returns {*} The new state with changed value and new objects along the path.
  */
 export default function deepChangeState<State = unknown, Value = unknown>(
 	state: State,
-	path: Array<string>,
+	path: Array<string | number>,
 	value: Value,
 ) {
 	const hasPath = path?.length;
@@ -26,11 +32,10 @@ export default function deepChangeState<State = unknown, Value = unknown>(
 		return value;
 	}
 
-	const newState = shallowCloneObject(state);
+	const newState = shallowCloneNode(state);
 
 	if (newState && typeof newState === "object") {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		setWith(newState, path, value, shallowCloneObject);
+		setWith(newState, path, value, shallowCloneNode);
 	}
 
 	return newState;
