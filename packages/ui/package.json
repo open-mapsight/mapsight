@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/ui",
 	"description": "Mapsight UI for map based web applications using React and Redux",
-	"version": "7.12.1",
+	"version": "7.13.0",
 	"type": "module",
 	"dependencies": {
 		"@mapsight/core": "workspace:^",
@@ -29,7 +29,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@tanstack/react-query": "^5.105.0",
+		"@tanstack/react-query": "^5.107.1",
 		"@testing-library/react": "^16.3.3",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
@@ -39,7 +39,7 @@
 		"jsdom": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"sass": "1.107.1",
+		"sass": "1.108.2",
 		"svgo": "^4.1.0",
 		"vitest": "catalog:"
 	},
@@ -190,7 +190,7 @@
 	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"@tanstack/react-query": "^5.105.0",
+		"@tanstack/react-query": "^5.107.1",
 		"jsdom": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"

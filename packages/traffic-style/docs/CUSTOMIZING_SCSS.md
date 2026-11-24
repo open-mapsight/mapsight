@@ -200,6 +200,47 @@ routed to the sheet via `auto-icon` mixins.
 | `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_COLOR`  | `#0c6490`                  | Caption fill when `markerCaptionColor` is omitted       |
 | `$MAPSIGHT_TRAFFIC_STYLE__FEATURE_CAPTION_DEFAULT_HALO`   | `#fff`                     | Caption outline when `markerCaptionHalo` is omitted     |
 
+## Polygon hover and selection emphasis
+
+The default state rules color hovered and selected features cyan. A style that
+sets polygon colors from feature data (for example Simplestyle `stroke` and
+`fill` properties) overrides that color, so selection can become invisible, and
+raising `fill-opacity` cannot reveal a fully transparent fill. The opt-in
+`polygonInteractionEmphasis` mixin keeps the data colors and instead widens the
+stroke and raises the effective paint alpha of `Polygon` and `MultiPolygon`
+features:
+
+```scss
+@use "@mapsight/traffic-style/src/scss/mixins/polygon-interaction";
+
+#features {
+	[stroke] {
+		stroke-color: attr(stroke);
+	}
+
+	[fill] {
+		fill-color: attr(fill);
+	}
+
+	// After the color rules, so the emphasis applies to the resolved paint.
+	@include polygon-interaction.polygonInteractionEmphasis;
+}
+```
+
+| Parameter                       | Default | Effect                                    |
+| ------------------------------- | ------- | ----------------------------------------- |
+| `$highlight-width-offset`       | `2`     | Pixels added to the stroke width on hover |
+| `$highlight-stroke-min-opacity` | `0.85`  | Minimum stroke alpha on hover             |
+| `$highlight-fill-min-opacity`   | `0.18`  | Minimum fill alpha on hover               |
+| `$select-width-offset`          | `4`     | Pixels added to the stroke width selected |
+| `$select-stroke-min-opacity`    | `1`     | Minimum stroke alpha when selected        |
+| `$select-fill-min-opacity`      | `0.3`   | Minimum fill alpha when selected          |
+
+Higher existing alphas are kept. The mixin uses the `stroke-widthOffset`,
+`stroke-minOpacity` and `fill-minOpacity` properties materialized by
+`@mapsight/lib-ol`. Nest the include under a selector such as an `env|` flag to
+limit it to some maps or layers.
+
 ---
 
 ## Zero-config precompiled style

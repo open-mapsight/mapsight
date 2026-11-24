@@ -1,7 +1,7 @@
 {
 	"name": "@mapsight/demos",
 	"description": "Developer demos for UI components, count aggregation, and icons",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"private": true,
 	"type": "module",
 	"dependencies": {
@@ -13,7 +13,7 @@
 		"@mapsight/lib-redux": "workspace:^",
 		"@mapsight/traffic-style": "workspace:^",
 		"@mapsight/ui": "workspace:^",
-		"@tanstack/react-query": "^5.105.0",
+		"@tanstack/react-query": "^5.107.1",
 		"breakpoint-sass": "^3.0.0",
 		"lodash": "catalog:",
 		"ol": "catalog:",
@@ -29,7 +29,7 @@
 		"@mapsight/a11y-audit": "workspace:^",
 		"@mapsight/vector-style-compiler": "workspace:^",
 		"@playwright/test": "catalog:",
-		"@tailwindcss/vite": "^4.3.4",
+		"@tailwindcss/vite": "^4.3.5",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
@@ -39,7 +39,7 @@
 		"rimraf": "^6.1.4",
 		"terser": "^5.51.2",
 		"typescript": "catalog:",
-		"vite": "^8.3.5"
+		"vite": "^8.3.8"
 	},
 	"license": "MIT",
 	"mapsight": {

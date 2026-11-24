@@ -220,13 +220,35 @@
 		},
 		{
 			"name": "fill",
-			"description": "Sass nested namespace for Mapsight vector style properties matching fill-*.",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "fill-minopacity",
+			"description": "Lower bound for the effective fill alpha from 0 to 1, applied after fill-opacity. Keeps the color's RGB channels, so it can reveal a transparent fill. Has no effect without a fill color.",
 			"status": "nonstandard",
 			"references": [
 				{
 					"name": "OpenLayers style docs",
 					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Fill.html"
 				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "minopacity",
+			"description": "Nested Mapsight vector style property segment. The exact OpenLayers option depends on the surrounding Sass property namespace.",
+			"status": "nonstandard",
+			"references": [
 				{
 					"name": "Mapsight vector style properties",
 					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
@@ -930,6 +952,51 @@
 				{
 					"name": "OpenLayers line styles example",
 					"url": "https://openlayers.org/en/latest/examples/line-styles.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-minopacity",
+			"description": "Lower bound for the effective stroke alpha from 0 to 1, applied after stroke-opacity. Keeps the color's RGB channels. Has no effect without a stroke color.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "stroke-widthoffset",
+			"description": "Pixels added to the resolved stroke width (1 when no width is set), for example to widen a data-driven width on hover or selection. The result is never negative.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
+				},
+				{
+					"name": "Mapsight vector style properties",
+					"url": "https://github.com/open-mapsight/mapsight/blob/main/packages/vector-style-compiler/README.md"
+				}
+			]
+		},
+		{
+			"name": "widthoffset",
+			"description": "Nested form of Mapsight vector style property stroke-widthoffset.",
+			"status": "nonstandard",
+			"references": [
+				{
+					"name": "OpenLayers style docs",
+					"url": "https://openlayers.org/en/latest/apidoc/module-ol_style_Stroke.html"
 				},
 				{
 					"name": "Mapsight vector style properties",
