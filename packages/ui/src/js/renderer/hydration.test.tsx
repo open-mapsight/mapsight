@@ -6,9 +6,14 @@ import {useSelector} from "react-redux";
 import {act, cleanup} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
+import {unset} from "@mapsight/core/lib/base/actions";
+import {removeLayer} from "@mapsight/core/lib/map/actions";
+
 import App from "../components/app";
 import AppContext from "../components/helping/app-context";
 import Instance from "../components/instance";
+import browserEmbed from "../embed/browser";
+import nodeEmbed from "../embed/node";
 import {create} from "../index";
 import createViewsPlugin from "../plugins/browser/views";
 import {setViewBreakpoints} from "../store/actions";
@@ -72,6 +77,90 @@ afterEach(async () => {
 });
 
 describe("app hydration", () => {
+	it.each(["unset", "removeLayer"] as const)(
+		"hydrates the server layer catalog after %s",
+		async (operation) => {
+			const overlay = {type: "VectorLayer" as const};
+			const baseMapsightConfig = {map: {layers: {overlay}}};
+			const createOptions = {
+				validateConfig: false,
+				plugins: [],
+				future: {v8_unsetRemovesKey: true},
+			};
+			const styleFunction = vi.fn(() => undefined);
+			function LayerProbe() {
+				const visible = useSelector(
+					(state: {map: {layers: Record<string, unknown>}}) =>
+						Object.hasOwn(state.map.layers, "overlay"),
+				);
+				return (
+					<button type="button">
+						{visible ? "Overlay" : "No overlay"}
+					</button>
+				);
+			}
+			const shell = (props: MapsightUiRendererProps) => (
+				<AppContext {...props}>
+					<LayerProbe />
+				</AppContext>
+			);
+			const server = nodeEmbed({
+				styleFunction,
+				baseMapsightConfig,
+				createOptions: {
+					...createOptions,
+					renderer: (_container, props) =>
+						renderToString(shell(props)),
+				},
+			});
+			server.store?.dispatch(
+				operation === "unset"
+					? unset(["map", "layers", "overlay"])
+					: removeLayer("map", "overlay"),
+			);
+			const fixture = document.createElement("div");
+			fixture.innerHTML = server.emitFragment({id: "layer-catalog"});
+			document.body.append(fixture);
+			const container = fixture.firstElementChild;
+			if (!(container instanceof HTMLElement)) {
+				throw new Error("Expected an embed fragment");
+			}
+			const serverButton = container.querySelector("button");
+			expect(serverButton?.textContent).toBe("No overlay");
+
+			const errors = vi.fn();
+			const renderer = vi.fn<MapsightUiRenderer<Root>>(
+				(_target, props) => {
+					const root = hydrateRoot(container, shell(props), {
+						onRecoverableError: errors,
+					});
+					roots.push(root);
+					return root;
+				},
+			);
+			await act(async () => {
+				browserEmbed(container, {
+					styleFunction,
+					baseMapsightConfig: {
+						map: {layers: {overlay, clientOnly: overlay}},
+					},
+					createOptions: {...createOptions, renderer},
+				});
+				await Promise.resolve();
+			});
+
+			const [, props, hydrate] = renderer.mock.calls[0] ?? [];
+			expect(hydrate).toBe(true);
+			for (const state of [props?.store.getState(), props?.serverState]) {
+				expect(state).not.toHaveProperty("map.layers.overlay");
+				expect(state).toHaveProperty("map.layers.clientOnly", overlay);
+			}
+			expect(container.querySelector("button")).toBe(serverButton);
+			expect(serverButton?.textContent).toBe("No overlay");
+			expect(errors).not.toHaveBeenCalled();
+		},
+	);
+
 	it.each(["default", "host"])(
 		"runs %s renderer plugins after commit and preserves the desktop nodes",
 		async (kind) => {

@@ -4,11 +4,15 @@ import {useSelector} from "react-redux";
 import {act} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 
-import {updateFeatureProperty} from "@mapsight/core/lib/feature-sources/actions";
+import {
+	removeFeature,
+	updateFeatureProperty,
+} from "@mapsight/core/lib/feature-sources/actions";
 import {findFeatureInFeatureSourcesById} from "@mapsight/core/lib/feature-sources/selectors";
 import type {FeatureSourcesState} from "@mapsight/core/lib/feature-sources/types";
 import type {State} from "@mapsight/core/types";
 
+import {create} from "../index";
 import browserDomRenderer from "../renderer/browser-dom";
 import type {MapsightUiRenderer, MapsightUiRendererProps} from "../types";
 import browserEmbed from "./browser";
@@ -28,6 +32,27 @@ const config = {
 						id: "selected",
 						geometry: {type: "Point", coordinates: [10, 52]},
 						properties: {title: "server"},
+					},
+				],
+			},
+		},
+	},
+};
+
+const configWithExtraFeature = {
+	...config,
+	featureSources: {
+		places: {
+			...config.featureSources.places,
+			data: {
+				...config.featureSources.places.data,
+				features: [
+					...config.featureSources.places.data.features,
+					{
+						type: "Feature",
+						id: "drop",
+						geometry: {type: "Point", coordinates: [11, 52]},
+						properties: {title: "removed"},
 					},
 				],
 			},
@@ -65,6 +90,95 @@ afterEach(async () => {
 });
 
 describe("compact SSR React hydration", () => {
+	it.each([false, true])(
+		"preserves a server feature deletion when compact=%s",
+		async (compact) => {
+			const errors = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
+			const server = nodeEmbed({
+				styleFunction: vi.fn(() => undefined),
+				baseMapsightConfig: configWithExtraFeature,
+				createOptions: {...uiOptions},
+				compactFeatureSourceIndexes: compact,
+			});
+			server.store?.dispatch(
+				removeFeature("featureSources", "places", "drop"),
+			);
+			document.body.innerHTML = server.emitFragment({
+				id: "deleted-feature",
+			});
+			const container = document.getElementById("deleted-feature")!;
+			const button = container.querySelector(
+				"[data-testid=feature-probe]",
+			);
+			expect(button?.textContent).toBe("selected: server");
+
+			let hydrated: MapsightUiRendererProps | undefined;
+			const renderer: MapsightUiRenderer<Root | undefined> = (
+				...args
+			) => {
+				hydrated = args[1];
+				const root = browserDomRenderer(...args);
+				if (root) roots.push(root);
+				return root;
+			};
+			await act(async () => {
+				await Promise.resolve();
+				browserEmbed(container, {
+					styleFunction: vi.fn(() => undefined),
+					baseMapsightConfig: {
+						...configWithExtraFeature,
+						featureSources: {
+							...configWithExtraFeature.featureSources,
+							clientOnly: {type: "local", data: null},
+						},
+					},
+					createOptions: {...uiOptions, renderer},
+				});
+			});
+
+			for (const state of [
+				hydrated?.serverState,
+				hydrated?.store.getState(),
+			]) {
+				const sources = state?.featureSources as FeatureSourcesState;
+				expect(
+					sources.places?.data?.features?.map(({id}) => id),
+				).toEqual(["selected"]);
+				expect(sources.places?.ids).toEqual(["selected"]);
+				expect(sources.places?.featuresById?.drop).toBeUndefined();
+				expect(sources.clientOnly?.type).toBe("local");
+			}
+			expect(container.querySelector("[data-testid=feature-probe]")).toBe(
+				button,
+			);
+			expect(button?.textContent).toBe("selected: server");
+			expect(errors).not.toHaveBeenCalled();
+		},
+	);
+
+	it("retains omitted feature entries in a legacy partial overlay", () => {
+		const context = create(
+			null,
+			vi.fn(() => undefined),
+			configWithExtraFeature,
+			{
+				...uiOptions,
+				renderer: vi.fn(),
+				reHydratedState: {
+					app: {},
+					featureSources: {
+						places: {data: config.featureSources.places.data},
+					},
+				},
+			},
+		);
+		const sources = context.store?.getState()
+			.featureSources as FeatureSourcesState;
+		expect(sources.places?.ids).toEqual(["selected", "drop"]);
+	});
+
 	it.each([false, true])(
 		"preserves real server DOM and lookup indexes when compact=%s, including an early client edit",
 		async (compact) => {

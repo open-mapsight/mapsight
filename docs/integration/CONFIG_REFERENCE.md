@@ -134,9 +134,21 @@ createOptions: {
 		v8_ariaControlTooltip: true,
 		v8_listSearchButton: true,
 		v8_automaticHeadings: true,
+		v8_unsetRemovesKey: true,
 	},
 }
 ```
+
+`v8_unsetRemovesKey` makes the `unset(path)` action delete the key from the Redux state when its parent is a plain
+object, instead of leaving it there with an `undefined` value. Array elements are still set to `undefined`, and a
+plain `set(path, undefined)` is unchanged. Omitted or `false` keeps today's behavior. The flag applies to the store
+of this instance only. To drop a layer or feature source, prefer `removeLayer` / `removeFeatureSource`, which work
+without the flag. This will be the only `unset` behavior in v8. A host that creates the `@mapsight/core` store itself
+passes `future: {v15_unsetRemovesKey: true}` in the options argument of `createMapsightStore`.
+
+Complete snapshots from `nodeEmbed` record keys deleted from the server's initial state. Hydration applies these
+deletions to the merged config before creating the client store and the React hydration snapshot. Unmarked
+`reHydratedState` payloads are partial overlays, so omitted keys can still come from the client base config.
 
 `v8_ariaControlTooltip` switches leftover hint.css control tooltips (RegionSelector) to the ARIA `Tooltip`.
 Omitted or `false` keeps `ms3-hint--*` classes.

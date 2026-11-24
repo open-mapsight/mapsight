@@ -1,6 +1,7 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 
 import {create} from "../index";
+import type {MapsightUiRendererProps} from "../types";
 import browserEmbed from "./browser";
 
 const minimalConfig = {
@@ -61,6 +62,57 @@ describe("browserEmbed hydration contract", () => {
 		expect(renderer).toHaveBeenCalledOnce();
 		expect(renderer.mock.calls[0]?.[2]).toBe(true);
 		expect(container.getAttribute("data-dehydrated-state")).toBe("");
+	});
+
+	it("keeps base layers omitted from an unmarked partial overlay", () => {
+		const overlay = {type: "VectorLayer" as const};
+		const baseMapsightConfig = {
+			map: {layers: {...minimalConfig.map.layers, overlay}},
+		};
+		const options = {
+			styleFunction: vi.fn(),
+			baseMapsightConfig,
+			createOptions: {
+				plugins: [],
+				validateConfig: false,
+				future: {v8_unsetRemovesKey: true},
+			},
+		};
+		const container = document.createElement("div");
+		container.setAttribute(
+			"data-dehydrated-state",
+			JSON.stringify({
+				app: {},
+				map: {layers: {base: {options: {visible: false}}}},
+			}),
+		);
+		const renderer = vi.fn(
+			(
+				_container: HTMLElement | null,
+				_props: MapsightUiRendererProps,
+				_hydrate?: boolean,
+			) => undefined,
+		);
+		browserEmbed(container, {
+			...options,
+			createOptions: {...options.createOptions, renderer},
+		});
+
+		expect(renderer).toHaveBeenCalledOnce();
+		const [, props, hydrate] = renderer.mock.calls[0] ?? [];
+		expect(hydrate).toBe(true);
+		expect(props?.store.getState()).toHaveProperty(
+			"map.layers.overlay",
+			overlay,
+		);
+		expect(props?.serverState).toHaveProperty(
+			"map.layers.overlay",
+			overlay,
+		);
+		expect(props?.store.getState()).toHaveProperty(
+			"map.layers.base.options.visible",
+			false,
+		);
 	});
 
 	it("warns on invalid config in development via browserEmbed but still boots", () => {

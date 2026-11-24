@@ -3,9 +3,14 @@ import type OlMap from "ol/Map";
 import {describe, expect, it} from "vitest";
 
 import {set, unset} from "@/lib/base/actions";
+import type {FutureFlags} from "@/lib/base/future";
 import {ACTION_REMOVE_KEY} from "@/lib/base/reducer";
 import {removeFeatureSource, setData} from "@/lib/feature-sources/actions";
-import {removeLayer} from "@/lib/map/actions";
+import {
+	addInteractionSelection,
+	removeInteractionSelection,
+	removeLayer,
+} from "@/lib/map/actions";
 import {getIdForLayer} from "@/lib/map/lib/tagLayer";
 import {
 	layerAttributionsSelector,
@@ -213,4 +218,113 @@ describe("layer selectors with undefined entries", () => {
 		expect(layerIdsIntegratedSwitcherSelector(state)).toEqual(["legend"]);
 		expect(layerIdsExternalSwitcherSelector(state)).toEqual(["legend"]);
 	});
+});
+
+describe("unset with the unsetRemovesKey future flag", () => {
+	const future: FutureFlags = {v15_unsetRemovesKey: true};
+
+	it("removes a layer like removeLayer", () => {
+		const viaUnset = createHighlightTestMap({future});
+		const viaRemove = createHighlightTestMap({future});
+		for (const {store} of [viaUnset, viaRemove]) {
+			store.dispatch(set(["map", "layers", "extra"], extraLayer()));
+		}
+		const poisBefore = layersOf(viaUnset.store).pois;
+
+		viaUnset.store.dispatch(unset(["map", "layers", "extra"]));
+		viaRemove.store.dispatch(removeLayer("map", "extra"));
+
+		expect("extra" in layersOf(viaUnset.store)).toBe(false);
+		expect(Object.keys(layersOf(viaUnset.store))).toEqual(["pois"]);
+		expect(layersOf(viaUnset.store).pois).toBe(poisBefore);
+		expect(layersOf(viaUnset.store)).toEqual(layersOf(viaRemove.store));
+		expect(olLayerIds(viaUnset.map)).toEqual(["pois"]);
+		expect(olLayerIds(viaUnset.map)).toEqual(olLayerIds(viaRemove.map));
+	});
+
+	it("keeps later actions working and lets the layer id be used again", () => {
+		const {store, map} = createHighlightTestMap({future});
+		store.dispatch(set(["map", "layers", "extra"], extraLayer()));
+		store.dispatch(unset(["map", "layers", "extra"]));
+
+		expect(() => {
+			store.dispatch(
+				set(["map", "layers", "pois", "options", "visible"], false),
+			);
+			store.dispatch(set(["map", "layers", "extra"], extraLayer()));
+		}).not.toThrow();
+
+		expect(olLayerIds(map)).toEqual(
+			expect.arrayContaining(["pois", "extra"]),
+		);
+	});
+
+	it("does nothing for a layer that does not exist", () => {
+		const {store} = createHighlightTestMap({future});
+		const state = store.getState();
+
+		store.dispatch(unset(["map", "layers", "missing"]));
+
+		expect(store.getState()).toBe(state);
+	});
+});
+
+describe("removeInteractionSelection", () => {
+	const selectionsOf = (store: EnhancedStore) =>
+		layersOf(store).pois?.options?.selections;
+
+	it("keeps the interaction with an undefined value by default", () => {
+		const {store} = createHighlightTestMap();
+		expect(selectionsOf(store)).toEqual({mouseover: "highlight"});
+
+		store.dispatch(removeInteractionSelection("map", "pois", "mouseover"));
+
+		expect(selectionsOf(store)).toStrictEqual({mouseover: undefined});
+		expect("mouseover" in (selectionsOf(store) ?? {})).toBe(true);
+	});
+
+	it("deletes the interaction with the future flag", () => {
+		const {store} = createHighlightTestMap({
+			future: {v15_unsetRemovesKey: true},
+		});
+		const poisBefore = layersOf(store).pois;
+
+		store.dispatch(removeInteractionSelection("map", "pois", "mouseover"));
+
+		expect(selectionsOf(store)).toStrictEqual({});
+		expect(layersOf(store).pois).not.toBe(poisBefore);
+		expect(layersOf(store).pois?.options?.source).toBe(
+			poisBefore?.options?.source,
+		);
+	});
+
+	it.each([
+		["by default", undefined],
+		["with the future flag", {v15_unsetRemovesKey: true}],
+	])(
+		"can be set again %s and ignores unknown interactions",
+		(_name, future) => {
+			const {store} = createHighlightTestMap({future});
+
+			store.dispatch(
+				removeInteractionSelection("map", "pois", "mouseover"),
+			);
+			store.dispatch(
+				addInteractionSelection(
+					"map",
+					"pois",
+					"mouseover",
+					"highlight",
+				),
+			);
+			expect(selectionsOf(store)).toStrictEqual({mouseover: "highlight"});
+
+			const state = store.getState();
+			store.dispatch(removeInteractionSelection("map", "pois", "touch"));
+			store.dispatch(
+				removeInteractionSelection("map", "gone", "mouseover"),
+			);
+			expect(store.getState()).toBe(state);
+		},
+	);
 });

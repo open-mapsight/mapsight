@@ -32,7 +32,7 @@ Mapsight has three coexisting action systems. Pick the one that matches your int
 - `merge` / `mergeAll` — the existing deep-merge actions; their behavior is unchanged.
 - `resetMapsightCore(config)` — deselect all features, then `mergeConfigAll(config)` (see §2).
 
-Both merge families keep omitted keys, ignore incoming `undefined` for existing values, and merge arrays **by index**. They do not replace arrays or remove keys. Use `set` for replacement, `removeFrom` to remove an array element, and `removeKey(path)` to delete an object key. `unset(path)` only sets the value to `undefined` and leaves the key in place. To remove a layer or feature source at runtime, use the domain actions in §7. The config family avoids copying loaded GeoJSON omitted from a preset; [configuration merge performance](./CONFIG_MERGE.md) describes its scope and verification.
+Both merge families keep omitted keys, ignore incoming `undefined` for existing values, and merge arrays **by index**. They do not replace arrays or remove keys. Use `set` for replacement, `removeFrom` to remove an array element, and `removeKey(path)` to delete an object key. `unset(path)` only sets the value to `undefined` and leaves the key in place, unless the store has the `v15_unsetRemovesKey` future flag (below). To remove a layer or feature source at runtime, use the domain actions in §7. The config family avoids copying loaded GeoJSON omitted from a preset; [configuration merge performance](./CONFIG_MERGE.md) describes its scope and verification.
 
 Paths are arrays routed by the first segment (`["map", "layers", id, …]`).
 
@@ -258,7 +258,32 @@ store.dispatch(set(["map", "view", "center"], map.getView().getCenter()));
 - `removeFeatureSource(controllerName, id)` deletes the source with its data, load state and history. A load still in flight is ignored when it completes and does not recreate the source, a refreshing source stops refreshing, and combined sources skip the removed member. Layers bound to the source are not removed; they keep the features they already show until they are removed too. A feature list bound to the removed source (`list.featureSource`), or a combined list whose members were all removed, shows its empty state instead of loading. Point `list.featureSource` at another source and remove the id from the `featureSourceNames` of combined sources to keep the state tidy.
 - Actions addressed to a source id that is not in the state are ignored: `setData`, `setError`, `loadSuccess`, `loadFailure`, `pauseRefreshUntilNextLoad`, feature edits and `undo`/`redo`. Before, the first group threw for unknown ids and `setError`, unbound `loadFailure` and the pause created a partial source. Create a source through config (`set` or `mergeConfig` of `featureSources.<id>`) before you write to it.
 - Unknown ids are ignored by `removeLayer` and `removeFeatureSource`, the state reference stays unchanged.
-- `unset(path)` is **not** meant for this. It keeps the key with an `undefined` value (`"layers" in state` stays true). Core's reducers, controllers and selectors tolerate such entries by skipping them, but they stay in the state.
+- `unset(path)` is **not** meant for this today. By default it keeps the key with an `undefined` value (`"layers" in state` stays true). Core's reducers, controllers and selectors tolerate such entries by skipping them, but they stay in the state, and they do not survive serialisation.
+
+### `unset` and the `v15_unsetRemovesKey` future flag
+
+`unset(path)` is `set(path, undefined)` plus a marker in `action.meta`. The next major of `@mapsight/core` will make it delete the key. Until then the default is unchanged, and a store opts in with the `future` option (same contract as [Decision 012](../../../docs/architecture/decisions/012-future-flags-for-next-major-ui.md): `true` is the next major's behavior, omitted or `false` is today's):
+
+```typescript
+import {createMapsightStore} from "@mapsight/core";
+
+const store = createMapsightStore(controllers, {}, initialState, null, {
+	future: {v15_unsetRemovesKey: true},
+});
+```
+
+`@mapsight/ui` forwards `createOptions.future.v8_unsetRemovesKey` to it.
+
+| `unset(path)` where…                             | Flag off (default)                        | Flag on                           |
+| ------------------------------------------------ | ----------------------------------------- | --------------------------------- |
+| the parent is a plain object and owns the key    | key stays, value `undefined`              | key deleted, like `removeKey`     |
+| the parent is an array                           | element becomes `undefined`               | same, arrays are not shortened    |
+| the key or its parent does not exist             | nothing happens, same state reference     | same                              |
+| the key exists with value `undefined` already    | nothing happens, same state reference     | key deleted                       |
+| the path is a whole controller state (`["map"]`) | the store throws (reducer is `undefined`) | same                              |
+| a plain `set(path, undefined)`                   | key stays, value `undefined`              | same, the flag does not affect it |
+
+The flag is read per store, so stores with different settings can live on one page. Batches (`batchActions`, `setAll`), `controlled()`, `quiet()` and `async()` keep the marker and are resolved the same way. Controller reducers registered with `registerReducer()` see a `MAPSIGHT_REMOVE_KEY` action instead of `MAPSIGHT_SET` for an unset that deletes a key; reducers passed to `createMapsightStore` as app reducers see the original action. With the flag on, `unset(["map", "layers", id])` and `unset(["featureSources", id])` behave like `removeLayer` and `removeFeatureSource`, and `removeInteractionSelection` deletes the interaction from `options.selections`. Prefer `removeKey` and the domain actions where you can: they work in both modes.
 
 ### Good
 
@@ -276,7 +301,7 @@ store.dispatch(removeFeatureSource("featureSources", "pois"));
 ```typescript
 import {set, unset} from "@mapsight/core/lib/base/actions";
 
-// ❌ Leaves `poi-layer: undefined` behind in the state
+// ❌ Leaves `poi-layer: undefined` behind in the state (unless the store has `v15_unsetRemovesKey`)
 store.dispatch(unset(["map", "layers", "poi-layer"]));
 
 // ❌ Replacing the whole parent just to drop one key
