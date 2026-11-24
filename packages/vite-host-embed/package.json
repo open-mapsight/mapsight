@@ -1,14 +1,14 @@
 {
 	"name": "@mapsight/vite-host-embed",
 	"description": "Vite plugin for Mapsight host embed static asset builds",
-	"version": "1.1.7",
+	"version": "1.1.8",
 	"type": "module",
 	"dependencies": {},
 	"devDependencies": {
 		"@types/node": "catalog:",
 		"@typescript/native": "catalog:",
 		"typescript": "catalog:",
-		"vite": "^8.3.5",
+		"vite": "^8.3.8",
 		"vitest": "catalog:"
 	},
 	"exports": {
@@ -23,7 +23,7 @@
 	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/vite-host-embed#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"vite": "^8.3.5"
+		"vite": "^8.3.8"
 	},
 	"repository": {
 		"type": "git",

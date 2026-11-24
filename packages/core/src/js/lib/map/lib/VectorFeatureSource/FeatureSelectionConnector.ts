@@ -93,50 +93,47 @@ export default class FeatureSelectionConnector {
 	subscribe(listener: FeatureSelectionListener) {
 		this._listeners.push(listener);
 
-		if (
-			this._unsubscribeFeatureSelections === null &&
-			this._listeners.length >= 1
-		) {
+		if (this._unsubscribeFeatureSelections === null) {
 			this._unsubscribeFeatureSelections =
 				this._featureSelectionsController.observeUncontrolled(
-					(s) => s as FeatureSelectionsState, // select all
+					(state) => state as FeatureSelectionsState,
 					(selections) => {
-						if (!selections) {
-							return;
-						}
-
-						// update selection maps
-						const previous = this._previousData;
-						this._previousData = this._data;
-						this._data = previous;
-						this._data.clear();
-						this._reverseData.clear();
-
-						Object.keys(selections).forEach((state) => {
-							getFilteredFeatures(selections[state])?.forEach(
-								(featureId: string) => {
-									if (this.get(featureId) !== undefined) {
-										return;
-									}
-
-									this._data.set(featureId, state);
-									this._reverseData.set(
-										state,
-										this.getAllFeaturesWithState(
-											state,
-										).concat([featureId]),
-									);
-								},
-							);
-						});
-
-						// feature changes
+						this._updateSelectionMaps(selections);
 						this._emit();
 					},
 				);
+			this._updateSelectionMaps(
+				this._featureSelectionsController.getState() as FeatureSelectionsState,
+			);
 		}
 
+		// Apply the current selections when a new layer connects, even if
+		// the shared observer was already running for a sibling.
+		listener();
 		return () => this.unsubscribe(listener);
+	}
+
+	private _updateSelectionMaps(
+		selections: FeatureSelectionsState | undefined,
+	) {
+		const previous = this._previousData;
+		this._previousData = this._data;
+		this._data = previous;
+		this._data.clear();
+		this._reverseData.clear();
+
+		for (const [state, selection] of Object.entries(selections ?? {})) {
+			for (const featureId of getFilteredFeatures(selection) ?? []) {
+				if (this._data.has(featureId)) {
+					continue;
+				}
+				this._data.set(featureId, state);
+				this._reverseData.set(
+					state,
+					this.getAllFeaturesWithState(state).concat([featureId]),
+				);
+			}
+		}
 	}
 
 	unsubscribe(listener: FeatureSelectionListener) {

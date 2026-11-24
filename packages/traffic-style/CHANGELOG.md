@@ -1,5 +1,23 @@
 # @mapsight/traffic-style
 
+## 5.8.0
+
+### Minor Changes
+
+- 3fbb08f: Add the opt-in `polygonInteractionEmphasis` mixin, which widens and reveals hovered and selected polygons while keeping data-driven colors.
+
+### Patch Changes
+
+- 37abb0e: Bump dependencies from Dependabot ([#464](https://github.com/open-mapsight/mapsight/pull/464)):
+
+    - `markdown-table` `^3.0.4` → `^3.1.0` (minor)
+
+- 0e943b2: Add Font Awesome pictograms for service POIs
+- 5aeedad: Install fewer dependencies: `vinyl`, `merge-stream` and `fs-extra` are no longer dependencies, and `@fortawesome/free-solid-svg-icons` (used only to generate the shipped Font Awesome pictogram module) is now a development dependency. No API or CLI behaviour changes.
+- 457a760: Generated style modules no longer import `@mapsight/lib-js`. The small path and replace helpers are now emitted inline, and only when a style uses them. After regenerating your styles you can remove a direct `@mapsight/lib-js` dependency from your application if nothing else needs it.
+- Updated dependencies [`3fbb08f`]:
+    - `@mapsight/lib-ol@4.3.4 → 4.4.0` (minor)
+
 ## 5.7.0
 
 ### Minor Changes

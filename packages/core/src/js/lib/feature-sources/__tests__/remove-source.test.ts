@@ -26,7 +26,7 @@ import {
 } from "@/lib/feature-sources/actions";
 import {estimateFeatureSourcesStateBytes} from "@/lib/feature-sources/cache/estimate-bytes";
 import {FeatureSourcesController} from "@/lib/feature-sources/controller";
-import {getCombinedFeatureSourceBindings} from "@/lib/feature-sources/lib/combined";
+import * as combined from "@/lib/feature-sources/lib/combined";
 import {
 	findFeatureInFeatureSourcesById,
 	findFeatureSourceIdForFeatureId,
@@ -195,6 +195,46 @@ describe("removeFeatureSource", () => {
 		expect("combined" in sources(store)).toBe(false);
 	});
 
+	it.each(["data", "error"])(
+		"ignores queued combined %s when the source ID is reused",
+		async (update) => {
+			if (update === "error") {
+				// The combined selector currently skips failed members. Inject
+				// an error result to cover the binding's other dispatch path.
+				vi.spyOn(
+					combined,
+					"createCombinedFeatureSourceSelector",
+				).mockImplementation(() => (state) => ({
+					error: (state[controllerName] as FeatureSourcesState).items
+						?.error as unknown as null,
+					data: collection("a1", "b1"),
+				}));
+			}
+
+			const store = createStore();
+			await vi.runAllTimersAsync();
+			store.dispatch(
+				update === "error"
+					? setError(controllerName, "items", "old binding error")
+					: setData(controllerName, "items", collection("a2")),
+			);
+			store.dispatch(removeFeatureSource(controllerName, "combined"));
+			store.dispatch(
+				set([controllerName, "combined"], {
+					type: "local",
+					data: collection("replacement"),
+				}),
+			);
+			const replacement = sources(store).combined;
+
+			await vi.runAllTimersAsync();
+
+			expect(sources(store).combined).toBe(replacement);
+			expect(combinedIds(store)).toEqual(["replacement"]);
+			expect(sources(store).combined?.error).toBeUndefined();
+		},
+	);
+
 	it("does not fail when a combined update is queued while the combined source is removed", async () => {
 		const store = createStore();
 		await vi.runAllTimersAsync();
@@ -248,7 +288,7 @@ describe("feature source selectors with undefined entries", () => {
 
 	it("skips them when collecting combined bindings", () => {
 		expect(
-			getCombinedFeatureSourceBindings({
+			combined.getCombinedFeatureSourceBindings({
 				gone: undefined,
 				combined: {type: "combined", featureSourceNames: ["a"]},
 				plain: {type: "local"},

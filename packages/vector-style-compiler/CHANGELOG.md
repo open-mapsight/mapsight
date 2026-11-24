@@ -1,5 +1,27 @@
 # @mapsight/vector-style-compiler
 
+## 13.3.0
+
+### Minor Changes
+
+- 3fbb08f: Document `fill-minOpacity`, `stroke-minOpacity` and `stroke-widthOffset` in the README and IDE metadata.
+
+### Patch Changes
+
+- 898baf5: Bump dependencies from Dependabot ([#486](https://github.com/open-mapsight/mapsight/pull/486)):
+
+    - `sass` `1.107.1` → `1.108.2` (minor)
+
+- 3741cca: Bump dependencies from Dependabot ([#487](https://github.com/open-mapsight/mapsight/pull/487)):
+
+    - `vite` `^8.3.5` → `^8.3.8` (patch)
+
+- 0ba468f: The compiler now warns about styles that declare `circle-*` or `icon-*` properties but no `image-type`, since such styles draw no point symbol. The API reports warnings through the new optional `onWarning` callback and the CLI prints them; the generated output is unchanged. The README examples now set `image-type` and its duplicated sections are removed.
+- 457a760: Generated style modules no longer import `@mapsight/lib-js`. The small path and replace helpers are now emitted inline, and only when a style uses them. After regenerating your styles you can remove a direct `@mapsight/lib-js` dependency from your application if nothing else needs it.
+- Updated dependencies [`3741cca`, `3fbb08f`]:
+    - `@mapsight/core@14.7.1 → 14.7.2` (patch)
+    - `@mapsight/lib-ol@4.3.4 → 4.4.0` (minor)
+
 ## 13.2.1
 
 ### Patch Changes

@@ -63,8 +63,9 @@ for (const mixin of [
 	WithControls,
 	WithMounting,
 	WithAnimations,
-	WithLayers,
+	// Register overlays before layer sources apply their initial selections.
 	WithLayerOverlays,
+	WithLayers,
 	WithSize,
 	WithInteractions,
 	WithFeatureInteractions,
