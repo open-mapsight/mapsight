@@ -1,3 +1,8 @@
+import type {Extent} from "ol/extent";
+import {getForViewAndSize} from "ol/extent";
+import {getUserProjection, transform, transformExtent} from "ol/proj";
+import type Projection from "ol/proj/Projection";
+
 import type {Selector} from "@reduxjs/toolkit";
 import {createSelector} from "@reduxjs/toolkit";
 import isEqual from "lodash/isEqual";
@@ -11,7 +16,7 @@ import type {
 	FeatureSourcesState,
 } from "@/lib/feature-sources/types";
 import type {FeatureInteractionName} from "@/lib/map/lib/WithFeatureInteractions";
-import type {LayerState, MapState} from "@/lib/map/types";
+import type {LayerState, MapState, MapViewState} from "@/lib/map/types";
 import {isVectorFeatureSource} from "@/lib/map/types";
 import type {State} from "@/types";
 
@@ -109,6 +114,105 @@ export const makeFeatureSourceFromLayerIdSelector = (
 	);
 
 export const mapSizeSelector = (state: MapState) => state.size;
+
+/**
+ * The Mapsight view is always created in the OpenLayers default projection;
+ * a `projection` key in the view state is not passed on to the view.
+ */
+const VIEW_PROJECTION = "EPSG:3857";
+
+const viewStateSelector = (state: MapState): MapViewState | undefined => {
+	const view = state.view;
+	return typeof view === "object" && view !== null ? view : undefined;
+};
+
+function projectedCenterFromSnapshot(view: MapViewState | undefined) {
+	const snapshot = view?.centerSnapshot;
+	return snapshot && isEqual(snapshot.center, view?.center)
+		? snapshot.projected
+		: undefined;
+}
+
+const activeProjection = (
+	_state: MapState,
+	userProjection: Projection | null,
+) => userProjection;
+
+const selectView = createSelector(
+	[viewStateSelector, activeProjection],
+	(view, userProjection) => {
+		const projected = projectedCenterFromSnapshot(view);
+		if (!view || !projected) return view;
+		const center = userProjection
+			? transform(projected, VIEW_PROJECTION, userProjection)
+			: projected;
+		return isEqual(view.center, center) ? view : {...view, center};
+	},
+);
+
+/** View state with the center in the active OpenLayers coordinate system. */
+export const viewSelector = (state: MapState): MapViewState | undefined =>
+	selectView(state, getUserProjection());
+
+/** Center in the active user projection, or EPSG:3857 when none is set. */
+export const viewCenterSelector = (state: MapState) =>
+	viewSelector(state)?.center;
+/** Rounded zoom level. Use {@link viewResolutionSelector} for the exact value. */
+export const viewZoomSelector = (state: MapState) =>
+	viewStateSelector(state)?.zoom;
+/** Rotation in radians; 0 when the view was never rotated. */
+export const viewRotationSelector = (state: MapState) =>
+	viewStateSelector(state)?.rotation ?? 0;
+/** Map units per pixel in view projection (EPSG:3857), never in user projection units. */
+export const viewResolutionSelector = (state: MapState) =>
+	viewStateSelector(state)?.resolution;
+
+const selectViewExtent = createSelector(
+	[
+		(state: MapState) => viewStateSelector(state)?.center,
+		(state: MapState) =>
+			projectedCenterFromSnapshot(viewStateSelector(state)),
+		viewResolutionSelector,
+		viewRotationSelector,
+		mapSizeSelector,
+		activeProjection,
+	],
+	(center, projectedCenter, resolution, rotation, size, userProjection) => {
+		const effectiveCenter =
+			projectedCenter ??
+			(center && userProjection
+				? transform(center, userProjection, VIEW_PROJECTION)
+				: center);
+		if (!effectiveCenter || resolution === undefined || !size) {
+			return undefined;
+		}
+		const extent = getForViewAndSize(
+			effectiveCenter,
+			resolution,
+			rotation,
+			size,
+		);
+		return userProjection
+			? transformExtent(extent, VIEW_PROJECTION, userProjection)
+			: extent;
+	},
+	{memoizeOptions: {resultEqualityCheck: isEqual}},
+);
+
+/**
+ * Visible extent `[minX, minY, maxX, maxY]`, derived from center, resolution,
+ * rotation and map size. The result uses the active coordinate system: view
+ * projection (EPSG:3857) units, or the user projection when one is set (for
+ * example degrees after `useGeographic()` from `ol/proj`), like
+ * `view.calculateExtent()`. With a rotated view this is the bounding box of
+ * the visible area. `undefined` while center, resolution or size are missing,
+ * for example before the map is mounted. Keeps its reference while the extent
+ * is unchanged.
+ */
+export const viewExtentSelector: Selector<MapState, Extent | undefined> = (
+	state,
+) => selectViewExtent(state, getUserProjection());
+
 export const viewportAnchorSelector = (state: MapState) => state.viewportAnchor;
 
 // die tatsächlich von OpenLayer gerenderten Layer. wenn ein Layer mit option.visible grundsätzlich aktiv ist, aber an der angezeigten Stelle nichts beiträgt, ist er hier nicht verzeichnet.

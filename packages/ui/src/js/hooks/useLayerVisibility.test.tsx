@@ -1,0 +1,174 @@
+import {act, cleanup, renderHook} from "@testing-library/react";
+import {afterEach, describe, expect, it} from "vitest";
+
+import {set, unset} from "@mapsight/core/lib/base/actions";
+
+import {MapHookProvider, createMapHookStore} from "./__tests__/map-hook-store";
+import useLayerVisibility from "./useLayerVisibility";
+
+afterEach(cleanup);
+
+const layers = {
+	parking: {type: "Vector", options: {visible: true}},
+	traffic: {type: "Vector", options: {visible: false}},
+	plain: {type: "Vector"},
+};
+
+type MapSlices = Record<
+	string,
+	{layers: Record<string, {options?: {visible?: boolean}}>}
+>;
+
+function storedVisibility(
+	store: ReturnType<typeof createMapHookStore>,
+	controllerName: string,
+	layerId: string,
+) {
+	const slices = store.getState() as MapSlices;
+	return slices[controllerName]?.layers[layerId]?.options?.visible;
+}
+
+function setup(layerId: string, controllerName?: string, extra = {}) {
+	const store = createMapHookStore({map: {layers}, ...extra});
+	const hook = renderHook(() => useLayerVisibility(layerId, controllerName), {
+		wrapper: ({children}) => (
+			<MapHookProvider store={store}>{children}</MapHookProvider>
+		),
+	});
+	return {store, ...hook};
+}
+
+describe("useLayerVisibility", () => {
+	it("reads the visibility of the layer", () => {
+		expect(setup("parking").result.current[0]).toBe(true);
+		expect(setup("traffic").result.current[0]).toBe(false);
+	});
+
+	it("treats unknown layers as hidden", () => {
+		expect(setup("missing").result.current[0]).toBe(false);
+	});
+
+	it("turns off an implicitly visible layer on the first toggle", () => {
+		const {result, store} = setup("plain");
+		const [visible, setVisible] = result.current;
+		expect(visible).toBe(true);
+		act(() => setVisible(!visible));
+		expect(result.current[0]).toBe(false);
+		expect(storedVisibility(store, "map", "plain")).toBe(false);
+	});
+
+	it("sets the visibility in the store", () => {
+		const {result, store} = setup("traffic");
+
+		act(() => result.current[1](true));
+		expect(result.current[0]).toBe(true);
+		expect(storedVisibility(store, "map", "traffic")).toBe(true);
+
+		act(() => result.current[1](false));
+		expect(result.current[0]).toBe(false);
+		expect(storedVisibility(store, "map", "traffic")).toBe(false);
+	});
+
+	it("does not recreate a removed layer when a retained setter is called", () => {
+		const {result, store} = setup("parking");
+		const setVisible = result.current[1];
+
+		act(() => {
+			store.dispatch(unset(["map", "layers", "parking"]));
+		});
+		expect(result.current[0]).toBe(false);
+		act(() => setVisible(true));
+
+		expect(
+			(store.getState() as MapSlices).map!.layers.parking,
+		).toBeUndefined();
+		expect(result.current[0]).toBe(false);
+	});
+
+	it("uses the same setter when a layer is registered later", () => {
+		const {result, store} = setup("later");
+		const setVisible = result.current[1];
+
+		act(() => setVisible(true));
+		expect(
+			(store.getState() as MapSlices).map!.layers.later,
+		).toBeUndefined();
+		act(() => {
+			store.dispatch(set(["map", "layers", "later"], layers.traffic));
+		});
+		act(() => setVisible(true));
+
+		expect(result.current[0]).toBe(true);
+	});
+
+	it("follows changes made elsewhere", () => {
+		const {result, store} = setup("parking");
+
+		act(() => {
+			store.dispatch(
+				set(["map", "layers", "parking", "options", "visible"], false),
+			);
+		});
+		expect(result.current[0]).toBe(false);
+	});
+
+	it("switches layer when the id changes", () => {
+		const store = createMapHookStore({map: {layers}});
+		const {result, rerender} = renderHook(
+			({id}) => useLayerVisibility(id),
+			{
+				initialProps: {id: "parking"},
+				wrapper: ({children}) => (
+					<MapHookProvider store={store}>{children}</MapHookProvider>
+				),
+			},
+		);
+
+		expect(result.current[0]).toBe(true);
+		rerender({id: "traffic"});
+		expect(result.current[0]).toBe(false);
+	});
+
+	it("targets another map controller", () => {
+		const {result, store} = setup("traffic", "overview", {
+			overview: {layers: {traffic: {options: {visible: false}}}},
+		});
+
+		act(() => result.current[1](true));
+		expect(storedVisibility(store, "overview", "traffic")).toBe(true);
+		expect(storedVisibility(store, "map", "traffic")).toBe(false);
+	});
+
+	it("is false while the controller slice or its layers do not exist yet", () => {
+		expect(setup("parking", "missing").result.current[0]).toBe(false);
+		expect(
+			setup("parking", "overview", {overview: {}}).result.current[0],
+		).toBe(false);
+	});
+
+	it("follows the slice appearing and the controller name changing", () => {
+		const store = createMapHookStore({
+			map: {layers},
+			overview: {layers: {parking: {options: {visible: false}}}},
+		});
+		const {result, rerender} = renderHook(
+			({name}) => useLayerVisibility("parking", name),
+			{
+				initialProps: {name: "map"},
+				wrapper: ({children}) => (
+					<MapHookProvider store={store}>{children}</MapHookProvider>
+				),
+			},
+		);
+
+		expect(result.current[0]).toBe(true);
+		rerender({name: "overview"});
+		expect(result.current[0]).toBe(false);
+		rerender({name: "later"});
+		expect(result.current[0]).toBe(false);
+		// Writing to a slice that does not exist yet must not throw either.
+		act(() => result.current[1](true));
+		rerender({name: "map"});
+		expect(result.current[0]).toBe(true);
+	});
+});

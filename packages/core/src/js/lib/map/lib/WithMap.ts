@@ -1,6 +1,8 @@
 import type OlMap from "ol/Map";
 import type OlView from "ol/View";
 
+import isEqual from "lodash/isEqual";
+
 import type {MapState, Options} from "@/lib/map/types";
 //import updateSizeOnTransitionEnd from "@mapsight/lib-ol/map/updateSizeOnTransitionEnd";
 //import canvasSizeFixer from "@mapsight/lib-ol/map/canvasSizeFixer";
@@ -8,13 +10,8 @@ import {di, setOptions, updateProxyObject} from "@/ol-proxy";
 import Map from "@/ol-proxy/definitions/Map";
 import View from "@/ol-proxy/definitions/View";
 
-import {async, controlled, quiet} from "../../base/actions";
+import {async, controlled, quiet, setAll} from "../../base/actions";
 import {BaseController} from "../../base/controller";
-import {
-	setViewCenter,
-	setViewRotation,
-	setViewZoomAndResolution,
-} from "../actions";
 import throttleDispatch from "./throttleDispatch";
 
 // Legacy. We always need Map and View, so we inject it by default. This should not be done here.
@@ -56,9 +53,43 @@ export default class WithMap extends BaseController<MapState> {
 		const name = this.getName();
 		let view: undefined | OlView = undefined;
 
+		const syncView = (nextView: OlView) => {
+			this.dispatch(
+				async(() => {
+					if (view !== nextView) return;
+					const zoom = nextView.getZoom();
+					const center = nextView.getCenter();
+					const projected = nextView.getCenterInternal();
+					this.dispatch(
+						quiet(
+							controlled(
+								setAll([name, "view"], {
+									center,
+									centerSnapshot:
+										center && projected
+											? {
+													center,
+													projected,
+												}
+											: undefined,
+									zoom:
+										zoom === undefined
+											? undefined
+											: Math.round(zoom),
+									resolution: nextView.getResolution(),
+									rotation: nextView.getRotation(),
+								}),
+							),
+						),
+					);
+				}),
+			);
+		};
+
 		this.getAndObserveUncontrolled(
 			(state) => state.view as Options | undefined,
 			(newOptions, oldOptions) => {
+				const previousView = view;
 				updateProxyObject({
 					di: di,
 					oldObject: view,
@@ -74,79 +105,28 @@ export default class WithMap extends BaseController<MapState> {
 							this._map.setView(view);
 						}
 
-						const handleResolution = () => {
-							this.dispatch(
-								async(() => {
-									const zoom = view?.getZoom();
-									const resolution = view?.getResolution();
-									if (zoom && resolution) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewZoomAndResolution(
-														name,
-														zoom,
-														resolution,
-													),
-												),
-											),
-										);
-									}
-								}),
-							);
-						};
-
-						const handleCenter = () => {
-							this.dispatch(
-								async(() => {
-									const center = view?.getCenter();
-									if (center) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewCenter(name, center),
-												),
-											),
-										);
-									}
-								}),
-							);
-						};
-
-						const handleRotation = () => {
-							this.dispatch(
-								async(() => {
-									const rotation = view?.getRotation();
-									if (rotation) {
-										this.dispatch(
-											quiet(
-												controlled(
-													setViewRotation(
-														name,
-														rotation,
-													),
-												),
-											),
-										);
-									}
-								}),
-							);
-						};
-
 						view.on(
-							"change:resolution",
-							throttleDispatch(handleResolution),
+							[
+								"change:center",
+								"change:resolution",
+								"change:rotation",
+							],
+							throttleDispatch(() => syncView(nextView)),
 						);
-						view.on(
-							"change:center",
-							throttleDispatch(handleCenter),
-						);
-						view.on(
-							"change:rotation",
-							throttleDispatch(handleRotation),
-						);
+						syncView(nextView);
 					},
 				});
+				// A requested center can clamp to the current position without an event.
+				const requestedCenter = newOptions?.center;
+				if (
+					view &&
+					view === previousView &&
+					requestedCenter != null &&
+					requestedCenter !== oldOptions?.center &&
+					!isEqual(requestedCenter, view.getCenter())
+				) {
+					syncView(view);
+				}
 			},
 		);
 
