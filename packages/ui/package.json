@@ -14,7 +14,7 @@
 		"@types/react-redux": "catalog:",
 		"breakpoint-sass": "^3.0.0",
 		"flatpickr": "^4.6.13",
-		"focus-trap-react": "^12.0.3",
+		"focus-trap-react": "^12.0.4",
 		"hint.css": "^3.0.0",
 		"lodash": "catalog:",
 		"ol": "catalog:",
@@ -29,7 +29,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@tanstack/react-query": "^5.107.1",
+		"@tanstack/react-query": "^5.108.0",
 		"@testing-library/react": "^16.3.3",
 		"@types/lodash": "catalog:",
 		"@types/react": "catalog:",
@@ -190,7 +190,7 @@
 	"homepage": "https://github.com/open-mapsight/mapsight/tree/main/packages/ui#readme",
 	"license": "MIT",
 	"peerDependencies": {
-		"@tanstack/react-query": "^5.107.1",
+		"@tanstack/react-query": "^5.108.0",
 		"jsdom": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"

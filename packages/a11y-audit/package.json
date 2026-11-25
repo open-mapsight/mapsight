@@ -7,7 +7,7 @@
 		"mapsight-a11y-audit": "./dist/cli.js"
 	},
 	"dependencies": {
-		"axe-core": "^4.14.0",
+		"axe-core": "^4.14.1",
 		"playwright": "catalog:"
 	},
 	"devDependencies": {
