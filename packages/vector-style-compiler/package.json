@@ -12,7 +12,7 @@
 		"@types/node": "catalog:",
 		"chokidar": "^6.0.0",
 		"lodash": "catalog:",
-		"postcss": "^8.5.32",
+		"postcss": "^8.5.33",
 		"sass": "1.108.2"
 	},
 	"devDependencies": {
